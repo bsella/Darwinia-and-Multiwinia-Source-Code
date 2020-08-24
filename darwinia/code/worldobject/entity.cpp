@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -680,9 +680,9 @@ int Entity::GetTypeId( char const *_typeName )
 }
 
 
-char *Entity::GetTypeName( int _troopType )
+const char *Entity::GetTypeName( int _troopType )
 {
-    static char *typeNames[NumEntityTypes] = {
+	static const char *typeNames[NumEntityTypes] = {
                                                 "InvalidType",
                                                 "LaserTroop",
                                                 "Engineer",
@@ -709,11 +709,11 @@ char *Entity::GetTypeName( int _troopType )
 }
 
 
-char *Entity::GetTypeNameTranslated ( int _troopType )
+const char *Entity::GetTypeNameTranslated ( int _troopType )
 {
-    char *typeName = GetTypeName( _troopType );
+	const char *typeName = GetTypeName( _troopType );
 
-    char stringId[256];
+	char stringId[256];
     sprintf( stringId, "entityname_%s", typeName );
 
     if( ISLANGUAGEPHRASE( stringId ) )
@@ -727,7 +727,7 @@ char *Entity::GetTypeNameTranslated ( int _troopType )
 }
 
 
-void Entity::ListSoundEvents( LList<char *> *_list )
+void Entity::ListSoundEvents( LList<const char *> *_list )
 {
     _list->PutData( "Create" );
     _list->PutData( "Attack" );

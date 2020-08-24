@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -530,7 +530,7 @@ void DarwiniaWindow::Render ( bool hasFocus )
 
     //glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     g_gameFont.SetRenderShadow(true);
-    glColor4ub( 255, 255, 150, 30 );
+	glColor4ub( 255, 255, 150, 30 );
 	int y = m_y+9;
 	int fontSize = GetMenuSize(12);
 	if( g_app->m_largeMenus )
@@ -588,20 +588,20 @@ void DarwiniaWindow::Update()
 
 	if( strcmp(EclGetCurrentFocus(), m_name) == 0 )
 	{
-		if( g_inputManager->controlEvent(ControlMenuDown) )
+		if( g_inputManager.controlEvent(ControlMenuDown) )
 		{
 			m_buttonChangedThisUpdate = true;
 			m_currentButton++;
 			m_currentButton = min( m_currentButton, m_buttonOrder.Size()-1 );
 		}
-		if( g_inputManager->controlEvent(ControlMenuUp) )
+		if( g_inputManager.controlEvent(ControlMenuUp) )
 		{
 			m_buttonChangedThisUpdate = true;
 			m_currentButton--;
 			m_currentButton = max(0, m_currentButton);
 		}
 
-		if( g_inputManager->controlEvent(ControlMenuActivate) )
+		if( g_inputManager.controlEvent(ControlMenuActivate) )
 		{
 			EclButton *b = m_buttonOrder.GetData(m_currentButton);
 			if( b )
@@ -610,7 +610,7 @@ void DarwiniaWindow::Update()
 			}
 		}
 
-        if( g_inputManager->controlEvent( ControlMenuClose ) &&
+		if( g_inputManager.controlEvent( ControlMenuClose ) &&
             !g_app->m_atMainMenu )
         {
             EclRemoveWindow( m_name );

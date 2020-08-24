@@ -1,9 +1,9 @@
-#ifndef LANGUAGE_TABLE_H
+﻿#ifndef LANGUAGE_TABLE_H
 #define LANGUAGE_TABLE_H
 
 #include "lib/input/input_types.h"
 
-#include <strstream>
+#include <sstream>
 
 #include "lib/llist.h"
 #include "lib/btree.h"
@@ -28,26 +28,26 @@ private:
 	BTree       <LangPhrase*>	m_phrasesRaw;
 	HashTable   <int>          *m_phrasesKbd;
 	HashTable   <int>          *m_phrasesXin;
-	char *                      m_chunk;
+	const char *                m_chunk;
 
 	bool specific_key_exists  (const char * _key, InputMode _mood);
 	bool RawDoesPhraseExist   (char const *_key);
 	HashTable<int> *GetCurrentTable();
 	HashTable<int> *GetCurrentTable(InputMode _mood);
 
-	void RebuildTable( HashTable<int> *_phrases, std::ostrstream &stream, InputMode _mood );
+	void RebuildTable( HashTable<int> *_phrases, std::ostringstream &stream, InputMode _mood );
 
 public:
-	LangTable   (char *_filename);
+	LangTable   (const char *_filename);
 	~LangTable  ();
 
     void ParseLanguageFile    (char const *_filename);
 	void RebuildTables        ();
 
-	bool DoesPhraseExist      (char const *_key);
-	char *LookupPhrase        (char const *_key);
+	bool DoesPhraseExist      (const char *_key);
+	const char *LookupPhrase  (const char *_key);
 
-	char *RawLookupPhrase     (char const *_key);
+	const char *RawLookupPhrase     (char const *_key);
 
 	bool RawDoesPhraseExist   (char const *_key, InputMode _mood);
 	char *RawLookupPhrase     (char const *_key, InputMode _mood);
@@ -58,7 +58,7 @@ public:
 };
 
 
-LList <char *> *WordWrapText(const char *_string,
+LList <const char *> *WordWrapText(const char *_string,
                              float _linewidth,
                              float _fontWidth,
                              bool _wrapToWindow=true);

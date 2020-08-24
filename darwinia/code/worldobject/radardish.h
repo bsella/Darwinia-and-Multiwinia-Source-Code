@@ -1,4 +1,4 @@
-#ifndef _included_radardish_h
+﻿#ifndef _included_radardish_h
 #define _included_radardish_h
 
 #define RADARDISH_TRANSPORTPERIOD    0.1f                        // Minimum wait time between sends
@@ -59,7 +59,7 @@ public:
 
     bool    UpdateEntityInTransit( Entity *_entity );
 
-    void    ListSoundEvents ( LList<char *> *_list );
+	void    ListSoundEvents ( LList<const char *> *_list );
 };
 
 

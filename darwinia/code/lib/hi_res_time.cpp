@@ -1,11 +1,14 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
+#ifdef TARGET_MSVC
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#endif
 #include <math.h>
 #include "main.h"
 
 #include "hi_res_time.h"
+#include <chrono>
 
 
 #define USE_PENTIUM_COUNTER 0
@@ -23,6 +26,17 @@ static double g_fakeTime;
 #pragma warning (disable : 4035)	// disable no return value warning
 inline  unsigned int GetPentiumCounter()
 {
+#ifdef TARGET_OS_LINUX
+	asm("_emit 0x0F		        // Call RDTSC (Read time stamp counter) this will"
+		"_emit 0x31				// put a 64 bit clock cycle count in edx;eax"
+
+		"shr eax,6				// 64 bits are too much and the resolution is too"
+		"						// high, so throw away the bottom 6 bits of eax"
+		"shl edx,26				// Now throw away everything other than the top 6 bits of edx"
+		"or eax,edx				// Shove the edx data into the gap in eax"
+		"						// Return value in eax, which apparently VC is happy with"
+	);
+#else
 	__asm
 	{
 		_emit 0x0F		        // Call RDTSC (Read time stamp counter) this will
@@ -34,6 +48,7 @@ inline  unsigned int GetPentiumCounter()
 		or eax,edx				// Shove the edx data into the gap in eax
 								// Return value in eax, which apparently VC is happy with
 	}
+#endif
 }
 #pragma warning (pop)
 
@@ -42,12 +57,16 @@ inline  unsigned int GetPentiumCounter()
 // *** InitialiseHighResTime
 void InitialiseHighResTime()
 {
+#ifdef TARGET_MSVC
 	// Start be getting the frequency the Performance Counter uses.
 	// We need to use the Performance Counter to calibrate the Pentium
 	// Counter, if we are going to use it.
     LARGE_INTEGER count;
     QueryPerformanceFrequency(&count);
     g_tickInterval = 1.0 / (double)count.QuadPart;
+#else
+	///TODO
+#endif
 
 #if USE_PENTIUM_COUNTER
 	// Get start times
@@ -75,33 +94,15 @@ void InitialiseHighResTime()
 
 inline double GetLowLevelTime()
 {
-#if USE_PENTIUM_COUNTER
-	static double wraps = 0.0;		// Each time the counter wraps, we increment this value by the wrap period
-	static unsigned int lastCount = 0;
-	unsigned int newCount = GetPentiumCounter();
+	///TODO
 
-	// Has the counter wrapped?
-	if (newCount < lastCount)
-	{
-		wraps += g_tickInterval * pow(2, 32);
-	}
-	lastCount = newCount;
+	using namespace std::chrono;
+	static auto startTime = high_resolution_clock::now();
 
-	return (double)newCount * g_tickInterval + wraps;
-#else
-    LARGE_INTEGER count;
+	high_resolution_clock::time_point t = high_resolution_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(t- startTime);
+	return time_span.count();
 
-    static LARGE_INTEGER startTime;
-    static bool initted = false;
-
-    if (!initted) {
-        QueryPerformanceCounter(&startTime);
-        initted = true;
-    }
-
-    QueryPerformanceCounter(&count);
-    return (double)(count.QuadPart - startTime.QuadPart) * g_tickInterval;
-#endif
 }
 
 

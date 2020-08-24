@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_startsequence_h
 #define _included_startsequence_h
 
@@ -12,7 +12,7 @@ protected:
     float m_startTime;
     LList<StartSequenceCaption *> m_captions;
 
-    void RegisterCaption( char *_caption, float _x, float _y, float _size,
+	void RegisterCaption( const char *_caption, float _x, float _y, float _size,
                           float _startTime, float _endTime );
 
 public:

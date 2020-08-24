@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/debug_render.h"
 #include "lib/file_writer.h"
@@ -422,7 +422,7 @@ void AntHill::Render( float _predictionTime )
 }
 
 
-void AntHill::ListSoundEvents( LList<char *> *_list )
+void AntHill::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 

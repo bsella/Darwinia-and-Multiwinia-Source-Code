@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 
 #include <stdlib.h>
@@ -40,14 +40,14 @@ void FastDArray <T>::RebuildFreeList ()
 	//  Reset free list
 
 	delete freelist;
-	freelist = new int[m_arraySize];
+	freelist = new int[this->m_arraySize];
 	firstfree = -1;
 	int lastknownfree = -1;
 
 	// Step through, rebuilding
 
-	for ( int i = 0; i < m_arraySize; ++i ) {
-		if ( shadow[i] == 0 ) {
+	for ( int i = 0; i < this->m_arraySize; ++i ) {
+		if ( this->shadow[i] == 0 ) {
 			if ( firstfree == -1 ) {
 				firstfree = i;
 			}
@@ -71,9 +71,9 @@ template <class T>
 void FastDArray <T>::RebuildNumUsed()
 {
 	numused = 0 ;
-	for ( int i = 0; i < m_arraySize; ++i )
+	for ( int i = 0; i < this->m_arraySize; ++i )
 	{
-		if ( shadow[i] == 1 ) ++numused;
+		if ( this->shadow[i] == 1 ) ++numused;
 	}
 }
 
@@ -81,67 +81,67 @@ void FastDArray <T>::RebuildNumUsed()
 template <class T>
 void FastDArray <T>::SetSize ( int newsize )
 {
-	if ( newsize > m_arraySize )
+	if ( newsize > this->m_arraySize )
 	{
-		int oldarraysize = m_arraySize;
+		int oldarraysize = this->m_arraySize;
 
-		m_arraySize = newsize;
-		T *temparray = new T[ m_arraySize ];
-		char *tempshadow = new char[ m_arraySize ];
-		int *tempfreelist = new int[ m_arraySize ];
+		this->m_arraySize = newsize;
+		T *temparray = new T[this->m_arraySize];
+		char *tempshadow = new char[this->m_arraySize];
+		int *tempfreelist = new int[this->m_arraySize];
 
 		int a;
 
 		for ( a = 0; a < oldarraysize; ++a )
 		{
-			temparray[a] = array[a];
-			tempshadow[a] = shadow[a];
+			temparray[a] = this->array[a];
+			tempshadow[a] = this->shadow[a];
 			tempfreelist[a] = freelist[a];
 		}
 
-		for ( a = oldarraysize; a < m_arraySize; ++a )
+		for ( a = oldarraysize; a < this->m_arraySize; ++a )
 			tempshadow[a] = 0;
 
 		int oldfirstfree = firstfree;
 		firstfree = oldarraysize;
-		for ( a = oldarraysize; a < m_arraySize-1; ++a )
+		for ( a = oldarraysize; a < this->m_arraySize-1; ++a )
 			tempfreelist[a] = a + 1;
-		tempfreelist[m_arraySize-1] = oldfirstfree;
+		tempfreelist[this->m_arraySize-1] = oldfirstfree;
 
-		delete[] array;
-		delete[] shadow;
+		delete[] this->array;
+		delete[] this->shadow;
 		delete[] freelist;
 
-		array = temparray;
-		shadow = tempshadow;
+		this->array = temparray;
+		this->shadow = tempshadow;
 		freelist = tempfreelist;
 	}
-	else if ( newsize < m_arraySize )
+	else if ( newsize <this->m_arraySize )
 	{
-		m_arraySize = newsize;
-		T *temparray = new T[m_arraySize];
-		char *tempshadow = new char[m_arraySize];
-		int *tempfreelist = new int[m_arraySize];
+		this->m_arraySize = newsize;
+		T *temparray = new T[this->m_arraySize];
+		char *tempshadow = new char[this->m_arraySize];
+		int *tempfreelist = new int[this->m_arraySize];
 
-		for ( int a = 0; a < m_arraySize; ++a )
+		for ( int a = 0; a < this->m_arraySize; ++a )
 		{
-			temparray[a] = array[a];
-			tempshadow[a] = shadow[a];
+			temparray[a] = this->array[a];
+			tempshadow[a] =this->shadow[a];
 			tempfreelist[a] = freelist[a];
 		}
 
-		delete[] array;
-		delete[] shadow;
+		delete[] this->array;
+		delete[] this->shadow;
 		delete[] freelist;
 
-		array = temparray;
-		shadow = tempshadow;
+		this->array = temparray;
+		this->shadow = tempshadow;
 		freelist = tempfreelist;
 
 		RebuildNumUsed();
 		RebuildFreeList();
 	}
-	else if ( newsize == m_arraySize )
+	else if ( newsize ==this->m_arraySize )
 	{
 		// Do nothing
 	}
@@ -151,22 +151,22 @@ void FastDArray <T>::SetSize ( int newsize )
 template <class T>
 void FastDArray <T>::Grow()
 {
-	if (m_stepSize == -1)
+	if (this->m_stepSize == -1)
 	{
-		if (m_arraySize == 0)
+		if (this->m_arraySize == 0)
 		{
 			SetSize( 1 );
 		}
 		else
 		{
 			// Double array size
-			SetSize( m_arraySize * 2 );
+			SetSize(this->m_arraySize * 2 );
 		}
 	}
 	else
 	{
 		// Increase array size by fixed amount
-		SetSize( m_arraySize + m_stepSize );
+		SetSize(this->m_arraySize + this->m_stepSize );
 	}
 }
 
@@ -190,26 +190,26 @@ DarwiniaDebugAssert(firstfree != -1);
 	int freeslot = firstfree;
 	int nextfree = freelist[freeslot];
 
-    array[freeslot] = newdata;
-	if ( shadow[freeslot] == 0 ) ++numused;
-    shadow[freeslot] = 1;
+	this->array[freeslot] = newdata;
+	if (this->shadow[freeslot] == 0 ) ++numused;
+	this->shadow[freeslot] = 1;
 	freelist[freeslot] = -2;
 	firstfree = nextfree;
 
-    return freeslot;
+	return freeslot;
 }
 
 
 template <class T>
 void FastDArray <T>::PutData( const T &newdata, int index )
 {
-    DarwiniaDebugAssert ( index < m_arraySize && index >= 0 );
+	DarwiniaDebugAssert ( index <this->m_arraySize && index >= 0 );
 
-    array[index] = newdata;
+	this->array[index] = newdata;
 
-    if ( shadow[index] == 0 )
+	if (this->shadow[index] == 0 )
 	{
-		shadow[index] = 1;
+		this->shadow[index] = 1;
 		++numused;
 		RebuildFreeList();
 	}
@@ -244,10 +244,10 @@ void FastDArray <T>::Empty()
 template <class T>
 void FastDArray <T>::MarkUsed( int index )
 {
-    DarwiniaDebugAssert ( index < m_arraySize && index >= 0 );
-    DarwiniaDebugAssert ( shadow[index] == 0 );
+	DarwiniaDebugAssert ( index <this->m_arraySize && index >= 0 );
+	DarwiniaDebugAssert (this->shadow[index] == 0 );
 
-    shadow[index] = 1;
+   this->shadow[index] = 1;
 	++numused;
     RebuildFreeList();
 }
@@ -256,11 +256,11 @@ void FastDArray <T>::MarkUsed( int index )
 template <class T>
 void FastDArray <T>::MarkNotUsed( int index )
 {
-    DarwiniaDebugAssert ( index < m_arraySize && index >= 0 );
-    DarwiniaDebugAssert ( shadow[index] != 0 );
+	DarwiniaDebugAssert ( index <this->m_arraySize && index >= 0 );
+	DarwiniaDebugAssert (this->shadow[index] != 0 );
 
 	--numused;
-    shadow[index] = 0;
+   this->shadow[index] = 0;
     freelist[index] = firstfree;
 	firstfree = index;
 }
@@ -292,12 +292,12 @@ int FastDArray<T>::GetNextFree()
 	int freeslot = firstfree;
 	int nextfree = freelist[freeslot];
 
-	if ( shadow[freeslot] == 0 )
+	if (this->shadow[freeslot] == 0 )
 	{
 		++numused;
 	}
 
-    shadow[freeslot] = 1;
+   this->shadow[freeslot] = 1;
 	freelist[freeslot] = -2;
 	firstfree = nextfree;
 

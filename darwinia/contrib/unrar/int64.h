@@ -1,4 +1,4 @@
-#ifndef _RAR_INT64_
+﻿#ifndef _RAR_INT64_
 #define _RAR_INT64_
 
 #if defined(__BORLANDC__) || defined(_MSC_VER)
@@ -80,6 +80,6 @@ inline unsigned int int64to32(Int64 n) {return(n.GetLowPart());}
 #define INT64ERR int32to64(0x80000000,0)
 
 void itoa(Int64 n,char *Str);
-Int64 atoil(char *Str);
+Int64 atoil(const char *Str);
 
 #endif

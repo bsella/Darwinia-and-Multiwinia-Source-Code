@@ -1,4 +1,4 @@
-#ifndef _included_ogl_extensions_h
+﻿#ifndef _included_ogl_extensions_h
 #define _included_ogl_extensions_h
 
 
@@ -109,7 +109,11 @@ extern glGetBufferParameterivARB	gglGetBufferParameterivARB;
 extern glGetBufferPointervARB		gglGetBufferPointervARB;
 
 // Extension for full-screen anti-aliasing
+#if defined(TARGET_MSVC)
 typedef bool (__stdcall *ChoosePixelFormatARB) (HDC, const int *, const float *, unsigned int, int *, unsigned int *);
+#else
+typedef bool (*ChoosePixelFormatARB) (int, const int *, const float *, unsigned int, int *, unsigned int *);
+#endif
 extern ChoosePixelFormatARB gglChoosePixelFormatARB;
 #define WGL_SAMPLE_BUFFERS_ARB              0x2041
 #define WGL_SAMPLES_ARB                     0x2042

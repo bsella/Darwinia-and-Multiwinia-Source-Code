@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/math_utils.h"
@@ -549,7 +549,7 @@ void Officer::SetWaypoint( Vector3 const &_wayPoint )
 }
 
 
-void Officer::ListSoundEvents( LList<char *> *_list )
+void Officer::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 
@@ -818,9 +818,9 @@ void Officer::SetPreviousMode()
     }
 }
 
-char *Officer::GetOrderType( int _orderType )
+const char *Officer::GetOrderType( int _orderType )
 {
-    static char *orders[] = {   "None",
+	static const char *orders[] = {   "None",
                                 "Goto",
                                 "Follow"
                             };

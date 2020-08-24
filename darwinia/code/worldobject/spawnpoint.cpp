@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/file_writer.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
@@ -276,7 +276,7 @@ void SpawnBuilding::TriggerSpirit( SpawnBuildingSpirit *_spirit )
         SpawnBuildingLink *link = m_links[i];
         for( int j = 0; j < link->m_targets.Size(); ++j )
         {
-            int thisLink = link->m_targets[j];
+			//int thisLink = link->m_targets[j];
             if( link->m_targets[j] == _spirit->m_targetBuildingId )
             {
                 link->m_spirits.PutData( _spirit );
@@ -597,10 +597,11 @@ void SpawnPoint::RecalculateOwnership()
 
 void SpawnPoint::TriggerSpirit( SpawnBuildingSpirit *_spirit )
 {
-    if( m_id.GetTeamId() == 0 )
-    {
-        int b = 10;
-    }
+	m_id.GetTeamId();
+	//if( m_id.GetTeamId() == 0 )
+	//{
+	//    int b = 10;
+	//}
 
     if( m_id.GetUniqueId() == _spirit->m_targetBuildingId )
     {

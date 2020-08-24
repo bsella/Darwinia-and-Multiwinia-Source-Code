@@ -1,6 +1,6 @@
-#ifndef INCLUDED_SYSTEM_INFO_H
+﻿#ifndef INCLUDED_SYSTEM_INFO_H
 #define INCLUDED_SYSTEM_INFO_H
-
+#include <string>
 
 //*****************************************************************************
 // Class LocaleInfo
@@ -9,11 +9,11 @@
 class LocaleInfo
 {
 public:
-	char *m_language;
-	char *m_country;
+	std::string m_language;
+	//char* m_language;
 
-	LocaleInfo(): m_language(NULL), m_country(NULL) {}
-	~LocaleInfo() { delete [] m_language; delete [] m_country; }
+	LocaleInfo() /*m_language(nullptr),*/ {}
+	~LocaleInfo() { /*delete [] m_language;*/ }
 };
 
 
@@ -29,7 +29,7 @@ public:
 	unsigned int m_numDevices;
 	int m_preferredDevice;
 
-	AudioInfo(): m_deviceNames(NULL), m_numDevices(0) {}
+	AudioInfo(): m_deviceNames(nullptr), m_numDevices(0) {}
 	~AudioInfo()
 	{
 		for (unsigned int i = 0; i < m_numDevices; ++i)
@@ -57,7 +57,6 @@ public:
 	int			m_directXVersion;
 
 	SystemInfo();
-	~SystemInfo();
 };
 
 

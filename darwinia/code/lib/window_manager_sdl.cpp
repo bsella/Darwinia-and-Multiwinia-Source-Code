@@ -1,14 +1,14 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
-#include <SDL.h>
-#include <SDL_version.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_version.h>
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
 #include <fenv.h>
 
 #include "lib/debug_utils.h"
-#include "lib/input.h"
+#include "lib/input/input.h"
 #include "lib/preferences.h"
 #include "lib/window_manager.h"
 
@@ -17,7 +17,7 @@
 #include "renderer.h"
 
 #ifdef TARGET_OS_LINUX
-#include "prefix.h"
+//#include "prefix.h"
 #endif
 
 #ifdef AMBROSIA_REGISTRATION
@@ -27,12 +27,13 @@
 #include "platform.h"
 #endif
 
-WindowManager *g_windowManager = NULL;
-
+WindowManager g_windowManager;
 
 // *** Constructor
 WindowManager::WindowManager()
-	:	m_mousePointerVisible(true), m_invertY(true), m_warpInvertY(false), m_windowed(false),
+	:	m_mousePointerVisible(true), m_invertY(true),
+	  //m_warpInvertY(false),
+	  m_windowed(false),
 		m_mouseCaptured(false)
 {
 	m_win32Specific = NULL;
@@ -83,7 +84,7 @@ WindowManager::~WindowManager()
 	SDL_Quit();
 }
 
-bool WindowManager::CreateWin(int &_width, int &_height, bool _windowed, int _colourDepth, int _refreshRate, int _zDepth)
+bool WindowManager::CreateWin(int _width, int _height, bool _windowed, int _colourDepth, int, int _zDepth, bool)
 {
     int bpp = 0;
     int flags = 0;
@@ -101,7 +102,7 @@ bool WindowManager::CreateWin(int &_width, int &_height, bool _windowed, int _co
 	{
 		flags |= SDL_FULLSCREEN;
 		m_invertY = false;
-		m_warpInvertY = false;
+		//m_warpInvertY = false;
 
 		// Look for the best valid video mode
 		if (_colourDepth != -1)
@@ -142,7 +143,7 @@ bool WindowManager::CreateWin(int &_width, int &_height, bool _windowed, int _co
 #endif
 #ifdef TARGET_OS_LINUX
 		m_invertY = false;
-		m_warpInvertY = false;
+		//m_warpInvertY = false;
 #endif
 		// Usually any combination is OK for windowed mode.
 		m_screenW = _width;
@@ -250,8 +251,8 @@ bool WindowManager::MouseVisible()
 void WindowManager::CaptureMouse()
 {
 	// Don't grab if we don't have focus
-	if (!g_inputManager->m_windowHasFocus)
-		return;
+	//if (!g_inputManager->m_windowHasFocus)
+	//	return;
 
 	SDL_WM_GrabInput(SDL_GRAB_ON);
 	m_mouseCaptured = true;
@@ -281,8 +282,13 @@ void WindowManager::EnsureMouseUncaptured()
 		UncaptureMouse();
 }
 
-void WindowManager::EnableOpenGL(int _colourDepth, int _zDepth)
+bool WindowManager::EnableOpenGL(int _colourDepth, int _zDepth)
 {
+	//SDL_GL_SetAttribute( SDL_GL_RED_SIZE, _colourDepth);
+	//SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, _colourDepth);
+	//SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, _colourDepth);
+	//SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, _zDepth);
+	//SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 }
 
 void WindowManager::DisableOpenGL()
@@ -301,7 +307,7 @@ void WindowManager::UnhideMousePointer()
 	m_mousePointerVisible = true;
 }
 
-void WindowManager::OpenWebsite( char *_url )
+void WindowManager::OpenWebsite( const char *_url )
 {
 #ifdef TARGET_OS_MACOSX
 #ifdef AMBROSIA_REGISTRATION
@@ -314,9 +320,10 @@ void WindowManager::OpenWebsite( char *_url )
 #endif
 #elif defined TARGET_OS_LINUX
 	const char *cmd = "/bin/sh open-www.sh";
-	char buffer[strlen(_url) + 1 + strlen(cmd) + 1];
+	char* buffer = new char[strlen(_url) + 1 + strlen(cmd) + 1];
 	sprintf(buffer, "%s %s", cmd, _url);
 	system(buffer);
+	delete[] buffer;
 #endif
 }
 
@@ -384,83 +391,84 @@ void CheckAllPirateCodes(bool *isValid, Uint64 licenseCode)
 }
 #endif
 
-// g_windowManager is assumed to be dynamically allocated
-// and is deleted in main ordinarily
-class DeleteWindowManagerOnExit {
-	public:
-	~DeleteWindowManagerOnExit()
-	{
-		delete g_windowManager;
-		g_windowManager = NULL;
-	}
-};
-
-static DeleteWindowManagerOnExit please;
-
-int main(int argc, char *argv[])
+void WindowManager::SuggestDefaultRes( int *_width, int *_height, int *_refresh, int *_depth )
 {
-	// It's really important under linux at least that
-	// SDL_Quit is called to restore fullscreen mode.
-	//
-	// So we make WindowManager a static object, so that
-	// it's destructor will be called on all normal
-	// exits.
-
-	g_windowManager	= new WindowManager;
-
-#if defined(TARGET_OS_LINUX)
-	SetupPathToProgram(SELFPATH);
-	ChangeToProgramDir(SELFPATH);
-#endif
-
-	SDL_WM_SetCaption("Darwinia", NULL);
-
-	if (argc > 1) {
-		if (strncmp(argv[1], "-v", 2) == 0) {
-			puts(DARWINIA_VERSION_STRING);
-			return 0;
-		}
-	}
-
-	SDL_version compiledVersion;
-	SDL_VERSION(&compiledVersion);
-	const SDL_version *linkedVersion = SDL_Linked_Version();
-
-	printf("SDL Version: Compiled against %d.%d.%d, running with %d.%d.%d\n",
-		compiledVersion.major, compiledVersion.minor, compiledVersion.patch,
-		linkedVersion->major, linkedVersion->minor, linkedVersion->patch);
-
-#ifdef AMBROSIA_REGISTRATION
-	// Ambrosia Registration Tool
-	RT3_Open(true, VERSION_3_CODES, RT3_PRODUCT_NAME, "Darwinia");
-	SystemSetQuitProc(RT3_Close);
-	atexit(RT3_Close);
-
-	// Ambrosia's Display Notice (Nag)
-	Bool8 launchedRegApp;
-	Result32 result = RT3_DisplayNotice(false, &launchedRegApp);
-	DarwiniaReleaseAssert(result == 0, "Failed to display Ambrosia Registration Notice");
-
-	// Check for pirate registration codes
-	bool isValid[NUM_PIRATED_CODES];
-	memset(isValid, 0, sizeof(bool) * NUM_PIRATED_CODES);
-	CheckAllPirateCodes(isValid, RT3_GetLicenseCode());
-
-	for (int i = 0; i < NUM_PIRATED_CODES; i++) {
-		if (!isValid[i])
-			FT_FileDelete(kPathRefPreferences, "Darwinia License");
-		DarwiniaReleaseAssert(isValid[i], "Check registration code (1)");
-	}
-#endif // AMBROSIA_REGISTRATION
-
-#if defined(TARGET_OS_LINUX) || defined (TARGET_OS_MACOSX)
-	// Setup illegal memory access handler
-	// See debug_utils_gcc.cpp
-	SetupMemoryAccessHandlers();
-#endif
-
-	AppMain();
-
-	return 0;
+	*_width = m_desktopScreenW;
+	*_height = m_desktopScreenH;
+	*_refresh = m_desktopRefresh;
+	*_depth = m_desktopColourDepth;
 }
+
+void WindowManager::NastyMoveMouse(int x, int y)
+{
+	//SDL_GetMouseState(&x,&y);
+	///TODO
+}
+
+//int main(int argc, char *argv[])
+//{
+//	// It's really important under linux at least that
+//	// SDL_Quit is called to restore fullscreen mode.
+//	//
+//	// So we make WindowManager a static object, so that
+//	// it's destructor will be called on all normal
+//	// exits.
+//
+//	g_windowManager	= new WindowManager;
+//
+//#if defined(TARGET_OS_LINUX)
+//	//SetupPathToProgram(SELFPATH);
+//	//ChangeToProgramDir(SELFPATH);
+//#endif
+//
+//	SDL_WM_SetCaption("Darwinia", NULL);
+//
+//	if (argc > 1) {
+//		if (strncmp(argv[1], "-v", 2) == 0) {
+//			puts(DARWINIA_VERSION_STRING);
+//			return 0;
+//		}
+//	}
+//
+//	SDL_version compiledVersion;
+//	SDL_VERSION(&compiledVersion);
+//	const SDL_version *linkedVersion = SDL_Linked_Version();
+//
+//	printf("SDL Version: Compiled against %d.%d.%d, running with %d.%d.%d\n",
+//		compiledVersion.major, compiledVersion.minor, compiledVersion.patch,
+//		linkedVersion->major, linkedVersion->minor, linkedVersion->patch);
+//
+//#ifdef AMBROSIA_REGISTRATION
+//	// Ambrosia Registration Tool
+//	RT3_Open(true, VERSION_3_CODES, RT3_PRODUCT_NAME, "Darwinia");
+//	SystemSetQuitProc(RT3_Close);
+//	atexit(RT3_Close);
+//
+//	// Ambrosia's Display Notice (Nag)
+//	Bool8 launchedRegApp;
+//	Result32 result = RT3_DisplayNotice(false, &launchedRegApp);
+//	DarwiniaReleaseAssert(result == 0, "Failed to display Ambrosia Registration Notice");
+//
+//	// Check for pirate registration codes
+//	bool isValid[NUM_PIRATED_CODES];
+//	memset(isValid, 0, sizeof(bool) * NUM_PIRATED_CODES);
+//	CheckAllPirateCodes(isValid, RT3_GetLicenseCode());
+//
+//	for (int i = 0; i < NUM_PIRATED_CODES; i++) {
+//		if (!isValid[i])
+//			FT_FileDelete(kPathRefPreferences, "Darwinia License");
+//		DarwiniaReleaseAssert(isValid[i], "Check registration code (1)");
+//	}
+//#endif // AMBROSIA_REGISTRATION
+//
+//#if defined(TARGET_OS_LINUX) || defined (TARGET_OS_MACOSX)
+//	// Setup illegal memory access handler
+//	// See debug_utils_gcc.cpp
+//	SetupMemoryAccessHandlers();
+//#endif
+//
+//	AppMain();
+//
+//	return 0;
+//}
 

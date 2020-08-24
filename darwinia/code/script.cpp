@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdarg.h>
 
@@ -511,7 +511,7 @@ void Script::RunCommand_PurityControl()
     //
     // Open up our store website
 
-    g_windowManager->OpenWebsite( "http://www.darwinia.co.uk/store/" );
+	g_windowManager.OpenWebsite( "http://www.darwinia.co.uk/store/" );
 
 
     //
@@ -634,7 +634,7 @@ bool Script::Skip()
 
 void Script::Advance()
 {
-    if( g_inputManager->controlEvent( ControlSkipCutscene ) )
+	if( g_inputManager.controlEvent( ControlSkipCutscene ) )
 	{
         if( Skip() ) return;
     }
@@ -1001,7 +1001,7 @@ void Script::TestScript(char *_filename)
 #endif // SCRIPT_TEST_ENABLED
 
 
-static char *g_opCodeNames[] =
+static const char *g_opCodeNames[] =
 {
 	"CamCut",
 	"CamMove",

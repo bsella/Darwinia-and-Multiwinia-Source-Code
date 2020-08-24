@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/resource.h"
 #include "lib/matrix34.h"
 #include "lib/shape.h"
@@ -411,7 +411,7 @@ bool SoulDestroyer::AdvanceToTargetPosition()
 }
 
 
-void SoulDestroyer::ListSoundEvents( LList<char *> *_list )
+void SoulDestroyer::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 

@@ -1,4 +1,4 @@
-#ifndef _included_engineer_h
+﻿#ifndef _included_engineer_h
 #define _included_engineer_h
 
 #include "lib/llist.h"
@@ -86,9 +86,9 @@ public:
     void RenderShape            ( float predictionTime );
     bool RenderPixelEffect      ( float predictionTime );
 
-    char *GetCurrentAction      ();
+	const char *GetCurrentAction      ();
 
-    void ListSoundEvents        ( LList<char *> *_list );
+	void ListSoundEvents        ( LList<const char *> *_list );
 };
 
 

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/resource.h"
 #include "lib/math_utils.h"
 #include "lib/preferences.h"
@@ -231,7 +231,7 @@ void GodDish::TriggerSpam()
 }
 
 
-void GodDish::ListSoundEvents( LList<char *> *_list )
+void GodDish::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 

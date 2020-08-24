@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/text_renderer.h"
 #include "lib/math_utils.h"
 #include "lib/vector2.h"
@@ -111,7 +111,7 @@ void Task::TargetSquad( Vector3 const &_pos )
     if( trackEntity == 0 )
     {
         // work out if player is using control pad
-		if ( g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD )
+		if ( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD )
 			trackEntity = 2;
     }
 
@@ -419,13 +419,13 @@ void Task::Stop()
 }
 
 
-char *Task::GetTaskName( int _type )
+const char *Task::GetTaskName( int _type )
 {
     return GlobalResearch::GetTypeName( _type );
 }
 
 
-char *Task::GetTaskNameTranslated( int _type )
+const char *Task::GetTaskNameTranslated( int _type )
 {
     return GlobalResearch::GetTypeNameTranslated( _type );
 }

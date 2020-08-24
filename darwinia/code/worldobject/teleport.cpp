@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -201,7 +201,7 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
 
     if( entity )
     {
-        Vector3 oldPos = entity->m_pos;
+		//Vector3 oldPos = entity->m_pos;
 
         if( !_relay )
         {

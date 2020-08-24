@@ -1,4 +1,4 @@
-#ifndef INCLUDED_RGB_COLOUR_H
+﻿#ifndef INCLUDED_RGB_COLOUR_H
 #define INCLUDED_RGB_COLOUR_H
 
 #include "debug_utils.h"
@@ -8,6 +8,7 @@ class RGBAColour
 public:
 	unsigned char r, g, b, a;
 
+	RGBAColour(const RGBAColour&);
 	RGBAColour();
 	RGBAColour(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
     RGBAColour(int _col);

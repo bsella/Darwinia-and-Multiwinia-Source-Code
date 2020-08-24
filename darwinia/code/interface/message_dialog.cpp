@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <string.h>
 
@@ -89,7 +89,7 @@ void MessageDialog::Create()
 	int const buttonHeight = GetMenuSize(18);
 	OKButton *button = new OKButton(this);
 
-    char *caption = "Close";
+	const char *caption = "Close";
     if( g_app->m_langTable ) caption = LANGUAGEPHRASE("dialog_close");
 
     button->SetShortProperties( caption, (m_w - buttonWidth)/2, m_h - GetMenuSize(30), buttonWidth, buttonHeight );

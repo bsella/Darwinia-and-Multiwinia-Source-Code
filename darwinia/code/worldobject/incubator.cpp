@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/file_writer.h"
 #include "lib/math_utils.h"
@@ -314,7 +314,7 @@ void Incubator::RenderAlphas( float _predictionTime )
 }
 
 
-void Incubator::ListSoundEvents( LList<char *> *_list )
+void Incubator::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 

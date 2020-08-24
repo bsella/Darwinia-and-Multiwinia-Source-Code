@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 #include <string.h>
@@ -76,13 +76,13 @@ void Camera::AdvanceDebugMode()
     float speedVertical = speedSideways;
     float speedForwards = speedSideways;
 
-    if ( g_inputManager->controlEvent( ControlCameraSpeedup ) )
+	if ( g_inputManager.controlEvent( ControlCameraSpeedup ) )
     {
         speedSideways *= 10.0f;
         speedVertical *= 10.0f;
         speedForwards *= 10.0f;
     }
-    else if ( g_inputManager->controlEvent( ControlCameraSlowdown ) )
+	else if ( g_inputManager.controlEvent( ControlCameraSlowdown ) )
     {
         speedSideways *= 0.1f;
         speedVertical /= 10.0f;
@@ -106,7 +106,7 @@ void Camera::AdvanceDebugMode()
 	int my = g_target->dY();
 
 	// TODO: Really?
-    if ( g_inputManager->controlEvent( ControlCameraDebugRotate ) )
+	if ( g_inputManager.controlEvent( ControlCameraDebugRotate ) )
     {
         Matrix33 mat(1);
 		mat.RotateAroundY((float)mx * -0.005f);
@@ -188,7 +188,7 @@ void Camera::AdvanceSphereWorldMode()
 	oldMouseY = screenH - oldMouseY;
 
     InputDetails details;
-    if( g_inputManager->controlEvent( ControlCameraMove, details ) )
+	if( g_inputManager.controlEvent( ControlCameraMove, details ) )
     {
         g_target->SetMousePos( g_target->X() + details.x, g_target->Y() + details.y );
         g_app->m_userInput->RecalcMousePos3d();
@@ -367,7 +367,7 @@ void Camera::AdvanceSphereWorldIntroMode()
     lastFrame = timeNow;
 
 #ifdef _DEBUG
-    if( g_inputManager->controlEvent( ControlDebugCameraFixUp ) )
+	if( g_inputManager.controlEvent( ControlDebugCameraFixUp ) )
     {
         fixMeUp = true;
     }
@@ -432,7 +432,7 @@ void Camera::AdvanceSphereWorldOutroMode()
     lastFrame = timeNow;
 
 #ifdef _DEBUG
-    if( g_inputManager->controlEvent( ControlDebugCameraFixUp ) )
+	if( g_inputManager.controlEvent( ControlDebugCameraFixUp ) )
     {
         fixMeUp = true;
     }
@@ -464,8 +464,8 @@ void Camera::AdvanceSphereWorldOutroMode()
     float distance = targetFront.Mag();
 
     float forwardSpeed = sqrtf(m_pos.Mag()) * 4;
-    forwardSpeed = max( forwardSpeed, 1000 );
-    forwardSpeed = min( forwardSpeed, 2000 );
+	forwardSpeed = std::fmax( forwardSpeed, 1000.f );
+	forwardSpeed = std::fmin( forwardSpeed, 2000.f );
 
     targetFront.Normalise();
 
@@ -618,7 +618,6 @@ void Camera::AdvanceFreeMovementMode()
 
 	int screenW = g_app->m_renderer->ScreenW();
 	int screenH = g_app->m_renderer->ScreenH();
-	InputManager *im = g_inputManager;
 
 	// Set up viewing matrices
 	glPushMatrix();
@@ -644,12 +643,12 @@ void Camera::AdvanceFreeMovementMode()
         Vector3 accelUp = g_upVector;
 
 		// TODO: Support mouse/joystick
-        if( g_inputManager->controlEvent( ControlCameraSpeedup ) ) moveRate *= 4.0f;
+		if( g_inputManager.controlEvent( ControlCameraSpeedup ) ) moveRate *= 4.0f;
 
-        bool keyForward     = g_inputManager->controlEvent( ControlCameraForwards );
-        bool keyBackward    = g_inputManager->controlEvent( ControlCameraBackwards );
-        bool keyLeft        = g_inputManager->controlEvent( ControlCameraLeft );
-        bool keyRight       = g_inputManager->controlEvent( ControlCameraRight );
+		bool keyForward     = g_inputManager.controlEvent( ControlCameraForwards );
+		bool keyBackward    = g_inputManager.controlEvent( ControlCameraBackwards );
+		bool keyLeft        = g_inputManager.controlEvent( ControlCameraLeft );
+		bool keyRight       = g_inputManager.controlEvent( ControlCameraRight );
 
 		if (keyLeft)		m_targetPos += accelRight * g_advanceTime * moveRate;
 		if (keyRight)		m_targetPos -= accelRight * g_advanceTime * moveRate;
@@ -659,7 +658,7 @@ void Camera::AdvanceFreeMovementMode()
         if( m_mode == ModeFreeMovement )
         {
             InputDetails details;
-            if( g_inputManager->controlEvent( ControlCameraMove, details ) )
+			if( g_inputManager.controlEvent( ControlCameraMove, details ) )
             {
                 m_targetPos -= accelRight * g_advanceTime * details.x * 10.0f;
                 m_targetPos -= accelForward * g_advanceTime * details.y * 10.0f;
@@ -779,7 +778,7 @@ void Camera::AdvanceFreeMovementMode()
 		int intMouseDeltaY = floorf(mouseDeltaY);
 		mouseDeltaX -= intMouseDeltaX;
 		mouseDeltaY -= intMouseDeltaY;
-		// g_inputManager->PollForEvents();
+		// g_inputManager.PollForEvents();
 		newMouseX = g_target->X() + intMouseDeltaX;
 		newMouseY = g_target->Y() + intMouseDeltaY;
 
@@ -876,11 +875,9 @@ bool Camera::GetEntityToTrack( WorldObjectId &selection )
 
     Task *currentTask = g_app->m_taskManager->GetCurrentTask();
     // if the task has just been ended or killed, it isnt valid
-    if (currentTask && currentTask->m_state == Task::StateStopping )
-        return false;
+	if (currentTask && currentTask->m_state == Task::StateStopping ) return false;
 
-    if( !currentTask )
-        return false;
+	if( !currentTask ) return false;
 
 	Unit *unit = team->GetMyUnit();
     if( !unit )
@@ -957,7 +954,7 @@ void Camera::UpdateControlVector()
 	const float angleThreshold = 0.98f;
 
 	bool recalc = false;
-	if( g_inputManager->controlEvent( ControlUnitMoveDirectionChange ) )
+	if( g_inputManager.controlEvent( ControlUnitMoveDirectionChange ) )
 	{
 		m_skipDirectionCalculation = false;
 		recalc = true;
@@ -965,7 +962,7 @@ void Camera::UpdateControlVector()
 
 	float angle = cosf( g_upVector * GetUp() );
 	if((fabs(angle) < angleThreshold  && !m_skipDirectionCalculation ) ||
-		!g_inputManager->controlEvent( ControlUnitMove ) ||
+		!g_inputManager.controlEvent( ControlUnitMove ) ||
 		recalc )
 	{
 		m_controlVector = GetRight();
@@ -979,9 +976,9 @@ void Camera::UpdateControlVector()
 
 bool Camera::AdvanceManualRotateCamera( Vector3 &cameraTarget )
 {
-	if((g_inputManager->controlEvent( ControlCameraRotateLeft ) ||
-        g_inputManager->controlEvent( ControlCameraRotateRight ) ) &&
-		!g_inputManager->controlEvent( ControlUnitPrimaryFireDirected ))
+	if((g_inputManager.controlEvent( ControlCameraRotateLeft ) ||
+		g_inputManager.controlEvent( ControlCameraRotateRight ) ) &&
+		!g_inputManager.controlEvent( ControlUnitPrimaryFireDirected ))
     {
         m_trackHeight = 0.0f;
 
@@ -989,12 +986,12 @@ bool Camera::AdvanceManualRotateCamera( Vector3 &cameraTarget )
 
 		int halfWidth = g_app->m_renderer->ScreenW() / 2;
 		int deltaX = g_target->X() - halfWidth;
-        if( g_inputManager->controlEvent( ControlCameraRotateLeft )  )
+		if( g_inputManager.controlEvent( ControlCameraRotateLeft )  )
         {
             deltaX = rotSpeed;
         }
 
-        if( g_inputManager->controlEvent( ControlCameraRotateRight ) )
+		if( g_inputManager.controlEvent( ControlCameraRotateRight ) )
         {
             deltaX = -rotSpeed;
         }
@@ -1038,14 +1035,14 @@ bool Camera::AdvanceManualCameraHeight( Vector3 &cameraTarget )
 
     if( EclGetWindows()->Size() == 0 )
     {
-	    if( g_inputManager->controlEvent( ControlCameraUp ) )
+		if( g_inputManager.controlEvent( ControlCameraUp ) )
 	    {
 		    m_heightMultiplier += heightScale;
 		    g_app->m_controlHelpSystem->RecordCondUsed(ControlHelpSystem::CondCameraUp);
 		    g_app->m_controlHelpSystem->RecordCondUsed(ControlHelpSystem::CondCameraDown);
 	    }
 
-	    if( g_inputManager->controlEvent( ControlCameraDown ) )
+		if( g_inputManager.controlEvent( ControlCameraDown ) )
 	    {
 		    m_heightMultiplier -= heightScale;
 		    camDown = true;
@@ -1188,45 +1185,44 @@ void Camera::AdvanceEntityTrackMode()
 
 	UpdateEntityTrackingMode();
 
-	if (!g_app->m_location || !m_entityTrack)
-		goto finishMode;
+	if (g_app->m_location && m_entityTrack){
 
-	Entity *entity = g_app->m_location->GetEntity( m_objectId );
-	if (!entity || entity->m_dead)
-	{
-		WorldObjectId id;
-		GetEntityToTrack(id);
-		m_objectId = id;
+		Entity *entity = g_app->m_location->GetEntity( m_objectId );
+		if (!entity || entity->m_dead)
+		{
+			WorldObjectId id;
+			GetEntityToTrack(id);
+			m_objectId = id;
+		}
+
+		entity = g_app->m_location->GetEntity( m_objectId );
+		if (entity && entity->m_dead){
+
+			Task *currentTask = g_app->m_taskManager->GetCurrentTask();
+			if (!currentTask || currentTask->m_state == Task::StateRunning )
+				goto finishMode;
+
+			if( !currentTask && entity->m_type != Entity::TypeOfficer )
+				goto finishMode;
+
+			if( !m_objectId.IsValid() )
+				goto finishMode;
+
+			// Calculate the predicated position of the entity (where it should be at
+			// the next frame). This is used by the auxiliary functions.
+			m_predictedEntityPos = entity->m_pos + g_advanceTime * entity->m_vel;
+			m_trackingEntity = entity;
+
+			AdvanceAutomaticTracking();
+
+			// Ensure that the target cursor remains in the centre of the screen
+			int halfHeight = g_app->m_renderer->ScreenH() / 2;
+			int halfWidth = g_app->m_renderer->ScreenW() / 2;
+			g_target->SetMousePos(halfWidth, halfHeight);
+
+			return;
+		}
 	}
-
-	entity = g_app->m_location->GetEntity( m_objectId );
-	if (!entity || entity->m_dead)
-		goto finishMode;
-
-    Task *currentTask = g_app->m_taskManager->GetCurrentTask();
-    if (currentTask && currentTask->m_state != Task::StateRunning )
-		goto finishMode;
-
-    if( !currentTask && entity->m_type != Entity::TypeOfficer )
-        goto finishMode;
-
-    if( !m_objectId.IsValid() )
-        goto finishMode;
-
-	// Calculate the predicated position of the entity (where it should be at
-	// the next frame). This is used by the auxiliary functions.
-	m_predictedEntityPos = entity->m_pos + g_advanceTime * entity->m_vel;
-	m_trackingEntity = entity;
-
-    AdvanceAutomaticTracking();
-
-	// Ensure that the target cursor remains in the centre of the screen
-    int halfHeight = g_app->m_renderer->ScreenH() / 2;
-	int halfWidth = g_app->m_renderer->ScreenW() / 2;
-	g_target->SetMousePos(halfWidth, halfHeight);
-
-	return;
-
 finishMode:
 	RequestMode( Camera::ModeFreeMovement );
 }
@@ -1515,14 +1511,14 @@ void Camera::AdvanceTurretAimMode()
 
 void Camera::AdvanceFirstPersonMode()
 {
-    if( g_inputManager->controlEvent( ControlCameraFreeMovement ) )
+	if( g_inputManager.controlEvent( ControlCameraFreeMovement ) )
     {
         RequestMode(Camera::ModeFreeMovement);
         return;
     }
 
 	// JAMES_TODO: Support directional firing mode
-	if( g_inputManager->controlEvent( ControlUnitPrimaryFireTarget ) )
+	if( g_inputManager.controlEvent( ControlUnitPrimaryFireTarget ) )
     {
         static float lastFire = 0.0f;
         if( GetHighResTime() > lastFire )
@@ -1580,7 +1576,7 @@ void Camera::AdvanceFirstPersonMode()
 void Camera::AdvanceMoveToTargetMode()
 {
 	double currentTimeFraction = (g_gameTime - m_startTime) / m_moveDuration;
-    currentTimeFraction = max( currentTimeFraction, 0.2f );
+	currentTimeFraction = std::fmax( currentTimeFraction, 0.2f );
 
 
 	// Pos
@@ -1749,7 +1745,7 @@ void Camera::SetupProjectionMatrix(float _nearPlane, float _farPlane)
 	//DarwiniaDebugAssert(m_fov > 0.0f);
 	//DarwiniaDebugAssert(m_fov < 180.0f);
 
-    clamp( m_fov, 1, 180 );
+	std::clamp( m_fov, 1.f, 180.f );
 
 	g_app->m_renderer->SetNearAndFar(_nearPlane, _farPlane);
 	g_app->m_renderer->SetupProjMatrixFor3D();
@@ -1889,7 +1885,7 @@ void Camera::AdvanceComponentZoom()
 	float adjustedTargetFov = m_targetFov;
 
 	// JAMES CHECK:
-    if( g_inputManager->controlEvent( ControlCameraZoom ) )
+	if( g_inputManager.controlEvent( ControlCameraZoom ) )
     {
         adjustedTargetFov /= 4.0f;
         change = 100.0f;
@@ -1942,8 +1938,8 @@ void Camera::AdvanceComponentMouseWheelHeight()
 
     if( EclGetWindows()->Size() == 0 )
     {
-        bool keyUp   = g_inputManager->controlEvent( ControlCameraUp );
-        bool keyDown = g_inputManager->controlEvent( ControlCameraDown );
+		bool keyUp   = g_inputManager.controlEvent( ControlCameraUp );
+		bool keyDown = g_inputManager.controlEvent( ControlCameraDown );
         if (keyUp)          delta += g_advanceTime * 7.0f;
         if (keyDown)        delta -= g_advanceTime * 7.0f;
         if( keyUp || keyDown )
@@ -2053,7 +2049,7 @@ void Camera::Advance()
 	}
 
 	// Toggle entity tracking
-	/*if (g_inputManager->controlEvent( ControlCameraSwitchMode ))
+	/*if (g_inputManager.controlEvent( ControlCameraSwitchMode ))
 		m_entityTrack = !m_entityTrack;*/
 
 //	switch (m_mode)
@@ -2092,12 +2088,12 @@ void Camera::Advance()
 		   (m_debugMode == DebugModeAuto && EclGetWindows()->Size() > 0) ||
 		   m_framesInThisMode < 2 ) )
 	{
-		g_windowManager->EnsureMouseUncaptured();
+		g_windowManager.EnsureMouseUncaptured();
 		AdvanceDebugMode();
 	}
 	else
 	{
-		g_windowManager->EnsureMouseCaptured();
+		g_windowManager.EnsureMouseCaptured();
 		switch(m_mode)
 		{
 			case ModeSphereWorld:		    AdvanceSphereWorldMode();		    break;
@@ -2485,11 +2481,11 @@ Vector3 Camera::GetControlVector()
 
 void Camera::UpdateEntityTrackingMode()
 {
-	if ( g_prefsManager && g_inputManager ) {
+	if ( g_prefsManager ) {
 		int camTracking = g_prefsManager->GetInt( OTHER_AUTOMATICCAM, 0 );
 		if( camTracking != 1 && camTracking != 2 ) {
 			// do automatic option detection
-			if ( g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD )
+			if ( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD )
 				camTracking = 2;
 		}
 		SwitchEntityTracking( camTracking == 2 );

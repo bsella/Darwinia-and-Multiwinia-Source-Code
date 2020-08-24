@@ -1,4 +1,4 @@
-#ifndef WORLDOBJECT_H
+﻿#ifndef WORLDOBJECT_H
 #define WORLDOBJECT_H
 
 #include "lib/rgb_colour.h"
@@ -27,6 +27,7 @@ protected:
     static int      s_nextUniqueId;
 
 public:
+	WorldObjectId(const WorldObjectId&);
     WorldObjectId();
     WorldObjectId( unsigned char _teamId, int _unitId, int _index, int _uniqueId );
     void			Set( unsigned char _teamId, int _unitId, int _index, int _uniqueId );

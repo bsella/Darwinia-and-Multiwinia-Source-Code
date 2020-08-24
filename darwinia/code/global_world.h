@@ -1,4 +1,4 @@
-#ifndef _included_global_world_h
+﻿#ifndef _included_global_world_h
 #define _included_global_world_h
 
 #include "lib/llist.h"
@@ -93,12 +93,12 @@ public:
 
     bool    Evaluate    ();
 
-    void    SetStringId ( char *_stringId );
-    void    SetCutScene ( char *_cutScene );
+	void    SetStringId ( const char *_stringId );
+	void    SetCutScene ( const char *_cutScene );
 
     void    Save        ( FileWriter *_out );
 
-    static char *GetTypeName( int _type );
+	static const char *GetTypeName( int _type );
 	static int  GetType(char const *_typeName);
 };
 
@@ -124,7 +124,7 @@ public:
     void    Write       ( FileWriter *_file );
     void    Execute     ();
 
-    static char *GetTypeName( int _type );
+	static const char *GetTypeName( int _type );
 };
 
 
@@ -203,10 +203,10 @@ public:
     void    Write               ( FileWriter *_out );
     void    Read                ( TextReader *_in );
 
-    static char *GetTypeName    ( int _type );
+	static const char *GetTypeName    ( int _type );
     static int   GetType        ( char *_name );
 
-    static char *GetTypeNameTranslated ( int _type );
+	static const char *GetTypeNameTranslated ( int _type );
 };
 
 
@@ -294,8 +294,8 @@ public:
     GlobalLocation *GetHighlightedLocation          ();                         // ie whats under the mouse
     int             GetLocationId                   ( char const *_name );
 	int				GetLocationIdFromMapFilename    ( char const *_mapFilename);
-    char           *GetLocationName                 ( int _id );
-    char           *GetLocationNameTranslated       ( int _id );
+	const char           *GetLocationName                 ( int _id );
+	const char           *GetLocationNameTranslated       ( int _id );
     Vector3         GetLocationPosition             ( int _id );
 
     GlobalBuilding *GetBuilding				(int _id, int _locationId);
@@ -304,11 +304,11 @@ public:
     bool            EvaluateEvents          ();	                        // Returns true if an event was triggered
     void            TransferSpirits         (int _locationId);
 
-    void			LoadGame				(char *_filename);
-    void			SaveGame				(char *_filename);
+	void			LoadGame				(const char *_filename);
+	void			SaveGame				(const char *_filename);
 
-    void            LoadLocations           (char *_filename);
-    void            SaveLocations           (char *_filename);
+	void            LoadLocations           (const char *_filename);
+	void            SaveLocations           (const char *_filename);
 
 	void			SetupLights				();
 	void			SetupFog				();

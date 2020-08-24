@@ -1,4 +1,4 @@
-#ifndef INCLUDED_LEVEL_FILE
+﻿#ifndef INCLUDED_LEVEL_FILE
 #define INCLUDED_LEVEL_FILE
 
 #include <stdlib.h>
@@ -41,7 +41,7 @@ public:
 	};
 
 	int		m_transitionMode;
-	char	*m_mountName;
+	const char	*m_mountName;
 	float	m_duration;
 
 public:
@@ -54,7 +54,7 @@ public:
 
 	~CamAnimNode()
 	{
-		free(m_mountName); m_mountName = NULL;
+		free((void*)m_mountName); m_mountName = NULL;
 	}
 
 	static int GetTransitModeId(char const *_word);

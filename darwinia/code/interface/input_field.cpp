@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -313,14 +313,14 @@ void InputScroller::Render( int realX, int realY, bool highlighted, bool clicked
 
     if( m_mouseDownStartTime > 0.0f &&
 		m_inputField &&
-		g_inputManager->controlEvent( ControlEclipseLMousePressed ) &&
+		g_inputManager.controlEvent( ControlEclipseLMousePressed ) &&
 		g_target->X() >= realX &&
         g_target->X() < realX + m_w &&
         g_target->Y() >= realY &&
         g_target->Y() < realY + m_h )
     {
 		float change = m_change;
-        if( g_inputManager->controlEvent( ControlScrollSpeedup ) ) change *= 5.0f;
+		if( g_inputManager.controlEvent( ControlScrollSpeedup ) ) change *= 5.0f;
 
 		float timeDelta = GetHighResTime() - m_mouseDownStartTime;
 		if (m_inputField->m_type == InputField::TypeChar)
@@ -353,7 +353,7 @@ void InputScroller::Render( int realX, int realY, bool highlighted, bool clicked
 
 void InputScroller::MouseDown()
 {
-	if ( g_inputManager->controlEvent( ControlEclipseLMousePressed ) )
+	if ( g_inputManager.controlEvent( ControlEclipseLMousePressed ) )
 	{
 	    m_mouseDownStartTime = GetHighResTime() - INTEGER_INCREMENT_PERIOD;
 	}
@@ -420,7 +420,7 @@ void ColourWidget::SetCallback(DarwiniaButton *button)
 // Class ColourButton
 // ****************************************************************************
 
-ColourWindow::ColourWindow( char *_name )
+ColourWindow::ColourWindow( const char *_name )
 :   DarwiniaWindow( _name ),
     m_callback(NULL),
     m_value(NULL)

@@ -1,10 +1,11 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 
 // By Christopher Delay
 // Modifications John Knottenbelt
 
 #include <string.h>
+#include <iostream>
 
 #include "lib/btree.h"
 #include "lib/debug_utils.h"
@@ -231,7 +232,7 @@ template <class T>
 void BTree<T>::Print()
 {
     if(ltree) ltree->Print();
-    if(id) cout << id << " : " << data << "\n";
+	if(id) std::cout << id << " : " << data << "\n";
     if(rtree) rtree->Print();
 }
 

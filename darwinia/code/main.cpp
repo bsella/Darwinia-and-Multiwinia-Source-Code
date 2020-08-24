@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -12,8 +12,6 @@
 #include <wpc.h>
 #include <shellapi.h>
 #endif
-
-#include <eclipse.h>
 
 #include "lib/avi_generator.h"
 #include "lib/debug_utils.h"
@@ -33,9 +31,12 @@
 #include "lib/text_stream_readers.h"
 #include "lib/language_table.h"
 
+#ifdef TARGET_MSVC
 #include "lib/input/win32_eventhandler.h"
 #include "lib/input/inputdriver_win32.h"
 #include "lib/input/inputdriver_xinput.h"
+#endif
+#include "lib/input/inputdriver_sdl.h"
 #include "lib/input/inputdriver_prefs.h"
 #include "lib/input/inputdriver_alias.h"
 #include "lib/input/inputdriver_conjoin.h"
@@ -150,7 +151,7 @@ void UpdateAdvanceTime()
 	    }
 	    g_gameTime = realTime;
 
-        float prevPredictionTime = g_predictionTime;
+		//float prevPredictionTime = g_predictionTime;
         g_predictionTime = float(realTime - g_lastServerAdvance) - 0.07f;
 
         //DebugOut( "Change = %6.3f\n", g_predictionTime - prevPredictionTime );
@@ -286,31 +287,31 @@ void RemoveAllWindows()
 
 bool HandleCommonConditions()
 {
-	bool curWindowHasFocus = g_eventHandler->WindowHasFocus();
-	static bool oldWindowFocus = true;
+	bool curWindowHasFocus = true;//g_eventHandler->WindowHasFocus();
 
-    static bool controllerPlugged = true;
-	if( controllerPlugged && g_inputManager->controlEvent( ControlControllerUnplugged ) )
+	static bool controllerPlugged = true;
+	if( controllerPlugged && g_inputManager.controlEvent( ControlControllerUnplugged ) )
 	{
 		MessageDialog *dialog = new MessageDialog( LANGUAGEPHRASE("dialog_unplugged1"), LANGUAGEPHRASE("dialog_unplugged2") );
 		EclRegisterWindow( dialog );
         controllerPlugged = false;
 	}
 
-	if( !controllerPlugged && g_inputManager->controlEvent( ControlControllerPlugged ) )
+	if( !controllerPlugged && g_inputManager.controlEvent( ControlControllerPlugged ) )
 	{
 		EclRemoveWindow( LANGUAGEPHRASE("dialog_unplugged1") );
         controllerPlugged = true;
 	}
 
 	// Pretend we're not focused
-    if( !controllerPlugged && g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD )
-        curWindowHasFocus = false;
+	if( !controllerPlugged && g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD ){
+		curWindowHasFocus = false;
+	}
 
 	if( !curWindowHasFocus )
 	{
-        g_app->m_userInput->Advance();
-        g_app->m_soundSystem->Advance();
+		g_app->m_userInput->Advance();
+		g_app->m_soundSystem->Advance();
 
 		// Render twice to avoid double buffering artefacts
 		g_app->m_renderer->Render();
@@ -451,7 +452,7 @@ void LocationGameLoop()
     double nextServerAdvanceTime = GetHighResTime();
     double nextIAmAliveMessage = GetHighResTime();
     double heavyWeightAdvanceStartTime = -1;
-    double serverAdvanceStartTime = -1;
+	//double serverAdvanceStartTime = -1;
     double lastRenderTime = GetHighResTime();
 
 	TeamControls teamControls;
@@ -485,8 +486,8 @@ void LocationGameLoop()
 			}
 		}
 
-		g_inputManager->PollForEvents();
-		if (g_inputManager->controlEvent( ControlMenuEscape ) && g_app->m_renderer->IsFadeComplete())
+		g_inputManager.PollForEvents();
+		if (g_inputManager.controlEvent( ControlMenuEscape ) && g_app->m_renderer->IsFadeComplete())
 		{
 			if (g_app->m_script && g_app->m_script->IsRunningScript())
 			{
@@ -545,7 +546,7 @@ void LocationGameLoop()
 
 				bool chatLog = g_app->m_sepulveda->ChatLogVisible();
                 bool entityUnderMouse = false;
-                int numMouseButtons = g_prefsManager->GetInt( "ControlMouseButtons", 3 );
+				//int numMouseButtons = g_prefsManager->GetInt( "ControlMouseButtons", 3 );
 
                 Team *team = g_app->m_location->GetMyTeam();
                 if( team )
@@ -554,9 +555,9 @@ void LocationGameLoop()
                     if( teamControls.m_unitMove ) checkMouse = true;
 
                     bool orderGiven = false;
-                    if( g_inputManager->getInputMode() == INPUT_MODE_KEYBOARD &&
+					if( g_inputManager.getInputMode() == INPUT_MODE_KEYBOARD &&
                         teamControls.m_primaryFireTarget )  orderGiven = true;
-                    if( g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD &&
+					if( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD &&
                         teamControls.m_secondaryFireDirected ) orderGiven = true;
 
                     if( team->GetMyEntity() &&
@@ -725,7 +726,7 @@ void LocationGameLoop()
     if( g_prefsManager->GetInt( "RecordDemo" ) == 1 )
     {
         if( g_app->m_server ) g_app->m_server->SaveHistory( "serverHistory.dat" );
-        //g_inputManager->StopLogging( "inputLog.dat" );
+		//g_inputManager.StopLogging( "inputLog.dat" );
     }
 
 	g_explosionManager.Reset();
@@ -764,7 +765,7 @@ void SwitchTaskManagerForX360Controller()
 	static int oldControlType = INPUT_MODE_KEYBOARD;
 
 	if( oldControlType != INPUT_MODE_GAMEPAD &&
-		g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD &&
+		g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD &&
 		!g_app->m_taskManagerInterface->m_visible )
 	{
 		// user has just switched to the game pad
@@ -776,7 +777,7 @@ void SwitchTaskManagerForX360Controller()
 		oldControlType = INPUT_MODE_GAMEPAD;
 	}
 	else if( oldControlType == INPUT_MODE_GAMEPAD &&
-			 g_inputManager->getInputMode() != INPUT_MODE_GAMEPAD &&
+			 g_inputManager.getInputMode() != INPUT_MODE_GAMEPAD &&
 			 !g_app->m_taskManagerInterface->m_visible )
 	{
 		if( g_prefsManager->GetInt( "ControlMethod" ) == 0 )
@@ -784,7 +785,7 @@ void SwitchTaskManagerForX360Controller()
 			delete g_app->m_taskManagerInterface;
 			g_app->m_taskManagerInterface = new TaskManagerInterfaceGestures();
 		}
-		oldControlType = g_inputManager->getInputMode();
+		oldControlType = g_inputManager.getInputMode();
 	}
 }
 
@@ -793,17 +794,16 @@ void SwitchTaskManagerForX360Controller()
 #ifndef PURITY_CONTROL
 void LocationEditorLoop()
 {
-	while( !g_inputManager->controlEvent( ControlMenuEscape ) )
+	while( !g_inputManager.controlEvent( ControlMenuEscape ) )
     {
-		g_inputManager->PollForEvents();
+		g_inputManager.PollForEvents();
 
 		if (HandleCommonConditions())
 			continue;
 
         //
         // Get the time
-        UpdateAdvanceTime();
-        double timeNow = GetHighResTime();
+		UpdateAdvanceTime();
 
         g_app->m_userInput->Advance();
         g_app->m_camera->Advance();
@@ -832,7 +832,7 @@ void LocationEditorLoop()
     if( g_prefsManager->GetInt( "RecordDemo" ) == 1 )
     {
         if( g_app->m_server ) g_app->m_server->SaveHistory( "serverHistory.dat" );
-        //g_inputManager->StopLogging( "inputLog.dat" );
+		//g_inputManager.StopLogging( "inputLog.dat" );
     }
 }
 #endif // PURITY_CONTROL
@@ -849,9 +849,9 @@ void GlobalWorldGameLoop()
     {
         if( g_app->m_atMainMenu ) break;
 
-		g_inputManager->PollForEvents();
+		g_inputManager.PollForEvents();
 
-        if( g_inputManager->controlEvent( ControlMenuEscape ) && g_app->m_renderer->IsFadeComplete() )
+		if( g_inputManager.controlEvent( ControlMenuEscape ) && g_app->m_renderer->IsFadeComplete() )
         {
 			if (WindowsOnScreen())
 			{
@@ -869,8 +869,7 @@ void GlobalWorldGameLoop()
 			continue;
 
         // Get the time
-        UpdateAdvanceTime();
-        double timeNow = GetHighResTime();
+		UpdateAdvanceTime();
 
 		g_app->m_script->Advance();
 		g_app->m_sepulveda->Advance();
@@ -911,9 +910,9 @@ void GlobalWorldEditorLoop()
 
 	while(g_app->m_requestedLocationId == -1 && !g_app->m_requestToggleEditing)
     {
-		g_inputManager->PollForEvents();
+		g_inputManager.PollForEvents();
 
-        if( g_inputManager->controlEvent( ControlMenuEscape ) )
+		if( g_inputManager.controlEvent( ControlMenuEscape ) )
         {
 			g_app->m_editing = false;
 			return;
@@ -922,21 +921,20 @@ void GlobalWorldEditorLoop()
 		if (HandleCommonConditions())
 			continue;
 
-        //
-        // Get the time
-        UpdateAdvanceTime();
-        double timeNow = GetHighResTime();
+		//
+		// Get the time
+		UpdateAdvanceTime();
 
 		g_app->m_globalWorld->Advance();
-        g_app->m_userInput->Advance();
-        g_app->m_camera->Advance();
-        g_app->m_soundSystem->Advance();
+		g_app->m_userInput->Advance();
+		g_app->m_camera->Advance();
+		g_app->m_soundSystem->Advance();
 #ifdef PROFILER_ENABLED
 		g_app->m_profiler->Advance();
 #endif // PROFILER_ENABLED
 
-        g_app->m_renderer->Render();
-    }
+		g_app->m_renderer->Render();
+	}
 
 	if (g_app->m_requestToggleEditing)
 	{
@@ -982,27 +980,28 @@ void SetPreferenceOverrides()
 
 void InitialiseInputManager()
 {
-	g_inputManager = new InputManager;
-	g_inputManager->addDriver( new ConjoinInputDriver() );
-	g_inputManager->addDriver( new ChordInputDriver() );
-	g_inputManager->addDriver( new InvertInputDriver() );
-	g_inputManager->addDriver( new IdleInputDriver() );
+	g_inputManager.addDriver( new SDLKeyboardInputDriver() );
+	g_inputManager.addDriver( new SDLMouseInputDriver() );
+	g_inputManager.addDriver( new ConjoinInputDriver() );
+	g_inputManager.addDriver( new ChordInputDriver() );
+	g_inputManager.addDriver( new InvertInputDriver() );
+	g_inputManager.addDriver( new IdleInputDriver() );
 #ifdef TARGET_MSVC
-	g_inputManager->addDriver( new W32InputDriver() );
+	g_inputManager.addDriver( new W32InputDriver() );
 
 	if (LoadLibrary("XINPUT1_3"))
-		g_inputManager->addDriver( new XInputDriver() );
+		g_inputManager.addDriver( new XInputDriver() );
 #endif
-	g_inputManager->addDriver( new PrefsInputDriver() );
-	g_inputManager->addDriver( new ValueInputDriver() );
-	g_inputManager->addDriver( new AliasInputDriver() );
+	g_inputManager.addDriver( new PrefsInputDriver() );
+	g_inputManager.addDriver( new ValueInputDriver() );
+	g_inputManager.addDriver( new AliasInputDriver() );
 	{
 		// Read Darwinia default input preferences file
 		TextReader *inputPrefsReader = g_app->m_resource->GetTextReader( InputPrefs::GetSystemPrefsPath() );
 		if ( inputPrefsReader ) {
 			DarwiniaReleaseAssert( inputPrefsReader->IsOpen(), "Couldn't open input preferences file: %s\n",
 			                       InputPrefs::GetSystemPrefsPath() );
-			g_inputManager->parseInputPrefs( *inputPrefsReader );
+			g_inputManager.parseInputPrefs( *inputPrefsReader );
 			delete inputPrefsReader;
 		}
 
@@ -1010,7 +1009,7 @@ void InitialiseInputManager()
 		TextReader *localeInputPrefsReader = g_app->m_resource->GetTextReader( InputPrefs::GetLocalePrefsPath() );
 		if ( localeInputPrefsReader ) {
 			if ( localeInputPrefsReader->IsOpen() ) {
-				g_inputManager->parseInputPrefs( *localeInputPrefsReader, true );
+				g_inputManager.parseInputPrefs( *localeInputPrefsReader, true );
 			}
 			delete localeInputPrefsReader;
 		}
@@ -1019,29 +1018,12 @@ void InitialiseInputManager()
 		TextReader *userInputPrefsReader = new TextFileReader( InputPrefs::GetUserPrefsPath() );
 		if ( userInputPrefsReader ) {
 			if ( userInputPrefsReader->IsOpen() ) {
-				g_inputManager->parseInputPrefs( *userInputPrefsReader, true );
+				g_inputManager.parseInputPrefs( *userInputPrefsReader, true );
 			}
 			delete userInputPrefsReader;
 		}
 
 	}
-}
-
-bool IsRunningVista()
-{
-    OSVERSIONINFOEX versionInfo;
-	ZeroMemory(&versionInfo, sizeof(OSVERSIONINFOEX));
-
-	versionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	GetVersionEx( (OSVERSIONINFO *) &versionInfo );
-
-	if ( versionInfo.dwMajorVersion < 6 ||
-		 versionInfo.wProductType != VER_NT_WORKSTATION )
-	{
-		return false;
-	}
-
-    return true;
 }
 
 #if defined(TARGET_OS_VISTA)
@@ -1133,12 +1115,12 @@ void Initialise()
 	g_target = new TargetCursor();
 	//if( g_prefsManager->GetInt("ControlMethod")==0 ) getW32EventHandler()->BindAltTab();
     EntityBlueprint::Initialise();
-	g_windowManager->HideMousePointer();
+	g_windowManager.HideMousePointer();
 
 	//
 	// Start on a specific level if the prefs file tells us to
 
-	char *startMap = g_prefsManager->GetString("StartMap");
+	const char *startMap = g_prefsManager->GetString("StartMap");
 	if( startMap && g_app->HasBoughtGame() )
 	{
 		int requestedLocationId = g_app->m_globalWorld->GetLocationId(startMap);
@@ -1163,7 +1145,6 @@ void Finalise()
 	delete g_soundLibrary2d; g_soundLibrary2d = NULL;
 
     delete g_app->m_resource;
-    delete g_windowManager;
 
 #ifdef TARGET_OS_VISTA
 	// Skip if not running on a Media Center
@@ -1189,19 +1170,19 @@ void RunBootLoaders()
 {
 #ifndef DEMOBUILD
 	if (g_app->HasBoughtGame() && g_prefsManager->GetInt("CurrentGameMode", 1 ) == 1) {
-		char *loaderName = g_prefsManager->GetString("BootLoader", "none");
+		const char *loaderName = g_prefsManager->GetString("BootLoader", "none");
 
 		if( stricmp( loaderName, "firsttime" ) == 0 )
 		{
-			g_app->m_startSequence = new StartSequence();
-			while( true )
-			{
-				UpdateAdvanceTime();
-				bool amIDone = g_app->m_startSequence->Advance();
-				if( amIDone ) break;
-			}
-
-			delete g_app->m_startSequence;
+			//g_app->m_startSequence = new StartSequence();
+			//while( true )
+			//{
+			//	UpdateAdvanceTime();
+			//	bool amIDone = g_app->m_startSequence->Advance();
+			//	if( amIDone ) break;
+			//}
+			//
+			//delete g_app->m_startSequence;
 			g_app->m_startSequence = NULL;
 
 			g_app->m_camera->SetTarget(Vector3(1000,500,1000), Vector3(0,-0.5f,-1));
@@ -1221,8 +1202,8 @@ void RunBootLoaders()
 			}
 		}
 
-		g_inputManager->Advance();          // clears g_keyDeltas[KEY_ESC]
-		g_inputManager->Advance();
+		g_inputManager.Advance();          // clears g_keyDeltas[KEY_ESC]
+		g_inputManager.Advance();
 	}
 #endif
 }
@@ -1401,7 +1382,7 @@ void RunTheGame()
             EnterGlobalWorld();
         }
 
-	    g_inputManager->Advance();
+		g_inputManager.Advance();
     }
 }
 
@@ -1410,15 +1391,7 @@ void RunTheGame()
 #endif
 
 // Main Function
-void AppMain()
+int main()
 {
-#ifdef USE_CRASHREPORTING
-    __try
-#endif
-    {
-        RunTheGame();
-    }
-#ifdef USE_CRASHREPORTING
-	__except( RecordExceptionInfo( GetExceptionInformation(), "AppMain", "0A88BB32", DARWINIA_VERSION ) ) {}
-#endif
+	RunTheGame();
 }

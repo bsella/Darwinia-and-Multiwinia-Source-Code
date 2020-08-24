@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -30,6 +30,14 @@ WorldObjectId::WorldObjectId()
     m_unitId(-1),
     m_index(-1),
     m_uniqueId(-1)
+{
+}
+
+WorldObjectId::WorldObjectId(const WorldObjectId& o):
+	m_teamId(o.m_teamId),
+	m_unitId(o.m_uniqueId),
+	m_index(o.m_index),
+	m_uniqueId(m_uniqueId)
 {
 }
 

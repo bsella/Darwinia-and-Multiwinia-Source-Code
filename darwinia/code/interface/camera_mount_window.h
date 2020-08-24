@@ -1,4 +1,4 @@
-#ifndef _INCLUDED_CAMERA_MOUNT_WINDOW_H
+﻿#ifndef _INCLUDED_CAMERA_MOUNT_WINDOW_H
 #define _INCLUDED_CAMERA_MOUNT_WINDOW_H
 
 
@@ -15,7 +15,7 @@
 class CameraMountEditWindow: public DarwiniaWindow
 {
 public:
-    CameraMountEditWindow( char *name );
+	CameraMountEditWindow( const char *name );
 	~CameraMountEditWindow();
 
 	void Create();

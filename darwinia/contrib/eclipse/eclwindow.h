@@ -1,4 +1,4 @@
-
+﻿
 /*
         A Window object.
         Essentially a container for Eclipse buttons.
@@ -44,23 +44,23 @@ public:
 
 public:
 
-    EclWindow                       ( char *_name );
+	EclWindow                       ( const char *_name );
     virtual ~EclWindow  ();
 
-    void SetName                    ( char *_name );
-    void SetTitle                   ( char *_title );
+	void SetName                    ( const char *_name );
+	void SetTitle                   ( const char *_title );
     void SetPosition                ( int _x, int _y );
     void SetSize                    ( int _w, int _h );
     void SetMovable                 ( bool _movable );
 	void MakeAllOnScreen			();
 
     void RegisterButton             ( EclButton *button );
-    void RemoveButton               ( char *_name );
+	void RemoveButton               ( const char *_name );
 
-    void BeginTextEdit              ( char *_name );
+	void BeginTextEdit              ( const char *_name );
     void EndTextEdit                ();
 
-    virtual EclButton   *GetButton  ( char *_name );
+	virtual EclButton   *GetButton  ( const char *_name );
     virtual EclButton   *GetButton  ( int _x, int _y );                             
 
     virtual void Create ();

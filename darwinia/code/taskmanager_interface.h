@@ -1,4 +1,4 @@
-#ifndef _included_taskmanagerinterface_h
+﻿#ifndef _included_taskmanagerinterface_h
 #define _included_taskmanagerinterface_h
 
 #include <string>
@@ -30,7 +30,7 @@ public:
 	bool	m_subZones;		// does the zone have sub icons? (ie, weapons)
 
 public:
-    ScreenZone( char *_name, char *_tooltip,
+	ScreenZone( const char *_name, const char *_tooltip,
                 float _x, float _y, float _w, float _h,
                 int _data );
 };
@@ -90,6 +90,7 @@ public:
 
 public:
     TaskManagerInterface();
+	virtual ~TaskManagerInterface();
 
     void    SetCurrentMessage ( int _messageType, int _taskType, float _timer );
 

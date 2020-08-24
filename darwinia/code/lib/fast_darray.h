@@ -1,4 +1,4 @@
-//===============================================================//
+﻿//===============================================================//
 //                        F D A R R A Y                          //
 //                                                               //
 //                   By Christopher Delay                        //
@@ -23,7 +23,7 @@ class FastDArray: public DArray <T>
 {
 protected:
 	int numused;
-	int	*freelist;
+	int* freelist;
 	int firstfree;
 
 	void RebuildFreeList();									// SLOW

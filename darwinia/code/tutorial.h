@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_tutorial_h
 #define _included_tutorial_h
 
@@ -13,13 +13,14 @@ protected:
     char    *m_repeatMessage;
     char    *m_repeatGesture;
 
-    void RepeatMessage( char *_stringId, float _repeatPeriod=20.0f, char *_gestureDemo=NULL );
+	void RepeatMessage( const char *_stringId, float _repeatPeriod=20.0f, char *_gestureDemo=NULL );
 
     virtual void TriggerChapter( int _chapter );
     virtual bool AdvanceCurrentChapter();
 
 public:
     Tutorial();
+	virtual ~Tutorial();
 
     bool IsRunning();
     int  GetCurrentChapter();

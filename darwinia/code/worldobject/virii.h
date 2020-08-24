@@ -1,4 +1,4 @@
-#ifndef _included_virii_h
+﻿#ifndef _included_virii_h
 #define _included_virii_h
 
 #include "worldobject/entity.h"
@@ -88,7 +88,7 @@ public:
 
     void Render             ( float predictionTime, int teamId, int _detail );
 
-    void ListSoundEvents    ( LList<char *> *_list );
+	void ListSoundEvents    ( LList<const char *> *_list );
 };
 
 

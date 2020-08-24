@@ -1,10 +1,12 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/preferences.h"
 #include "lib/text_renderer.h"
 #include "lib/window_manager.h"
 #include "lib/resource.h"
 #include "lib/language_table.h"
+#ifdef TARGET_MSVC
 #include "lib/input/win32_eventhandler.h"
+#endif
 
 #include "interface/mainmenus.h"
 #include "interface/prefs_screen_window.h"
@@ -330,11 +332,13 @@ public:
             g_prefsManager->SetInt( "ScreenWidth", 800 );
             g_prefsManager->SetInt( "ScreenHeight", 600 );
 
-		    g_windowManager->DestroyWin();
+			g_windowManager.DestroyWin();
             delete g_app->m_renderer;
             g_app->m_renderer = new Renderer();
             g_app->m_renderer->Initialise();
+#if defined(TARGET_MSVC)
 			getW32EventHandler()->ResetWindowHandle();
+#endif
 		    g_app->m_resource->FlushOpenGlState();
 		    g_app->m_resource->RegenerateOpenGlState();
 
@@ -346,7 +350,7 @@ public:
                                    g_app->m_renderer->ScreenH()/2 - m_parent->m_h/2 );
 
         }
-        g_windowManager->OpenWebsite( m_website );
+		g_windowManager.OpenWebsite( m_website );
     }
 };
 
@@ -738,14 +742,14 @@ void SkipPrologueWindow::Render( bool _hasFocus )
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
-	LList<char *> *wrapped = WordWrapText( LANGUAGEPHRASE("dialog_skip1"), m_w*1.70f, fontSize, true);
+	LList<const char *> *wrapped = WordWrapText( LANGUAGEPHRASE("dialog_skip1"), m_w*1.70f, fontSize, true);
     for( int i = 0; i < wrapped->Size(); ++i )
     {
 		g_gameFont.DrawText2DCentre( m_x+m_w/2, y+=h, fontSize, wrapped->GetData(i) );
     }
     delete wrapped->GetData(0);
     delete wrapped;
-};
+}
 
 PlayPrologueWindow::PlayPrologueWindow()
 :   DarwiniaWindow( LANGUAGEPHRASE("dialog_playprologue") )
@@ -807,11 +811,11 @@ void PlayPrologueWindow::Render( bool _hasFocus )
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
-	LList<char *> *wrapped = WordWrapText( LANGUAGEPHRASE("dialog_prologue1"), m_w*1.70f, fontSize, true);
+	LList<const char *> *wrapped = WordWrapText( LANGUAGEPHRASE("dialog_prologue1"), m_w*1.70f, fontSize, true);
     for( int i = 0; i < wrapped->Size(); ++i )
     {
 		g_gameFont.DrawText2DCentre( m_x+m_w/2, y+=h, fontSize, wrapped->GetData(i) );
     }
     delete wrapped->GetData(0);
     delete wrapped;
-};
+}

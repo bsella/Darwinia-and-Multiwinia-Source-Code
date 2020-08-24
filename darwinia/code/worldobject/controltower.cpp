@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -451,7 +451,7 @@ void ControlTower::RenderAlphas ( float _predictionTime )
 }
 
 
-void ControlTower::ListSoundEvents( LList<char *> *_list )
+void ControlTower::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 }

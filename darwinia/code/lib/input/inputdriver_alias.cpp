@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/input/inputdriver_alias.h"
 #include "lib/input/input.h"
@@ -23,7 +23,7 @@ InputParserState AliasInputDriver::parseInputSpecification( InputSpecTokens cons
 	state = STATE_WANT_CONTROL;
 	if ( idx >= tokens.length() ) return state;
 
-	spec.control_id = g_inputManager->getControlID( tokens[idx++] );
+	spec.control_id = g_inputManager.getControlID( tokens[idx++] );
 	if ( spec.control_id < 0 ) {
 		return state;
 	}
@@ -37,7 +37,7 @@ InputParserState AliasInputDriver::parseInputSpecification( InputSpecTokens cons
 bool AliasInputDriver::getInput( InputSpec const &spec, InputDetails &details )
 {
 	if ( 0 <= spec.control_id && spec.control_id < NumControlTypes )
-		return g_inputManager->controlEvent( static_cast<ControlType>(spec.control_id), details );
+		return g_inputManager.controlEvent( static_cast<ControlType>(spec.control_id), details );
 	else
 		return false; // We should never get here!
 }
@@ -72,7 +72,7 @@ bool AliasInputDriver::getInputDescription( InputSpec const &spec, InputDescript
 	// TODO: This isn't quite right.
 	// May break translations.
 	if ( 0 <= spec.control_id && spec.control_id < NumControlTypes )
-		return g_inputManager->getBoundInputDescription( static_cast<ControlType>(spec.control_id), desc );
+		return g_inputManager.getBoundInputDescription( static_cast<ControlType>(spec.control_id), desc );
 	else
 		return false; // We should never get here!
 }

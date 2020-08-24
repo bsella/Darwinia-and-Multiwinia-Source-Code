@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_anthill_h
 #define _included_anthill_h
 
@@ -60,7 +60,7 @@ public:
     void Read   ( TextReader *_in, bool _dynamic );
     void Write  ( FileWriter *_out );
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 };
 
 

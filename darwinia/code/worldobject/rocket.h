@@ -1,4 +1,4 @@
-#ifndef _included_rocket_h
+﻿#ifndef _included_rocket_h
 #define _included_rocket_h
 
 #include "worldobject/building.h"
@@ -67,7 +67,7 @@ public:
     void Render         ( float _predictionTime );
     void RenderAlphas   ( float _predictionTime );
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 
     char *GetObjectiveCounter();
 };
@@ -83,7 +83,7 @@ public:
 
     bool Advance();
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 };
 
 
@@ -107,7 +107,7 @@ public:
     bool IsLoading();
     bool BoardRocket( WorldObjectId id );
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 
     bool PerformDepthSort( Vector3 &_centrePos );
 };
@@ -186,9 +186,9 @@ public:
 
     char *GetObjectiveCounter();
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 
-    static int GetStateId( char *_state );
+	static int GetStateId( const char *_state );
 };
 
 #endif

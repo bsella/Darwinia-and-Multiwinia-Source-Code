@@ -1,4 +1,4 @@
-#ifndef INCLUDED_INSERTION_SQUAD
+﻿#ifndef INCLUDED_INSERTION_SQUAD
 #define INCLUDED_INSERTION_SQUAD
 
 
@@ -93,7 +93,7 @@ public:
     bool HasSecondaryWeapon     ();
     void FireSecondaryWeapon    ( Vector3 const &_pos );
 
-    void ListSoundEvents	    ( LList<char *> *_list );
+	void ListSoundEvents	    ( LList<const char *> *_list );
 
 	Vector3 GetCameraFocusPoint	();
 

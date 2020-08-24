@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -137,7 +137,7 @@ public:
 // Class InstantUnitEditWindow
 // ****************************************************************************
 
-InstantUnitEditWindow::InstantUnitEditWindow( char *name )
+InstantUnitEditWindow::InstantUnitEditWindow( const char *name )
 :	DarwiniaWindow(name)
 {
 }
@@ -249,7 +249,7 @@ public:
 // Class InstantUnitCreateWindow
 // ****************************************************************************
 
-InstantUnitCreateWindow::InstantUnitCreateWindow( char *name )
+InstantUnitCreateWindow::InstantUnitCreateWindow( const char *name )
 :	DarwiniaWindow(name)
 {
 }
@@ -268,15 +268,15 @@ void InstantUnitCreateWindow::Create()
 
 	int y = 3;
 	int const buttonYPitch = 18;
-	char *lowerLimit = " ";
-	char *best;
+	const char *lowerLimit = " ";
+	const char *best;
 
 	for (int i = 0; i < Entity::NumEntityTypes; ++i)
 	{
 		best = "~~~~"; // All reasonable strings come before this when alphabetically sorted
 		for (int j = 0; j < Entity::NumEntityTypes; ++j)
 		{
-			char *typeName = Entity::GetTypeNameTranslated(j);
+			const char *typeName = Entity::GetTypeNameTranslated(j);
 			if (stricmp(typeName, lowerLimit) > 0 &&
 				stricmp(typeName, best) < 0)
 			{

@@ -1,10 +1,18 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "rgb_colour.h"
 
 RGBAColour g_colourBlack(0,0,0);
 RGBAColour g_colourWhite(255,255,255);
 
+
+RGBAColour::RGBAColour(const RGBAColour& _other):
+	r(_other.r),
+	g(_other.g),
+	b(_other.b),
+	a(_other.a)
+{
+}
 
 // *** Constructor
 RGBAColour::RGBAColour()

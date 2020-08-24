@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #define JAL_DEBUG 0
 #if JAL_DEBUG
@@ -39,7 +39,7 @@ struct CaptionParserMode {
 	CaptionParserMode() : writing( true ), ifdepth( 0 ), writingStopDepth( 0 ),
 	                      inOffset( 0 ), outOffset( 0 )
 	{
-		if ( g_inputManager ) mood = g_inputManager->getInputMode();
+		mood = g_inputManager.getInputMode();
 	}
 };
 
@@ -218,11 +218,11 @@ bool consumeKeyMarker( char const *_baseString, char *_dest, CaptionParserMode &
 			strncpy( buf, in + 4, len );
 			buf[len] = '\0';
 
-			controltype_t eventId = g_inputManager->getControlID( buf );
+			controltype_t eventId = g_inputManager.getControlID( buf );
 			if ( eventId >= 0 ) {
 				// Lookup the key name for the binding
 				InputDescription desc;
-				if ( g_inputManager->getBoundInputDescription( static_cast<ControlType>(eventId), desc ) )
+				if ( g_inputManager.getBoundInputDescription( static_cast<ControlType>(eventId), desc ) )
 				{
 					char const *keyName = desc.noun.c_str();
 

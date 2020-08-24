@@ -1,4 +1,4 @@
-#include "rarbloat.h"
+﻿#include "rarbloat.h"
 
 CommandData::CommandData()
 {
@@ -150,7 +150,7 @@ bool CommandData::IsConfigEnabled(int argc, char *argv[])
 
 
 #if !defined(GUI) && !defined(SFX_MODULE)
-void CommandData::ReadConfig(int argc, char *argv[])
+void CommandData::ReadConfig(int argc, const char *argv[])
 {
 	StringList List;
 	if (ReadTextFile(DefConfigName, &List, true))
@@ -383,7 +383,7 @@ void CommandData::ProcessSwitch(char *Switch)
 						case 'I':
 							{
 								Priority = atoi(Switch + 2);
-								char *ChPtr = strchr(Switch + 2, ':');
+								const char *ChPtr = strchr(Switch + 2, ':');
 								if (ChPtr != NULL)
 									SleepTime = atoi(ChPtr + 1);
 								SetPriority(Priority);
@@ -463,7 +463,7 @@ void CommandData::ProcessSwitch(char *Switch)
 								{
 								case 'C':
 									{
-										char *Str = Switch + 2;
+										const char *Str = Switch + 2;
 										if (*Str == '-')
 											for (int I = 0; I < sizeof(FilterModes)/sizeof(FilterModes[0]); I++)
 												FilterModes[I].State = FILTER_DISABLE;
@@ -531,7 +531,8 @@ void CommandData::ProcessSwitch(char *Switch)
 									break;
 								case 'S':
 									{
-										char *Names = Switch + 2, DefNames[512];
+										char *Names = Switch + 2;
+										char DefNames[512];
 										if (*Names == 0)
 										{
 											strcpy(DefNames, DefaultStoreList);
@@ -732,7 +733,7 @@ void CommandData::ProcessSwitch(char *Switch)
 
 
 #if !defined(SFX_MODULE) && !defined(_WIN_CE)
-void CommandData::BadSwitch(char *Switch)
+void CommandData::BadSwitch(const char *Switch)
 {
 	mprintf(St(MUnknownOption), Switch);
 	ErrHandler.Exit(USER_ERROR);
@@ -851,7 +852,7 @@ void CommandData::OutHelp()
 }
 
 
-bool CommandData::ExclCheck(char *CheckName, bool CheckFullPath)
+bool CommandData::ExclCheck(const char *CheckName, bool CheckFullPath)
 {
 	char *Name = ConvertPath(CheckName, NULL);
 	char FullName[NM], *ExclName;
@@ -1000,7 +1001,7 @@ void CommandData::ProcessCommand()
 }
 
 
-void CommandData::AddArcName(char *Name, wchar *NameW)
+void CommandData::AddArcName(const char *Name, wchar *NameW)
 {
 	ArcNames->AddString(Name, NameW);
 }
@@ -1025,7 +1026,7 @@ bool CommandData::IsSwitch(int Ch)
 
 
 #ifndef SFX_MODULE
-unsigned int CommandData::GetExclAttr(char *Str)
+unsigned int CommandData::GetExclAttr(const char *Str)
 {
 #ifdef _UNIX
 	return (strtol(Str, NULL, 0));

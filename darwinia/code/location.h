@@ -1,4 +1,4 @@
-#ifndef INCLUDED_LOCATION_H
+﻿#ifndef INCLUDED_LOCATION_H
 #define INCLUDED_LOCATION_H
 
 #include <float.h>
@@ -115,7 +115,7 @@ public:
 
     void UpdateTeam         ( unsigned char teamId, TeamControls const& teamControls );
 
-    int  SpawnSpirit        ( Vector3 const &_pos, Vector3 const &_vel, unsigned char _teamId, WorldObjectId _id );
+	int  SpawnSpirit        ( Vector3 const &_pos, Vector3 const &_vel, unsigned char _teamId, const WorldObjectId& _id );
     void ThrowWeapon        ( Vector3 const &_pos, Vector3 const &_target, int _type, unsigned char _fromTeamId );
     void FireRocket         ( Vector3 const &_pos, Vector3 const &_target, unsigned char _fromTeamId );
     void FireLaser          ( Vector3 const &_pos, Vector3 const &_vel, unsigned char _fromTeamId );

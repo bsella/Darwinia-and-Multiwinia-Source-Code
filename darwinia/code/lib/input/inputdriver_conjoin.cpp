@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <algorithm>
 
@@ -23,7 +23,7 @@ InputParserState ConjoinInputDriver::parseInputSpecification( InputSpecTokens co
                                                               InputSpec &spec )
 {
 	string s = "";
-	auto_ptr<InputSpecList> speclist( new InputSpecList() );
+	unique_ptr<InputSpecList> speclist( new InputSpecList() );
 	bool haveComplexInput = false;
 	bool hasParts = false;
 
@@ -36,7 +36,7 @@ InputParserState ConjoinInputDriver::parseInputSpecification( InputSpecTokens co
 			hasParts = true;
 			InputSpec partspec;
 			partspec.type = INPUT_TYPE_BOOL;
-			InputParserState pState = g_inputManager->parseInputSpecString( s, partspec, lastError );
+			InputParserState pState = g_inputManager.parseInputSpecString( s, partspec, lastError );
 			if ( PARSE_SUCCESS( pState ) ) {
 				if ( partspec.type > INPUT_TYPE_BOOL ) {
 					if ( haveComplexInput ) {
@@ -48,7 +48,7 @@ InputParserState ConjoinInputDriver::parseInputSpecification( InputSpecTokens co
 						spec.type = partspec.type;
 					}
 				}
-				speclist->push_back( auto_ptr<const InputSpec>( new InputSpec( partspec ) ) );
+				speclist->push_back(new InputSpec( partspec ));
 				s.clear(); // Ready for another spec
 			} else {
 				return STATE_CONJ_ERROR;
@@ -70,7 +70,7 @@ bool ConjoinInputDriver::getInput( InputSpec const &spec, InputDetails &details 
 		const InputSpecList &specs = *(m_specs[ spec.control_id ]);
 		for ( InputSpecIt i = specs.begin(); i != specs.end(); ++i ) {
 			InputDetails d;
-			if ( g_inputManager->checkInput( **i, d ) ) {
+			if ( g_inputManager.checkInput( **i, d ) ) {
 				if ( !detailsSet || d.type > INPUT_TYPE_BOOL ) { // This is our actual return value
 					details.type = d.type;
 					details.x = d.x;
@@ -110,7 +110,7 @@ bool ConjoinInputDriver::getInputDescription( InputSpec const &spec, InputDescri
 		for ( InputSpecIt i = specs.begin(); i != specs.end(); ++i ) {
 			InputDescription d;
 			const InputSpec &spec = **i;
-			if ( g_inputManager->getInputDescription( spec, d ) ) {
+			if ( g_inputManager.getInputDescription( spec, d ) ) {
 				if ( !descSet || spec.type >= curr_type ) { // This is our actual return value
 					desc.noun = d.noun;
 					desc.verb = d.verb;

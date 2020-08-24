@@ -1,8 +1,8 @@
-#include "rarbloat.h"
+﻿#include "rarbloat.h"
 
 static bool IsUnicode(unsigned char *Data,int Size);
 
-bool ReadTextFile(char *Name,StringList *List,bool Config,bool AbortOnError,
+bool ReadTextFile(const char *Name,StringList *List,bool Config,bool AbortOnError,
                   bool ConvertToAnsi,bool Unquote,bool SkipComments)
 {
   char FileName[NM];

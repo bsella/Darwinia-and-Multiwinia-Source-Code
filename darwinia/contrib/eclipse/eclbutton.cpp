@@ -1,4 +1,4 @@
-
+﻿
 // Source file for button class
 // Part of the Eclipse interface library
 // By Christopher Delay
@@ -34,8 +34,8 @@ EclButton::~EclButton ()
 
 }
 
-void EclButton::SetProperties ( char *_name, int _x, int _y, int _w, int _h,
-		 	   				    char *_caption, char *_tooltip )
+void EclButton::SetProperties ( const char *_name, int _x, int _y, int _w, int _h,
+								const char *_caption, const char *_tooltip )
 {
 
 	if ( !_caption )
@@ -74,7 +74,7 @@ void EclButton::SetCaption ( const char *_caption )
 
 }
 
-void EclButton::SetTooltip ( char *_tooltip )
+void EclButton::SetTooltip ( const char *_tooltip )
 {
 
 	if ( !_tooltip ) _tooltip = "";

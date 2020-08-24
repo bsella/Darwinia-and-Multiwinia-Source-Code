@@ -1,4 +1,4 @@
-#include "rarbloat.h"
+﻿#include "rarbloat.h"
 
 #ifndef NATIVE_INT64
 
@@ -262,7 +262,7 @@ void itoa(Int64 n,char *Str)
 }
 
 
-Int64 atoil(char *Str)
+Int64 atoil(const char *Str)
 {
   Int64 n=0;
   while (*Str>='0' && *Str<='9')

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/hi_res_time.h"
 #include "lib/window_manager.h"
@@ -75,7 +75,7 @@ void MatrixLoader::Run()
     float timer = GetHighResTime();
     bool fallAway = false;
 
-    while( !g_inputManager->controlEvent( ControlSkipMessage ) )
+	while( !g_inputManager.controlEvent( ControlSkipMessage ) )
     {
         if( g_app->m_requestQuit ) break;
         //

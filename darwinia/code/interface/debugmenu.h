@@ -1,4 +1,4 @@
-#ifndef _included_debugmenu_h
+﻿#ifndef _included_debugmenu_h
 #define _included_debugmenu_h
 
 #include "interface/darwinia_window.h"
@@ -8,7 +8,7 @@
 class DebugMenu : public DarwiniaWindow
 {
 public:
-    DebugMenu( char *name );
+	DebugMenu( const char *name );
 
 	void Advance();
     void Create();

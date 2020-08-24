@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/resource.h"
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
@@ -111,7 +111,7 @@ void TrunkPort::Render( float predictionTime )
 
     char caption[256];
 
-    char *locationName = g_app->m_globalWorld->GetLocationNameTranslated( m_targetLocationId );
+	const char *locationName = g_app->m_globalWorld->GetLocationNameTranslated( m_targetLocationId );
     if( locationName )
     {
         strcpy( caption, locationName );
@@ -308,7 +308,7 @@ void TrunkPort::ReprogramComplete()
 }
 
 
-void TrunkPort::ListSoundEvents( LList<char *> *_list )
+void TrunkPort::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 

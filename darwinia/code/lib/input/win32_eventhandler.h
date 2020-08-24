@@ -1,7 +1,6 @@
-#ifndef INCLUDED_W32_EVENTHANDLER_H
+﻿#ifndef INCLUDED_W32_EVENTHANDLER_H
 #define INCLUDED_W32_EVENTHANDLER_H
 
-#include <windows.h>
 #include <vector>
 
 #include "lib/input/eventhandler.h"

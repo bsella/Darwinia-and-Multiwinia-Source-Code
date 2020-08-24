@@ -1,8 +1,7 @@
-#ifndef INCLUDED_INPUT_XINPUT_H
+﻿#ifndef INCLUDED_INPUT_XINPUT_H
 #define INCLUDED_INPUT_XINPUT_H
 
 #include <string>
-#include <XInput.h>
 #include "lib/input/inputdriver_simple.h"
 
 

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
@@ -83,14 +83,14 @@ void GestureRecordingThread()
 	// Wait for the start of the gesture
 	while(1)
 	{
-		if ( g_inputManager->controlEvent( ControlGestureActive ) )
+		if ( g_inputManager.controlEvent( ControlGestureActive ) )
 		{
 			break;
 		}
 		Sleep(GESTURE_DEMO_SAMPLE_PERIOD);
 	}
 
-	while ( g_inputManager->controlEvent( ControlGestureActive ) )
+	while ( g_inputManager.controlEvent( ControlGestureActive ) )
 	{
 		Sleep(GESTURE_DEMO_SAMPLE_PERIOD);
 		float x = g_target->X();

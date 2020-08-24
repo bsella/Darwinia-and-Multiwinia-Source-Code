@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/debug_utils.h"
 #include "lib/filesys_utils.h"
 #include "lib/file_writer.h"
@@ -78,9 +78,9 @@ int SoundSourceBlueprint::GetSoundSoundType ( char const *_name )
 }
 
 
-char *SoundSourceBlueprint::GetSoundSourceName( int _type )
+const char *SoundSourceBlueprint::GetSoundSourceName( int _type )
 {
-    char *names[] = {
+	const char *names[] = {
                         "Laser",
                         "Grenade",
                         "Rocket",
@@ -98,7 +98,7 @@ char *SoundSourceBlueprint::GetSoundSourceName( int _type )
 }
 
 
-void SoundSourceBlueprint::ListSoundEvents( int _type, LList<char *> *_list )
+void SoundSourceBlueprint::ListSoundEvents( int _type, LList<const char *> *_list )
 {
     switch( _type )
     {
@@ -215,13 +215,13 @@ char *DspBlueprint::GetParameter( int _param, float *_min, float *_max, float *_
 // Class SampleGroup
 //*****************************************************************************
 
-void SampleGroup::SetName( char *_name )
+void SampleGroup::SetName( const char *_name )
 {
     strcpy( m_name, _name );
 }
 
 
-void SampleGroup::AddSample( char *_sample )
+void SampleGroup::AddSample( const char *_sample )
 {
     char *sampleCopy = NewStr( _sample );
     m_samples.PutData( sampleCopy );
@@ -307,7 +307,7 @@ void SoundSystem::RestartSoundLibrary()
 	int volume      = g_prefsManager->GetInt("SoundMasterVolume", 255);
     m_numChannels   = g_prefsManager->GetInt("SoundChannels", 32);
     int hw3d        = g_prefsManager->GetInt("SoundHW3D", 0);
-    char *libName   = g_prefsManager->GetString("SoundLibrary", "dsound");
+	const char *libName   = g_prefsManager->GetString("SoundLibrary", "dsound");
 	int bufSize		= 20000;
 
 	g_soundLibrary2d = new SoundLibrary2d;
@@ -1049,7 +1049,7 @@ SoundInstance *SoundSystem::GetSoundInstance( SoundInstanceId id )
 }
 
 
-void SoundSystem::TriggerEntityEvent( Entity *_entity, char *_eventName )
+void SoundSystem::TriggerEntityEvent( Entity *_entity, const char *_eventName )
 {
     if( !m_channels ) return;
 
@@ -1079,7 +1079,7 @@ void SoundSystem::TriggerEntityEvent( Entity *_entity, char *_eventName )
 	END_PROFILE(m_mainProfiler, "TriggerEntityEvent");
 }
 
-void SoundSystem::TriggerBuildingEvent( Building *_building, char *_eventName )
+void SoundSystem::TriggerBuildingEvent( Building *_building, const char *_eventName )
 {
     if( !m_channels ) return;
 
@@ -1107,7 +1107,7 @@ void SoundSystem::TriggerBuildingEvent( Building *_building, char *_eventName )
 }
 
 
-void SoundSystem::TriggerOtherEvent( WorldObject *_other, char *_eventName, int _type )
+void SoundSystem::TriggerOtherEvent( WorldObject *_other, const char *_eventName, int _type )
 {
     if( !m_channels ) return;
 
@@ -1192,7 +1192,7 @@ void SoundSystem::TriggerDuplicateSound ( SoundInstance *_instance )
 }
 
 
-void SoundSystem::StopAllSounds( WorldObjectId _id, char *_eventName )
+void SoundSystem::StopAllSounds( WorldObjectId _id, const char *_eventName )
 {
     if( strstr( _eventName, "Music" ) )
     {
@@ -1241,7 +1241,7 @@ int SoundSystem::IsSoundPlaying( SoundInstanceId _id )
 }
 
 
-int SoundSystem::NumInstancesPlaying( WorldObjectId _id, char *_eventName )
+int SoundSystem::NumInstancesPlaying( WorldObjectId _id, const char *_eventName )
 {
     int result = 0;
 
@@ -1263,7 +1263,7 @@ int SoundSystem::NumInstancesPlaying( WorldObjectId _id, char *_eventName )
 }
 
 
-int SoundSystem::NumInstances( WorldObjectId _id, char *_eventName )
+int SoundSystem::NumInstances( WorldObjectId _id, const char *_eventName )
 {
     int result = 0;
 
@@ -2238,7 +2238,7 @@ void SoundSystem::PropagateBlueprints()
 }
 
 
-SampleGroup *SoundSystem::GetSampleGroup ( char *_name )
+SampleGroup *SoundSystem::GetSampleGroup ( const char *_name )
 {
     for( int i = 0; i < m_sampleGroups.Size(); ++i )
     {
@@ -2256,7 +2256,7 @@ SampleGroup *SoundSystem::GetSampleGroup ( char *_name )
 }
 
 
-SampleGroup *SoundSystem::NewSampleGroup ( char *_name )
+SampleGroup *SoundSystem::NewSampleGroup ( const char *_name )
 {
     SampleGroup *group = new SampleGroup();
     m_sampleGroups.PutData( group );
@@ -2284,7 +2284,7 @@ SampleGroup *SoundSystem::NewSampleGroup ( char *_name )
 }
 
 
-bool SoundSystem::RenameSampleGroup( char *_oldName, char *_newName )
+bool SoundSystem::RenameSampleGroup( const char *_oldName, const char *_newName )
 {
     //
     // Check the new name is unique

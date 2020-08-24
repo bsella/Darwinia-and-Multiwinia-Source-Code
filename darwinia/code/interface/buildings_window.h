@@ -1,4 +1,4 @@
-#ifndef _BUILDINGS_EDIT_WINDOW
+﻿#ifndef _BUILDINGS_EDIT_WINDOW
 #define _BUILDINGS_EDIT_WINDOW
 
 #ifdef LOCATION_EDITOR
@@ -14,7 +14,7 @@
 class BuildingEditWindow : public DarwiniaWindow
 {
 public:
-    BuildingEditWindow( char *name );
+	BuildingEditWindow( const char *name );
 	~BuildingEditWindow();
 
 	void Create();
@@ -33,7 +33,7 @@ public:
     int m_buildingType;
 
 public:
-    BuildingsCreateWindow( char *_name );
+	BuildingsCreateWindow( const char *_name );
 	~BuildingsCreateWindow();
 
     void Create();

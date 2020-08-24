@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/input/input.h"
 #include "lib/text_renderer.h"
 #include "lib/hi_res_time.h"
@@ -26,7 +26,7 @@ CreditsLoader::CreditsLoader()
 }
 
 
-void CreditsLoader::GenerateCharsCentre( float _x, float _y, float _size, char *_string )
+void CreditsLoader::GenerateCharsCentre( float _x, float _y, float _size, const char *_string )
 {
     float texWidth = g_gameFont.GetTextWidth( strlen(_string), _size );
 
@@ -34,7 +34,7 @@ void CreditsLoader::GenerateCharsCentre( float _x, float _y, float _size, char *
 }
 
 
-int CreditsLoader::AddString( float _x, float _y, float _size, char *_string )
+int CreditsLoader::AddString( float _x, float _y, float _size, const char *_string )
 {
     //
     // Look for existing item
@@ -79,7 +79,7 @@ int CreditsLoader::AddString( float _x, float _y, float _size, char *_string )
 }
 
 
-void CreditsLoader::GenerateWords( float _x, float _y, float _size, char *_string )
+void CreditsLoader::GenerateWords( float _x, float _y, float _size, const char *_string )
 {
     char stringCopy[256];
     strcpy( stringCopy, _string );
@@ -117,14 +117,14 @@ void CreditsLoader::GenerateWords( float _x, float _y, float _size, char *_strin
 }
 
 
-void CreditsLoader::GenerateWordsCentre( float _x, float _y, float _size, char *_string )
+void CreditsLoader::GenerateWordsCentre( float _x, float _y, float _size, const char *_string )
 {
     float texWidth = g_gameFont.GetTextWidth( strlen(_string), _size );
     GenerateWords( _x - texWidth/2.0f, _y, _size, _string );
 }
 
 
-void CreditsLoader::GenerateChars( float _x, float _y, float _size, char *_string )
+void CreditsLoader::GenerateChars( float _x, float _y, float _size, const char *_string )
 {
     float x = _x;
 
@@ -475,10 +475,10 @@ void CreditsLoader::DeleteUnusedStrings()
 
 void CreditsLoader::FlipBuffers( float _alpha )
 {
-	g_inputManager->PollForEvents();
-	g_inputManager->Advance();
+	g_inputManager.PollForEvents();
+	g_inputManager.Advance();
 	glFinish();
-	g_windowManager->Flip();
+	g_windowManager.Flip();
 	glClear	(GL_DEPTH_BUFFER_BIT);
 
     float screenRatio = (float) g_app->m_renderer->ScreenH() / (float) g_app->m_renderer->ScreenW();
@@ -509,7 +509,7 @@ void CreditsLoader::Run()
     float time = GetHighResTime();
     float startTime = time;
 
-    while( !g_inputManager->controlEvent( ControlSkipMessage ) )
+	while( !g_inputManager.controlEvent( ControlSkipMessage ) )
     {
         if( g_app->m_requestQuit ) break;
         if( m_darwinians.NumUsed() == 0 )

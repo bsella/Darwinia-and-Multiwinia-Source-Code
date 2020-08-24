@@ -1,0 +1,10 @@
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/install/strip.dir
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/install/local.dir
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/install.dir
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/list_install_components.dir
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/rebuild_cache.dir
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/edit_cache.dir
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/test.dir
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/pngtest.dir
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/png12_static.dir
+/home/karim/Downloads/libpng-1.2.59/build/CMakeFiles/png12.dir

@@ -1,21 +1,29 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #if !defined USE_DIRECT3D
 #include "lib/ogl_extensions.h"
 
 #include <limits.h>
+#ifdef TARGET_MSVC
 #include <windows.h>
 #include <shellapi.h>
 
 #include "lib/input/win32_eventhandler.h"
+#endif
 #include "lib/debug_utils.h"
 #include "lib/window_manager.h"
+#if defined(TARGET_MSVC)
 #include "lib/window_manager_win32.h"
+#elif defined(TARGET_OS_LINUX)
+#include "lib/window_manager_sdl.h"
+#endif
 
 #include "main.h"
 #include "renderer.h"
 
+#ifdef TARGET_MSVC
 static HINSTANCE g_hInstance;
+#endif
 
 #define WH_KEYBOARD_LL 13
 #define LLKHF_ALTDOWN 0x20
@@ -23,7 +31,7 @@ static HINSTANCE g_hInstance;
 
 WindowManager *g_windowManager = NULL;
 
-
+#ifdef TARGET_MSVC
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	W32EventHandler *w = getW32EventHandler();
@@ -35,6 +43,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+#endif
 
 
 WindowManager::WindowManager()
@@ -43,7 +52,9 @@ WindowManager::WindowManager()
 	m_mouseCaptured(false)
 {
 	DarwiniaDebugAssert(g_windowManager == NULL);
+#ifdef TARGET_MSVC
 	m_win32Specific = new WindowManagerWin32;
+#endif
 
 	ListAllDisplayModes();
 
@@ -60,14 +71,14 @@ WindowManager::~WindowManager()
 void WindowManager::SaveDesktop()
 {
     DEVMODE mode;
-    ZeroMemory(&mode, sizeof(mode));
+	ZeroMemory(&mode, sizeof(mode));
     mode.dmSize = sizeof(mode);
     bool success = EnumDisplaySettings ( NULL, ENUM_CURRENT_SETTINGS, &mode );
 
     m_desktopScreenW = mode.dmPelsWidth;
     m_desktopScreenH = mode.dmPelsHeight;
     m_desktopColourDepth = mode.dmBitsPerPel;
-    m_desktopRefresh = mode.dmDisplayFrequency;
+	m_desktopRefresh = mode.dmDisplayFrequency;
 }
 
 
@@ -103,7 +114,7 @@ void WindowManager::RestoreDesktop()
 	    devmode.dmDisplayFrequency = m_desktopRefresh;
 	    devmode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY | DM_BITSPERPEL;
 	    long result = ChangeDisplaySettings(&devmode, CDS_FULLSCREEN);
-    }
+	}
 }
 
 
@@ -447,7 +458,7 @@ void WindowManager::SuggestDefaultRes( int *_width, int *_height, int *_refresh,
 
 void WindowManager::OpenWebsite( char *_url )
 {
-    ShellExecute(NULL, "open", _url, NULL, NULL, SW_SHOWNORMAL);
+	//ShellExecute(NULL, "open", _url, NULL, NULL, SW_SHOWNORMAL);
 }
 
 

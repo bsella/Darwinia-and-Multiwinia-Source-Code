@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_spiritreceiver_h
 #define _included_spiritreceiver_h
 
@@ -32,7 +32,7 @@ public:
     virtual Vector3 GetSpiritLocation   ();
     virtual void    TriggerSpirit       ( float _initValue );
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 
     static SpiritProcessor *GetSpiritProcessor();
 

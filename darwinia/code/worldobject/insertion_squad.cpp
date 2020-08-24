@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/hi_res_time.h"
 
 #include "limits.h"
@@ -755,7 +755,7 @@ void Squadie::FireSecondaryWeapon( Vector3 const &_pos )
 }
 
 
-void Squadie::ListSoundEvents( LList<char *> *_list )
+void Squadie::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 
@@ -769,11 +769,11 @@ void Squadie::ListSoundEvents( LList<char *> *_list )
 
 Vector3 Squadie::GetCameraFocusPoint()
 {
-	if( g_inputManager->controlEvent( ControlUnitPrimaryFireDirected /* ControlUnitStartSecondaryFireDirected */ ) &&
+	if( g_inputManager.controlEvent( ControlUnitPrimaryFireDirected /* ControlUnitStartSecondaryFireDirected */ ) &&
         g_app->m_camera->IsInMode( Camera::ModeEntityTrack ) )
 	{
 		InputDetails details;
-        g_inputManager->controlEvent( ControlUnitPrimaryFireDirected, details );
+		g_inputManager.controlEvent( ControlUnitPrimaryFireDirected, details );
 
 		Vector3 t = GetSecondaryWeaponTarget();
 
@@ -786,7 +786,7 @@ Vector3 Squadie::GetCameraFocusPoint()
 Vector3 Squadie::GetSecondaryWeaponTarget()
 {
 	InputDetails details;
-    g_inputManager->controlEvent( ControlUnitPrimaryFireDirected, details );
+	g_inputManager.controlEvent( ControlUnitPrimaryFireDirected, details );
 
 	Vector3 t = m_pos;
 

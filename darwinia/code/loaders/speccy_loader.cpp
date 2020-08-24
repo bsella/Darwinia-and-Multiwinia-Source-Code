@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdlib.h>
 
@@ -67,7 +67,7 @@ void SpeccyLoader::Header(float _endTime, bool _drawText)
 {
 	m_mode = ModeHeader;
 
-	while (!g_inputManager->controlEvent( ControlSkipMessage ) && GetHighResTime() < _endTime)
+	while (!g_inputManager.controlEvent( ControlSkipMessage ) && GetHighResTime() < _endTime)
 	{
         if( g_app->m_requestQuit ) break;
 		StartFrame();
@@ -127,7 +127,7 @@ void SpeccyLoader::Data(float _endTime, bool _drawText)
 {
 	m_mode = ModeData;
 
-	while (!g_inputManager->controlEvent( ControlSkipMessage ) && GetHighResTime() < _endTime)
+	while (!g_inputManager.controlEvent( ControlSkipMessage ) && GetHighResTime() < _endTime)
 	{
         if( g_app->m_requestQuit ) break;
 		StartFrame();
@@ -188,7 +188,7 @@ void SpeccyLoader::Silence(float _endTime, bool _drawText)
 	m_mode = ModeSilence;
 	int currentCol = 0;
 
-	while (!g_inputManager->controlEvent( ControlSkipMessage ) && GetHighResTime() < _endTime)
+	while (!g_inputManager.controlEvent( ControlSkipMessage ) && GetHighResTime() < _endTime)
 	{
         if( g_app->m_requestQuit ) break;
 		StartFrame();
@@ -235,7 +235,7 @@ void SpeccyLoader::Screen()
 
 	double timeToAdvance = GetHighResTime() + 0.192;
 
-	while ( !g_inputManager->controlEvent( ControlSkipMessage ) )
+	while ( !g_inputManager.controlEvent( ControlSkipMessage ) )
 	{
         if( g_app->m_requestQuit ) break;
 		StartFrame();

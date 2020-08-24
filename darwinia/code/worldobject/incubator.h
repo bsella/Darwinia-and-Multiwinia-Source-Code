@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_incubator_h
 #define _included_incubator_h
 
@@ -56,7 +56,7 @@ public:
 
     void GetDockPoint( Vector3 &_pos, Vector3 &_front );
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 };
 
 

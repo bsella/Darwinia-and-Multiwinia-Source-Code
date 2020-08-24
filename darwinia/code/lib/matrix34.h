@@ -1,4 +1,4 @@
-#ifndef _INCLUDED_MATRIX34_H
+﻿#ifndef _INCLUDED_MATRIX34_H
 #define _INCLUDED_MATRIX34_H
 
 
@@ -22,15 +22,19 @@ public:
 	// Constructors
 	Matrix34() {}
 
-	Matrix34(int _ignored)
+	Matrix34(int)
 	{
 		SetToIdentity();
 	}
 
 
-	Matrix34( Matrix34 const &_other )
+	constexpr Matrix34( const Matrix34 &_other ):
+		r(_other.r),
+		u(_other.u),
+		f(_other.f),
+		pos(_other.pos)
 	{
-		memcpy(this, &_other, sizeof(Matrix34));
+		//memcpy(this, &_other, sizeof(Matrix34));
 	}
 
 
@@ -130,6 +134,13 @@ public:
 //	}
 
 
+	Matrix34& operator =(const Matrix34& _other){
+		r=_other.r;
+		u=_other.u;
+		f=_other.f;
+		pos=_other.pos;
+		return *this;
+	}
 	Matrix34 const &operator *= ( Matrix34 const &_o );
 	Matrix34		operator *  ( Matrix34 const &b ) const
 	{

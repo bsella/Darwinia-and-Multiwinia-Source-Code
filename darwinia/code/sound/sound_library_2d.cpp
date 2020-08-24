@@ -1,6 +1,8 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
+#ifdef TARGET_MSVC
 #include <MMSYSTEM.H>
+#endif
 
 #include "lib/debug_utils.h"
 #include "lib/preferences.h"
@@ -9,7 +11,9 @@
 #include "sound/sound_library_2d.h"
 
 
+#ifdef TARGET_MSVC
 static HWAVEOUT	s_device;
+#endif
 SoundLibrary2d *g_soundLibrary2d = NULL;
 
 
@@ -31,6 +35,7 @@ SoundLib2dBuf::SoundLib2dBuf()
 	// Clear the buffer
 	memset(m_buffer, 0, numSamples * sizeof(StereoSample));
 
+#ifdef TARGET_MSVC
 	// Register the buffer with Windows
 	memset(&m_header, 0, sizeof(WAVEHDR));
 	m_header.lpData = (char*)m_buffer;
@@ -48,13 +53,16 @@ SoundLib2dBuf::SoundLib2dBuf()
 		result = waveOutWrite(s_device, &m_header, sizeof(WAVEHDR));
 		DarwiniaReleaseAssert(result == MMSYSERR_NOERROR, "Couldn't send sound data");
 	}
+#endif
 }
 
 
 SoundLib2dBuf::~SoundLib2dBuf()
 {
+#ifdef TARGET_MSVC
 	waveOutUnprepareHeader(s_device, &m_header, sizeof(WAVEHDR));
 	delete [] m_buffer;			m_buffer = NULL;
+#endif
 }
 
 
@@ -63,6 +71,7 @@ SoundLib2dBuf::~SoundLib2dBuf()
 // Class SoundLibrary2d
 //*****************************************************************************
 
+#ifdef TARGET_MSVC
 void CALLBACK WaveOutProc(HWAVEOUT _dev, UINT _msg, DWORD _userData, DWORD _param1, DWORD _param2)
 {
 	if (_msg != WOM_DONE) return;
@@ -71,6 +80,7 @@ void CALLBACK WaveOutProc(HWAVEOUT _dev, UINT _msg, DWORD _userData, DWORD _para
 
 	g_soundLibrary2d->m_fillsRequested++;
 }
+#endif
 
 
 SoundLibrary2d::SoundLibrary2d()
@@ -88,7 +98,7 @@ SoundLibrary2d::SoundLibrary2d()
 
 	//
 	// Initialise the output device
-
+#ifdef TARGET_MSVC
 	WAVEFORMATEX format;
 	memset(&format, 0, sizeof(WAVEFORMATEX));
 	format.wFormatTag = WAVE_FORMAT_PCM;
@@ -109,8 +119,7 @@ SoundLibrary2d::SoundLibrary2d()
 		case WAVERR_SYNC:			errString = "Device is synchronous but waveOutOpen called without WAVE_ALLOWSYNC flag";	break;
 	}
 	DarwiniaReleaseAssert(result == MMSYSERR_NOERROR, "Failed to open audio output device: \"%s\"", errString);
-
-
+#endif
 	//
 	// Create the sound buffers
 
@@ -120,9 +129,11 @@ SoundLibrary2d::SoundLibrary2d()
 
 SoundLibrary2d::~SoundLibrary2d()
 {
+#ifdef TARGET_MSVC
 	waveOutReset(s_device);
 	delete [] m_buffers;		m_buffers = NULL;
 	waveOutClose(s_device);		s_device = NULL;
+#endif
 	g_soundLibrary2d = NULL;
 }
 
@@ -152,6 +163,7 @@ void SoundLibrary2d::TopupBuffer()
 	}
 	else
 	{
+#ifdef TARGET_MSVC
 		while (m_fillsRequested)
 		{
 			SoundLib2dBuf *buf = &m_buffers[m_nextBuffer];
@@ -170,6 +182,7 @@ void SoundLibrary2d::TopupBuffer()
 				m_fillsRequested--;
 			}
 		}
+#endif
 	}
 }
 

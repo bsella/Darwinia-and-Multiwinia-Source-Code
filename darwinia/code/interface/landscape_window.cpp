@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <string.h>
 
@@ -99,7 +99,7 @@ public:
 // Class LandscapeTileEditWindow
 // ****************************************************************************
 
-LandscapeTileEditWindow::LandscapeTileEditWindow( char *name, int tileId )
+LandscapeTileEditWindow::LandscapeTileEditWindow( const char *name, int tileId )
 :   DarwiniaWindow(name),
     m_tileId(tileId)
 {
@@ -189,7 +189,7 @@ public:
 // Class LandscapeFlatAreaEditWindow
 // ****************************************************************************
 
-LandscapeFlattenAreaEditWindow::LandscapeFlattenAreaEditWindow(char *_name, int areaId)
+LandscapeFlattenAreaEditWindow::LandscapeFlattenAreaEditWindow(const char *_name, int areaId)
 :   DarwiniaWindow(_name),
     m_areaId(areaId)
 {
@@ -355,7 +355,7 @@ public:
 // Class LandscapeEditWindow
 // ****************************************************************************
 
-LandscapeEditWindow::LandscapeEditWindow( char *name )
+LandscapeEditWindow::LandscapeEditWindow( const char *name )
 :   DarwiniaWindow(name)
 {
 }
@@ -564,8 +564,8 @@ public:
 		int mouseX = g_target->X();
 		int mouseY = g_target->Y();
 		// TODO: What should this really be?
-		bool mousePressed = g_inputManager->controlEvent( ControlEclipseLMousePressed ) ||
-		                    g_inputManager->controlEvent( ControlEclipseRMousePressed );
+		bool mousePressed = g_inputManager.controlEvent( ControlEclipseLMousePressed ) ||
+							g_inputManager.controlEvent( ControlEclipseRMousePressed );
         if( mousePressed &&
             mouseX >= m_x + m_parent->m_x &&
             mouseY >= m_y + m_parent->m_y &&
@@ -586,7 +586,7 @@ public:
                         {
                             case LandscapeGuideGridWindow::GuideGridToolFreehand:
 								// TODO: What should this really be?
-								if ( g_inputManager->controlEvent( ControlEclipseLMousePressed ) )
+								if ( g_inputManager.controlEvent( ControlEclipseLMousePressed ) )
 								{
 									newVal = currentVal + parent->m_toolSize * effect;
 								}
@@ -609,7 +609,7 @@ public:
 
                             case LandscapeGuideGridWindow::GuideGridToolBinary:
 								// TODO: What should this really be?
-                                if ( g_inputManager->controlEvent( ControlEclipseLMousePressed ) )
+								if ( g_inputManager.controlEvent( ControlEclipseLMousePressed ) )
                                 {
                                     newVal = 255;
                                 }
@@ -715,7 +715,7 @@ public:
     }
 };
 
-LandscapeGuideGridWindow::LandscapeGuideGridWindow( char *name, int tileId )
+LandscapeGuideGridWindow::LandscapeGuideGridWindow( const char *name, int tileId )
 :   DarwiniaWindow(name),
     m_tileId(tileId),
     m_tool(GuideGridToolFreehand),

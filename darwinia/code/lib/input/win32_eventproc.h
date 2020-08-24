@@ -1,8 +1,5 @@
-#ifndef INCLUDED_WIN32EVENTPROC_H
+﻿#ifndef INCLUDED_WIN32EVENTPROC_H
 #define INCLUDED_WIN32EVENTPROC_H
-
-#include <windows.h>
-
 
 class W32EventProcessor {
 

@@ -1,4 +1,4 @@
-#include "rarbloat.h"
+﻿#include "rarbloat.h"
 
 char* PointToName(const char *Path)
 {
@@ -314,7 +314,7 @@ bool EnumConfigPaths(char *Path,int Number)
     strcpy(Path,EnvStr);
     return(true);
   }
-  static char *AltPath[]={
+  static const char *AltPath[]={
     "/etc","/usr/lib","/usr/local/lib","/usr/local/etc"
   };
   Number--;

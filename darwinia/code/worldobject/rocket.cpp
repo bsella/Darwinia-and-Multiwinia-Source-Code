@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/resource.h"
 #include "lib/file_writer.h"
 #include "lib/text_stream_readers.h"
@@ -194,8 +194,8 @@ void FuelBuilding::RenderAlphas( float _predictionTime )
 
             int buildingDetail = g_prefsManager->GetInt( "RenderBuildingDetail" );
             float maxLoops = 4 - buildingDetail;
-            maxLoops = max( maxLoops, 1 );
-            maxLoops = min( maxLoops, 3 );
+			maxLoops = std::fmax( maxLoops, 1 );
+			maxLoops = std::fmin( maxLoops, 3 );
 
             for( int i = 0; i < maxLoops; ++i )
             {
@@ -300,8 +300,8 @@ bool FuelGenerator::Advance()
     // Advance surges
 
     m_surges -= SERVER_ADVANCE_PERIOD * 1.0f;
-    m_surges = min( m_surges, 10 );
-    m_surges = max( m_surges, 0 );
+	m_surges = std::fmin( m_surges, 10 );
+	m_surges = std::fmax( m_surges, 0 );
 
     if( m_surges > 8 )
     {
@@ -359,7 +359,7 @@ bool FuelGenerator::Advance()
 }
 
 
-void FuelGenerator::ListSoundEvents( LList<char *> *_list )
+void FuelGenerator::ListSoundEvents( LList<const char *> *_list )
 {
     FuelBuilding::ListSoundEvents( _list );
 
@@ -447,7 +447,7 @@ bool FuelPipe::Advance()
 }
 
 
-void FuelPipe::ListSoundEvents( LList<char *> *_list )
+void FuelPipe::ListSoundEvents( LList<const char *> *_list )
 {
     FuelBuilding::ListSoundEvents( _list );
 
@@ -564,7 +564,7 @@ bool FuelStation::BoardRocket( WorldObjectId _id )
 }
 
 
-void FuelStation::ListSoundEvents( LList<char *> *_list )
+void FuelStation::ListSoundEvents( LList<const char *> *_list )
 {
     FuelBuilding::ListSoundEvents( _list );
 
@@ -767,7 +767,7 @@ EscapeRocket::EscapeRocket()
 }
 
 
-void EscapeRocket::ListSoundEvents( LList<char *> *_list )
+void EscapeRocket::ListSoundEvents( LList<const char *> *_list )
 {
     FuelBuilding::ListSoundEvents( _list );
 
@@ -783,7 +783,7 @@ void EscapeRocket::ListSoundEvents( LList<char *> *_list )
 
 void EscapeRocket::SetupSounds()
 {
-    char *requiredSoundName = NULL;
+	const char *requiredSoundName = NULL;
 
     //
     // What ambience should be playing?
@@ -1469,9 +1469,9 @@ void EscapeRocket::Write( FileWriter *_out )
 }
 
 
-int EscapeRocket::GetStateId( char *_state )
+int EscapeRocket::GetStateId( const char *_state )
 {
-    static char *stateNames[] = {
+	static const char *stateNames[] = {
                                     "Refueling",
                                     "Loading",
                                     "Ignition",

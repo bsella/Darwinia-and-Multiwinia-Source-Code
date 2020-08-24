@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -55,7 +55,7 @@ void UserInput::AdvanceMenus()
 //	if ( g_keyDeltas[KEY_F1] )
 //		DebugKeyBindings::DebugMenu();
 
-	InputManager *im = g_inputManager;
+	InputManager *im = &g_inputManager;
 	int mouseX = g_target->X();
 	int mouseY = g_target->Y();
 	bool lmb = im->controlEvent( ControlEclipseLMousePressed );
@@ -80,7 +80,7 @@ void UserInput::Advance()
 {
     START_PROFILE(g_app->m_profiler, "Advance UserInput");
 
-	g_inputManager->Advance();
+	g_inputManager.Advance();
 
 	if (m_removeTopLevelMenu)
 	{
@@ -97,18 +97,18 @@ void UserInput::Advance()
     bool modsEnabled = g_prefsManager->GetInt( "ModSystemEnabled", 0 ) != 0;
 
 
-    if( g_inputManager->controlEvent( ControlGamePause ) )	g_app->m_clientToServer->RequestPause();
+	if( g_inputManager.controlEvent( ControlGamePause ) )	g_app->m_clientToServer->RequestPause();
 
 //    if (g_keyDeltas[KEY_F2]) DebugKeyBindings::DebugCameraButton();
 #ifdef LOCATION_EDITOR
     if( modsEnabled )
     {
-        if ( g_inputManager->controlEvent( ControlToggleEditor ) ) DebugKeyBindings::EditorButton();
+		if ( g_inputManager.controlEvent( ControlToggleEditor ) ) DebugKeyBindings::EditorButton();
     }
 #endif
 //
 #ifdef CHEATMENU_ENABLED
-    if( g_inputManager->controlEvent( ControlToggleCheatMenu ) ) DebugKeyBindings::CheatButton();
+	if( g_inputManager.controlEvent( ControlToggleCheatMenu ) ) DebugKeyBindings::CheatButton();
 #endif
 
 //

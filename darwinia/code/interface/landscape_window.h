@@ -1,4 +1,4 @@
-#ifndef _INCLUDED_LANDSCAPE_WINDOW_H
+﻿#ifndef _INCLUDED_LANDSCAPE_WINDOW_H
 #define _INCLUDED_LANDSCAPE_WINDOW_H
 
 #ifdef LOCATION_EDITOR
@@ -20,7 +20,7 @@ public:
 	LandscapeTile        	*m_tileDef;
     int						m_tileId;
 
-    LandscapeTileEditWindow( char *name, int tileId );
+	LandscapeTileEditWindow( const char *name, int tileId );
     ~LandscapeTileEditWindow();
 
 	void					Create();
@@ -37,7 +37,7 @@ public:
 	LandscapeFlattenArea	*m_areaDef;
     int						m_areaId;
 
-    LandscapeFlattenAreaEditWindow(char *_name, int areaId);
+	LandscapeFlattenAreaEditWindow(const char *_name, int areaId);
     ~LandscapeFlattenAreaEditWindow();
 
 	void					Create();
@@ -51,7 +51,7 @@ public:
 class LandscapeEditWindow: public DarwiniaWindow
 {
 public:
-    LandscapeEditWindow( char *name );
+	LandscapeEditWindow( const char *name );
     ~LandscapeEditWindow();
 
 	void					Create();
@@ -79,7 +79,7 @@ public:
     int                     m_tool;
     float                   m_toolSize;
 
-    LandscapeGuideGridWindow( char *name, int tileId );
+	LandscapeGuideGridWindow( const char *name, int tileId );
     ~LandscapeGuideGridWindow();
 
     void                    Create();

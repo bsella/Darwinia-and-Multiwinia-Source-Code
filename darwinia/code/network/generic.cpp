@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "net_lib.h"
 
@@ -15,6 +15,6 @@ void IpToString(struct in_addr in, char *newip)
 #elif defined(HAVE_INET_NTOA)
 strcpy( newip, inet_ntoa( in ) );
 #else
-#error Need inet_ntoa or similar
+//#error Need inet_ntoa or similar
 #endif
 }

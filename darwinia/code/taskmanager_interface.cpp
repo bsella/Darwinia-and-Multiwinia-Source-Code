@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/text_renderer.h"
 #include "lib/math_utils.h"
 #include "lib/vector2.h"
@@ -51,7 +51,7 @@
 
 
 
-ScreenZone::ScreenZone( char *_name, char *_tooltip,
+ScreenZone::ScreenZone( const char *_name, const char *_tooltip,
                         float _x, float _y, float _w, float _h,
                         int _data )
 :   m_x(_x),
@@ -92,6 +92,9 @@ TaskManagerInterface::TaskManagerInterface()
 {
 }
 
+TaskManagerInterface::~TaskManagerInterface()
+{
+}
 
 void TaskManagerInterface::SetCurrentMessage( int _messageType, int _taskType, float _timer )
 {
@@ -159,18 +162,18 @@ void TaskManagerInterface::SetVisible( bool _visible )
 void TaskManagerInterface::AdvanceTab()
 {
     if( !m_visible ||
-        g_inputManager->getInputMode() == INPUT_MODE_KEYBOARD )
+		g_inputManager.getInputMode() == INPUT_MODE_KEYBOARD )
     {
         int taskId = -1;
         int index = -1;
         bool changeTask = false;
         bool gesturesCycle = false;
-        if( g_inputManager->controlEvent( ControlGesturesSwitchUnit ) &&
+		if( g_inputManager.controlEvent( ControlGesturesSwitchUnit ) &&
             g_prefsManager->GetInt( "ControlMethod", 0 ) == 0 )
         {
             gesturesCycle = true;
         }
-        if(g_inputManager->controlEvent( ControlUnitCycleRight ) ||
+		if(g_inputManager.controlEvent( ControlUnitCycleRight ) ||
             gesturesCycle )
         {
             changeTask = true;
@@ -194,7 +197,7 @@ void TaskManagerInterface::AdvanceTab()
             }
         }
 
-        if( g_inputManager->controlEvent( ControlUnitCycleLeft ) )
+		if( g_inputManager.controlEvent( ControlUnitCycleLeft ) )
         {
             changeTask = true;
             for( int i = 0; i < g_app->m_taskManager->m_tasks.Size(); ++i )

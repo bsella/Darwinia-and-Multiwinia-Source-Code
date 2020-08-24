@@ -1,4 +1,4 @@
-#ifndef VECTOR3_H
+﻿#ifndef VECTOR3_H
 #define VECTOR3_H
 
 
@@ -27,6 +27,10 @@ public:
 	// *** Constructors ***
 	Vector3()
 	:	x(0.0f), y(0.0f), z(0.0f)
+	{
+	}
+
+	constexpr Vector3(const Vector3&b): x(b.x), y(b.y), z(b.z)
 	{
 	}
 

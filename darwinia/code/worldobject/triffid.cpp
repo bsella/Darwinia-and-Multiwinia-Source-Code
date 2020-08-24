@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/file_writer.h"
 #include "lib/resource.h"
@@ -476,9 +476,9 @@ void Triffid::Write( FileWriter *_out )
 }
 
 
-char *Triffid::GetSpawnName( int _spawnType )
+const char *Triffid::GetSpawnName( int _spawnType )
 {
-    static char *names[NumSpawnTypes] = {
+	static const char *names[NumSpawnTypes] = {
                                             "SpawnVirii",
                                             "SpawnCentipedes",
                                             "SpawnSpider",
@@ -492,9 +492,9 @@ char *Triffid::GetSpawnName( int _spawnType )
 }
 
 
-char *Triffid::GetSpawnNameTranslated( int _spawnType )
+const char *Triffid::GetSpawnNameTranslated( int _spawnType )
 {
-    char *spawnName = GetSpawnName( _spawnType );
+	const char *spawnName = GetSpawnName( _spawnType );
 
     char stringId[256];
     sprintf( stringId, "spawnname_%s", spawnName );
@@ -510,7 +510,7 @@ char *Triffid::GetSpawnNameTranslated( int _spawnType )
 }
 
 
-void Triffid::ListSoundEvents( LList<char *> *_list )
+void Triffid::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 
@@ -749,7 +749,7 @@ bool TriffidEgg::RenderPixelEffect( float _predictionTime )
 }
 
 
-void TriffidEgg::ListSoundEvents( LList<char *> *_list )
+void TriffidEgg::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 

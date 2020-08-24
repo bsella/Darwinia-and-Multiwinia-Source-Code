@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/binary_stream_readers.h"
 #include "lib/bitmap.h"
@@ -365,10 +365,11 @@ void BitmapRGBA::WritePng(FILE *_out, bool _saveAlpha)
        return; // failed
     }
 
+	///TODO
     png_init_io( png_ptr, _out );
-	png_set_compression_level( png_ptr, Z_BEST_SPEED );
+	///png_set_compression_level( png_ptr, Z_BEST_SPEED );
     png_set_compression_mem_level( png_ptr, 8 );
-    png_set_compression_strategy( png_ptr, Z_DEFAULT_STRATEGY );
+	///png_set_compression_strategy( png_ptr, Z_DEFAULT_STRATEGY );
     png_set_compression_window_bits( png_ptr, 15 );
     png_set_compression_method( png_ptr, 8 );
     png_set_compression_buffer_size( png_ptr, 8192 );

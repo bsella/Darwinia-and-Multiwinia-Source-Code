@@ -1,4 +1,4 @@
-/* Represents one connection to one client. Server is expected to have a list of these. */
+﻿/* Represents one connection to one client. Server is expected to have a list of these. */
 
 
 #ifndef _SERVERTOCLIENT_H
@@ -15,9 +15,9 @@ private:
     NetSocket	*m_socket;
 
 public:
-    ServerToClient( char *_ip );
+	ServerToClient( const char *_ip );
 
-    char        *GetIP ();
+	const char        *GetIP ();
     NetSocket   *GetSocket ();
 
     int         m_lastKnownSequenceId;

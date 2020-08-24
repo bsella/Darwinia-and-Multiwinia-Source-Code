@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
 #include "lib/hi_res_time.h"
@@ -79,7 +79,7 @@ bool ReceiverBuilding::IsInView()
 }
 
 
-void ReceiverBuilding::ListSoundEvents( LList<char *> *_list )
+void ReceiverBuilding::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -464,7 +464,7 @@ bool Engineer::AdvanceToTargetPos()
         actualDir.Normalise();
 
         float desiredSpeed = distance.Mag();
-        desiredSpeed = min( desiredSpeed, m_stats[StatSpeed] );
+		desiredSpeed = std::fmin( desiredSpeed, m_stats[StatSpeed] );
         if( m_state == StateIdle ) desiredSpeed *= 0.25f;
 
         Vector3 newPos = m_pos + actualDir * desiredSpeed * SERVER_ADVANCE_PERIOD;
@@ -1146,7 +1146,7 @@ bool Engineer::RenderPixelEffect( float predictionTime )
 }
 
 
-char *Engineer::GetCurrentAction()
+const char *Engineer::GetCurrentAction()
 {
     switch( m_state )
     {
@@ -1169,7 +1169,7 @@ char *Engineer::GetCurrentAction()
 }
 
 
-void Engineer::ListSoundEvents( LList<char *> *_list )
+void Engineer::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 

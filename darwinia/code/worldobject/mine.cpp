@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/text_stream_readers.h"
 #include "lib/shape.h"
@@ -121,9 +121,9 @@ void MineBuilding::RenderAlphas( float _predictionTime )
 {
     Building::RenderAlphas( _predictionTime );
 
-    Vector3 camPos = g_app->m_camera->GetPos();
-    Vector3 camFront = g_app->m_camera->GetFront();
-    Vector3 camUp = g_app->m_camera->GetUp();
+	//Vector3 camPos = g_app->m_camera->GetPos();
+	//Vector3 camFront = g_app->m_camera->GetFront();
+	//Vector3 camUp = g_app->m_camera->GetUp();
 
     if( m_trackLink != -1 )
     {
@@ -355,7 +355,7 @@ bool MineBuilding::Advance()
 }
 
 
-void MineBuilding::ListSoundEvents( LList<char *> *_list )
+void MineBuilding::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 
@@ -473,7 +473,7 @@ float MineBuilding::RefinerySpeed()
             int mineLocationId = g_app->m_globalWorld->GetLocationId("mine");
             s_refineryPopulation = 0.0f;
 
-            GlobalBuilding *globalRefinery = NULL;
+			//GlobalBuilding *globalRefinery = NULL;
             for( int i = 0; i < g_app->m_globalWorld->m_buildings.Size(); ++i )
             {
                 if( g_app->m_globalWorld->m_buildings.ValidIndex(i) )
@@ -860,7 +860,7 @@ Refinery::Refinery()
 }
 
 
-char *Refinery::GetObjectiveCounter()
+const char *Refinery::GetObjectiveCounter()
 {
     GlobalBuilding *gb = g_app->m_globalWorld->GetBuilding( m_id.GetUniqueId(), g_app->m_locationId );
     int numRefined = 0;

@@ -1,4 +1,4 @@
-#include "rarbloat.h"
+﻿#include "rarbloat.h"
 
 unsigned int CRCTab[256];
 
@@ -20,7 +20,8 @@ unsigned int CRC(unsigned int StartCRC,void *Addr,unsigned int Size)
     InitCRC();
   unsigned char *Data=(unsigned char *)Addr;
 #if defined(LITTLE_ENDIAN) && defined(PRESENT_INT32)
-  while (Size>0 && ((int)Data & 7))
+  //while (Size>0 && ((int)Data & 7))
+  while (Size>0)
   {
     StartCRC=CRCTab[(unsigned char)(StartCRC^Data[0])]^(StartCRC>>8);
     Size--;

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #ifdef WIN32
 #include <io.h>
@@ -23,6 +23,20 @@
 // Misc directory and filename functions
 //*****************************************************************************
 
+
+bool IsDirectory(const char *_fullPath)
+{
+#ifdef TARGET_MSVC
+	// To do
+	return false;
+#else
+	struct stat s;
+	int rc = stat(_fullPath, &s);
+	if (rc != 0)
+		return false;
+	return (s.st_mode & S_IFDIR);
+#endif
+}
 
 static bool FilterMatch( const char *_filename, const char *_filter )
 {
@@ -294,20 +308,6 @@ void DeleteThisFile(char const *_filename)
     bool result = DeleteFile( _filename );
 #else
 	unlink( _filename );
-#endif
-}
-
-bool IsDirectory(const char *_fullPath)
-{
-#ifdef TARGET_MSVC
-	// To do
-	return false;
-#else
-	struct stat s;
-	int rc = stat(_fullPath, &s);
-	if (rc != 0)
-		return false;
-	return (s.st_mode & S_IFDIR);
 #endif
 }
 

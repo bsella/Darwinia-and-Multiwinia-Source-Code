@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <memory>
 
@@ -104,7 +104,7 @@ void ControlBindings::setIcon( controltype_t id, std::string const &iconfile )
 bool ControlBindings::bind( int type, InputSpec const &spec, bool replace )
 {
 	if ( isAcceptibleInputType( type, spec.type ) ) {
-		auto_ptr<const InputSpec> specCopy( new InputSpec( spec ) );
+		std::unique_ptr<const InputSpec> specCopy( new InputSpec( spec ) );
 		if ( replace && bindings[ type ].size() > 0 ) {
 			bindings[ type ].erase( 0 );
 			bindings[ type ].insert( 0, specCopy );

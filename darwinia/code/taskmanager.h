@@ -1,4 +1,4 @@
-#ifndef _included_taskmanager_h
+﻿#ifndef _included_taskmanager_h
 #define _included_taskmanager_h
 
 #include "lib/llist.h"
@@ -49,8 +49,8 @@ public:
     static WorldObjectId Demote          ( WorldObjectId _id );
     static WorldObjectId FindDarwinian   ( Vector3 const &_pos );
 
-    static char *GetTaskName            ( int _type );
-    static char *GetTaskNameTranslated  ( int _type );
+	static const char *GetTaskName            ( int _type );
+	static const char *GetTaskNameTranslated  ( int _type );
 };
 
 

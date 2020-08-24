@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 
 #include <stdio.h>
@@ -58,7 +58,7 @@ public:
 // Class ProfileWindow
 // ****************************************************************************
 
-ProfileWindow::ProfileWindow( char *name )
+ProfileWindow::ProfileWindow( const char *name )
 :   DarwiniaWindow( name ),
 	m_totalPerSecond(true)
 {
@@ -131,7 +131,7 @@ void ProfileWindow::RenderElementProfile(ProfiledElement *_pe, unsigned int _ind
 			glColor3ub( brightness, brightness, brightness );
 
 			// Deal with mouse clicks to expand or unexpand a node
-			if ( g_inputManager->controlEvent( ControlEclipseLMousePressed ) ) // g_inputManager->GetRawLmbClicked()
+			if ( g_inputManager.controlEvent( ControlEclipseLMousePressed ) ) // g_inputManager.GetRawLmbClicked()
 			{
 				int x = g_target->X();
 				int y = g_target->Y();

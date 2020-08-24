@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/hi_res_time.h"
 #include "lib/input/input.h"
 #include "lib/math_utils.h"
@@ -96,7 +96,7 @@ void AmigaLoader::RenderStars(float _frameTime)
 
 void AmigaLoader::RenderScrollText(float _frameTime)
 {
-    char *theText = LANGUAGEPHRASE("bootloader_amiga");
+	const char *theText = LANGUAGEPHRASE("bootloader_amiga");
 
 	int len = strlen(theText);
 	float const textSpeed = 450.0f;
@@ -220,7 +220,7 @@ void AmigaLoader::Run()
 	float endTime = GetHighResTime() + 89.0f;
 	float lastTime = GetHighResTime();
 
-	while ( !g_inputManager->controlEvent( ControlSkipMessage ) )
+	while ( !g_inputManager.controlEvent( ControlSkipMessage ) )
 	{
 		float timeNow = GetHighResTime();
 		float frameTime = timeNow - lastTime;

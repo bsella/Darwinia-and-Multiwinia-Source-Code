@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "net_lib.h"
 #include "net_mutex.h"
@@ -50,10 +50,10 @@ static NetCallBackRetType ListenCallback(NetUdpPacket *udpdata)
 }
 
 
-static NetCallBackRetType ListenThread(void *ignored)
+static NetCallBackRetType ListenThread(void *)
 {
     g_app->m_clientToServer->m_receiveSocket = new NetSocketListener( 4001 );
-    NetRetCode retCode = g_app->m_clientToServer->m_receiveSocket->StartListening( ListenCallback );
+	NetRetCode retCode = g_app->m_clientToServer->m_receiveSocket->StartListening( reinterpret_cast<void*(*)(void*)>(ListenCallback) );
     DarwiniaDebugAssert( retCode == NetOk );
     return 0;
 }
@@ -72,10 +72,10 @@ ClientToServer::ClientToServer()
         m_netLib->Initialise();
 
         m_sendSocket = new NetSocket();
-	    char *serverAddress = g_prefsManager->GetString("ServerAddress");
+		const char *serverAddress = g_prefsManager->GetString("ServerAddress");
         m_sendSocket->Connect( serverAddress, 4000 );
 
-		NetStartThread( ListenThread );
+		//NetStartThread( ListenThread );
     }
 	else
 	{
@@ -557,6 +557,7 @@ void ClientToServer::ProcessServerUpdates( ServerToClientLetter *letter )
                 int programId = update->m_program;
                 g_app->m_taskManager->TargetTask( programId, update->GetWorldPos() );
             }
+			default: break;
         }
     }
 }

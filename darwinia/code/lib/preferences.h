@@ -1,4 +1,4 @@
-#ifndef INCLUDED_PREFERENCES_H
+﻿#ifndef INCLUDED_PREFERENCES_H
 #define INCLUDED_PREFERENCES_H
 
 #include <string>
@@ -67,7 +67,7 @@ public:
 
 	void Clear		();
 
-	char *GetString (char const *_key, char *_default=NULL) const;
+	const char *GetString (char const *_key, const char *_default=NULL) const;
 	float GetFloat  (char const *_key, float _default=-1.0f) const;
 	int	  GetInt    (char const *_key, int _default=-1) const;
 

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/hi_res_time.h"
 #include "lib/resource.h"
 #include "lib/language_table.h"
@@ -93,7 +93,7 @@ public:
 // Class MainEditWindow
 // ****************************************************************************
 
-MainEditWindow::MainEditWindow(char *name)
+MainEditWindow::MainEditWindow(const char *name)
 :	DarwiniaWindow(name),
 	m_currentEditWindow(NULL)
 {

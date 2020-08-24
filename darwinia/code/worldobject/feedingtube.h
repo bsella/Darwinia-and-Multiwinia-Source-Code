@@ -1,4 +1,4 @@
-#ifndef _included_feedingtube_h
+﻿#ifndef _included_feedingtube_h
 #define _included_feedingtube_h
 
 
@@ -37,7 +37,7 @@ public:
 
     bool    DoesSphereHit   (Vector3 const &_pos, float _radius);
 
-    void    ListSoundEvents ( LList<char *> *_list );
+	void    ListSoundEvents ( LList<const char *> *_list );
     bool IsInView();
 };
 

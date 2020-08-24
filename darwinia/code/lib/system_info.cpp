@@ -1,8 +1,9 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
-#include <mmsystem.h>
+//#include <mmsystem.h>
 //#include <dxdiag.h>
 #include <stdio.h>
+#include <locale>
 
 #include "lib/debug_utils.h"
 #include "lib/system_info.h"
@@ -15,38 +16,31 @@ SystemInfo::SystemInfo()
 {
 	GetLocaleDetails();
 	GetAudioDetails();
-	GetDirectXVersion();
+//	GetDirectXVersion();
 }
-
-
-SystemInfo::~SystemInfo()
-{
-}
-
 
 void SystemInfo::GetLocaleDetails()
 {
-    int size;
-    bool languageSuccess = false;
+#if defined(TARGET_MSVC)
+	int size;
+	bool languageSuccess = false;
 
-    if( !languageSuccess )
-    {
-	    size = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, NULL, 0);
-	    m_localeInfo.m_language = new char[size + 1];
-	    DarwiniaReleaseAssert(GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, m_localeInfo.m_language, size),
-				      "Couldn't get locale details");
-    }
-
-
-	size = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGCOUNTRY, NULL, 0);
-	m_localeInfo.m_country = new char[size + 1];
-	DarwiniaReleaseAssert(GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGCOUNTRY, m_localeInfo.m_country, size),
-				  "Couldn't get country details");
+	if( !languageSuccess )
+	{
+		size = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, NULL, 0);
+		m_localeInfo.m_language = new char[size + 1];
+		DarwiniaReleaseAssert(GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, m_localeInfo.m_language, size),
+					  "Couldn't get locale details");
+	}
+#else
+	m_localeInfo.m_language= std::locale("").name();
+#endif
 }
 
 
 void SystemInfo::GetAudioDetails()
 {
+#if defined(TARGET_MSVC)
 	unsigned int numDevs = waveOutGetNumDevs();
 	m_audioInfo.m_numDevices = numDevs;
 	m_audioInfo.m_preferredDevice = -1;
@@ -86,11 +80,13 @@ void SystemInfo::GetAudioDetails()
 	}
 
 	DarwiniaReleaseAssert(m_audioInfo.m_preferredDevice != -1, "No suitable audio hardware found");
+#endif
 }
 
 
 void SystemInfo::GetDirectXVersion()
 {
+#if defined(TARGET_MSVC)
 	HKEY hkey;
 	long errCode;
 	unsigned long bufLen = 256;
@@ -192,4 +188,5 @@ void SystemInfo::GetDirectXVersion()
 //		if( bCleanupCOM )
 //			CoUninitialize();
 //	}
+#endif
 }

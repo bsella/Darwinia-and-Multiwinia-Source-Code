@@ -1,9 +1,8 @@
-#ifndef INCLUDED_WINDOW_MANAGER_H
+﻿#ifndef INCLUDED_WINDOW_MANAGER_H
 #define INCLUDED_WINDOW_MANAGER_H
 
 
 #include <lib/llist.h>
-
 
 class WindowManagerWin32;
 
@@ -31,7 +30,7 @@ class WindowManager
 {
 public:
 	LList		<Resolution *> m_resolutions;
-	WindowManagerWin32 *m_win32Specific;
+	WindowManagerWin32* m_win32Specific;
 	bool		m_mousePointerVisible;
 	bool		m_invertY;	// Whether the Y coordinate needs to be inverted or not.
 
@@ -95,13 +94,13 @@ public:
 
     void SuggestDefaultRes( int *_width, int *_height, int *_refresh, int *_depth );
 
-    static void OpenWebsite( char *_url );
+	static void OpenWebsite( const char *_url );
 };
 
 
 void AppMain();
 
-extern WindowManager *g_windowManager;
+extern WindowManager g_windowManager;
 
 
 #endif

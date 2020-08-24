@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/binary_stream_readers.h"
 #include "lib/debug_utils.h"
 #include "lib/hi_res_time.h"
@@ -189,9 +189,9 @@ void SoundInstance::SetEventName( char const *_entityName, char const *_eventNam
 }
 
 
-char *SoundInstance::GetPositionTypeName( int _type )
+const char *SoundInstance::GetPositionTypeName( int _type )
 {
-    static char *types[] = {    "Type2D",
+	static const char *types[] = {    "Type2D",
                                 "Type3DStationary",
                                 "Type3DAttachedToObject",
                                 "TypeInEditor"
@@ -206,9 +206,9 @@ char *SoundInstance::GetPositionTypeName( int _type )
 }
 
 
-char *SoundInstance::GetInstanceTypeName( int _type )
+const char *SoundInstance::GetInstanceTypeName( int _type )
 {
-    static char *types[] = {    "Polyphonic",
+	static const char *types[] = {    "Polyphonic",
                                 "MonophonicRandom",
                                 "MonophonicNearest"
                             };
@@ -222,9 +222,9 @@ char *SoundInstance::GetInstanceTypeName( int _type )
 }
 
 
-char *SoundInstance::GetLoopTypeName( int _type )
+const char *SoundInstance::GetLoopTypeName( int _type )
 {
-    static char *types[] = {    "PlayOnce",
+	static const char *types[] = {    "PlayOnce",
                                 "Loop",
                                 "LoopADSR"
                                 };
@@ -238,9 +238,9 @@ char *SoundInstance::GetLoopTypeName( int _type )
 }
 
 
-char *SoundInstance::GetSourceTypeName( int _type )
+const char *SoundInstance::GetSourceTypeName( int _type )
 {
-    static char *types[] = {    "Sample",
+	static const char *types[] = {    "Sample",
                                 "SampleGroupRandom"
                                 };
 
@@ -1037,11 +1037,11 @@ WorldObject *SoundInstance::GetAttachedObject()
 }
 
 
-char *SoundInstance::GetDescriptor()
+const char *SoundInstance::GetDescriptor()
 {
     static char descriptor[256];
 
-    char *looping = GetLoopTypeName( m_loopType );
+	const char *looping = GetLoopTypeName( m_loopType );
     char const *inEditor = m_positionType == TypeInEditor ? " editor" : "       ";
 
     char priority[32];

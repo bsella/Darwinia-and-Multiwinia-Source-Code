@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/resource.h"
 #include "lib/matrix34.h"
 #include "lib/shape.h"
@@ -166,14 +166,14 @@ void Armour::AdvanceToTargetPos()
     if( distance > 100.0f && angle < 1.0f )
     {
         m_speed += 10.0f * SERVER_ADVANCE_PERIOD;
-        m_speed = min( m_speed, m_stats[StatSpeed] );
+		m_speed = std::fmin( m_speed, m_stats[StatSpeed] );
     }
     else if( distance > 10.0f )
     {
         float targetSpeed = distance * 0.2f;
         m_speed = m_speed * 0.95f + targetSpeed * 0.05f;
-        m_speed = min( m_speed, m_stats[StatSpeed] );
-        m_speed = max( m_speed, 0.0f );
+		m_speed = std::fmin( m_speed, m_stats[StatSpeed] );
+		m_speed = std::fmax( m_speed, 0.0f );
     }
     else
     {
@@ -446,7 +446,7 @@ void Armour::GetEntrance( Vector3 &_exitPos, Vector3 &_exitDir )
 }
 
 
-void Armour::ListSoundEvents( LList<char *> *_list )
+void Armour::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 

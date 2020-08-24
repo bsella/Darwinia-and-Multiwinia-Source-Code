@@ -1,4 +1,4 @@
-#ifndef _included_particle_system_h
+﻿#ifndef _included_particle_system_h
 #define _included_particle_system_h
 
 #include "lib/rgb_colour.h"
@@ -89,7 +89,7 @@ public:
 	ParticleSystem();
 
 	void CreateParticle(Vector3 const &_pos, Vector3 const &_vel,
-                        int _particleTypeId, float _size=-1.0f, RGBAColour col = NULL );
+						int _particleTypeId, float _size=-1.0f, RGBAColour col = 0);
 
 	void Advance(int _slice);
 	void Render();

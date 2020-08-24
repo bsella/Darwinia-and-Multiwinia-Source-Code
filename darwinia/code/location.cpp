@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -337,16 +337,16 @@ Vector3 Location::FindValidSpawnPosition( Vector3 const &_pos, float _spread )
     // Failed to find a valid pos
 
     Vector3 pos = _pos;
-    pos.x = max( pos.x, 20 );
-    pos.z = max( pos.z, 20 );
-    pos.x = min( pos.x, m_landscape.GetWorldSizeX()-20 );
-    pos.z = min( pos.z, m_landscape.GetWorldSizeZ()-20 );
+	pos.x = fmax( pos.x, 20 );
+	pos.z = fmax( pos.z, 20 );
+	pos.x = fmin( pos.x, m_landscape.GetWorldSizeX()-20 );
+	pos.z = fmin( pos.z, m_landscape.GetWorldSizeZ()-20 );
 
     return pos;
 }
 
 
-int Location::SpawnSpirit( Vector3 const &_pos, Vector3 const &_vel, unsigned char _teamId, WorldObjectId _id )
+int Location::SpawnSpirit( Vector3 const &_pos, Vector3 const &_vel, unsigned char _teamId, const WorldObjectId& _id )
 {
     DarwiniaDebugAssert( _teamId < NUM_TEAMS );
 
@@ -558,7 +558,7 @@ Building *Location::GetBuilding(Vector3 const &_rayStart, Vector3 const &_rayDir
 		}
 	}
 
-	return false;
+	return nullptr;
 }
 
 
@@ -1925,7 +1925,7 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
 												 Particle::TypeExplosionCore, size );
     }
 
-    int numDebris = max(1, _range * _damage * 0.005f);
+	int numDebris = fmax(1.f, _range * _damage * 0.005f);
     for( int p = 0; p < numDebris; ++p )
     {
         Vector3 vel( syncsfrand( 30.0f ),

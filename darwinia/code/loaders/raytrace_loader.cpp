@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <float.h>
 
@@ -305,89 +305,89 @@ void RayTraceLoader::AdvanceObjects(float _advanceTime)
 
 void RayTraceLoader::AdvanceControls( float _advanceTime )
 {
-    if( g_inputManager->controlEvent( ControlRTLoaderReflectivenessIncrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderReflectivenessIncrease ) )
     {
         m_reflectiveness += _advanceTime;
         m_reflectiveness = min( m_reflectiveness, 1.0f );
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderReflectivenessDecrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderReflectivenessDecrease ) )
     {
         m_reflectiveness -= _advanceTime;
         m_reflectiveness = max( m_reflectiveness, 0.0f );
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderPixelWaveIncrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderPixelWaveIncrease ) )
     {
         m_pixelWave += _advanceTime;
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderPixelWaveDecrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderPixelWaveDecrease ) )
     {
         m_pixelWave -= _advanceTime;
         m_pixelWave = max( m_pixelWave, 0.0f );
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderMotionBlurIncrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderMotionBlurIncrease ) )
     {
         m_motionBlur += _advanceTime * 0.1f;
         m_motionBlur = min( m_motionBlur, 1.0f );
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderMotionBlurDecrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderMotionBlurDecrease ) )
     {
         m_motionBlur -= _advanceTime * 0.1f;
         m_motionBlur = max( m_motionBlur, 0.0f );
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderPixelBlurIncrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderPixelBlurIncrease ) )
     {
         m_pixelBlur++;
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderPixelBlurDecrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderPixelBlurDecrease ) )
     {
         m_pixelBlur--;
         m_pixelBlur = max( m_pixelBlur, 1.0f );
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderBrightnessIncrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderBrightnessIncrease ) )
     {
         m_brightness += _advanceTime * 0.1f;
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderBrightnessDecrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderBrightnessDecrease ) )
     {
         m_brightness -= _advanceTime * 0.1f;
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderResolutionDecrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderResolutionDecrease ) )
     {
         m_resolution--;
         m_resolution = max( m_resolution, 1 );
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderResolutionIncrease ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderResolutionIncrease ) )
     {
         m_resolution++;
         m_resolution = min( m_resolution, RAYTRACELOADER_MAXRES );
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderCameraMode1 ) ) m_cameraMode = 0;
-    if( g_inputManager->controlEvent( ControlRTLoaderCameraMode2 ) ) m_cameraMode = 1;
-    if( g_inputManager->controlEvent( ControlRTLoaderCameraMode3 ) ) m_cameraMode = 2;
+	if( g_inputManager.controlEvent( ControlRTLoaderCameraMode1 ) ) m_cameraMode = 0;
+	if( g_inputManager.controlEvent( ControlRTLoaderCameraMode2 ) ) m_cameraMode = 1;
+	if( g_inputManager.controlEvent( ControlRTLoaderCameraMode3 ) ) m_cameraMode = 2;
 
     if( m_cameraMode == 1 )
     {
         Vector3 camRight = m_cameraUp ^ m_cameraFront;
-        if( g_inputManager->controlEvent( ControlCameraForwards ) ) m_cameraPos += m_cameraFront * _advanceTime * 20;
-        if( g_inputManager->controlEvent( ControlCameraBackwards ) ) m_cameraPos -= m_cameraFront * _advanceTime * 20;
-        if( g_inputManager->controlEvent( ControlCameraLeft ) ) m_cameraPos -= camRight * _advanceTime * 20;
-        if( g_inputManager->controlEvent( ControlCameraRight ) ) m_cameraPos += camRight * _advanceTime * 20;
-        if( g_inputManager->controlEvent( ControlCameraUp ) ) m_cameraPos += m_cameraUp * _advanceTime * 20;
-        if( g_inputManager->controlEvent( ControlCameraDown ) ) m_cameraPos -= m_cameraUp * _advanceTime * 20;
+		if( g_inputManager.controlEvent( ControlCameraForwards ) ) m_cameraPos += m_cameraFront * _advanceTime * 20;
+		if( g_inputManager.controlEvent( ControlCameraBackwards ) ) m_cameraPos -= m_cameraFront * _advanceTime * 20;
+		if( g_inputManager.controlEvent( ControlCameraLeft ) ) m_cameraPos -= camRight * _advanceTime * 20;
+		if( g_inputManager.controlEvent( ControlCameraRight ) ) m_cameraPos += camRight * _advanceTime * 20;
+		if( g_inputManager.controlEvent( ControlCameraUp ) ) m_cameraPos += m_cameraUp * _advanceTime * 20;
+		if( g_inputManager.controlEvent( ControlCameraDown ) ) m_cameraPos -= m_cameraUp * _advanceTime * 20;
 
-        if( g_inputManager->controlEvent( ControlRTLoaderRMB ) )
+		if( g_inputManager.controlEvent( ControlRTLoaderRMB ) )
         {
             Matrix33 mat(1);
 		    mat.RotateAroundY((float)g_target->dX() * _advanceTime * 0.1f );
@@ -402,7 +402,7 @@ void RayTraceLoader::AdvanceControls( float _advanceTime )
         }
     }
 
-    if( g_inputManager->controlEvent( ControlRTLoaderLMB ) )
+	if( g_inputManager.controlEvent( ControlRTLoaderLMB ) )
     {
         Vector3 right = m_light ^ g_upVector;
         Vector3 up = right ^ m_light;
@@ -661,7 +661,7 @@ void RayTraceLoader::Run()
 	float endOfSecond = GetHighResTime() + 1.0f;
 	int fps = 0;
 	int lastFps = 0;
-    while( !g_inputManager->controlEvent( ControlSkipMessage ) )
+	while( !g_inputManager.controlEvent( ControlSkipMessage ) )
     {
         if( g_app->m_requestQuit ) break;
         float oldTime = m_time;
@@ -691,12 +691,12 @@ void RayTraceLoader::Run()
         glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
         //g_gameFont.DrawText2D(5, 10, 5, "%d", lastFps);
 
-        if( g_inputManager->controlEvent( ControlLoaderHelp ) ) RenderHelp();
+		if( g_inputManager.controlEvent( ControlLoaderHelp ) ) RenderHelp();
 		else RenderMessage();
 
-        g_windowManager->Flip();
-		g_inputManager->Advance();
-        g_inputManager->PollForEvents();
+		g_windowManager.Flip();
+		g_inputManager.Advance();
+		g_inputManager.PollForEvents();
         AdvanceSound();
         Sleep(1);
     }

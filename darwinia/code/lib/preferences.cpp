@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,7 +57,7 @@ PrefsItem::PrefsItem(char *_line)
 	char *value = c + 1;
 	while (isspace(*value) || *value == '=')
 	{
-		if (value == '\0') break;
+		if (value[0] == '\0') break;
 		value++;
 	}
 
@@ -506,7 +506,7 @@ int PrefsManager::GetInt(char const *_key, int _default) const
 }
 
 
-char *PrefsManager::GetString(char const *_key, char *_default) const
+const char *PrefsManager::GetString(char const *_key, const char *_default) const
 {
 	int index = m_items.GetIndex(_key);
 	if (index == -1) return _default;

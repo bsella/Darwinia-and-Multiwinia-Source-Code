@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -378,7 +378,7 @@ void Team::Advance(int _slice)
                     Vector3 oldPos( ent->m_pos );
                     WorldObjectId myId( m_teamId, -1, i, ent->m_id.GetUniqueId() );
 
-                    char *entityName = Entity::GetTypeName( ent->m_type );
+					const char *entityName = Entity::GetTypeName( ent->m_type );
                     START_PROFILE( g_app->m_profiler, entityName );
                     bool amIdead = ent->Advance(NULL);
                     END_PROFILE( g_app->m_profiler, entityName );
@@ -716,17 +716,17 @@ void TeamControls::Advance()
 
 	m_mousePos = g_app->m_userInput->GetMousePos3d();
 
-	m_primaryFireTarget |= g_inputManager->controlEvent( ControlUnitPrimaryFireTarget );
-	m_secondaryFireTarget |= g_inputManager->controlEvent( ControlUnitSecondaryFireTarget );
-    m_primaryFireDirected |= g_inputManager->controlEvent( ControlUnitPrimaryFireDirected ) && !g_inputManager->controlEvent( ControlCameraRotate );
-	m_secondaryFireDirected |= g_inputManager->controlEvent( ControlUnitSecondaryFireDirected ) /* && g_inputManager->controlEvent( ControlUnitStartSecondaryFireDirected ) */;
+	m_primaryFireTarget |= g_inputManager.controlEvent( ControlUnitPrimaryFireTarget );
+	m_secondaryFireTarget |= g_inputManager.controlEvent( ControlUnitSecondaryFireTarget );
+	m_primaryFireDirected |= g_inputManager.controlEvent( ControlUnitPrimaryFireDirected ) && !g_inputManager.controlEvent( ControlCameraRotate );
+	m_secondaryFireDirected |= g_inputManager.controlEvent( ControlUnitSecondaryFireDirected ) /* && g_inputManager.controlEvent( ControlUnitStartSecondaryFireDirected ) */;
 	m_cameraEntityTracking |= g_app->m_camera->IsInMode( Camera::ModeEntityTrack );
-    m_unitMove |= g_inputManager->controlEvent( ControlUnitSetTarget ) && !m_secondaryFireTarget;
-	m_unitSecondaryMode |= g_inputManager->controlEvent( ControlUnitStartSecondaryFireDirected );
-	m_endSetTarget |= g_inputManager->controlEvent( ControlUnitEndSetTarget );
+	m_unitMove |= g_inputManager.controlEvent( ControlUnitSetTarget ) && !m_secondaryFireTarget;
+	m_unitSecondaryMode |= g_inputManager.controlEvent( ControlUnitStartSecondaryFireDirected );
+	m_endSetTarget |= g_inputManager.controlEvent( ControlUnitEndSetTarget );
 
 	InputDetails details;
-	if (g_inputManager->controlEvent( ControlUnitMove, details )) {
+	if (g_inputManager.controlEvent( ControlUnitMove, details )) {
 
 		Vector3 right = g_app->m_camera->GetControlVector();
 		Vector3 front = g_upVector ^ -right;
@@ -741,8 +741,8 @@ void TeamControls::Advance()
 		g_app->m_controlHelpSystem->RecordCondUsed(ControlHelpSystem::CondMoveCameraOrUnit);
 	}
 
-    if( g_inputManager->controlEvent( ControlUnitPrimaryFireDirected, details ) &&
-        !g_inputManager->controlEvent( ControlCameraRotate ))
+	if( g_inputManager.controlEvent( ControlUnitPrimaryFireDirected, details ) &&
+		!g_inputManager.controlEvent( ControlCameraRotate ))
     {
         m_primaryFireDirected = true;
         m_directUnitFireDx = details.x;

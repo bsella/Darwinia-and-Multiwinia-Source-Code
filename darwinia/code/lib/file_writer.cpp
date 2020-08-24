@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
@@ -32,6 +32,8 @@ FileWriter::~FileWriter()
 	fclose(m_file);
 }
 
+
+#include <stdarg.h>
 
 int FileWriter::printf(char const *_fmt, ...)
 {

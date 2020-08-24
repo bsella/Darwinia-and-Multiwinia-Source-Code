@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/debug_utils.h"
 #include "lib/vector3.h"
 #include "lib/text_renderer.h"
@@ -228,7 +228,7 @@ class CloneBuildingButton : public DarwiniaButton
 // Class BuildingEditWindow
 // ****************************************************************************
 
-BuildingEditWindow::BuildingEditWindow( char *name )
+BuildingEditWindow::BuildingEditWindow( const char *name )
 :   DarwiniaWindow( name )
 {
 }
@@ -550,7 +550,7 @@ public:
 // Class BuildingsCreateWindow
 // ****************************************************************************
 
-BuildingsCreateWindow::BuildingsCreateWindow( char *_name )
+BuildingsCreateWindow::BuildingsCreateWindow( const char *_name )
 :	DarwiniaWindow( _name ),
     m_buildingType(0)
 {

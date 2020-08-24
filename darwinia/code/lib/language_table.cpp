@@ -1,6 +1,6 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
-#include <strstream>
+#include <sstream>
 #include <iostream>
 #include <fstream>
 
@@ -38,7 +38,7 @@ LangPhrase::~LangPhrase()
 // Class LangTable
 // ****************************************************************************
 
-LangTable::LangTable(char *_filename)
+LangTable::LangTable(const char *_filename)
 {
 	// Create the "not found" Phrase that will be returned when
 	// the LookupPhrase is called with an unknown key
@@ -206,7 +206,7 @@ bool printTable( HashTable<int> const *keys, const char *table, std::ostream &ou
 
 void LangTable::RebuildTables()
 {
-	std::ostrstream stream;
+	std::ostringstream stream;
 
 	delete m_phrasesKbd;
 	delete m_phrasesXin;
@@ -217,7 +217,7 @@ void LangTable::RebuildTables()
 	RebuildTable( m_phrasesKbd, stream, INPUT_MODE_KEYBOARD );
 	RebuildTable( m_phrasesXin, stream, INPUT_MODE_GAMEPAD );
 	if ( m_chunk ) delete [] m_chunk;
-	m_chunk = stream.str();
+	m_chunk = stream.str().c_str();
 
 	if ( DEBUG_PRINT_LANGTABLE ) {
 		std::ofstream dbg_out( "langtable_debug.txt", std::ios::app );
@@ -234,7 +234,7 @@ void LangTable::RebuildTables()
 	}
 }
 
-void LangTable::RebuildTable( HashTable<int> *_phrases, std::ostrstream &stream, InputMode _mood )
+void LangTable::RebuildTable( HashTable<int> *_phrases, std::ostringstream &stream, InputMode _mood )
 {
 	char theString[1024];
 
@@ -280,9 +280,9 @@ void LangTable::RebuildTable( HashTable<int> *_phrases, std::ostrstream &stream,
 
 HashTable<int> *LangTable::GetCurrentTable()
 {
-	if ( g_inputManager )
-		return GetCurrentTable( g_inputManager->getInputMode() );
-	return NULL;
+//	if ( g_inputManager )
+		return GetCurrentTable( g_inputManager.getInputMode() );
+	//return NULL;
 }
 
 
@@ -353,10 +353,10 @@ bool LangTable::RawDoesPhraseExist(char const *_key)
 }
 
 
-char *LangTable::LookupPhrase(char const *_key)
+const char *LangTable::LookupPhrase(char const *_key)
 {
 	HashTable<int> *phrases = GetCurrentTable();
-    char *phrase = NULL;
+	const char *phrase = NULL;
 
     if( !_key || !phrases || !m_chunk )
     {
@@ -381,18 +381,14 @@ char *LangTable::LookupPhrase(char const *_key)
 }
 
 
-char *LangTable::RawLookupPhrase(char const *_key)
+const char *LangTable::RawLookupPhrase(char const *_key)
 {
-	if ( !g_inputManager )
-    {
-        sprintf( m_notFound.m_string, "ERROR (null)" );
-		return m_notFound.m_string;
-	}
-	else
-	{
-		return RawLookupPhrase( _key, g_inputManager->getInputMode() );
-	}
-
+	//if ( !g_inputManager )
+	//{
+	//	sprintf( m_notFound.m_string, "ERROR (null)" );
+	//	return m_notFound.m_string;
+	//}
+	return RawLookupPhrase( _key, g_inputManager.getInputMode() );
 }
 
 
@@ -519,7 +515,7 @@ DArray<LangPhrase *> *LangTable::GetPhraseList()
 // Goes through the string and divides it up into several
 // smaller strings, taking into account newline characters,
 // and the width of the text area.
-LList <char *> *WordWrapText (const char *_string, float _lineWidth, float _fontWidth, bool _wrapToWindow)
+LList <const char *> *WordWrapText (const char *_string, float _lineWidth, float _fontWidth, bool _wrapToWindow)
 {
 	if ( !_string ) return NULL;
     if ( _lineWidth < 0 && _wrapToWindow ) return NULL;
@@ -538,7 +534,7 @@ LList <char *> *WordWrapText (const char *_string, float _lineWidth, float _font
 	// Build a linked list of pointers into this new string
 	// Each pointer representing another line
 
-	LList <char *> *llist = new LList <char *> ();
+	LList <const char *> *llist = new LList <const char *> ();
 
 	char *currentpos = newstring;
 	llist->PutData( currentpos );

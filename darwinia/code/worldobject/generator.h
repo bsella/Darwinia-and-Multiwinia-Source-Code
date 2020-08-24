@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_generator_h
 #define _included_generator_h
 
@@ -32,7 +32,7 @@ public:
     Vector3 GetPowerLocation();
     virtual void TriggerSurge ( float _initValue );
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 
     void Read   ( TextReader *_in, bool _dynamic );
     void Write  ( FileWriter *_out );
@@ -68,7 +68,7 @@ public:
 
     char *GetObjectiveCounter();
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 
     bool Advance();
     void Render( float _predictionTime );
@@ -148,7 +148,7 @@ public:
     void RenderPorts    ();
     void RenderAlphas   ( float _predictionTime );
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 };
 
 #endif

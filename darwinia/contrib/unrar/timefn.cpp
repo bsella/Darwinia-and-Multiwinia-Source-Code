@@ -1,4 +1,4 @@
-#include "rarbloat.h"
+﻿#include "rarbloat.h"
 
 RarTime::RarTime()
 {
@@ -186,7 +186,7 @@ void RarTime::GetText(char *DateStr,bool FullYear)
 
 
 #ifndef SFX_MODULE
-void RarTime::SetIsoText(char *TimeText)
+void RarTime::SetIsoText(const char *TimeText)
 {
   int Field[6];
   memset(Field,0,sizeof(Field));
@@ -210,7 +210,7 @@ void RarTime::SetIsoText(char *TimeText)
 
 
 #ifndef SFX_MODULE
-void RarTime::SetAgeText(char *TimeText)
+void RarTime::SetAgeText(const char *TimeText)
 {
   unsigned int Seconds=0,Value=0;
   for (int I=0;TimeText[I]!=0;I++)

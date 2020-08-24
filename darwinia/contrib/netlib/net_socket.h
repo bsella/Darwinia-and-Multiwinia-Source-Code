@@ -1,4 +1,4 @@
-// ****************************************************************************
+﻿// ****************************************************************************
 // A UDP socket sender class
 // ****************************************************************************
 
@@ -25,7 +25,7 @@ public:
 	// Establishes a connection to the host/port specified
 	// on object construction. Returns NetOK on success,
 	// NetTimedout on timeout, and NetFailed on failure
-	NetRetCode Connect(char *host, unsigned short port);
+	NetRetCode Connect(const char *host, unsigned short port);
 	
 	// Close the current socket connection
 	void Close();

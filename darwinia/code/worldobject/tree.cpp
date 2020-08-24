@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/debug_render.h"
 #include "lib/file_writer.h"
@@ -135,8 +135,8 @@ bool Tree::Advance()
         //
         // Spread to nearby trees
 
-        Vector3 hitCentre = m_pos + m_hitcheckCentre*actualHeight;
-        float hitRadius = m_hitcheckRadius * actualHeight;
+		//Vector3 hitCentre = m_pos + m_hitcheckCentre*actualHeight;
+		//float hitRadius = m_hitcheckRadius * actualHeight;
 
         for( int b = 0; b < g_app->m_location->m_buildings.Size(); ++b )
         {
@@ -544,7 +544,7 @@ void Tree::RenderBranch( Vector3 _from, Vector3 _to, int _iterations,
 }
 
 
-void Tree::ListSoundEvents( LList<char *> *_list )
+void Tree::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 

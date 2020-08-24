@@ -1,4 +1,4 @@
-#include "rarbloat.h"
+﻿#include "rarbloat.h"
 
 int ToPercent(Int64 N1,Int64 N2)
 {
@@ -8,7 +8,6 @@ int ToPercent(Int64 N1,Int64 N2)
     return(100);
   return(int64to32(N1*100/N2));
 }
-
 
 void RARInitData()
 {

@@ -1,4 +1,4 @@
-#ifndef _RAR_CMDDATA_
+﻿#ifndef _RAR_CMDDATA_
 #define _RAR_CMDDATA_
 
 #include "headers.h"
@@ -11,10 +11,10 @@
 class CommandData:public RAROptions
 {
   private:
-    void ProcessSwitchesString(char *Str);
-    void ProcessSwitch(char *Switch);
-    void BadSwitch(char *Switch);
-    unsigned int GetExclAttr(char *Str);
+	void ProcessSwitchesString(char *Str);
+	void ProcessSwitch(char *Switch);
+	void BadSwitch(const char *Switch);
+	unsigned int GetExclAttr(const char *Str);
 
     bool FileLists;
     bool NoMoreSwitches;
@@ -25,21 +25,21 @@ class CommandData:public RAROptions
     ~CommandData();
     void Init();
     void Close();
-    void ParseArg(char *Arg,wchar *ArgW);
+	void ParseArg(char *Arg,wchar *ArgW);
     void ParseDone();
     void ParseEnvVar();
-    void ReadConfig(int argc,char *argv[]);
+	void ReadConfig(int argc, const char *argv[]);
     bool IsConfigEnabled(int argc,char *argv[]);
     void OutTitle();
     void OutHelp();
     bool IsSwitch(int Ch);
-    bool ExclCheck(char *CheckName,bool CheckFullPath);
-    bool StoreCheck(char *CheckName);
+	bool ExclCheck(const char *CheckName,bool CheckFullPath);
+	bool StoreCheck(const char *CheckName);
     bool TimeCheck(RarTime &ft);
     int IsProcessFile(FileHeader &NewLhd,bool *ExactMatch=NULL,int MatchType=MATCH_WILDSUBPATH);
     void ProcessCommand();
-    void AddArcName(char *Name,wchar *NameW);
-    bool GetArcName(char *Name,wchar *NameW,int MaxSize);
+	void AddArcName(const char *Name,wchar *NameW);
+	bool GetArcName(char *Name,wchar *NameW,int MaxSize);
     bool CheckWinSize();
 
     int GetRecoverySize(char *Str,int DefSize);

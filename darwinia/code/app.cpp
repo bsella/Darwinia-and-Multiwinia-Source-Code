@@ -1,8 +1,8 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <shlobj.h>
+//#include <shlobj.h>
 
 #ifdef TARGET_OS_VISTA
 #include <knownfolders.h>
@@ -70,7 +70,6 @@ App *g_app = NULL;
         #define GAMEDATAFILE "game.txt"
     #endif
 #endif
-
 
 App::App()
 :   m_camera(NULL),
@@ -176,10 +175,10 @@ App::App()
     //
     // Determine default language if possible
 
-    char *language = g_prefsManager->GetString("TextLanguage");
+	const char *language = g_prefsManager->GetString("TextLanguage");
     if( stricmp(language, "unknown") == 0 )
     {
-        char *defaultLang = g_systemInfo->m_localeInfo.m_language;
+		const char *defaultLang = g_systemInfo->m_localeInfo.m_language.c_str();
         char langFilename[512];
         sprintf( langFilename, "data/language/%s.txt", defaultLang );
         if( DoesFileExist(langFilename) )
@@ -256,7 +255,7 @@ App::App()
     //
     // Load mods
 
-    char *modName = g_prefsManager->GetString("Mod", "none" );
+	const char *modName = g_prefsManager->GetString("Mod", "none" );
     if( stricmp( modName, "none" ) != 0 )
     {
         g_app->m_resource->LoadMod( modName );
@@ -318,7 +317,7 @@ void App::UpdateDifficultyFromPreferences()
 }
 
 
-void App::SetLanguage( char *_language, bool _test )
+void App::SetLanguage( const char *_language, bool _test )
 {
     //
     // Delete existing language data
@@ -383,12 +382,12 @@ void App::SetLanguage( char *_language, bool _test )
     }
     g_editorFont.Initialise( fontFilename );
 
-	if ( g_inputManager )
-		m_langTable->RebuildTables();
+	//if ( g_inputManager )
+	//	m_langTable->RebuildTables();
 }
 
 
-void App::SetProfileName( char *_profileName )
+void App::SetProfileName( const char *_profileName )
 {
     strcpy( m_userProfileName, _profileName );
 
@@ -671,7 +670,7 @@ void App::LoadPrologue()
     strcpy(m_requestedMap, gloc->m_mapFilename);
     strcpy(m_requestedMission, gloc->m_missionFilename);
 
-    m_tutorial = new Demo2Tutorial();
+	m_tutorial = new Demo2Tutorial();
 
     m_atMainMenu = false;
 

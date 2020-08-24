@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -9,7 +9,9 @@
 #include "lib/bitmap.h"
 #include "lib/debug_utils.h"
 #include "lib/hi_res_time.h"
+#ifdef TARGET_MSVC
 #include "lib/input/win32_eventhandler.h"
+#endif
 #include "lib/poster_maker.h"
 #include "lib/math_utils.h"
 #include "lib/mouse_cursor.h"
@@ -108,14 +110,14 @@ void Renderer::Initialise()
 
     if( m_screenW == 0 || m_screenH == 0 )
     {
-        g_windowManager->SuggestDefaultRes( &m_screenW, &m_screenH, &refreshRate, &colourDepth );
-        g_prefsManager->SetInt( "ScreenWidth", m_screenW );
-        g_prefsManager->SetInt( "ScreenHeight", m_screenH );
-        g_prefsManager->SetInt( "ScreenRefresh", refreshRate );
-        g_prefsManager->SetInt( "ScreenColourDepth", colourDepth );
+		g_windowManager.SuggestDefaultRes( &m_screenW, &m_screenH, &refreshRate, &colourDepth );
+		g_prefsManager->SetInt( "ScreenWidth", m_screenW );
+		g_prefsManager->SetInt( "ScreenHeight", m_screenH );
+		g_prefsManager->SetInt( "ScreenRefresh", refreshRate );
+		g_prefsManager->SetInt( "ScreenColourDepth", colourDepth );
     }
 
-    bool success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, waitVRT);
+	bool success = g_windowManager.CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, waitVRT);
 
     if( !success )
     {
@@ -139,12 +141,12 @@ void Renderer::Initialise()
         zDepth = 16;
         refreshRate = 60;
 
-        success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, waitVRT);
+		success = g_windowManager.CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, waitVRT);
 		if(!success)
 		{
 			// next try with 24bit z (colour depth is automatic in windowed mode)
 			zDepth = 24;
-			success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, waitVRT);
+			success = g_windowManager.CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, waitVRT);
 		}
         DarwiniaReleaseAssert( success, "Failed to set screen mode" );
 
@@ -272,7 +274,7 @@ void Renderer::Render()
 	g_app->m_profiler->RenderStarted();
 #endif
 
-    if (g_inputManager->controlEvent( ControlCreateScreenShot ) && EclGetWindows()->Size() == 0 )
+	if (g_inputManager.controlEvent( ControlCreateScreenShot ) && EclGetWindows()->Size() == 0 )
 	{
 #if 0
 // something is broken with tile camera -> landscape disappears
@@ -300,7 +302,7 @@ void Renderer::Render()
 				// reads from backbuffer
 				pm.AddFrame();
 				// flips back to front
-				g_windowManager->Flip();
+				g_windowManager.Flip();
 				++m_tileIndex;
 				if (m_tileIndex == posterResolution * posterResolution)
 				{
@@ -604,7 +606,7 @@ void Renderer::RenderFrame(bool withFlip)
 		glEnd();
 
 		std::string inmode;
-		switch ( g_inputManager->getInputMode() ) {
+		switch ( g_inputManager.getInputMode() ) {
 			case INPUT_MODE_KEYBOARD:
 				inmode = "keyboard"; break;
 			case INPUT_MODE_GAMEPAD:
@@ -747,14 +749,14 @@ void Renderer::RenderFrame(bool withFlip)
 
     g_editorFont.EndText2D();
 
-	if ( !g_eventHandler->WindowHasFocus() ||
+	if ( //!g_eventHandler->WindowHasFocus() ||
         g_app->m_paused )
 		RenderPaused();
 
     START_PROFILE(g_app->m_profiler, "GL Flip");
 
     if(withFlip)
-		g_windowManager->Flip();
+		g_windowManager.Flip();
 
     END_PROFILE(g_app->m_profiler, "GL Flip");
 
@@ -1611,10 +1613,10 @@ void Renderer::RasteriseSphere(Vector3 const &_pos, float _radius)
 	int y1 = floorf(bottomRight.y * screenToGridFactor);
 	int y2 = ceilf(topLeft.y * screenToGridFactor);
 
-	clamp(x1, 0, PIXEL_EFFECT_GRID_RES);
-	clamp(x2, 0, PIXEL_EFFECT_GRID_RES);
-	clamp(y1, 0, PIXEL_EFFECT_GRID_RES);
-	clamp(y2, 0, PIXEL_EFFECT_GRID_RES);
+	std::clamp(x1, 0, PIXEL_EFFECT_GRID_RES);
+	std::clamp(x2, 0, PIXEL_EFFECT_GRID_RES);
+	std::clamp(y1, 0, PIXEL_EFFECT_GRID_RES);
+	std::clamp(y2, 0, PIXEL_EFFECT_GRID_RES);
 
 	float const nearestZ = centre.z - _radius;
 

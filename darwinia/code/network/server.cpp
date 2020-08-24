@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "net_lib.h"
 #include "net_mutex.h"
@@ -85,10 +85,10 @@ Server::~Server()
 }
 
 
-static NetCallBackRetType ListenThread(void *ptr)
+static NetCallBackRetType ListenThread(void *)
 {
     NetSocketListener *m_listener = new NetSocketListener( 4000 );
-    m_listener->StartListening( ListenCallback );
+	m_listener->StartListening( reinterpret_cast<void*(*)(void*)>(ListenCallback) );
     return 0;
 }
 
@@ -103,18 +103,18 @@ void Server::Initialise()
         m_netLib = new NetLib();
         m_netLib->Initialise();
 
-        NetStartThread( ListenThread );
+		//NetStartThread( ListenThread );
     }
 }
 
 
-int Server::GetClientId ( char *_ip )
+int Server::GetClientId ( const char *_ip )
 {
     for ( int i = 0; i < m_clients.Size(); ++i )
     {
         if ( m_clients.ValidIndex(i) )
         {
-            char *thisIP = m_clients[i]->GetIP();
+			const char *thisIP = m_clients[i]->GetIP();
             if ( strcmp ( thisIP, _ip ) == 0 )
             {
                 return i;
@@ -165,7 +165,7 @@ char *Server::ConvertIntToIP ( const int _ip )
 
 
 // ***RegisterNewClient
-void Server::RegisterNewClient ( char *_ip )
+void Server::RegisterNewClient ( const char *_ip )
 {
     DarwiniaDebugAssert(GetClientId(_ip) == -1);
     ServerToClient *sToC = new ServerToClient(_ip);
@@ -182,7 +182,7 @@ void Server::RegisterNewClient ( char *_ip )
 }
 
 
-void Server::RemoveClient( char *_ip )
+void Server::RemoveClient( const char *_ip )
 {
     int clientId = GetClientId(_ip);
     ServerToClient *sToC = m_clients[clientId];
@@ -202,7 +202,7 @@ void Server::RemoveClient( char *_ip )
 
 
 // *** RegisterNewTeam
-void Server::RegisterNewTeam ( char *_ip, int _teamType, int _desiredTeamId )
+void Server::RegisterNewTeam ( const char *_ip, int _teamType, int _desiredTeamId )
 {
     int clientId = GetClientId(_ip);
     DarwiniaDebugAssert( clientId != -1 );                           // Client not properly connected
@@ -415,7 +415,7 @@ void Server::Advance()
 
                 if( m_sync.ValidIndex(sequenceId) )
                 {
-                    unsigned char lastKnownSync = m_sync[sequenceId];
+					//unsigned char lastKnownSync = m_sync[sequenceId];
                     DarwiniaDebugAssert( lastKnownSync == sync );
                     //DebugOut( "Sync %02d verified as %03d\n", sequenceId, sync );
                 }
@@ -487,7 +487,7 @@ void Server::Advance()
     END_PROFILE(g_app->m_profiler, "Advance Server");
 }
 
-void Server::LoadHistory( char *_filename )
+void Server::LoadHistory( const char *_filename )
 {
     FILE *file = fopen( _filename, "rb" );
 
@@ -514,7 +514,7 @@ void Server::LoadHistory( char *_filename )
     fclose( file );
 }
 
-void Server::SaveHistory( char *_filename )
+void Server::SaveHistory( const char *_filename )
 {
     FILE *file = fopen( _filename, "wb" );
 

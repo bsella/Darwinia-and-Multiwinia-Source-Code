@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/math_utils.h"
 #include "lib/input/input.h"
 #include "lib/resource.h"
@@ -317,7 +317,7 @@ void GameOfLifeLoader::Run()
     float lastFrameTime = GetHighResTime();
     float lastPropagation = 0.0f;
 
-    while( !g_inputManager->controlEvent( ControlSkipMessage ) )
+	while( !g_inputManager.controlEvent( ControlSkipMessage ) )
     {
         if( g_app->m_requestQuit ) break;
         //
@@ -343,9 +343,9 @@ void GameOfLifeLoader::Run()
             m_numFound = 0;
         }
 
-        if( g_inputManager->controlEvent( ControlGOLLoaderSpeedup ) ) m_speed *= 1.1f;
-        if( g_inputManager->controlEvent( ControlGOLLoaderSlowdown ) ) m_speed *= 0.9f;
-        if( g_inputManager->controlEvent( ControlGOLLoaderReset ) )
+		if( g_inputManager.controlEvent( ControlGOLLoaderSpeedup ) ) m_speed *= 1.1f;
+		if( g_inputManager.controlEvent( ControlGOLLoaderSlowdown ) ) m_speed *= 0.9f;
+		if( g_inputManager.controlEvent( ControlGOLLoaderReset ) )
         {
             CommitCells();
             ClearCells();
@@ -403,7 +403,7 @@ void GameOfLifeLoader::Run()
         }
 
 
-        if( g_inputManager->controlEvent( ControlLoaderHelp ) ) RenderHelp();
+		if( g_inputManager.controlEvent( ControlLoaderHelp ) ) RenderHelp();
 
         FlipBuffers();
         AdvanceSound();

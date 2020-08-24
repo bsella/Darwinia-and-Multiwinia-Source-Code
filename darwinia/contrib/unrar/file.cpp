@@ -1,4 +1,4 @@
-#include "rarbloat.h"
+﻿#include "rarbloat.h"
 
 #pragma warning (disable:4800)
 
@@ -111,6 +111,7 @@ bool File::Open(const char *Name,const wchar *NameW,bool OpenShared,bool Update)
   return(Success);
 }
 
+extern ErrorHandler ErrHandler;
 
 #if !defined(SHELL_EXT) && !defined(SFX_MODULE)
 void File::TOpen(const char *Name,const wchar *NameW)

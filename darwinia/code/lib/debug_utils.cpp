@@ -1,17 +1,23 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef TARGET_MSVC
 #define WIN32_LEAN_AND_MEAN
 #include <crtdbg.h>
+#endif
 #include "debug_utils.h"
 
 #include "app.h"
 
+#ifdef TARGET_OS_LINUX
+#include <iostream>
+#define OutputDebugString(arg) std::cout << arg << std::endl;
+#endif
 
-void DebugOut(char *_fmt, ...)
+void DebugOut(const char *_fmt, ...)
 {
     char buf[2048];
     va_list ap;
@@ -23,37 +29,37 @@ void DebugOut(char *_fmt, ...)
 
 void DarwiniaReleaseAssert(bool _condition, char const *_fmt, ...)
 {
-	if (!_condition)
-	{
-		char buf[512];
-		va_list ap;
-		va_start (ap, _fmt);
-		vsprintf(buf, _fmt, ap);
-
-		DWORD rc = GetLastError();
-		if (rc != ERROR_SUCCESS) {
-			LPVOID lpMsgBuf;
-
-			FormatMessage(
-				FORMAT_MESSAGE_ALLOCATE_BUFFER |
-				FORMAT_MESSAGE_FROM_SYSTEM,
-				NULL,
-				rc,
-				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-				(LPTSTR) &lpMsgBuf,
-				0, NULL );
-
-			sprintf( buf + strlen(buf), "\nLast error: %s (%d)", lpMsgBuf, rc );
-		}
-		ShowCursor(true);
-		MessageBox(NULL, buf, "Fatal Error", MB_OK);
-        GenerateBlackBox( buf );
-#ifndef _DEBUG
-		exit(-1);
-#else
-		_ASSERT(_condition);
-#endif
-	}
+//	if (!_condition)
+//	{
+//		char buf[512];
+//		va_list ap;
+//		va_start (ap, _fmt);
+//		vsprintf(buf, _fmt, ap);
+//
+//		DWORD rc = GetLastError();
+//		if (rc != ERROR_SUCCESS) {
+//			LPVOID lpMsgBuf;
+//
+//			FormatMessage(
+//				FORMAT_MESSAGE_ALLOCATE_BUFFER |
+//				FORMAT_MESSAGE_FROM_SYSTEM,
+//				NULL,
+//				rc,
+//				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+//				(LPTSTR) &lpMsgBuf,
+//				0, NULL );
+//
+//			sprintf( buf + strlen(buf), "\nLast error: %s (%d)", lpMsgBuf, rc );
+//		}
+//		ShowCursor(true);
+//		MessageBox(NULL, buf, "Fatal Error", MB_OK);
+//        GenerateBlackBox( buf );
+//#ifndef _DEBUG
+//		exit(-1);
+//#else
+//		_ASSERT(_condition);
+//#endif
+//	}
 }
 
 
@@ -203,10 +209,10 @@ void GenerateBlackBox( char *_msg )
 		mov [framePtr], ebp
 	}
 #else
-	asm (
-	    "movl %%ebp, %0;"
-	    :"=r"(framePtr)
-	    );
+	//asm (
+	//	"movl %%ebp, %0;"
+	//	:"=r"(framePtr)
+	//    );
 #endif
 	while(framePtr) {
 

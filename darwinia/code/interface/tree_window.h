@@ -1,4 +1,4 @@
-#ifndef _included_treewindow_h
+﻿#ifndef _included_treewindow_h
 #define _included_treewindow_h
 
 
@@ -14,7 +14,7 @@ public:
     int m_selectionId;
 
 public:
-    TreeWindow( char *_name );
+	TreeWindow( const char *_name );
 
     void Create();
     void Update();

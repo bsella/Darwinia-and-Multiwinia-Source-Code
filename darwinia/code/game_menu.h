@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_gamemenu_h
 #define _included_gamemenu_h
 
@@ -31,7 +31,7 @@ class GameMenuButton : public DarwiniaButton
 public:
     char    *m_iconName;
 public:
-    GameMenuButton( char *_iconName );
+	GameMenuButton( const char *_iconName );
     void Render( int realX, int realY, bool highlighted, bool clicked );
 };
 

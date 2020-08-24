@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -131,7 +131,7 @@ public:
 // Class CameraMountEditWindow
 // ****************************************************************************
 
-CameraMountEditWindow::CameraMountEditWindow( char *name )
+CameraMountEditWindow::CameraMountEditWindow( const char *name )
 :	DarwiniaWindow(name)
 {
 }

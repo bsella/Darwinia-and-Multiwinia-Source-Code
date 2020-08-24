@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
@@ -191,7 +191,7 @@ void PowerBuilding::TriggerSurge ( float _initValue )
 }
 
 
-void PowerBuilding::ListSoundEvents( LList<char *> *_list )
+void PowerBuilding::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 
@@ -268,7 +268,7 @@ void Generator::ReprogramComplete()
 }
 
 
-void Generator::ListSoundEvents( LList<char *> *_list )
+void Generator::ListSoundEvents( LList<const char *> *_list )
 {
     PowerBuilding::ListSoundEvents( _list );
 
@@ -671,7 +671,7 @@ void SolarPanel::RenderAlphas( float _predictionTime )
 }
 
 
-void SolarPanel::ListSoundEvents( LList<char *> *_list )
+void SolarPanel::ListSoundEvents( LList<const char *> *_list )
 {
     PowerBuilding::ListSoundEvents( _list );
 

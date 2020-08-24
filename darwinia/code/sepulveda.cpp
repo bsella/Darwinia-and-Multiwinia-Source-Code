@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <memory>
 
@@ -151,7 +151,7 @@ void Sepulveda::Advance()
         float pauseTime = CalculatePauseTime();
 
         if( GetHighResTime() >= m_timeSync + textTime + pauseTime ||
-            g_inputManager->controlEvent( ControlSkipMessage ) )
+			g_inputManager.controlEvent( ControlSkipMessage ) )
         {
             m_caption[0] = '\0';
 		    m_gestureDemo = NULL;
@@ -172,7 +172,7 @@ void Sepulveda::Advance()
     {
         char *stringId = m_msgQueue[0];
         m_msgQueue.RemoveData(0);
-		std::auto_ptr<SepulvedaCaption> sepulvedaCaption = std::auto_ptr<SepulvedaCaption>( new SepulvedaCaption() );
+		std::unique_ptr<SepulvedaCaption> sepulvedaCaption = std::unique_ptr<SepulvedaCaption>( new SepulvedaCaption() );
         sepulvedaCaption->m_stringId = NewStr(stringId);
         sepulvedaCaption->m_timeSync = GetHighResTime();
 
@@ -255,7 +255,7 @@ bool Sepulveda::PlayerSkipsMessage()
 }
 
 
-void Sepulveda::Say( char *_stringId )
+void Sepulveda::Say( const char *_stringId )
 {
     //
     // If we are using a 1 button mouse, look out for an alternative stringID
@@ -323,7 +323,7 @@ void Sepulveda::Say( char *_stringId )
 }
 
 
-void Sepulveda::HighlightPosition( Vector3 const &_pos, float _radius, char *_highlightName )
+void Sepulveda::HighlightPosition( Vector3 const &_pos, float _radius, const char *_highlightName )
 {
     //
     // Does the highlight already exist?
@@ -348,7 +348,7 @@ void Sepulveda::HighlightPosition( Vector3 const &_pos, float _radius, char *_hi
 }
 
 
-void Sepulveda::HighlightBuilding( int _buildingId, char *_highlightName )
+void Sepulveda::HighlightBuilding( int _buildingId, const char *_highlightName )
 {
     if( !g_app->m_location ) return;
 
@@ -362,7 +362,7 @@ void Sepulveda::HighlightBuilding( int _buildingId, char *_highlightName )
 }
 
 
-bool Sepulveda::IsHighlighted( Vector3 const &_pos, float _radius, char *_highlightName )
+bool Sepulveda::IsHighlighted( Vector3 const &_pos, float _radius, const char *_highlightName )
 {
     for( int i = 0; i < m_highlights.Size(); ++i )
     {
@@ -380,7 +380,7 @@ bool Sepulveda::IsHighlighted( Vector3 const &_pos, float _radius, char *_highli
 }
 
 
-void Sepulveda::ClearHighlights( char *_highlightName )
+void Sepulveda::ClearHighlights( const char *_highlightName )
 {
     for( int i = 0; i < m_highlights.Size(); ++i )
     {
@@ -513,7 +513,7 @@ void Sepulveda::RenderGestureDemo()
 			float ageOfThisLine = g_gameTime - m_gestureStartTime - i;
 			if (ageOfThisLine > 2.0f) ageOfThisLine = 2.0f;
 			unsigned char col = 127.0f * (2.0f - ageOfThisLine);
-            col = max( col, 128 );
+			col = std::max( col, static_cast<unsigned char>(128) );
 			glColor4ub(col>>1, col>>1, col, col);
 			coords = m_gestureDemo->GetCoords(i);
 			glVertex2f(prevX, prevY);
@@ -675,11 +675,11 @@ void Sepulveda::RenderTextBoxCutsceneMode()
 
         glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
-        LList<char *> *wrapped = WordWrapText( m_caption, textBoxW-15, g_editorFont.GetTextWidth(1,textH), true );
+		LList<const char *> *wrapped = WordWrapText( m_caption, textBoxW-15, g_editorFont.GetTextWidth(1,textH), true );
 
         for( int i = 0; i < wrapped->Size(); i++ )
         {
-            char *thisLine = wrapped->GetData(i);
+			const char *thisLine = wrapped->GetData(i);
 
             if( thisChar + strlen(thisLine) < finishingChar )
             {
@@ -838,11 +838,11 @@ void Sepulveda::RenderTextBoxTaskManagerMode()
             m_previousNumChars = finishingChar;
         }
 
-        LList<char *> *wrapped = WordWrapText( m_caption, textBoxW-15, g_editorFont.GetTextWidth(1,textH), true );
+		LList<const char *> *wrapped = WordWrapText( m_caption, textBoxW-15, g_editorFont.GetTextWidth(1,textH), true );
 
         for( int i = 0; i < wrapped->Size(); i++ )
         {
-            char *thisLine = wrapped->GetData(i);
+			const char *thisLine = wrapped->GetData(i);
 
             if( thisChar + strlen(thisLine) < finishingChar )
             {
@@ -1099,11 +1099,11 @@ void Sepulveda::RenderTextBox()
             m_previousNumChars = finishingChar;
         }
 
-        LList<char *> *wrapped = WordWrapText( m_caption, textBoxW-15, g_editorFont.GetTextWidth(1,textH), true );
+		LList<const char *> *wrapped = WordWrapText( m_caption, textBoxW-15, g_editorFont.GetTextWidth(1,textH), true );
 
         for( int i = wrapped->Size()-1; i >= 0; --i )
         {
-            char *thisLine = wrapped->GetData(i);
+			const char *thisLine = wrapped->GetData(i);
             thisChar -= strlen(thisLine);
 
             if( yPos > 450.0f && yPos < 570.0f+textH )
@@ -1165,12 +1165,12 @@ void Sepulveda::RenderTextBox()
         {
 			char buf[SEPULVEDA_MAX_PHRASE_LENGTH];
             BuildCaption(LANGUAGEPHRASE( caption->m_stringId ), buf);
-			LList<char *> *wrapped = WordWrapText( buf, textBoxW-15, g_editorFont.GetTextWidth(1,textH) );
+			LList<const char *> *wrapped = WordWrapText( buf, textBoxW-15, g_editorFont.GetTextWidth(1,textH) );
             bool rendered = false;
 
             for( int j = wrapped->Size()-1; j >= 0; --j )
             {
-                char *thisLine = wrapped->GetData(j);
+				const char *thisLine = wrapped->GetData(j);
                 if( yPos > 450.0f && yPos < 570.0f+textH )
                 {
                     if( j == 0 )
@@ -1203,7 +1203,7 @@ void Sepulveda::RenderTextBox()
     }
 
     s_highestY = yPos;
-    s_highestY = max( s_highestY, 440 );
+	s_highestY = std::fmax( s_highestY, 440.f );
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     if( m_msgQueue.Size() > 0 )
@@ -1361,12 +1361,12 @@ void Sepulveda::RenderScrollBar()
 
     if( mouseX > scrollX && mouseX < scrollX+scrollW &&
         mouseY > scrollY && mouseY < scrollY+scrollH &&
-            g_inputManager->controlEvent( ControlEclipseLMousePressed ) ) // TODO: Is this right?
+			g_inputManager.controlEvent( ControlEclipseLMousePressed ) ) // TODO: Is this right?
     {
         float midPoint = scrollY + scrollH * 0.5f;
         float scrollDir = midPoint - mouseY;
         m_scrollbarOffset += g_advanceTime * scrollDir * 3;
-        m_scrollbarOffset = max( m_scrollbarOffset, 0 );
+		m_scrollbarOffset = std::fmax( m_scrollbarOffset, 0.f );
     }
 
 
@@ -1377,7 +1377,7 @@ void Sepulveda::RenderScrollBar()
 }
 
 
-SepulvedaHighlight::SepulvedaHighlight( char *_name )
+SepulvedaHighlight::SepulvedaHighlight( const char *_name )
 :   m_radius(0.0f),
     m_alpha(0.0f),
     m_ended(false),
@@ -1464,13 +1464,13 @@ bool Sepulveda::ChatLogVisible()
 	}
 
     if( g_prefsManager->GetInt("ControlMethod") == 1 &&
-        g_inputManager->controlEvent( ControlIconsChatLog ) )
+		g_inputManager.controlEvent( ControlIconsChatLog ) )
     {
         return true;
     }
 
     if( g_prefsManager->GetInt("ControlMethod") == 0 &&
-        g_inputManager->controlEvent( ControlGesturesChatLog ) )
+		g_inputManager.controlEvent( ControlGesturesChatLog ) )
     {
         return true;
     }

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/debug_render.h"
 #include "lib/language_table.h"
 #include "lib/math_utils.h"
@@ -601,7 +601,7 @@ void HelpSystem::Advance()
 
     if( !m_helpEnabled )
     {
-        if( g_inputManager->controlEvent( ControlSepulvedaHelp ) && cameraInteractive )
+		if( g_inputManager.controlEvent( ControlSepulvedaHelp ) && cameraInteractive )
         {
             RunDefaultHelp();
         }
@@ -623,7 +623,7 @@ void HelpSystem::Advance()
             Unit *currentUnit = g_app->m_location->GetMyTeam()->GetMyUnit();
             if( currentUnit &&
                 currentUnit->m_troopType == Entity::TypeInsertionSquadie &&
-                g_inputManager->controlEvent( ControlUnitPrimaryFireTarget ) ) // TODO: Add directional mode
+				g_inputManager.controlEvent( ControlUnitPrimaryFireTarget ) ) // TODO: Add directional mode
             {
                 currentlyFiring = true;
             }
@@ -639,7 +639,7 @@ void HelpSystem::Advance()
             m_actionHelpTimer = GetHighResTime();
         }
 
-        if( g_inputManager->controlEvent( ControlSepulvedaHelp ) && cameraInteractive )
+		if( g_inputManager.controlEvent( ControlSepulvedaHelp ) && cameraInteractive )
         {
             g_app->m_sepulveda->ShutUp();
             m_actionHelpTimer = GetHighResTime() - HELPSYSTEM_ACTIONHELP_INTERVAL - 10;
@@ -648,7 +648,7 @@ void HelpSystem::Advance()
 
         if( m_actionHelpTimer != -1.0f &&
             GetHighResTime() > m_actionHelpTimer + HELPSYSTEM_ACTIONHELP_INTERVAL &&
-		    g_inputManager->getInputMode() == INPUT_MODE_KEYBOARD )
+			g_inputManager.getInputMode() == INPUT_MODE_KEYBOARD )
         {
             // Sepulveda has been quiet for a while, so look for something helpful to say
             for( int i = 0; i < NumActionHelps; ++i )
@@ -902,7 +902,7 @@ void HelpSystem::RunDefaultHelp()
 void HelpSystem::Render()
 {
     if( !m_helpEnabled ) return;
-	if( g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD ) return;
+	if( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD ) return;
 
     START_PROFILE(g_app->m_profiler, "Render Helpsys");
 
@@ -913,7 +913,7 @@ void HelpSystem::Render()
         g_app->m_location &&
         !g_app->m_renderer->m_renderingPoster &&
         ( (int) g_gameTime % 2 == 0 ) &&
-		g_inputManager->getInputMode() == INPUT_MODE_KEYBOARD )
+		g_inputManager.getInputMode() == INPUT_MODE_KEYBOARD )
     {
         g_gameFont.BeginText2D();
         g_gameFont.SetRenderOutline(true);

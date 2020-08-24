@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <time.h>
 
@@ -62,10 +62,10 @@ int Loader::SetupFor2D( int _screenW )
 
 void Loader::FlipBuffers()
 {
-	g_inputManager->PollForEvents();
-	g_inputManager->Advance();
+	g_inputManager.PollForEvents();
+	g_inputManager.Advance();
 	glFinish();
-	g_windowManager->Flip();
+	g_windowManager.Flip();
     glClearColor(0,0,0,1);
 	glClear	(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	Sleep(1);
@@ -110,14 +110,14 @@ Loader *Loader::CreateLoader( int _type )
 
 
 
-char *Loader::GetLoaderName( int _index )
+const char *Loader::GetLoaderName( int _index )
 {
     if( _index < 0 ) return NULL;
     if( _index >= NumLoaders ) return NULL;
 
     // TODO : These strings should be encrypted
 
-    static char *loaderNames[] = {
+	static const char *loaderNames[] = {
                                     "Spectrum",
                                     "Matrix",
                                     "Fodder",
@@ -172,7 +172,7 @@ int Loader::GetRandomLoaderIndex()
 }
 
 
-int Loader::GetLoaderIndex( char *_name )
+int Loader::GetLoaderIndex( const char *_name )
 {
 
     if( stricmp( _name, "random" ) == 0 )
@@ -182,7 +182,7 @@ int Loader::GetLoaderIndex( char *_name )
 
     for( int i = 0; i < NumLoaders; ++i )
     {
-        char *loaderName = GetLoaderName(i);
+		const char *loaderName = GetLoaderName(i);
         if( stricmp( loaderName, _name ) == 0 )
         {
             return i;

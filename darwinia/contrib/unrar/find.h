@@ -1,4 +1,4 @@
-#ifndef _RAR_FINDDATA_
+﻿#ifndef _RAR_FINDDATA_
 #define _RAR_FINDDATA_
 
 struct FindData

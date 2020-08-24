@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdio.h>
 #include <unrar.h>
@@ -531,6 +531,13 @@ void Resource::RegenerateOpenGlState()
 }
 
 
+#ifdef TARGET_OS_LINUX
+char *itoa(long i, char* s, int) {
+	sprintf(s, "%ld", i);
+	return s;
+}
+#endif
+
 char *Resource::GenerateName()
 {
 	int digits = log10f(m_nameSeed) + 1;
@@ -546,7 +553,7 @@ void Resource::LoadMod( char const *_modName )
 {
 #ifndef DEMOBUILD
 #ifndef PURITY_CONTROL
-    bool modsEnabled = g_prefsManager->GetInt( "ModSystemEnabled", 0 ) != 0;
+	bool modsEnabled = false;//g_prefsManager->GetInt( "ModSystemEnabled", 0 ) != 0;
     if( modsEnabled )
     {
         if( m_modName )

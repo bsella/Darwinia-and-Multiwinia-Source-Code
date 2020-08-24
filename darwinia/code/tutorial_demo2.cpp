@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/hi_res_time.h"
 #include "lib/input/input.h"
 #include "lib/text_renderer.h"
@@ -527,7 +527,7 @@ bool Demo2Tutorial::AdvanceCurrentChapter()
             break;
         }
 
-        case 17:   TriggerChapter(m_chapter+1);
+		case 17:   TriggerChapter(m_chapter+1);
 
         case 18:                        // Wipe out virii
         {
@@ -890,7 +890,7 @@ bool Demo2Tutorial::IsPlayerBusy()
         Unit *currentUnit = g_app->m_location->GetMyTeam()->GetMyUnit();
         if( currentUnit && currentUnit->m_troopType == Entity::TypeInsertionSquadie )
         {
-            if( g_inputManager->controlEvent( ControlUnitPrimaryFireTarget ) )
+			if( g_inputManager.controlEvent( ControlUnitPrimaryFireTarget ) )
             {
                 // We are firing lasers
                 s_playerBusyTimer = timeNow;

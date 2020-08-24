@@ -1,4 +1,4 @@
-
+﻿
 /*
  * =======
  * GESTURE
@@ -89,13 +89,13 @@ protected:
 
 public:
 
-    Gesture( char *_filename );
+	Gesture( const char *_filename );
 
     //
     // Training
 
-    void LoadTrainingData    ( char *filename );
-    void SaveTrainingData    ( char *filename );
+	void LoadTrainingData    ( const char *filename );
+	void SaveTrainingData    ( const char *filename );
     void AddTrainingSample   ( int symbolID );
     int  GetNumTrainers      ( int symbolID );
     int  GetNumSymbols       ();

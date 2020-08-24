@@ -1,10 +1,7 @@
-#ifndef INCLUDED_SOUND_LIBRARY_2D
+﻿#ifndef INCLUDED_SOUND_LIBRARY_2D
 #define INCLUDED_SOUND_LIBRARY_2D
 
-
 #include <stdio.h>
-#include <MMSystem.h>
-
 
 //*****************************************************************************
 // Class StereoSample
@@ -28,7 +25,7 @@ class SoundLib2dBuf
 {
 public:
 	StereoSample	*m_buffer;
-	WAVEHDR			m_header;
+//	WAVEHDR			m_header;
 
 	SoundLib2dBuf();
 	~SoundLib2dBuf();

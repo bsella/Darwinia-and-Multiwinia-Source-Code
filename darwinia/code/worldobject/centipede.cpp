@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/resource.h"
 #include "lib/matrix34.h"
 #include "lib/shape.h"
@@ -274,8 +274,8 @@ bool Centipede::Advance( Unit *_unit )
         if( maxHealth < 0 ) maxHealth = 0;
         if( maxHealth > 255 ) maxHealth = 255;
         float newHealth = maxHealth * healthFraction;
-        newHealth = max( newHealth, 0 );
-        newHealth = min( newHealth, 255 );
+		newHealth = std::fmax( newHealth, 0 );
+		newHealth = std::fmin( newHealth, 255 );
         m_stats[StatHealth] = newHealth;
     }
 
@@ -577,7 +577,7 @@ bool Centipede::GetTrailPosition( Vector3 &_pos, Vector3 &_vel, int _numSteps )
 {
     if( m_positionHistory.Size() < 3 ) return false;
 
-    float timeSinceAdvance = g_gameTime - m_lastAdvance;
+	//float timeSinceAdvance = g_gameTime - m_lastAdvance;
 
     Vector3 pos1 = *m_positionHistory.GetPointer(_numSteps+1);
     Vector3 pos2 = *m_positionHistory.GetPointer(_numSteps);
@@ -641,7 +641,7 @@ bool Centipede::AdvanceToTargetPosition()
 }
 
 
-void Centipede::ListSoundEvents( LList<char *> *_list )
+void Centipede::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 

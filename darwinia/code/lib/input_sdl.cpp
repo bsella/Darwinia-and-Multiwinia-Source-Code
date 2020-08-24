@@ -1,14 +1,15 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <time.h>
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <eclipse.h>
 #include <string.h>
 
 #include "lib/avi_generator.h"
 #include "lib/debug_utils.h"
 #include "lib/hi_res_time.h"
-#include "lib/input.h"
+#include "lib/input/input.h"
+#include "lib/input/keydefs.h"
 #include "lib/math_utils.h"
 #include "lib/preferences.h"
 #include "lib/preference_names.h"
@@ -23,7 +24,7 @@
 #include "camera.h"
 #include "renderer.h"
 
-InputManager *g_inputManager = NULL;
+InputManager g_inputManager;
 signed char g_keyDeltas[KEY_MAX];
 signed char g_keys[KEY_MAX];
 double g_keyDownTime[KEY_MAX];
@@ -121,12 +122,6 @@ static inline int SignOf(int x)
 	else
 		return 0;
 }
-
-
-void InputManager::ResetWindowHandle()
-{
-}
-
 
 static void AdjustForBuggyXinerama(int &_xrel, int &_yrel)
 {
@@ -395,6 +390,7 @@ void InputManager::ChangeWindowHasFocus(bool _newWindowHasFocus)
 		SDL_PauseAudio(!m_windowHasFocus);
 }
 
+/*
 void InputManager::IncreaseCameraLogSize()
 {
 	int newSize = m_maxCameraItems * 2;
@@ -420,7 +416,7 @@ void InputManager::IncreaseLogSize()
 	m_inputLog = newLog;
 	m_maxNumEvents = newSize;
 }
-
+*/
 
 // *** Advance
 void InputManager::Advance()
@@ -494,7 +490,7 @@ void InputManager::Advance()
 }
 
 
-void InputManager::PollForMessages()
+void InputManager::PollForEvents()
 {
 	if (!m_replaying)
 	{
@@ -630,7 +626,7 @@ void InputManager::StopLogging(char const *_filename)
 	m_logging = false;
 }
 
-
+/*
 void InputManager::StartReplay(char const *_filename)
 {
 	DarwiniaDebugAssert(!m_logging && !m_replaying);
@@ -742,7 +738,6 @@ void InputManager::StartReplay(char const *_filename)
     m_replayStartTime = time(NULL);
 }
 
-
 void InputManager::StopReplay()
 {
 	DarwiniaDebugAssert(!m_logging && m_replaying);
@@ -779,14 +774,14 @@ float InputManager::ReplayTimeRemaining ()
     float percentRemaining = 100.0f - percentDone;
     return percentRemaining * timeForOnePercent;
 }
-
+*/
 #ifdef TARGET_OS_MACOSX
 #define META_KEY_NAME "COMMAND"
 #else
 #define META_KEY_NAME "META"
 #endif
 
-static char *s_keyNames[] =
+static const char *s_keyNames[] =
 {
 	"unknown 0",
 	"unknown 1",

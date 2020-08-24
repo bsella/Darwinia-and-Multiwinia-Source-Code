@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_centipede_h
 #define _included_centipede_h
 
@@ -59,7 +59,7 @@ public:
 
     void Attack             ( Vector3 const &_pos );
 
-    void ListSoundEvents    ( LList<char *> *_list );
+	void ListSoundEvents    ( LList<const char *> *_list );
 };
 
 

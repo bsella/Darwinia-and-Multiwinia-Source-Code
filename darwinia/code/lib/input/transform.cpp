@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/input/input.h"
 #include "lib/input/transform.h"
@@ -14,24 +14,24 @@ ControlEventFunctor::ControlEventFunctor( ControlType _type )
 
 bool ControlEventFunctor::operator()()
 {
-	if ( g_inputManager )
-		return g_inputManager->controlEvent( type );
-	else return false;
+	//if ( g_inputManager )
+		return g_inputManager.controlEvent( type );
+	//else return false;
 }
 
 
 bool ControlEventFunctor::operator()( InputDetails &details )
 {
-	if ( g_inputManager )
-		return g_inputManager->controlEvent( type, details );
-	else return false;
+	//if ( g_inputManager )
+		return g_inputManager.controlEvent( type, details );
+	//else return false;
 }
 
 
 string ControlEventFunctor::noun()
 {
 	InputDescription desc;
-	g_inputManager->getBoundInputDescription( type, desc );
+	g_inputManager.getBoundInputDescription( type, desc );
 	return desc.noun;
 }
 
@@ -43,9 +43,9 @@ ToggleInputTransform::ToggleInputTransform( ControlType _on, ControlType _off )
   m_state( false ), m_change( false ) {}
 
 
-ToggleInputTransform::ToggleInputTransform( auto_ptr<InputTransform> _on,
-                                            auto_ptr<InputTransform> _off )
-: m_on( _on ), m_off( _off ), m_state( false ), m_change( false ) {}
+ToggleInputTransform::ToggleInputTransform( unique_ptr<InputTransform> _on,
+											unique_ptr<InputTransform> _off )
+	: m_on( std::move(_on) ), m_off( std::move(_off) ), m_state( false ), m_change( false ) {}
 
 
 void ToggleInputTransform::Advance()

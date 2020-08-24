@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/debug_render.h"
 #include "lib/text_renderer.h"
 #include "lib/resource.h"
@@ -97,7 +97,7 @@ void Spam::Destroy( float _intensity )
 	m_damage = 0.0f;
 }
 
-void Spam::ListSoundEvents( LList<char *> *_list )
+void Spam::ListSoundEvents( LList<const char *> *_list )
 {
     _list->PutData( "Attack" );
     _list->PutData( "Explode" );
@@ -505,7 +505,7 @@ void SpamInfection::AdvanceAttackingEntity()
         {
             Vector3 vel( sfrand(15.0f), frand(15.0f), sfrand(15.0f) );
             float size = i * 30;
-            Vector3 pos = m_pos + Vector3(0,50,0);
+			//Vector3 pos = m_pos + Vector3(0,50,0);
             g_app->m_particleSystem->CreateParticle( m_pos, vel, Particle::TypeFire, size );
         }
 
@@ -550,7 +550,7 @@ void SpamInfection::AdvanceAttackingSpirit()
         {
             Vector3 vel( sfrand(15.0f), frand(15.0f), sfrand(15.0f) );
             float size = i * 30;
-            Vector3 pos = m_pos + Vector3(0,50,0);
+			//Vector3 pos = m_pos + Vector3(0,50,0);
             g_app->m_particleSystem->CreateParticle( m_pos, vel, Particle::TypeFire, size );
         }
 
@@ -583,8 +583,8 @@ bool SpamInfection::Advance()
 {
     switch( m_state )
     {
-        case StateIdle:                     AdvanceIdle();
-        case StateAttackingEntity:          AdvanceAttackingEntity();
+		case StateIdle:                     AdvanceIdle();break;
+		case StateAttackingEntity:          AdvanceAttackingEntity();break;
         case StateAttackingSpirit:          AdvanceAttackingSpirit();
     }
 

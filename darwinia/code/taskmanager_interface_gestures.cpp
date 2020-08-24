@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/text_renderer.h"
 #include "lib/math_utils.h"
 #include "lib/input/input.h"
@@ -120,9 +120,9 @@ void TaskManagerInterfaceGestures::AdvanceGestures()
     // We won't permit new gestures to be drawn if we already have
     // an object waiting to be placed into the world
 
-    if( g_inputManager->controlEvent( ControlGestureActive ) ||
+	if( g_inputManager.controlEvent( ControlGestureActive ) ||
         ( g_app->m_gesture->IsRecordingGesture() &&
-	      !g_inputManager->controlEvent( ControlGestureActive ) ) ) // TODO: Really?
+		  !g_inputManager.controlEvent( ControlGestureActive ) ) ) // TODO: Really?
     {
         Task *task = g_app->m_taskManager->GetCurrentTask();
         if( task &&
@@ -139,9 +139,9 @@ void TaskManagerInterfaceGestures::AdvanceGestures()
     //
     // Only permit gestures to be drawn in the central screen
 
-    if( g_inputManager->controlEvent( ControlGestureActive ) ||
+	if( g_inputManager.controlEvent( ControlGestureActive ) ||
         ( g_app->m_gesture->IsRecordingGesture() &&
-	      !g_inputManager->controlEvent( ControlGestureActive ) ) ) // TODO: Really?
+		  !g_inputManager.controlEvent( ControlGestureActive ) ) ) // TODO: Really?
     {
         if( m_screenId != ScreenTaskManager )
         {
@@ -163,7 +163,7 @@ void TaskManagerInterfaceGestures::AdvanceGestures()
     // Starting a new gesture
 
     if ( !g_app->m_gesture->IsRecordingGesture() &&
-	     g_inputManager->controlEvent( ControlGestureActive ) )
+		 g_inputManager.controlEvent( ControlGestureActive ) )
     {
         g_app->m_gesture->BeginGesture();
         g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
@@ -174,7 +174,7 @@ void TaskManagerInterfaceGestures::AdvanceGestures()
     // Adding to a gesture
 
     if( g_app->m_gesture->IsRecordingGesture() &&
-		g_inputManager->controlEvent( ControlGestureActive ) )
+		g_inputManager.controlEvent( ControlGestureActive ) )
     {
         int mouseX = g_target->X();
         int mouseY = g_target->Y();
@@ -187,7 +187,7 @@ void TaskManagerInterfaceGestures::AdvanceGestures()
     // Finishing a gesture
 
     if ( g_app->m_gesture->IsRecordingGesture() &&
-	     !g_inputManager->controlEvent( ControlGestureActive ) )
+		 !g_inputManager.controlEvent( ControlGestureActive ) )
     {
         g_app->m_gesture->EndGesture();
         g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureEnd", SoundSourceBlueprint::TypeGesture );
@@ -265,7 +265,7 @@ void TaskManagerInterfaceGestures::Advance()
 
     AdvanceScrolling();
     AdvanceTab();
-    if( g_inputManager->controlEvent( ControlGesturesTaskManagerDisplay ) )
+	if( g_inputManager.controlEvent( ControlGesturesTaskManagerDisplay ) )
     {
         if( !m_visible )
         {
@@ -323,8 +323,8 @@ void TaskManagerInterfaceGestures::AdvanceScreenEdges()
     bool scrollPermitted = fabs(m_desiredScreenX - m_screenX) < 0.1f;
 
     int screenBorder = 10;
-    bool keyLeft        = g_inputManager->controlEvent( ControlGestureLeft );
-    bool keyRight       = g_inputManager->controlEvent( ControlGestureRight );
+	bool keyLeft        = g_inputManager.controlEvent( ControlGestureLeft );
+	bool keyRight       = g_inputManager.controlEvent( ControlGestureRight );
 
     switch( m_screenId )
     {
@@ -624,7 +624,7 @@ void TaskManagerInterfaceGestures::AdvanceScreenZones()
     // Handle mouse clickage
 
     if( m_currentScreenZone != -1 &&
-        g_inputManager->controlEvent( ControlActivateTMButton ) && // TODO: This
+		g_inputManager.controlEvent( ControlActivateTMButton ) && // TODO: This
         !highlightOnly )
     {
         ScreenZone *currentZone = m_screenZones[m_currentScreenZone];
@@ -929,7 +929,7 @@ void TaskManagerInterfaceGestures::RenderMessages()
         //
         // Lookup task name
 
-        char *taskName = NULL;
+		const char *taskName = NULL;
 
         if( m_currentTaskType == 999 )
         {
@@ -1135,10 +1135,10 @@ void TaskManagerInterfaceGestures::RenderTaskManager()
         glVertex2f( x, y+height );
     glEnd();
 
-    gglActiveTextureARB (GL_TEXTURE1_ARB);
+	glActiveTextureARB (GL_TEXTURE1_ARB);
     glDisable		    (GL_TEXTURE_2D);
 
-    gglActiveTextureARB (GL_TEXTURE0_ARB);
+	glActiveTextureARB (GL_TEXTURE0_ARB);
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     glTexEnvf           (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1373,7 +1373,7 @@ void TaskManagerInterfaceGestures::RenderRunningTasks()
                 Engineer *engineer = (Engineer *) g_app->m_location->GetEntitySafe( task->m_objId, Entity::TypeEngineer );
                 if( engineer )
                 {
-                    char *state = engineer->GetCurrentAction();
+					const char *state = engineer->GetCurrentAction();
                     int numSpirits = engineer->GetNumSpirits();
 
                     g_gameFont.SetRenderShadow(true);
@@ -1807,7 +1807,7 @@ void TaskManagerInterfaceGestures::RenderObjectives()
             GlobalEventCondition *condition = objectives->GetData(i);
             bool completed = condition->Evaluate();
 
-            char *descriptor = LANGUAGEPHRASE( condition->m_stringId );
+			const char *descriptor = LANGUAGEPHRASE( condition->m_stringId );
 
             g_gameFont.SetRenderOutline(true);
             glColor4f( 0.8f, 0.8f, 0.8f, 0.0f );
@@ -1833,7 +1833,7 @@ void TaskManagerInterfaceGestures::RenderObjectives()
                 Building *building = g_app->m_location->GetBuilding( condition->m_id );
                 if( building )
                 {
-                    char *objectiveCounter = building->GetObjectiveCounter();
+					const char *objectiveCounter = building->GetObjectiveCounter();
                     g_gameFont.DrawText2D( completeX, textY+textH*0.75f, textH/3, "%s", objectiveCounter );
                 }
             }
@@ -2220,8 +2220,8 @@ void TaskManagerInterfaceGestures::RenderResearch()
 
 bool TaskManagerInterfaceGestures::ControlEvent( TMControl _type ) {
 	switch ( _type ) {
-		case TMTerminate: return g_inputManager->controlEvent( ControlGesturesTaskManagerEndTask );
-		case TMDisplay:   return g_inputManager->controlEvent( ControlGesturesTaskManagerDisplay );
+		case TMTerminate: return g_inputManager.controlEvent( ControlGesturesTaskManagerEndTask );
+		case TMDisplay:   return g_inputManager.controlEvent( ControlGesturesTaskManagerDisplay );
 		default:          return false;
 	}
 }

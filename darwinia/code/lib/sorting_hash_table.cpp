@@ -1,4 +1,4 @@
-#include "debug_utils.h"
+﻿#include "debug_utils.h"
 #include "sorting_hash_table.h"
 
 
@@ -9,24 +9,24 @@
 template <class T>
 void SortingHashTable<T>::Grow()
 {
-	unsigned int oldSize = m_size;
-	m_size *= 2;
-	m_mask = (m_mask << 1) + 1;
+	unsigned int oldSize = this->m_size;
+	this->m_size *= 2;
+	this->m_mask = (this->m_mask << 1) + 1;
 
 	// Copy pointers to existing data
-	char **oldKeys = m_keys;
-	T *oldData = m_data;
+	char **oldKeys = this->m_keys;
+	T *oldData = this->m_data;
 	short *oldOrderedIndices = m_orderedIndices;
 
 	// Make new data
-	m_keys = new char *[m_size];
-	m_data = new T [m_size];
-	m_orderedIndices = new short [m_size];
+	this->m_keys = new char *[this->m_size];
+	this->m_data = new T [this->m_size];
+	m_orderedIndices = new short [this->m_size];
 
 	// Set all new data to zero
-	memset(m_keys, 0, sizeof(char *) * m_size);
-	memset(m_data, 0, sizeof(T) * m_size);
-	memset(m_orderedIndices, -2, sizeof(short) * m_size);
+	memset(this->m_keys, 0, sizeof(char *) * this->m_size);
+	memset(this->m_data, 0, sizeof(T) * this->m_size);
+	memset(m_orderedIndices, -2, sizeof(short) * this->m_size);
 
 
 	//
@@ -34,16 +34,16 @@ void SortingHashTable<T>::Grow()
 	// new table as we go
 
 	short oldI = m_firstOrderedIndex;
-	short newI = GetInsertPos(oldKeys[oldI]);
+	short newI = this->GetInsertPos(oldKeys[oldI]);
 	m_firstOrderedIndex = newI;
 	while (oldI != -1)
 	{
 		short nextOldI = oldOrderedIndices[oldI];
 
-		m_keys[newI] = oldKeys[oldI];
-		m_data[newI] = oldData[oldI];
+		this->m_keys[newI] = oldKeys[oldI];
+		this->m_data[newI] = oldData[oldI];
 
-		short nextNewI = (nextOldI != -1) ? GetInsertPos(oldKeys[nextOldI]) : -1;
+		short nextNewI = (nextOldI != -1) ? this->GetInsertPos(oldKeys[nextOldI]) : -1;
 
 		m_orderedIndices[newI] = nextNewI;
 
@@ -51,7 +51,7 @@ void SortingHashTable<T>::Grow()
 		newI = nextNewI;
 	}
 
-	m_slotsFree += m_size - oldSize;
+	this->m_slotsFree += this->m_size - oldSize;
 
 	delete [] oldKeys;
 	delete [] oldData;
@@ -70,7 +70,7 @@ short SortingHashTable<T>::FindPrevKey(char const *_key) const
 	{
 		if (i == -1) return prevI;
 
-		if (stricmp(m_keys[i], _key) >= 0) return prevI;
+		if (stricmp(this->m_keys[i], _key) >= 0) return prevI;
 
 		prevI = i;
 		i = m_orderedIndices[i];
@@ -88,8 +88,8 @@ SortingHashTable<T>::SortingHashTable()
 :	HashTable<T>(),
 	m_firstOrderedIndex(-1)
 {
-	m_orderedIndices = new short [m_size];
-	memset(m_orderedIndices, 0, sizeof(short) * m_size);
+	m_orderedIndices = new short [this->m_size];
+	memset(m_orderedIndices, 0, sizeof(short) * this->m_size);
 }
 
 
@@ -106,7 +106,7 @@ int SortingHashTable<T>::PutData(char const *_key, T const &_data)
 	//
 	// Make sure the table is big enough
 
-	if (m_slotsFree * 2 <= m_size)
+	if (this->m_slotsFree * 2 <= this->m_size)
 	{
 		Grow();
 	}
@@ -115,11 +115,11 @@ int SortingHashTable<T>::PutData(char const *_key, T const &_data)
 	//
 	// Do the main insert
 
-	unsigned int index = GetInsertPos(_key);
-	DarwiniaDebugAssert(m_keys[index] == NULL);
-	m_keys[index] = strdup(_key);
-	m_data[index] = _data;
-	m_slotsFree--;
+	unsigned int index = this->GetInsertPos(_key);
+	DarwiniaDebugAssert(this->m_keys[index] == NULL);
+	this->m_keys[index] = strdup(_key);
+	this->m_data[index] = _data;
+	this->m_slotsFree--;
 
 
 	//
@@ -146,7 +146,7 @@ int SortingHashTable<T>::PutData(char const *_key, T const &_data)
 template <class T>
 void SortingHashTable<T>::RemoveData(char const *_key)
 {
-	int index = GetIndex(_key);
+	int index = this->GetIndex(_key);
 	if (index >= 0)
 	{
 		RemoveData(index);
@@ -160,9 +160,9 @@ void SortingHashTable<T>::RemoveData(unsigned int _index)
 	//
 	// Remove data
 
-	delete [] m_keys[_index];
-	m_keys[_index] = NULL;
-	m_slotsFree++;
+	delete [] this->m_keys[_index];
+	this->m_keys[_index] = NULL;
+	this->m_slotsFree++;
 
 
 	//

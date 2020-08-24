@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_researchitem_h
 #define _included_researchitem_h
 
@@ -43,7 +43,7 @@ public:
 
     bool IsInView();
 
-    void ListSoundEvents    ( LList<char *> *_list );
+	void ListSoundEvents    ( LList<const char *> *_list );
 };
 
 

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -485,7 +485,7 @@ bool SporeGenerator::RenderPixelEffect( float _predictionTime )
 }
 
 
-void SporeGenerator::ListSoundEvents( LList<char *> *_list )
+void SporeGenerator::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 

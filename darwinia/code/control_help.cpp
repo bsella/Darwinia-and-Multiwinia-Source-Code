@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/debug_render.h"
 #include "lib/language_table.h"
 #include "lib/math_utils.h"
@@ -426,7 +426,7 @@ void ControlHelpSystem::InitialiseConditions()
 
 void ControlHelpSystem::Advance()
 {
-	if (g_inputManager->getInputMode() != INPUT_MODE_GAMEPAD && g_prefsManager->GetInt(OTHER_CONTROLHELPENABLED, 1))
+	if (g_inputManager.getInputMode() != INPUT_MODE_GAMEPAD && g_prefsManager->GetInt(OTHER_CONTROLHELPENABLED, 1))
 		return;
 
 	// Clear all helpIcons
@@ -556,11 +556,9 @@ static bool UnitSelected()
 
     Task *currentTask = g_app->m_taskManager->GetCurrentTask();
     // if the task has just been ended or killed, it isnt valid
-    if (currentTask && currentTask->m_state == Task::StateStopping )
-        return false;
+	if (currentTask && currentTask->m_state == Task::StateStopping ) return false;
 
-    if( !currentTask )
-        return false;
+	if( !currentTask ) return false;
 
 	Unit *unit = team->GetMyUnit();
 	return unit != NULL;
@@ -692,19 +690,19 @@ bool ControlHelpSystem::CheckCondition( int _condition )
 
 		case CondFireGrenades:
 			return !g_app->m_taskManagerInterface->m_visible &&
-				   g_inputManager->controlEvent( ControlUnitPrimaryFireDirected ) &&
+				   g_inputManager.controlEvent( ControlUnitPrimaryFireDirected ) &&
 				   SquaddieSelected() &&
 				   WeaponSelected( GlobalResearch::TypeGrenade );
 
 		case CondFireRocket:
 			return !g_app->m_taskManagerInterface->m_visible &&
-				   g_inputManager->controlEvent( ControlUnitPrimaryFireDirected ) &&
+				   g_inputManager.controlEvent( ControlUnitPrimaryFireDirected ) &&
 				   SquaddieSelected() &&
 				   WeaponSelected( GlobalResearch::TypeRocket );
 
 		case CondFireAirstrike:
 			return !g_app->m_taskManagerInterface->m_visible &&
-				   g_inputManager->controlEvent( ControlUnitPrimaryFireDirected ) &&
+				   g_inputManager.controlEvent( ControlUnitPrimaryFireDirected ) &&
 				   SquaddieSelected() &&
 				   WeaponSelected( GlobalResearch::TypeAirStrike );
 
@@ -802,7 +800,7 @@ void ControlHelpSystem::Render()
 {
 	// Don't render if not in location
 	if (g_app->m_locationId == -1 ||
-		g_inputManager->getInputMode() != INPUT_MODE_GAMEPAD ||
+		g_inputManager.getInputMode() != INPUT_MODE_GAMEPAD ||
 		!g_prefsManager->GetInt(OTHER_CONTROLHELPENABLED, 1))
 	{
 		return;

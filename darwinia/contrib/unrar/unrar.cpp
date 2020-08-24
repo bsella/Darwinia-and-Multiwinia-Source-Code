@@ -1,4 +1,4 @@
-#include "array.h"
+﻿#include "array.h"
 #include "cmddata.h"
 #include "consio.h"
 #include "extract.h"
@@ -35,7 +35,6 @@ MemMappedFile::~MemMappedFile()
 	delete [] m_data;
 	free (m_filename);
 }
-
 
 //*****************************************************************************
 // Class UncompressedArchive

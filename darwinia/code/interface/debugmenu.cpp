@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/debug_utils.h"
 //#include "lib/input.h"
 #include "lib/text_renderer.h"
@@ -200,7 +200,7 @@ public:
 // Class DebugMenu
 // ****************************************************************************
 
-DebugMenu::DebugMenu( char *name )
+DebugMenu::DebugMenu( const char *name )
 :   DarwiniaWindow( name )
 {
 	m_x = 10;
@@ -345,7 +345,7 @@ void DebugMenu::Render(bool hasFocus)
 
 void DebugKeyBindings::DebugMenu()
 {
-	char *debugMenuWindowName = LANGUAGEPHRASE("dialog_toolsmenu");
+	const char *debugMenuWindowName = LANGUAGEPHRASE("dialog_toolsmenu");
 	if (EclGetWindow(debugMenuWindowName))
 		EclRemoveWindow(debugMenuWindowName);
 	else
@@ -528,5 +528,5 @@ void DebugKeyBindings::ReallyQuitButton()
 void DebugKeyBindings::ToggleFullscreenButton()
 {
 	bool switchingToWindowed;
-	SetWindowed(!g_windowManager->Windowed(), true, switchingToWindowed);
+	SetWindowed(!g_windowManager.Windowed(), true, switchingToWindowed);
 }

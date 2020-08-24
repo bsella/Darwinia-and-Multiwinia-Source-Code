@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_goddish_h
 #define _included_goddish_h
 
@@ -30,7 +30,7 @@ public:
 
     void TriggerSpam();
 
-    void ListSoundEvents( LList<char *> *_list );
+	void ListSoundEvents( LList<const char *> *_list );
 };
 
 

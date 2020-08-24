@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_loader_h
 #define _included_loader_h
 
@@ -39,8 +39,8 @@ public:
     virtual void Run();
 
     static Loader *CreateLoader         ( int _type );
-    static char *GetLoaderName          ( int _index );
-    static int GetLoaderIndex           ( char *_name );
+	static const char *GetLoaderName          ( int _index );
+	static int GetLoaderIndex           ( const char *_name );
 };
 
 

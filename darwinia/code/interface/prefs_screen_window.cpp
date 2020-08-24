@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 //#include "lib/input.h"
 #include "lib/preferences.h"
 #include "lib/preference_names.h"
@@ -14,8 +14,10 @@
 #include "app.h"
 #include "renderer.h"
 
+#ifdef TARGET_MSVC
 #include "lib/input/win32_eventhandler.h"
 #include "lib/window_manager_win32.h"
+#endif
 
 #ifdef TARGET_MSVC
 #define HAVE_REFRESH_RATES
@@ -175,7 +177,7 @@ void RestartWindowManagerAndRenderer()
 void SetWindowed(bool _isWindowed, bool _isPermanent, bool &_isSwitchingToWindowed)
 {
 	bool oldIsWindowedPref = g_prefsManager->GetInt( SCREEN_WINDOWED_PREFS_NAME );
-	bool oldIsWindowed = g_windowManager->Windowed();
+	bool oldIsWindowed = g_windowManager.Windowed();
 	g_prefsManager->SetInt( SCREEN_WINDOWED_PREFS_NAME, _isWindowed );
 
 	if (oldIsWindowed != _isWindowed) {
@@ -200,7 +202,7 @@ class SetScreenButton : public DarwiniaButton
     {
         PrefsScreenWindow *parent = (PrefsScreenWindow *) m_parent;
 
-        Resolution *resolution = g_windowManager->GetResolution( parent->m_resId );
+		Resolution *resolution = g_windowManager.GetResolution( parent->m_resId );
         g_prefsManager->SetInt( SCREEN_WIDTH_PREFS_NAME, resolution->m_width );
         g_prefsManager->SetInt( SCREEN_HEIGHT_PREFS_NAME, resolution->m_height );
 #ifdef HAVE_REFRESH_RATES
@@ -214,7 +216,7 @@ class SetScreenButton : public DarwiniaButton
 
         g_prefsManager->Save();
 
-        parent->m_resId = g_windowManager->GetResolutionId( g_prefsManager->GetInt(SCREEN_WIDTH_PREFS_NAME),
+		parent->m_resId = g_windowManager.GetResolutionId( g_prefsManager->GetInt(SCREEN_WIDTH_PREFS_NAME),
                                                             g_prefsManager->GetInt(SCREEN_HEIGHT_PREFS_NAME) );
 
         parent->m_windowed      = g_prefsManager->GetInt( SCREEN_WINDOWED_PREFS_NAME, 0 );
@@ -235,7 +237,7 @@ PrefsScreenWindow::PrefsScreenWindow()
 {
 	int height = 240;
 
-    m_resId = g_windowManager->GetResolutionId( g_prefsManager->GetInt(SCREEN_WIDTH_PREFS_NAME),
+	m_resId = g_windowManager.GetResolutionId( g_prefsManager->GetInt(SCREEN_WIDTH_PREFS_NAME),
                                                 g_prefsManager->GetInt(SCREEN_HEIGHT_PREFS_NAME) );
 
     m_windowed      = g_prefsManager->GetInt( SCREEN_WINDOWED_PREFS_NAME, 0 );
@@ -277,9 +279,9 @@ void PrefsScreenWindow::Create()
 
     ScreenResDropDownMenu *screenRes = new ScreenResDropDownMenu();
     screenRes->SetShortProperties( LANGUAGEPHRASE("dialog_resolution"), x, y+=border, buttonW, buttonH );
-    for( int i = 0; i < g_windowManager->m_resolutions.Size(); ++i )
+	for( int i = 0; i < g_windowManager.m_resolutions.Size(); ++i )
     {
-        Resolution *resolution = g_windowManager->m_resolutions[i];
+		Resolution *resolution = g_windowManager.m_resolutions[i];
         char caption[64];
         sprintf( caption, "%d x %d", resolution->m_width, resolution->m_height );
         screenRes->AddOption( caption, i );
@@ -319,7 +321,9 @@ void PrefsScreenWindow::Create()
 	m_buttonOrder.PutData( windowed );
     if( windowed->GetSelectionValue() == 0 )
     {
+#ifdef HAVE_REFRESH_RATES
         m_buttonOrder.PutData( refresh );
+#endif
         m_buttonOrder.PutData( colourDepth );
     }
 

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/resource.h"
 #include "lib/debug_render.h"
 #include "lib/shape.h"
@@ -274,7 +274,7 @@ void SpaceInvader::ChangeHealth( int _amount )
 }
 
 
-void SpaceInvader::ListSoundEvents( LList<char *> *_list )
+void SpaceInvader::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 

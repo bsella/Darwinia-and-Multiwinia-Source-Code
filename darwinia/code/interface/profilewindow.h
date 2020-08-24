@@ -1,4 +1,4 @@
-#ifndef _included_profilewindow_h
+﻿#ifndef _included_profilewindow_h
 #define _included_profilewindow_h
 
 #ifdef PROFILER_ENABLED
@@ -25,7 +25,7 @@ protected:
 public:
 	bool	m_totalPerSecond;
 
-    ProfileWindow( char *name );
+	ProfileWindow( const char *name );
     ~ProfileWindow();
 
     void Render( bool hasFocus );

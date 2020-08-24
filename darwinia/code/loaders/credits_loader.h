@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_creditsloader_h
 #define _included_creditsloader_h
 
@@ -19,11 +19,11 @@ public:
     int m_sceneIndex;
 
 public:
-    void GenerateChars          ( float _x, float _y, float _size, char *_string );
-    void GenerateCharsCentre    ( float _x, float _y, float _size, char *_string );
-    void GenerateWords          ( float _x, float _y, float _size, char *_string );
-    void GenerateWordsCentre    ( float _x, float _y, float _size, char *_string );
-    int  AddString              ( float _x, float _y, float _size, char *_string );
+	void GenerateChars          ( float _x, float _y, float _size, const char *_string );
+	void GenerateCharsCentre    ( float _x, float _y, float _size, const char *_string );
+	void GenerateWords          ( float _x, float _y, float _size, const char *_string );
+	void GenerateWordsCentre    ( float _x, float _y, float _size, const char *_string );
+	int  AddString              ( float _x, float _y, float _size, const char *_string );
 
     void GenerateBetaTesterList ();
     void GenerateEGamesList();
@@ -58,7 +58,7 @@ public:
     float   m_size;
     bool    m_used;
 
-    void    SetString( char *_string ) { m_string = strdup(_string); }
+	void    SetString( const char *_string ) { m_string = strdup(_string); }
 };
 
 

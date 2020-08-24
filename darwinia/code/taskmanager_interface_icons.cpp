@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/text_renderer.h"
 #include "lib/math_utils.h"
 #include "lib/input/input.h"
@@ -140,7 +140,7 @@ TaskManagerInterfaceIcons::TaskManagerInterfaceIcons()
 
 void TaskManagerInterfaceIcons::AdvanceTerminate()
 {
-    if( g_inputManager->controlEvent( ControlIconsTaskManagerEndTask ) )
+	if( g_inputManager.controlEvent( ControlIconsTaskManagerEndTask ) )
     {
         g_app->m_taskManager->TerminateTask( g_app->m_taskManager->m_currentTaskId );
         g_app->m_taskManager->m_currentTaskId = -1;
@@ -203,8 +203,8 @@ void TaskManagerInterfaceIcons::Advance()
 	}
 
     if( !m_visible &&
-        (g_inputManager->controlEvent(ControlIconsTaskManagerDisplay) ||
-         g_inputManager->controlEvent(ControlIconsTaskManagerDisplayDown))
+		(g_inputManager.controlEvent(ControlIconsTaskManagerDisplay) ||
+		 g_inputManager.controlEvent(ControlIconsTaskManagerDisplayDown))
       )
     {
         // Tab key just pressed
@@ -219,12 +219,12 @@ void TaskManagerInterfaceIcons::Advance()
         g_app->m_soundSystem->TriggerOtherEvent( NULL, "Show", SoundSourceBlueprint::TypeInterface );
         g_app->m_helpSystem->PlayerDoneAction( HelpSystem::TaskBasics );
 
-        if (g_inputManager->controlEvent(ControlIconsTaskManagerDisplayDown)) {
+		if (g_inputManager.controlEvent(ControlIconsTaskManagerDisplayDown)) {
             // Controller activated the task manager, record the time
             m_taskManagerDownTime = GetHighResTime();
         }
     }
-    else if( m_visible && g_inputManager->controlEvent(ControlIconsTaskManagerHide) )
+	else if( m_visible && g_inputManager.controlEvent(ControlIconsTaskManagerHide) )
     {
         // Tab key pressed while visible
         // So remove the task manager
@@ -239,7 +239,7 @@ void TaskManagerInterfaceIcons::Advance()
     AdvanceQuickUnit();
 
 
-    if( g_inputManager->controlEvent( ControlIconsTaskManagerQuickUnit ) )
+	if( g_inputManager.controlEvent( ControlIconsTaskManagerQuickUnit ) )
     {
         if( !m_quickUnitVisible )
         {
@@ -524,7 +524,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
             }
         }
 
-        if( g_inputManager->controlEvent( ControlMenuDown ) &&
+		if( g_inputManager.controlEvent( ControlMenuDown ) &&
 			m_currentScrollZone != 3)
         {
 			int numZones = m_screenZones.Size();
@@ -541,7 +541,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
             }
         }
 
-        if( g_inputManager->controlEvent( ControlMenuUp ) &&
+		if( g_inputManager.controlEvent( ControlMenuUp ) &&
 			m_currentScrollZone != 3)
         {
 			int numZones = m_screenZones.Size();
@@ -561,7 +561,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
 		bool changeScrollZone = false;
 		if( m_screenId == ScreenTaskManager )
 		{
-			if( g_inputManager->controlEvent( ControlMenuLeft ) )
+			if( g_inputManager.controlEvent( ControlMenuLeft ) )
 			{
 				if( m_currentScrollZone == 1 )
 				{
@@ -590,7 +590,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
 				}
 			}
 
-			if( g_inputManager->controlEvent( ControlMenuRight) )
+			if( g_inputManager.controlEvent( ControlMenuRight) )
 			{
 				if( m_currentScrollZone == 2 )
 				{
@@ -680,7 +680,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
                     ScreenZone *zone = m_screenZones[i];
                     if( stricmp( zone->m_name, "SelectTask" ) == 0 && zone->m_data == taskIndex )
                     {
-						if( g_inputManager->getInputMode() != INPUT_MODE_GAMEPAD )
+						if( g_inputManager.getInputMode() != INPUT_MODE_GAMEPAD )
 						{
 							//m_currentScreenZone = i;
 						}
@@ -717,7 +717,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
     // Handle mouse clickage
 
     if( m_currentScreenZone != -1 &&
-        (g_inputManager->controlEvent( ControlActivateTMButton ) || ButtonHeldAndReleased()) &&
+		(g_inputManager.controlEvent( ControlActivateTMButton ) || ButtonHeldAndReleased()) &&
         !highlightOnly )
     {
         ScreenZone *currentZone = m_screenZones[m_currentScreenZone];
@@ -735,7 +735,7 @@ bool TaskManagerInterfaceIcons::ButtonHeld()
 
 bool TaskManagerInterfaceIcons::ButtonHeldAndReleased()
 {
-    return ButtonHeld() && g_inputManager->controlEvent( ControlIconsTaskManagerDisplayUp ) ;
+	return ButtonHeld() && g_inputManager.controlEvent( ControlIconsTaskManagerDisplayUp ) ;
 }
 
 void TaskManagerInterfaceIcons::AdvanceKeyboardShortcuts()
@@ -776,7 +776,7 @@ void TaskManagerInterfaceIcons::RunScreenZone( const char *_name, int _data )
         {
             g_app->m_clientToServer->RequestRunProgram( g_app->m_globalWorld->m_myTeamId, _data );
             g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
-			if( g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD )
+			if( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD )
 			{
 				HideTaskManager();
 			}
@@ -800,7 +800,7 @@ void TaskManagerInterfaceIcons::RunScreenZone( const char *_name, int _data )
             g_app->m_taskManager->m_currentTaskId = nextTask->m_id;
             g_app->m_taskManager->SelectTask( g_app->m_taskManager->m_currentTaskId );
             g_app->m_soundSystem->TriggerOtherEvent( NULL, "SelectTask", SoundSourceBlueprint::TypeInterface );
-			if( g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD )
+			if( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD )
 			{
 				HideTaskManager();
 			}
@@ -835,7 +835,7 @@ void TaskManagerInterfaceIcons::RunScreenZone( const char *_name, int _data )
             g_app->m_clientToServer->RequestRunProgram( g_app->m_globalWorld->m_myTeamId, _data );
             g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
             g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
-			if( g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD )
+			if( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD )
 			{
 				HideTaskManager();
 			}
@@ -1042,7 +1042,7 @@ void TaskManagerInterfaceIcons::RenderTooltip()
         g_gameFont.DrawText2D( 20, m_screenH - 12, 12, clippedTooltip );
 
 
-		if (g_inputManager->getInputMode() != INPUT_MODE_GAMEPAD) {
+		if (g_inputManager.getInputMode() != INPUT_MODE_GAMEPAD) {
 			//
 			// Render keyboard shortcut
 
@@ -1126,7 +1126,7 @@ void TaskManagerInterfaceIcons::RenderMessages()
         //
         // Lookup task name
 
-        char *taskName = NULL;
+		const char *taskName = NULL;
 
         if( m_currentTaskType == 999 )
         {
@@ -1293,7 +1293,7 @@ void TaskManagerInterfaceIcons::RenderTaskManager()
     if( fabs(m_screenY) < 0.1f )
     {
 		bool render360Controls =
-			g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD &&
+			g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD &&
 			g_prefsManager->GetInt(OTHER_CONTROLHELPENABLED, 1);
 
 		unsigned alpha = (fmodf(g_gameTime, 2.0f) < 1.0f ? 155 : 255 );
@@ -1650,7 +1650,7 @@ void TaskManagerInterfaceIcons::RenderRunningTasks()
                 Engineer *engineer = (Engineer *) g_app->m_location->GetEntitySafe( task->m_objId, Entity::TypeEngineer );
                 if( engineer )
                 {
-                    char *state = engineer->GetCurrentAction();
+					const char *state = engineer->GetCurrentAction();
                     int numSpirits = engineer->GetNumSpirits();
 
                     g_gameFont.SetRenderShadow(true);
@@ -2203,7 +2203,7 @@ void TaskManagerInterfaceIcons::RenderObjectives()
             GlobalEventCondition *condition = objectives->GetData(i);
             bool completed = condition->Evaluate();
 
-            char *descriptor = LANGUAGEPHRASE( condition->m_stringId );
+			const char *descriptor = LANGUAGEPHRASE( condition->m_stringId );
 
             g_gameFont.SetRenderOutline(true);
             glColor4f( 0.8f, 0.8f, 0.8f, 0.0f );
@@ -2229,7 +2229,7 @@ void TaskManagerInterfaceIcons::RenderObjectives()
                 Building *building = g_app->m_location->GetBuilding( condition->m_id );
                 if( building )
                 {
-                    char *objectiveCounter = building->GetObjectiveCounter();
+					const char *objectiveCounter = building->GetObjectiveCounter();
                     g_gameFont.DrawText2D( completeX, textY+textH*0.75f, textH/3, "%s", objectiveCounter );
                 }
             }
@@ -2246,7 +2246,7 @@ void TaskManagerInterfaceIcons::RenderObjectives()
     if( m_screenY > 0.9f )
     {
 		bool render360Controls =
-			g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD &&
+			g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD &&
 			g_prefsManager->GetInt(OTHER_CONTROLHELPENABLED, 1);
 
 		unsigned alpha = (fmodf(g_gameTime, 2.0f) < 1.0f ? 155 : 255 );
@@ -2580,7 +2580,7 @@ void TaskManagerInterfaceIcons::RenderResearch()
     if( m_screenY < 0.1f )
     {
 		bool render360Controls =
-			g_inputManager->getInputMode() == INPUT_MODE_GAMEPAD &&
+			g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD &&
 			g_prefsManager->GetInt(OTHER_CONTROLHELPENABLED, 1);
 
 		unsigned alpha = (fmodf(g_gameTime, 2.0f) < 1.0f ? 155 : 255 );
@@ -2608,8 +2608,8 @@ void TaskManagerInterfaceIcons::RenderResearch()
 
 bool TaskManagerInterfaceIcons::ControlEvent( TMControl _type ) {
 	switch ( _type ) {
-		case TMTerminate: return g_inputManager->controlEvent( ControlIconsTaskManagerEndTask );
-		case TMDisplay:   return g_inputManager->controlEvent( ControlIconsTaskManagerDisplay );
+		case TMTerminate: return g_inputManager.controlEvent( ControlIconsTaskManagerEndTask );
+		case TMDisplay:   return g_inputManager.controlEvent( ControlIconsTaskManagerDisplay );
 		default:          return false;
 	}
 }
@@ -2650,18 +2650,18 @@ void TaskManagerInterfaceIcons::AdvanceQuickUnit()
         m_quickUnitDirection == 0)
     {
 		InputDetails cameraDetails, targetDetails;
-		g_inputManager->controlEvent( ControlTargetMove, targetDetails  );
-		g_inputManager->controlEvent( ControlCameraMove, cameraDetails );
+		g_inputManager.controlEvent( ControlTargetMove, targetDetails  );
+		g_inputManager.controlEvent( ControlCameraMove, cameraDetails );
 
-		bool right = (g_inputManager->controlEvent( ControlUnitCycleLeft ) ||
+		bool right = (g_inputManager.controlEvent( ControlUnitCycleLeft ) ||
 					cameraDetails.x < -10 ||
 					targetDetails.x < -10 ||
-					g_inputManager->controlEvent( ControlIconsTaskManagerQuickUnitLeft ) );
+					g_inputManager.controlEvent( ControlIconsTaskManagerQuickUnitLeft ) );
 
-		bool left = (g_inputManager->controlEvent( ControlUnitCycleRight ) ||
+		bool left = (g_inputManager.controlEvent( ControlUnitCycleRight ) ||
 					cameraDetails.x > 10 ||
 					targetDetails.x > 10 ||
-					g_inputManager->controlEvent( ControlIconsTaskManagerQuickUnitRight ) );
+					g_inputManager.controlEvent( ControlIconsTaskManagerQuickUnitRight ) );
 
         if( left )
         {
@@ -2720,7 +2720,7 @@ void TaskManagerInterfaceIcons::AdvanceQuickUnit()
             }
         }
 
-        if( g_inputManager->controlEvent( ControlIconsTaskManagerQuickUnitCreate ) )
+		if( g_inputManager.controlEvent( ControlIconsTaskManagerQuickUnitCreate ) )
         {
             int taskId = GetQuickUnitTask();
             if( taskId != -1 )
@@ -2822,7 +2822,7 @@ int TaskManagerInterfaceIcons::GetQuickUnitTask( int _position )
 bool TaskManagerInterfaceIcons::AdviseCreateControlHelpBlue()
 {
 	return m_currentScreenZone != -1 &&
-		ButtonHeld() && g_inputManager->controlEvent( ControlIconsTaskManagerDisplayPressed ) &&
+		ButtonHeld() && g_inputManager.controlEvent( ControlIconsTaskManagerDisplayPressed ) &&
 		g_app->m_taskManager->CapacityUsed() < g_app->m_taskManager->Capacity();
 }
 
@@ -2854,7 +2854,7 @@ bool TaskManagerInterfaceIcons::AdviseCloseControlHelp()
 		return false;
 
 	if (m_currentScreenZone != -1 &&
-		ButtonHeld() && g_inputManager->controlEvent( ControlIconsTaskManagerDisplayPressed ))
+		ButtonHeld() && g_inputManager.controlEvent( ControlIconsTaskManagerDisplayPressed ))
 		return false;
 
 	return true;

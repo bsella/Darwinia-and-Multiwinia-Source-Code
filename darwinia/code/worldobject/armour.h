@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_tank_h
 #define _included_tank_h
 
@@ -64,7 +64,7 @@ public:
 
     int Capacity();
 
-    void ListSoundEvents    ( LList<char *> *_list );
+	void ListSoundEvents    ( LList<const char *> *_list );
 
     void GetEntrance( Vector3 &_exitPos, Vector3 &_exitDir );
 };

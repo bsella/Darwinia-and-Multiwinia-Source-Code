@@ -1,8 +1,9 @@
-#ifndef _RAR_ARRAY_
+﻿#ifndef _RAR_ARRAY_
 #define _RAR_ARRAY_
 
 #include "errhnd.h"
 #include "rardefs.h"
+#include <cstring>
 
 extern ErrorHandler ErrHandler;
 
@@ -111,7 +112,7 @@ template <class T> void Array<T>::operator =(Array<T> &Src)
   Reset();
   Alloc(Src.BufSize);
   if (Src.BufSize!=0)
-    memcpy((void *)Buffer,(void *)Src.Buffer,Src.BufSize*sizeof(T));
+	memcpy((void *)Buffer,(void *)Src.Buffer,Src.BufSize*sizeof(T));
 }
 
 

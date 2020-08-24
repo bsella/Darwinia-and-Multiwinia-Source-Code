@@ -1,4 +1,4 @@
-// See header file for description of this library
+﻿// See header file for description of this library
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -6,7 +6,7 @@
 #include "net_lib.h"
 
 
-void NetDebugOut(char *_fmt, ...)
+void NetDebugOut(const char *_fmt, ...)
 {
     char buf[512];
     va_list ap;

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/bitmap.h"
 #include "lib/targetcursor.h"
 #include "lib/math_utils.h"
@@ -389,10 +389,10 @@ void GameCursor::Render()
 				    task->m_type == GlobalResearch::TypeSquad &&
 				    task->m_state == Task::StateRunning )
 			    {
-				    if( g_inputManager->controlEvent( ControlUnitPrimaryFireDirected /* ControlUnitStartSecondaryFireDirected */ ) )
+					if( g_inputManager.controlEvent( ControlUnitPrimaryFireDirected /* ControlUnitStartSecondaryFireDirected */ ) )
 				    {
 					    InputDetails details;
-					    g_inputManager->controlEvent( ControlUnitPrimaryFireDirected, details );
+						g_inputManager.controlEvent( ControlUnitPrimaryFireDirected, details );
 
 					    InsertionSquad *squad = ( InsertionSquad *)g_app->m_location->GetMyTeam()->GetMyUnit();
 					    Squadie *pointMan = (Squadie *)squad->GetPointMan();
@@ -501,7 +501,7 @@ void GameCursor::Render()
     }
 
     if( !cursorRendered &&
-        g_inputManager->getInputMode() != INPUT_MODE_GAMEPAD )
+		g_inputManager.getInputMode() != INPUT_MODE_GAMEPAD )
     {
         // Nobody has drawn a cursor yet
         // So give us the default
@@ -1026,7 +1026,7 @@ void MouseCursor::SetHotspot(float x, float y)
 }
 
 
-void MouseCursor::SetColour(RGBAColour &_col )
+void MouseCursor::SetColour(const RGBAColour &_col )
 {
     m_colour = _col;
 }

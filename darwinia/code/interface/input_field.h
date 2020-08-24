@@ -1,4 +1,4 @@
-#ifndef INCLUDED_INPUT_FIELD_H
+﻿#ifndef INCLUDED_INPUT_FIELD_H
 #define INCLUDED_INPUT_FIELD_H
 
 #include "lib/rgb_colour.h"
@@ -120,7 +120,7 @@ public:
     int *m_value;
 
 public:
-    ColourWindow( char *_name );
+	ColourWindow( const char *_name );
 
     void SetValue           (int *value);
     void SetCallback        (DarwiniaButton *button);              // This button will be clicked on Refresh

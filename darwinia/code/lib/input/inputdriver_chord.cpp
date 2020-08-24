@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <algorithm>
 
@@ -24,7 +24,7 @@ InputParserState ChordInputDriver::parseInputSpecification( InputSpecTokens cons
 {
 	string s;
 
-	auto_ptr<InputSpecList> speclist( new InputSpecList() );
+	unique_ptr<InputSpecList> speclist( new InputSpecList() );
 	vector<string> strings;
 	bool hasParts = false;
 
@@ -51,14 +51,14 @@ InputParserState ChordInputDriver::parseInputSpecification( InputSpecTokens cons
 		InputSpec partspec;
 		partspec.type = INPUT_TYPE_BOOL;
 
-		InputParserState pState = g_inputManager->parseInputSpecString( s, partspec, lastError );
+		InputParserState pState = g_inputManager.parseInputSpecString( s, partspec, lastError );
 		if ( PARSE_SUCCESS( pState ) ) {
 			if ( partspec.type > INPUT_TYPE_BOOL ) {
 				static string repError = "Complex inputs are not allowed in chords.";
 				lastError = repError;
 				return STATE_CONJ_ERROR;
 			}
-			speclist->push_back( InputSpecPtr( new InputSpec( partspec ) ) );
+			speclist->push_back( new InputSpec( partspec ));
 		} else {
 			return STATE_CONJ_ERROR;
 		}
@@ -77,7 +77,7 @@ bool ChordInputDriver::getInput( InputSpec const &spec, InputDetails &details )
 	if ( 0 <= spec.control_id && spec.control_id < m_specs.size() ) {
 		const InputSpecList &specs = *(m_specs[ spec.control_id ]);
 		for ( InputSpecIt i = specs.begin(); i != specs.end(); ++i )
-			if ( g_inputManager->checkInput( **i, details ) )
+			if ( g_inputManager.checkInput( **i, details ) )
 				return true;
 	}
 	return false;
@@ -107,7 +107,7 @@ bool ChordInputDriver::getInputDescription( InputSpec const &spec, InputDescript
 		for ( InputSpecIt i = specs.begin(); i != specs.end(); ++i ) {
 			InputDescription d;
 			const InputSpec &spec = **i;
-			if ( g_inputManager->getInputDescription( spec, d ) ) {
+			if ( g_inputManager.getInputDescription( spec, d ) ) {
 				d.translate();
 				if ( firstPart ) {
 					desc.noun = d.noun;

@@ -1,4 +1,4 @@
-#ifndef INCLUDED_NET_LIB_LINUX_H
+﻿#ifndef INCLUDED_NET_LIB_LINUX_H
 #define INCLUDED_NET_LIB_LINUX_H
 
 #include <sys/types.h>
@@ -25,12 +25,11 @@
   #endif
 #else
 	#define USE_SELECT_READ_WRITE 1
-  #endif
 #endif
 #include <fcntl.h>
-#include <map.h>
-#include <vector.h>
-#include <iterator.h>
+#include <map>
+#include <vector>
+#include <iterator>
 #include <pthread.h>
 
 
@@ -75,12 +74,14 @@ typedef void *(*NetThreadFunc)(void *ptr);
   #define ncAcceptLenType(a) a
 #endif
 
+#include <errno.h>
+
 // Define portable ways to test various conditions
 #define NetIsAddrInUse					(errno != EADDRINUSE)
 #define NetIsSocketError(a)				(a == -1)
 #define NetIsBlockingError(a)			((a == EALREADY) || (a == EINPROGRESS) || (a == EAGAIN))
 #define NetIsConnected(a)				0
 #define NetIsReset(a)					((a == EPIPE) || (a == ECONNRESET))
-
+#define NetGetLastError()				errno
 
 #endif

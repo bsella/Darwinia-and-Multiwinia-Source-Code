@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <float.h>
 
@@ -118,23 +118,23 @@ GlobalEventCondition::~GlobalEventCondition()
 	delete [] m_cutScene;
 }
 
-void GlobalEventCondition::SetStringId ( char *_stringId )
+void GlobalEventCondition::SetStringId ( const char *_stringId )
 {
 	delete [] m_stringId;
     m_stringId = NewStr( _stringId );
 }
 
 
-void GlobalEventCondition::SetCutScene ( char *_cutScene )
+void GlobalEventCondition::SetCutScene ( const char *_cutScene )
 {
     delete [] m_cutScene;
     m_cutScene = NewStr( _cutScene );
 }
 
 
-char *GlobalEventCondition::GetTypeName( int _type )
+const char *GlobalEventCondition::GetTypeName( int _type )
 {
-    static char *names[] = {
+	static const char *names[] = {
                                 "AlwaysTrue",
                                 "BuildingOnline",
                                 "BuildingOffline",
@@ -237,9 +237,9 @@ void GlobalEventCondition::Save( FileWriter *_out )
 // Class GlobalEventAction
 // ****************************************************************************
 
-char *GlobalEventAction::GetTypeName(int _type)
+const char *GlobalEventAction::GetTypeName(int _type)
 {
-    static char *names[] = {
+	static const char *names[] = {
                                 "SetMission",
                                 "RunScript",
                                 "MakeAvailable"
@@ -290,7 +290,7 @@ void GlobalEventAction::Write(FileWriter *_out)
 {
     _out->printf( "\t\tAction %-10s ", GetTypeName(m_type));
 
-    char *locationName = g_app->m_globalWorld->GetLocationName( m_locationId );
+	const char *locationName = g_app->m_globalWorld->GetLocationName( m_locationId );
 
     switch (m_type)
     {
@@ -754,9 +754,9 @@ void GlobalResearch::Read( TextReader *_in )
     }
 }
 
-char *GlobalResearch::GetTypeName( int _type )
+const char *GlobalResearch::GetTypeName( int _type )
 {
-    char *names[] = {
+	const char *names[] = {
                         "Darwinian",
                         "Officer",
                         "Squad",
@@ -775,11 +775,11 @@ char *GlobalResearch::GetTypeName( int _type )
 }
 
 
-char *GlobalResearch::GetTypeNameTranslated ( int _type )
+const char *GlobalResearch::GetTypeNameTranslated ( int _type )
 {
-    char *typeName = GetTypeName(_type);
+	const char *typeName = GetTypeName(_type);
 
-    char stringId[256];
+	char stringId[256];
     sprintf( stringId, "researchname_%s", typeName );
 
     if( ISLANGUAGEPHRASE( stringId ) )
@@ -1423,7 +1423,7 @@ void GlobalWorld::Advance()
         if( m_editorMode == 0 )
         {
             // Edit locations
-		    if ( g_inputManager->controlEvent( ControlSelectLocation ) )
+			if ( g_inputManager.controlEvent( ControlSelectLocation ) )
 		    {
 			    Vector3 rayStart, rayDir;
 				g_app->m_camera->GetClickRay( g_target->X(), g_target->Y(), &rayStart, &rayDir );
@@ -1440,13 +1440,13 @@ void GlobalWorld::Advance()
         else
         {
             // Move locations
-            if( g_inputManager->controlEvent( ControlSelectLocation ) )
+			if( g_inputManager.controlEvent( ControlSelectLocation ) )
             {
 			    Vector3 rayStart, rayDir;
 			    g_app->m_camera->GetClickRay( g_target->X(), g_target->Y(), &rayStart, &rayDir );
 			    m_editorSelectionId = LocationHit(rayStart, rayDir);
             }
-            else if( g_inputManager->controlEvent( ControlLocationDragActive ) )
+			else if( g_inputManager.controlEvent( ControlLocationDragActive ) )
             {
                 GlobalLocation *loc = GetLocation( m_editorSelectionId );
                 if( loc )
@@ -1455,7 +1455,7 @@ void GlobalWorld::Advance()
                     loc->m_pos = mousePos3D / 120.0f;
                 }
             }
-            else if( g_inputManager->controlEvent( ControlDeselectLocation ) )
+			else if( g_inputManager.controlEvent( ControlDeselectLocation ) )
             {
                 m_editorSelectionId = -1;
             }
@@ -1466,7 +1466,7 @@ void GlobalWorld::Advance()
 		bool chatLog = g_app->m_sepulveda->ChatLogVisible();
 
 		// Has the user clicked on a location?
-		if ( g_inputManager->controlEvent( ControlSelectLocation ) &&
+		if ( g_inputManager.controlEvent( ControlSelectLocation ) &&
 		     m_locationRequested == -1 &&
 		     EclGetWindows()->Size() == 0
 			 && !chatLog )
@@ -1642,7 +1642,7 @@ int GlobalWorld::GetLocationIdFromMapFilename(char const *_mapFilename)
 }
 
 
-char *GlobalWorld::GetLocationName( int _id )
+const char *GlobalWorld::GetLocationName( int _id )
 {
     GlobalLocation *loc = GetLocation( _id );
     if( loc ) return loc->m_name;
@@ -1650,12 +1650,12 @@ char *GlobalWorld::GetLocationName( int _id )
 }
 
 
-char *GlobalWorld::GetLocationNameTranslated( int _id )
+const char *GlobalWorld::GetLocationNameTranslated( int _id )
 {
     GlobalLocation *loc = GetLocation( _id );
     if( !loc ) return NULL;
 
-    char stringId[256];
+	char stringId[256];
     sprintf( stringId, "location_%s", loc->m_name );
 
     if( ISLANGUAGEPHRASE( stringId ) )
@@ -1875,7 +1875,7 @@ void GlobalWorld::AddLevelBuildingToGlobalBuildings(Building *_building, int _lo
 	}
 }
 
-void GlobalWorld::LoadGame( char *_filename )
+void GlobalWorld::LoadGame( const char *_filename )
 {
     TextReader *in = NULL;
     char fullFilename[256];
@@ -1998,7 +1998,7 @@ void GlobalWorld::LoadGame( char *_filename )
 }
 
 
-void GlobalWorld::SaveGame( char *_filename )
+void GlobalWorld::SaveGame( const char *_filename )
 {
     FileWriter *out = NULL;
     char fullFilename[256];
@@ -2075,7 +2075,7 @@ void GlobalWorld::ParseTutorial(TextReader *_in)
 }
 
 
-void GlobalWorld::LoadLocations(char *_filename)
+void GlobalWorld::LoadLocations(const char *_filename)
 {
     TextReader *in = g_app->m_resource->GetTextReader(_filename);
 
@@ -2096,7 +2096,7 @@ void GlobalWorld::LoadLocations(char *_filename)
 }
 
 
-void GlobalWorld::SaveLocations(char *_filename)
+void GlobalWorld::SaveLocations(const char *_filename)
 {
     FileWriter *out = g_app->m_resource->GetFileWriter( _filename, false );
 

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -538,7 +538,7 @@ bool RadarDish::UpdateEntityInTransit( Entity *_entity )
 }
 
 
-void RadarDish::ListSoundEvents ( LList<char *> *_list )
+void RadarDish::ListSoundEvents ( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <string.h>
 
@@ -151,7 +151,7 @@ void SoundParameter::Read( TextReader *_in )
 }
 
 
-void SoundParameter::Write( FileWriter *_file, char *_paramName, int _tabs )
+void SoundParameter::Write( FileWriter *_file, const char *_paramName, int _tabs )
 {
     for( int i = 0; i < _tabs; ++i )
     {
@@ -198,9 +198,9 @@ float SoundParameter::GetSmooth()
 }
 
 
-char *SoundParameter::GetParameterTypeName( int _type )
+const char *SoundParameter::GetParameterTypeName( int _type )
 {
-    char *names[] = {
+	static const char *names[] = {
                         "TypeFixedValue",
                         "TypeRangedRandom",
                         "TypeLinked"
@@ -210,7 +210,7 @@ char *SoundParameter::GetParameterTypeName( int _type )
     return names[_type];
 }
 
-int SoundParameter::GetParameterType( char *_name )
+int SoundParameter::GetParameterType( const char *_name )
 {
     for( int i = 0; i < NumParameterTypes; ++i )
     {
@@ -223,9 +223,9 @@ int SoundParameter::GetParameterType( char *_name )
 }
 
 
-char *SoundParameter::GetLinkName( int _type )
+const char *SoundParameter::GetLinkName( int _type )
 {
-    char *names[] = {
+	static const char *names[] = {
                         "Nothing",
                         "HeightAboveGround",
                         "Xpos",
@@ -240,7 +240,7 @@ char *SoundParameter::GetLinkName( int _type )
 }
 
 
-int SoundParameter::GetLinkType( char *_name )
+int SoundParameter::GetLinkType( const char *_name )
 {
     for( int i = 0; i < NumLinkTypes; ++i )
     {
@@ -253,9 +253,9 @@ int SoundParameter::GetLinkType( char *_name )
 }
 
 
-char *SoundParameter::GetUpdateTypeName( int _type )
+const char *SoundParameter::GetUpdateTypeName( int _type )
 {
-    char *names[] = {
+	static const char *names[] = {
                         "UpdateConstantly",
                         "UpdateOncePerLoop"
                     };
@@ -265,7 +265,7 @@ char *SoundParameter::GetUpdateTypeName( int _type )
 }
 
 
-int SoundParameter::GetUpdateType( char *_name )
+int SoundParameter::GetUpdateType( const char *_name )
 {
     for( int i = 0; i < NumUpdateTypes; ++i )
     {

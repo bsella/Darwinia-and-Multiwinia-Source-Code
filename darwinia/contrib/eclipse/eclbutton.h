@@ -1,4 +1,4 @@
-
+﻿
 
 // Button class
 // Part of the Eclipse interface library
@@ -36,11 +36,11 @@ public:
 	EclButton ();
 	virtual ~EclButton ();
 
-    virtual void SetProperties   ( char *_name, int _x, int _y, int _w, int _h,
-			        		       char *_caption=NULL, char *_tooltip=NULL );
+	virtual void SetProperties   ( const char *_name, int _x, int _y, int _w, int _h,
+								   const char *_caption=NULL, const char *_tooltip=NULL );
 
 	virtual void SetCaption      ( const char *_caption );
-	virtual void SetTooltip      ( char *_tooltip );
+	virtual void SetTooltip      ( const char *_tooltip );
     virtual void SetParent       ( EclWindow *_parent );
 
 	virtual void Render     ( int realX, int realY, bool highlighted, bool clicked );

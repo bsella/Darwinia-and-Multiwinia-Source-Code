@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <float.h>
 
@@ -44,7 +44,7 @@
 // *** AdvanceTeleportControl
 void LocationInput::AdvanceRadarDishControl(Building *_building)
 {
-	if( g_inputManager->controlEvent( ControlUnitSetTarget ) )
+	if( g_inputManager.controlEvent( ControlUnitSetTarget ) )
     {
         Vector3 rayStart;
         Vector3 rayDir;
@@ -135,7 +135,7 @@ bool LocationInput::GetObjectUnderMouse( WorldObjectId &_id, int _teamId )
 // *** AdvanceNoSelection
 void LocationInput::AdvanceNoSelection()
 {
-	if (g_inputManager->controlEvent( ControlSelectLocation ) &&
+	if (g_inputManager.controlEvent( ControlSelectLocation ) &&
         !g_app->m_taskManagerInterface->m_visible )
     {
         WorldObjectId id;
@@ -180,11 +180,11 @@ void LocationInput::AdvanceNoSelection()
 /*
 void LocationInput::AdvanceNoSelection()
 {
-    if (g_inputManager->m_lmbClicked)
+	if (g_inputManager.m_lmbClicked)
     {
         Vector3 rayStart;
         Vector3 rayDir;
-        g_app->m_camera->GetClickRay(g_inputManager->m_mouseX, g_inputManager->m_mouseY,
+		g_app->m_camera->GetClickRay(g_inputManager.m_mouseX, g_inputManager.m_mouseY,
 									 &rayStart, &rayDir);
 
         // Find any objects the ray intersects
@@ -203,7 +203,7 @@ void LocationInput::AdvanceNoSelection()
 
 		if (buildId != -1 || unitId != -1 || entId.IsValid() )
 		{
-			g_inputManager->m_lmbClicked = false;
+			g_inputManager.m_lmbClicked = false;
 		}
 
         if( buildDist < unitDist )
@@ -274,8 +274,8 @@ void LocationInput::AdvanceTeamControl()
     //
     // Have we clicked to select something?
 
-    if ( g_inputManager->controlEvent( ControlUnitSetTarget ) && // TODO: Really?
-        //!g_inputManager->m_rmb &&
+	if ( g_inputManager.controlEvent( ControlUnitSetTarget ) && // TODO: Really?
+		//!g_inputManager.m_rmb &&
         !g_app->m_taskManagerInterface->m_visible &&
 		!taskStarted)
     {
@@ -296,7 +296,7 @@ void LocationInput::AdvanceTeamControl()
                           team->m_currentEntityId != -1 ||
                           team->m_currentBuildingId != -1;
 
-    if ( g_inputManager->controlEvent( ControlUnitDeselect ) )
+	if ( g_inputManager.controlEvent( ControlUnitDeselect ) )
     {
         if( objectSelected )
         {
@@ -317,7 +317,7 @@ void LocationInput::AdvanceTeamControl()
 
     if( taskStarted && !g_app->m_taskManagerInterface->m_visible )
     {
-        if( g_inputManager->controlEvent( ControlUnitCreate ) )
+		if( g_inputManager.controlEvent( ControlUnitCreate ) )
         {
             Vector3 mousePos = g_app->m_userInput->GetMousePos3d();
             g_app->m_clientToServer->RequestTargetProgram( g_app->m_globalWorld->m_myTeamId,
@@ -376,19 +376,19 @@ void LocationInput::AdvanceTeamControl()
                 }
 
                 Officer *officer = (Officer *)ent;
-                if( g_inputManager->controlEvent( ControlWeaponCycleLeft ) )
+				if( g_inputManager.controlEvent( ControlWeaponCycleLeft ) )
                 {
                     officer->SetPreviousMode();
                 }
-                else if( g_inputManager->controlEvent( ControlWeaponCycleRight ) )
+				else if( g_inputManager.controlEvent( ControlWeaponCycleRight ) )
                 {
                     officer->SetNextMode();
                 }
             }
             else if( ent->m_type == Entity::TypeArmour )
             {
-                if( g_inputManager->controlEvent( ControlWeaponCycleLeft ) ||
-                    g_inputManager->controlEvent( ControlWeaponCycleRight ) )
+				if( g_inputManager.controlEvent( ControlWeaponCycleLeft ) ||
+					g_inputManager.controlEvent( ControlWeaponCycleRight ) )
                 {
                     Armour *armour = (Armour *)ent;
                     armour->SetDirectOrders();
@@ -434,7 +434,7 @@ void LocationInput::AdvanceTeamControl()
                     if( weaponList.Size() > 1 )
                     {
                         int oldWeapon = currentWeapon;
-                        if( g_inputManager->controlEvent( ControlWeaponCycleLeft ) )
+						if( g_inputManager.controlEvent( ControlWeaponCycleLeft ) )
                         {
                             currentWeapon--;
                             if( currentWeapon < 0 )
@@ -443,7 +443,7 @@ void LocationInput::AdvanceTeamControl()
                             }
                         }
 
-                        if( g_inputManager->controlEvent( ControlWeaponCycleRight ) )
+						if( g_inputManager.controlEvent( ControlWeaponCycleRight ) )
                         {
                             currentWeapon++;
                             if( currentWeapon >= weaponList.Size() )

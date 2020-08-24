@@ -1,4 +1,4 @@
-// See header file for module description
+﻿// See header file for module description
 
 #include "net_lib.h"
 #include "net_socket.h"
@@ -6,6 +6,7 @@
 #include "net_thread.h"
 #include "net_udp_packet.h"
 
+#include <string.h>
 
 NetSocketListener::NetSocketListener(unsigned short port)
 {

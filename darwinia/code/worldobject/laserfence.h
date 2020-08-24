@@ -1,4 +1,4 @@
-#ifndef _included_laserfence_h
+﻿#ifndef _included_laserfence_h
 #define _included_laserfence_h
 
 #include <stdio.h>
@@ -74,7 +74,7 @@ public:
                                  float _rayLen=1e10, Vector3 *_pos=NULL, Vector3 *_norm=NULL);
     bool DoesShapeHit           (Shape *_shape, Matrix34 _transform);
 
-    void ListSoundEvents        (LList<char *> *_list );
+	void ListSoundEvents        (LList<const char *> *_list );
 
     Vector3 GetTopPosition();
 };

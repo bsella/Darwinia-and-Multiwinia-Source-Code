@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <vector>
 #include <iostream>
@@ -16,7 +16,7 @@
 using namespace std;
 
 
-InputManager *g_inputManager = NULL;
+InputManager g_inputManager;
 
 
 InputManager::InputManager()
@@ -165,10 +165,10 @@ void InputManager::Advance()
 		idleNext = idleNext && driverIdle;
 
 		if ( !driverIdle ) {
-		InputMode driverInputMode = driver->getInputMode();
-		if ( driverInputMode > nextInputMode )
-			nextInputMode = driverInputMode; // This prefers the Gamepad
-	}
+			InputMode driverInputMode = driver->getInputMode();
+			if ( driverInputMode > nextInputMode )
+				nextInputMode = driverInputMode; // This prefers the Gamepad
+		}
 	}
 
 	m_idle = idleNext;

@@ -1,4 +1,4 @@
-#ifndef INCLUDED_MOVEMENT3D_H
+﻿#ifndef INCLUDED_MOVEMENT3D_H
 #define INCLUDED_MOVEMENT3D_H
 
 #include <memory>
@@ -82,11 +82,11 @@ public:
 class PriorityMovement2D : public Movement2D {
 
 private:
-	std::auto_ptr<Movement2D> first, second;
+	std::unique_ptr<Movement2D> first, second;
 
 public:
-	PriorityMovement2D( std::auto_ptr<Movement2D> _first,
-	                    std::auto_ptr<Movement2D> _second );
+	PriorityMovement2D( std::unique_ptr<Movement2D>& _first,
+						std::unique_ptr<Movement2D>& _second );
 
 	void Advance();
 

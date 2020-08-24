@@ -1,4 +1,4 @@
-#ifndef INCLUDED_INPUT_H
+﻿#ifndef INCLUDED_INPUT_H
 #define INCLUDED_INPUT_H
 
 #include <vector>
@@ -11,10 +11,7 @@
 #include "lib/input/control_types.h"
 #include "lib/input/control_bindings.h"
 
-
 class InputManager {
-
-private:
 	std::vector<InputDriver *> drivers;
 
 	ControlBindings bindings;
@@ -105,7 +102,7 @@ public:
 };
 
 
-extern InputManager *g_inputManager;
+extern InputManager g_inputManager;
 
 
 #endif

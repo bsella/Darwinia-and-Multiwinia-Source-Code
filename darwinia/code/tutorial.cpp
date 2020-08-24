@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/hi_res_time.h"
 #include "lib/text_renderer.h"
 #include "lib/input/input.h"
@@ -32,6 +32,9 @@ Tutorial::Tutorial()
 {
 }
 
+Tutorial::~Tutorial()
+{
+}
 
 int  Tutorial::GetCurrentChapter()
 {
@@ -57,7 +60,7 @@ void Tutorial::SetChapter( int _chapter )
 }
 
 
-void Tutorial::RepeatMessage( char *_stringId, float _repeatPeriod, char *_gestureDemo )
+void Tutorial::RepeatMessage( const char *_stringId, float _repeatPeriod, char *_gestureDemo )
 {
     if( m_repeatMessage )
     {
@@ -127,7 +130,7 @@ void Tutorial::Advance()
     //
     // Has the user skipped the tutorial?
 
-    if( g_inputManager->controlEvent( ControlSkipTutorial ) )
+	if( g_inputManager.controlEvent( ControlSkipTutorial ) )
     {
         g_app->m_sepulveda->ShutUp();
         g_app->m_sepulveda->Say( "tutorial_skipped" );

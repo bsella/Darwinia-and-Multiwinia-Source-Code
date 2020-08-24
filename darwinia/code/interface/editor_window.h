@@ -1,4 +1,4 @@
-#ifndef _included_EditWindow_h
+﻿#ifndef _included_EditWindow_h
 #define _included_EditWindow_h
 
 #ifdef LOCATION_EDITOR
@@ -11,7 +11,7 @@ class MainEditWindow : public DarwiniaWindow
 public:
 	DarwiniaWindow *m_currentEditWindow;
 
-	MainEditWindow( char *name );
+	MainEditWindow( const char *name );
 
 	void Create();
 };

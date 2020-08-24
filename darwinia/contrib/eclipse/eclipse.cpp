@@ -1,4 +1,4 @@
- //#include "lib/universal_include.h"
+﻿ //#include "lib/universal_include.h"
 #include "lib/random.h"
 
 #ifdef WIN32
@@ -366,12 +366,12 @@ void EclShutdown ()
     dirtyrects.EmptyAndDelete();
 }
 
-char *EclGetCurrentButton ()
+const char *EclGetCurrentButton ()
 {
     return currentButton;
 }
 
-char *EclGetCurrentClickedButton ()
+const char *EclGetCurrentClickedButton ()
 {
     if ( lmb )
         return currentButton;
@@ -380,7 +380,7 @@ char *EclGetCurrentClickedButton ()
         return "None";
 }
 
-char *EclGenerateUniqueWindowName( char *name )
+const char *EclGenerateUniqueWindowName( const char *name )
 {
     static char uniqueName[SIZE_ECLWINDOW_NAME];
 
@@ -438,7 +438,7 @@ void EclRemovePopup ()
     strcpy( popupWindow, "None" );
 }
 
-void EclRemoveWindow ( char *name )
+void EclRemoveWindow ( const char *name )
 {
     
     int index = EclGetWindowIndex(name);
@@ -467,7 +467,7 @@ void EclRemoveWindow ( char *name )
     
 }
 
-void EclSetWindowPosition ( char *name, int x, int y )
+void EclSetWindowPosition ( const char *name, int x, int y )
 {
 
     EclWindow *window = EclGetWindow(name);
@@ -484,7 +484,7 @@ void EclSetWindowPosition ( char *name, int x, int y )
 
 }
 
-void EclSetWindowSize ( char *name, int w, int h )
+void EclSetWindowSize ( const char *name, int w, int h )
 {
     EclWindow *window = EclGetWindow(name);
     if ( window )
@@ -502,7 +502,7 @@ void EclSetWindowSize ( char *name, int w, int h )
     }
 }
 
-void EclBringWindowToFront ( char *name )
+void EclBringWindowToFront ( const char *name )
 {
 
     int index = EclGetWindowIndex(name);
@@ -543,7 +543,7 @@ bool EclIsTextEditing()
 	 return (currentWindow && strcmp( currentWindow->m_currentTextEdit, "None" ) != 0);
 }
 
-int EclGetWindowIndex ( char *name )
+int EclGetWindowIndex ( const char *name )
 {
     for ( int i = 0; i < windows.Size(); ++i )
     {
@@ -555,7 +555,7 @@ int EclGetWindowIndex ( char *name )
     return -1;
 }
 
-EclWindow *EclGetWindow ( char *name )
+EclWindow *EclGetWindow ( const char *name )
 {
     
     int index = EclGetWindowIndex (name);
@@ -586,7 +586,7 @@ EclWindow *EclGetWindow ( int x, int y )
     return NULL;
 }
 
-void EclMaximiseWindow ( char *name )
+void EclMaximiseWindow ( const char *name )
 {
     EclUnMaximise();
     EclWindow *w = EclGetWindow( name );
@@ -674,7 +674,7 @@ void EclRegisterClearFunction ( void (*_clearDraw) (int, int, int, int) )
     clearDraw = _clearDraw;
 }
 
-void EclDirtyWindow ( char *name )
+void EclDirtyWindow ( const char *name )
 {
 
     EclWindow *window = EclGetWindow(name);
@@ -750,12 +750,12 @@ bool EclRectangleOverlap ( int x1, int y1, int w1, int h1,
 
 }
 
-char *EclGetCurrentFocus()
+const char *EclGetCurrentFocus()
 {
     return windowFocus;
 }
 
-void EclSetCurrentFocus( char *name )
+void EclSetCurrentFocus( const char *name )
 {
     if( strlen( name ) < SIZE_ECLWINDOW_NAME )
     {

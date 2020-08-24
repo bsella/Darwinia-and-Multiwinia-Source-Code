@@ -1,4 +1,4 @@
-#ifndef _RAR_RARCOMMON_
+﻿#ifndef _RAR_RARCOMMON_
 #define _RAR_RARCOMMON_
 
 #include "raros.h"

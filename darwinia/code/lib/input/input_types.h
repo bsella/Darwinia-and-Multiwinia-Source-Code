@@ -1,4 +1,4 @@
-#ifndef INCLUDED_INPUT_TYPES_H
+﻿#ifndef INCLUDED_INPUT_TYPES_H
 #define INCLUDED_INPUT_TYPES_H
 
 #include <string>
@@ -23,7 +23,7 @@ struct InputDetails {
 };
 
 typedef auto_vector<const InputDetails> InputDetailsList;
-typedef std::auto_ptr<InputDetails> InputDetailsPtr;
+typedef std::unique_ptr<InputDetails> InputDetailsPtr;
 
 class InputDescription {
 
@@ -54,5 +54,4 @@ enum InputMode {
 	INPUT_MODE_GAMEPAD     // Describes a driver that accepts input from a Gamepad
 };
 
-
-#endif INCLUDED_INPUT_TYPES_H
+#endif

@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_sporegenerator_h
 #define _included_sporegenerator_h
 
@@ -49,7 +49,7 @@ public:
     void Render             ( float _predictionTime );
     bool RenderPixelEffect  ( float _predictionTime );
 
-    void ListSoundEvents    ( LList<char *> *_list );
+	void ListSoundEvents    ( LList<const char *> *_list );
 };
 
 

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 
 #include <string.h>
@@ -12,7 +12,7 @@
 
 
 
-ServerToClient::ServerToClient( char *_ip )
+ServerToClient::ServerToClient( const char *_ip )
 :   m_socket(NULL)
 {
     strcpy ( m_ip, _ip );
@@ -28,7 +28,7 @@ ServerToClient::ServerToClient( char *_ip )
 }
 
 
-char *ServerToClient::GetIP()
+const char *ServerToClient::GetIP()
 {
     return m_ip;
 }

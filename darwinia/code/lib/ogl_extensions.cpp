@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #if !defined USE_DIRECT3D
 #include "lib/debug_utils.h"
@@ -40,6 +40,7 @@ void InitialiseOGLExtensions()
 //	fprintf(out, "%s\n", extensions);
 //	fclose(out);
 
+#ifdef TARGET_MSVC
     gglMultiTexCoord2fARB = (MultiTexCoord2fARB)wglGetProcAddress("glMultiTexCoord2fARB");
     gglActiveTextureARB = (ActiveTextureARB)wglGetProcAddress("glActiveTextureARB");
 
@@ -56,6 +57,9 @@ void InitialiseOGLExtensions()
 	gglGetBufferPointervARB		= (glGetBufferPointervARB)		wglGetProcAddress("glGetBufferPointervARB");
 
     gglChoosePixelFormatARB = (ChoosePixelFormatARB)wglGetProcAddress("wglChoosePixelFormatARB");
+#else
+	///TODO
+#endif
 }
 
 int IsOGLExtensionSupported(const char *extension)

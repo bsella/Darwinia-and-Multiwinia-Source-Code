@@ -1,4 +1,4 @@
-#ifndef _INCLUDED_LIGHTS_WINDOW_H
+﻿#ifndef _INCLUDED_LIGHTS_WINDOW_H
 #define _INCLUDED_LIGHTS_WINDOW_H
 
 #ifdef LOCATION_EDITOR
@@ -13,7 +13,7 @@
 class LightsEditWindow: public DarwiniaWindow
 {
 public:
-    LightsEditWindow( char *name );
+	LightsEditWindow( const char *name );
 	~LightsEditWindow();
 
 	void Create();

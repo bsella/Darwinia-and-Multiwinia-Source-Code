@@ -1,4 +1,4 @@
-// ****************************************************************************
+﻿// ****************************************************************************
 //  Top level include file for NetLib
 //
 //  NetLib - A very thin portable UDP network library
@@ -25,7 +25,7 @@
 #endif
 
 
-void NetDebugOut(char *fmt, ...);
+void NetDebugOut(const char *fmt, ...);
 
 
 #define MAX_HOSTNAME_LEN   	256

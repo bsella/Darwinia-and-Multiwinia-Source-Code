@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -66,7 +66,7 @@ void ThrowableWeapon::Initialise ()
 }
 
 
-void ThrowableWeapon::TriggerSoundEvent( char *_event )
+void ThrowableWeapon::TriggerSoundEvent( const char *_event )
 {
     switch( m_type )
     {
@@ -897,10 +897,10 @@ void MuzzleFlash::Render( float _predictionTime )
     float predictedLife = m_life - _predictionTime * 10.0f;
     //float predictedLife = m_life;
     Vector3 predictedPos = m_pos + m_front * _predictionTime * 10.0f;
-    Vector3 right = m_front ^ g_upVector;
-
-    Vector3 camUp = g_app->m_camera->GetUp();
-    Vector3 camRight = g_app->m_camera->GetRight();
+	//Vector3 right = m_front ^ g_upVector;
+	//
+	//Vector3 camUp = g_app->m_camera->GetUp();
+	//Vector3 camRight = g_app->m_camera->GetRight();
 
     Vector3 fromPos = predictedPos;
     Vector3 toPos = predictedPos + m_front * m_size;
@@ -991,7 +991,7 @@ bool Missile::AdvanceToTargetPosition( Vector3 const &_pos )
 
 bool Missile::Advance()
 {
-    bool dead = false;
+	//bool dead = false;
     m_life -= SERVER_ADVANCE_PERIOD;
     if( m_life < 0.0f )
     {

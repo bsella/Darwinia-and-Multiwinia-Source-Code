@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <string>
 #include <memory>
@@ -7,7 +7,9 @@
 #include "lib/text_renderer.h"
 #include "lib/language_table.h"
 #include "lib/text_stream_readers.h"
+#ifdef TARGET_MSVC
 #include "lib/input/win32_eventhandler.h"
+#endif
 #include "lib/input/control_types.h"
 #include "lib/input/file_paths.h"
 
@@ -70,8 +72,8 @@ public:
 	{
 		TextFileReader reader( InputPrefs::GetSystemPrefsPath() );
 		if ( reader.IsOpen() ) {
-			g_inputManager->Clear();
-			g_inputManager->parseInputPrefs( reader );
+			g_inputManager.Clear();
+			g_inputManager.parseInputPrefs( reader );
 		}
 
 		PrefsKeybindingsWindow *parent = (PrefsKeybindingsWindow *) m_parent;
@@ -91,18 +93,18 @@ class ApplyKeybindingsButton : public DarwiniaButton
 
 		for ( unsigned i = 0; s_controls[ i ].name != NULL; ++i )
 		{
-			g_inputManager->getControlString( s_controls[ i ].type, key );
+			g_inputManager.getControlString( s_controls[ i ].type, key );
 			val = parent->m_bindings[ i ]->pref;
 			prefsMan.SetString( key.c_str(), val.c_str() );
-			g_inputManager->replacePrimaryBinding( s_controls[ i ].type, val );
+			g_inputManager.replacePrimaryBinding( s_controls[ i ].type, val );
 
 			if ( ControlIconsTaskManagerDisplay == s_controls[ i ].type ) {
 				string::size_type pos = val.find( "down", 0 );
 				if ( pos != string::npos ) {
-					g_inputManager->getControlString( ControlIconsTaskManagerHide, key );
+					g_inputManager.getControlString( ControlIconsTaskManagerHide, key );
 					val = val.replace( pos, 4, "up", 0, 2 );
 					prefsMan.SetString( key.c_str(), val.c_str() );
-					g_inputManager->replacePrimaryBinding( ControlIconsTaskManagerHide, val );
+					g_inputManager.replacePrimaryBinding( ControlIconsTaskManagerHide, val );
 				}
 			}
 		}
@@ -160,10 +162,10 @@ public:
 		if (m_listening)
 		{
 			InputSpec spec;
-			if ( g_inputManager->getFirstActiveInput( spec, m_instant ) ) {
-				auto_ptr<InputDescription> desc( new InputDescription() );
-				if ( g_inputManager->getInputDescription( spec, *desc ) ) {
-					parent->m_bindings[m_id] = desc;
+			if ( g_inputManager.getFirstActiveInput( spec, m_instant ) ) {
+				std::unique_ptr<InputDescription> desc( new InputDescription() );
+				if ( g_inputManager.getInputDescription( spec, *desc ) ) {
+					parent->m_bindings[m_id] = std::move(desc);
 					m_listening = false;
 				}
 			}
@@ -214,8 +216,8 @@ PrefsKeybindingsWindow::PrefsKeybindingsWindow()
 	unsigned i;
 	for ( i = 0; s_controls[i].type != ControlNull; ++i )
 	{
-		auto_ptr<InputDescription> desc( new InputDescription() );
-		g_inputManager->getBoundInputDescription( s_controls[i].type, *desc );
+		std::unique_ptr<InputDescription> desc( new InputDescription() );
+		g_inputManager.getBoundInputDescription( s_controls[i].type, *desc );
 		m_bindings.push_back( desc );
 	}
 

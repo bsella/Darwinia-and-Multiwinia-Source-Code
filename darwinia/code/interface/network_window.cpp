@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 
 #include <stdio.h>
@@ -15,7 +15,7 @@
 #include "interface/network_window.h"
 
 
-NetworkWindow::NetworkWindow( char *name )
+NetworkWindow::NetworkWindow( const char *name )
 :   DarwiniaWindow( name )
 {
 }

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <string>
 #include <sstream>
@@ -81,7 +81,7 @@ void IdleInputDriver::Advance()
 	double timeNow = GetHighResTime();
 	m_oldIdleTime = m_idleTime;
 
-	if ( g_inputManager->isIdle() ) {
+	if ( g_inputManager.isIdle() ) {
 		double timeDelta = timeNow - m_lastChecked;
 		m_idleTime += timeDelta;
 	} else {

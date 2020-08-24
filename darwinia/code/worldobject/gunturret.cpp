@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -306,8 +306,8 @@ bool GunTurret::Advance()
         primaryFire = g_controlBindings->ControlMouseEvent( ControlBindings::ControlUnitPrimaryFire, team->m_currentMouseStatus, team->m_mouseDeltas );
         secondaryFire = g_controlBindings->ControlMouseEvent( ControlBindings::ControlUnitSecondaryFire, team->m_currentMouseStatus, team->m_mouseDeltas );
 #endif // JAMES_FIX
-        primaryFire = g_inputManager->controlEvent( ControlUnitPrimaryFireTarget ) || g_inputManager->controlEvent( ControlUnitStartSecondaryFireDirected );
-        secondaryFire = g_inputManager->controlEvent( ControlUnitSecondaryFireTarget );
+		primaryFire = g_inputManager.controlEvent( ControlUnitPrimaryFireTarget ) || g_inputManager.controlEvent( ControlUnitStartSecondaryFireDirected );
+		secondaryFire = g_inputManager.controlEvent( ControlUnitSecondaryFireTarget );
     }
     else
     {
@@ -520,7 +520,7 @@ bool GunTurret::DoesRayHit(Vector3 const &_rayStart, Vector3 const &_rayDir,
 }
 
 
-void GunTurret::ListSoundEvents( LList<char *> *_list )
+void GunTurret::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 

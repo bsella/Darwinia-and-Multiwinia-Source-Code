@@ -1,4 +1,4 @@
-#ifndef INCLUDED_SOUND_LIBRARY_3D_H
+﻿#ifndef INCLUDED_SOUND_LIBRARY_3D_H
 #define INCLUDED_SOUND_LIBRARY_3D_H
 
 
@@ -104,7 +104,7 @@ public:
 
     void		 WriteSilence       (signed short *_data, unsigned int _numSamples);
 
-	virtual void StartRecordToFile	(char const *_filename) {}
+	virtual void StartRecordToFile	(char const *) {}
 	virtual void EndRecordToFile	() {}
 };
 

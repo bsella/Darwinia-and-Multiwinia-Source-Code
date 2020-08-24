@@ -1,4 +1,4 @@
-#ifndef _RAR_GLOBAL_
+﻿#ifndef _RAR_GLOBAL_
 #define _RAR_GLOBAL_
 
 #ifdef INCLUDEGLOBAL

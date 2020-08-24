@@ -1,4 +1,4 @@
-#ifndef INCLUDED_SOUND_INSTANCE_H
+﻿#ifndef INCLUDED_SOUND_INSTANCE_H
 #define INCLUDED_SOUND_INSTANCE_H
 
 #include "lib/vector3.h"
@@ -161,7 +161,7 @@ public:
     void    StopPlaying         ();                                     // Stops sound immediately (if playing)
 
     int     GetChannelIndex		();
-    char    *GetDescriptor		();
+	const char    *GetDescriptor		();
 
     bool    Update3DPosition            ();                             // Will only set the pos if required
     bool    UpdateChannelVolume         ();                             // Takes into account ADSR. Returns true if done
@@ -174,10 +174,10 @@ public:
 
     WorldObject *GetAttachedObject  ();
 
-    static char *GetPositionTypeName    ( int _type );
-    static char *GetInstanceTypeName    ( int _type );
-    static char *GetLoopTypeName        ( int _type );
-    static char *GetSourceTypeName      ( int _type );
+	static const char *GetPositionTypeName    ( int _type );
+	static const char *GetInstanceTypeName    ( int _type );
+	static const char *GetLoopTypeName        ( int _type );
+	static const char *GetSourceTypeName      ( int _type );
 };
 
 

@@ -1,4 +1,4 @@
-#ifndef _RAR_TIMEFN_
+﻿#ifndef _RAR_TIMEFN_
 #define _RAR_TIMEFN_
 
 
@@ -36,7 +36,7 @@ class RarTime
 #endif
 #if defined(_UNIX) || defined(_EMX)
     RarTime& operator =(time_t ut);
-    time_t RarTime::GetUnix();
+	time_t GetUnix();
 #endif
     bool operator == (RarTime &rt);
     bool operator < (RarTime &rt);
@@ -47,9 +47,9 @@ class RarTime
     void SetLocal(RarLocalTime *lt) {rlt=*lt;}
     unsigned int GetDos();
     void SetDos(unsigned int DosTime);
-    void GetText(char *DateStr,bool FullYear);
-    void SetIsoText(char *TimeText);
-    void SetAgeText(char *TimeText);
+	void GetText(char *DateStr,bool FullYear);
+	void SetIsoText(const char *TimeText);
+	void SetAgeText(const char *TimeText);
     void SetCurrentTime();
     void Reset() {rlt.Year=0;}
     bool IsSet() {return(rlt.Year!=0);}

@@ -1,4 +1,4 @@
-#ifndef SERVER_H
+﻿#ifndef SERVER_H
 #define SERVER_H
 
 #include "lib/llist.h"
@@ -53,16 +53,16 @@ public:
     void ReceiveLetter      ( NetworkUpdate *update, char *fromIP );
     void SendLetter         ( ServerToClientLetter *letter );
 
-    int  GetClientId        ( char *_ip );
-    void RegisterNewClient  ( char *_ip );
-    void RemoveClient       ( char *_ip );
-    void RegisterNewTeam    ( char *_ip, int _teamType, int _desiredTeamId );
+	int  GetClientId        ( const char *_ip );
+	void RegisterNewClient  ( const char *_ip );
+	void RemoveClient       ( const char *_ip );
+	void RegisterNewTeam    ( const char *_ip, int _teamType, int _desiredTeamId );
 
 	void AdvanceSender		();
     void Advance			();
 
-    void LoadHistory        ( char *_filename );
-    void SaveHistory        ( char *_filename );
+	void LoadHistory        ( const char *_filename );
+	void SaveHistory        ( const char *_filename );
 
     static int   ConvertIPToInt( const char *_ip );
     static char *ConvertIntToIP( const int _ip );

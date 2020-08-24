@@ -1,4 +1,4 @@
-#ifndef _included_weapons_h
+﻿#ifndef _included_weapons_h
 #define _included_weapons_h
 
 
@@ -26,7 +26,7 @@ protected:
 
     RGBAColour m_colour;
 
-    void TriggerSoundEvent( char *_event );
+	void TriggerSoundEvent( const char *_event );
 
 public:
     ThrowableWeapon( int _type, Vector3 const &_startPos, Vector3 const &_front, float _force );

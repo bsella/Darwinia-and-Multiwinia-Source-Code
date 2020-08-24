@@ -1,4 +1,4 @@
-#ifndef INCLUDED_SEPULVEDA_H
+﻿#ifndef INCLUDED_SEPULVEDA_H
 #define INCLUDED_SEPULVEDA_H
 
 #include "lib/llist.h"
@@ -63,16 +63,16 @@ public:
     void Advance    ();
     void Render     ();
 
-    void Say                ( char *_stringId );
+	void Say                ( const char *_stringId );
     void DemoGesture        ( char const *_gestureDemoName, float _startDelay );
     void ShutUp             ();
 
     void SetCutsceneMode    ( bool _cutsceneMode );
     bool IsInCutsceneMode   ();
-    void HighlightBuilding  ( int _buildingId, char *_highlightName );
-    void HighlightPosition  ( Vector3 const &_pos, float _radius, char *_highlightName );
-    bool IsHighlighted      ( Vector3 const &_pos, float _radius, char *_highlightName=NULL );
-    void ClearHighlights    ( char *_highlightName=NULL );
+	void HighlightBuilding  ( int _buildingId, const char *_highlightName );
+	void HighlightPosition  ( Vector3 const &_pos, float _radius, const char *_highlightName );
+	bool IsHighlighted      ( Vector3 const &_pos, float _radius, const char *_highlightName=NULL );
+	void ClearHighlights    ( const char *_highlightName=NULL );
 
     bool PlayerSkipsMessage();      // Returns true if a message was skipped
 
@@ -109,7 +109,7 @@ public:
     char        *m_name;
 
 public:
-    SepulvedaHighlight( char *_name );
+	SepulvedaHighlight( const char *_name );
     ~SepulvedaHighlight();
 
     void        Start   ( Vector3 const &_pos, float _radius );

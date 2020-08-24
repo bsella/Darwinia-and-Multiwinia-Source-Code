@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_darwinian_h
 #define _included_darwinian_h
 
@@ -117,7 +117,7 @@ public:
     void SetFire                ();
     bool IsOnFire               ();
 
-    void ListSoundEvents        ( LList<char *> *_list );
+	void ListSoundEvents        ( LList<const char *> *_list );
 };
 
 

@@ -1,4 +1,4 @@
-
+﻿
 /*
  *          ECLIPSE
  *        version 2.0
@@ -32,16 +32,16 @@ void EclShutdown ();
 
 
 void EclRegisterWindow          ( EclWindow *window, EclWindow *parent=NULL );
-void EclRemoveWindow            ( char *name );
+void EclRemoveWindow            ( const char *name );
 void EclRegisterPopup           ( EclWindow *window );
 void EclRemovePopup             ();
 
-void EclBringWindowToFront      ( char *name );
-void EclSetWindowPosition       ( char *name, int x, int y );
-void EclSetWindowSize           ( char *name, int w, int h );
+void EclBringWindowToFront      ( const char *name );
+void EclSetWindowPosition       ( const char *name, int x, int y );
+void EclSetWindowSize           ( const char *name, int w, int h );
 
-int EclGetWindowIndex           ( char *name );                                             // -1 = failure
-EclWindow *EclGetWindow         ( char *name );
+int EclGetWindowIndex           ( const char *name );                                             // -1 = failure
+EclWindow *EclGetWindow         ( const char *name );
 EclWindow *EclGetWindow         ( int x, int y );                                           
 
 bool EclMouseInWindow           ( EclWindow *window );
@@ -50,16 +50,16 @@ bool EclIsTextEditing			();
 
 void EclRegisterTooltipCallback ( void (*_callback) (EclWindow *, EclButton *) );
 
-void EclMaximiseWindow          ( char *name );
+void EclMaximiseWindow          ( const char *name );
 void EclUnMaximise              ();
 
-char *EclGetCurrentButton          ();
-char *EclGetCurrentClickedButton   ();
+const char *EclGetCurrentButton          ();
+const char *EclGetCurrentClickedButton   ();
 
-char *EclGetCurrentFocus             ();
-void EclSetCurrentFocus              ( char *name );
+const char *EclGetCurrentFocus             ();
+void EclSetCurrentFocus              ( const char *name );
 
-char *EclGenerateUniqueWindowName( char *name );                                // In static mem (don't delete!)
+const char *EclGenerateUniqueWindowName( const char *name );                                // In static mem (don't delete!)
 LList <EclWindow *> *EclGetWindows ();
 
 // ============================================================================
@@ -80,7 +80,7 @@ public:
 
 void EclRegisterClearFunction   ( void (*_clearDraw) (int, int, int, int) );
 
-void EclDirtyWindow             ( char *name );
+void EclDirtyWindow             ( const char *name );
 void EclDirtyWindow             ( EclWindow *window );
 void EclDirtyRectangle          ( int x, int y, int w, int h );
 

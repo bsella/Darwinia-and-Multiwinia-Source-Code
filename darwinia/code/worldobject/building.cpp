@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -695,7 +695,7 @@ int Building::GetPortOperatorCount( int _portId, int _teamId )
 }
 
 
-char *Building::GetObjectiveCounter()
+const char *Building::GetObjectiveCounter()
 {
     return "";
 }
@@ -839,9 +839,9 @@ int Building::GetTypeId( char const *_name )
     return -1;
 }
 
-char *Building::GetTypeName( int _type )
+const char *Building::GetTypeName( int _type )
 {
-    static char *buildingNames[] = {    "Invalid",
+	static const char *buildingNames[] = {    "Invalid",
                                         "Factory",                              // These must be in the
                                         "Cave",                                 // Same order as defined
                                         "RadarDish",                            // in building.h
@@ -913,9 +913,9 @@ char *Building::GetTypeName( int _type )
 }
 
 
-char *Building::GetTypeNameTranslated( int _type )
+const char *Building::GetTypeNameTranslated( int _type )
 {
-    char *typeName = GetTypeName(_type);
+	const char *typeName = GetTypeName(_type);
 
     char stringId[256];
     sprintf( stringId, "buildingname_%s", typeName );
@@ -931,7 +931,7 @@ char *Building::GetTypeNameTranslated( int _type )
 }
 
 
-void Building::ListSoundEvents( LList<char *> *_list )
+void Building::ListSoundEvents( LList<const char *> *_list )
 {
     _list->PutData( "Create" );
     _list->PutData( "Reprogramming" );              // Remove me

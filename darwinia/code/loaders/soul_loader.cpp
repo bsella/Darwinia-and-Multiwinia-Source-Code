@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/vector3.h"
 #include "lib/debug_render.h"
 #include "lib/window_manager.h"
@@ -191,7 +191,7 @@ void SoulLoader::RenderMessage( float _time )
 
                 char msgId[256];
                 sprintf( msgId, "bootloader_soul_%d", i );
-                char *msg = LANGUAGEPHRASE(msgId);
+				const char *msg = LANGUAGEPHRASE(msgId);
                 g_gameFont.DrawText3DCentre( pos, thisSize, msg );
             }
         }
@@ -203,7 +203,7 @@ void SoulLoader::Run()
 {
     g_app->m_soundSystem->TriggerOtherEvent( NULL, "LoaderSoul", SoundSourceBlueprint::TypeMusic );
 
-    while( !g_inputManager->controlEvent( ControlSkipMessage ) )
+	while( !g_inputManager.controlEvent( ControlSkipMessage ) )
     {
         if( g_app->m_requestQuit ) break;
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -216,9 +216,9 @@ void SoulLoader::Run()
         RenderAllSpirits();
         RenderMessage( timeThisFrame );
 
-        g_windowManager->Flip();
-		g_inputManager->Advance();
-        g_inputManager->PollForEvents();
+		g_windowManager.Flip();
+		g_inputManager.Advance();
+		g_inputManager.PollForEvents();
         Sleep(1);
 
         AdvanceSound();

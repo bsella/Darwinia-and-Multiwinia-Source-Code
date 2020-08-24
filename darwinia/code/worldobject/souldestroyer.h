@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_souldestroyer_h
 #define _included_souldestroyer_h
 
@@ -57,7 +57,7 @@ public:
 
     void Attack             ( Vector3 const &_pos );
 
-    void ListSoundEvents    ( LList<char *> *_list );
+	void ListSoundEvents    ( LList<const char *> *_list );
 
 	void SetWaypoint( Vector3 const _waypoint );
 };

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/debug_render.h"
 #include "lib/math_utils.h"
@@ -2441,7 +2441,7 @@ void Darwinian::Render( float _predictionTime, float _highDetail )
 }
 
 
-void Darwinian::ListSoundEvents( LList<char *> *_list )
+void Darwinian::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
 

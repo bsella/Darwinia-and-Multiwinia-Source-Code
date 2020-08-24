@@ -1,9 +1,9 @@
-#ifndef DEBUG_UTILS_H
+﻿#ifndef DEBUG_UTILS_H
 #define DEBUG_UTILS_H
 
 #include <stdio.h>
 
-void DebugOut(char *fmt, ...);
+void DebugOut(const char *fmt, ...);
 
 
 void DarwiniaReleaseAssert(bool _condition, char const *_fmt, ...);

@@ -1,4 +1,4 @@
-#ifndef _RAR_PATHFN_
+﻿#ifndef _RAR_PATHFN_
 #define _RAR_PATHFN_
 
 char* PointToName(const char *Path);
@@ -39,6 +39,6 @@ char* VolNameToFirstName(const char *VolName,char *FirstName,bool NewNumbering);
 
 
 
-inline char* GetOutputName(const char *Name) {return((char *)Name);};
+inline char* GetOutputName(const char *Name) {return((char *)Name);}
 
 #endif

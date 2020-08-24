@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_controltower_h
 #define _included_controltower_h
 
@@ -45,7 +45,7 @@ public:
     bool Reprogram              ( int _teamId );                            // Returns true if job completed
     void EndReprogram           ( int _position );
 
-    void ListSoundEvents        ( LList<char *> *_list );
+	void ListSoundEvents        ( LList<const char *> *_list );
 
     void Read   ( TextReader *_in, bool _dynamic );
     void Write  ( FileWriter *_out );

@@ -1,4 +1,4 @@
-#ifndef INCLUDED_UNIVERSAL_INCLUDE_H
+﻿#ifndef INCLUDED_UNIVERSAL_INCLUDE_H
 #define INCLUDED_UNIVERSAL_INCLUDE_H
 
 #define DARWINIA_VERSION "1.5.11"
@@ -16,8 +16,6 @@
 //#define TARGET_VISTA_DEMO2
 
 // === PICK ONE OF THESE TARGETS ===
-
-#define DEBUG_RENDER_ENABLED
 
 //#define USE_CRASHREPORTING
 
@@ -149,28 +147,28 @@
 	#define stricmp strcasecmp
 	#define strnicmp strncasecmp
 	#define __stdcall
-	template<class T> inline T min (T a, T b) { return (a < b) ? a : b; };
-	template<class T> inline T max (T a, T b) { return (a > b) ? a : b; };
+	template<class T> inline T min (T a, T b) { return (a < b) ? a : b; }
+	template<class T> inline T max (T a, T b) { return (a > b) ? a : b; }
 	inline char * strlwr(char *s) {
-	  char *p = s;
 	  for (char *p = s; *p; p++)
 		*p = tolower(*p);
 	  return s;
 	}
 	inline char * strupr(char *s) {
-	  char *p = s;
 	  for (char *p = s; *p; p++)
 		*p = toupper(*p);
 	  return s;
 	}
 	#include <unistd.h>
-	#define Sleep sleep
+	#define Sleep usleep
 
     #define DARWINIA_PLATFORM "linux"
 	#define _snprintf snprintf
 
 	#undef AVI_GENERATOR
 	#undef SOUND_EDITOR
+
+	#define ZeroMemory(dest, len) memset(dest,0, len)
 #endif
 
 #ifdef TARGET_OS_MACOSX

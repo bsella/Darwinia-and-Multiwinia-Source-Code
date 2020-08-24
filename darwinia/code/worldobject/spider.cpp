@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <float.h>
 
@@ -800,7 +800,7 @@ bool Spider::IsInView()
 }
 
 
-void Spider::ListSoundEvents(LList<char *> *_list)
+void Spider::ListSoundEvents(LList<const char *> *_list)
 {
     Entity::ListSoundEvents( _list );
 

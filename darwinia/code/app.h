@@ -1,4 +1,4 @@
-#ifndef _INCLUDED_APP_H
+﻿#ifndef _INCLUDED_APP_H
 #define _INCLUDED_APP_H
 
 #include "lib/rgb_colour.h"
@@ -123,12 +123,12 @@ public:
 	~App();
 
 
-    void    SetProfileName  ( char *_profileName );
+	void    SetProfileName  ( const char *_profileName );
     bool    LoadProfile     ();
     bool    SaveProfile     ( bool _global, bool _local );
     void    ResetLevel      ( bool _global );
 
-    void    SetLanguage     ( char *_language, bool _test );
+	void    SetLanguage     ( const char *_language, bool _test );
 
 	bool	HasBoughtGame	();
 

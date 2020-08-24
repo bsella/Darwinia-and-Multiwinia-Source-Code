@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <time.h>
 
@@ -79,7 +79,7 @@ public:
 
 
 
-TreeWindow::TreeWindow( char *_name )
+TreeWindow::TreeWindow( const char *_name )
 :   DarwiniaWindow( _name ),
     m_selectionId(-1)
 {

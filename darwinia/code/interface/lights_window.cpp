@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <stdio.h>
 
@@ -90,7 +90,7 @@ class NewLightButton : public DarwiniaButton
 // Class LightsEditWindow
 // ****************************************************************************
 
-LightsEditWindow::LightsEditWindow( char *name )
+LightsEditWindow::LightsEditWindow( const char *name )
 :	DarwiniaWindow(name)
 {
 }

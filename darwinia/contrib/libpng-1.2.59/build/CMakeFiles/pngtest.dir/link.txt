@@ -1,0 +1,1 @@
+/usr/bin/cc -O2 -g -DNDEBUG  -rdynamic CMakeFiles/pngtest.dir/pngtest.o  -o pngtest  -Wl,-rpath,/home/karim/Downloads/libpng-1.2.59/build libpng12.so.0.59.0 -lz -lm 

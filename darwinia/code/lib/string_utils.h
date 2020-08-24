@@ -1,4 +1,4 @@
-#ifndef INCLUDED_STRING_UTILS_H
+﻿#ifndef INCLUDED_STRING_UTILS_H
 #define INCLUDED_STRING_UTILS_H
 
 #include <string.h>

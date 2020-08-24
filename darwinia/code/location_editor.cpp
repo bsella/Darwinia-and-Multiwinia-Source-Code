@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 #include <limits.h>
@@ -277,7 +277,7 @@ void LocationEditor::AdvanceModeNone()
 	Vector3 rayStart, rayDir;
 	g_app->m_camera->GetClickRay( g_target->X(), g_target->Y(), &rayStart, &rayDir );
 
-	if ( g_inputManager->controlEvent( ControlSelectLocation ) ) // TODO: Really?
+	if ( g_inputManager.controlEvent( ControlSelectLocation ) ) // TODO: Really?
 	{
 		if (DoesRayHitBuilding(rayStart, rayDir) != -1)				RequestMode(ModeBuilding);
 		else if (DoesRayHitInstantUnit(rayStart, rayDir) != -1)		RequestMode(ModeInstantUnit);
@@ -314,7 +314,7 @@ void LocationEditor::AdvanceModeLandTile()
 	Vector3 mousePos3D = g_app->m_userInput->GetMousePos3d();
 
 	int newSelectionId = -1;
-	if ( g_inputManager->controlEvent( ControlTileSelect ) )
+	if ( g_inputManager.controlEvent( ControlTileSelect ) )
 	{
 		newSelectionId = IsPosInLandTile(mousePos3D);
 	}
@@ -351,7 +351,7 @@ void LocationEditor::AdvanceModeLandTile()
 	{
 		// There is a current selection
 
-		if( g_inputManager->controlEvent( ControlTileDrop ) )
+		if( g_inputManager.controlEvent( ControlTileDrop ) )
 		{
 			// Move the selected landscape to the new position and regenerate it
 			LandscapeTile *tileDef = g_app->m_location->m_levelFile->m_landscape.m_tiles.GetData(m_selectionId);
@@ -369,7 +369,7 @@ void LocationEditor::AdvanceModeLandTile()
 				g_app->m_location->m_landscape.Init(def);
 			}
 		}
-		if( g_inputManager->controlEvent( ControlTileSelect ) ) // TODO: Should this be ControlTileGrab?
+		if( g_inputManager.controlEvent( ControlTileSelect ) ) // TODO: Should this be ControlTileGrab?
 		{
 			if (newSelectionId == m_selectionId)
 			{
@@ -389,7 +389,7 @@ void LocationEditor::AdvanceModeLandTile()
                 EclRemoveWindow(LANGUAGEPHRASE("editor_guidegrid"));
 			}
 		}
-		else if ( g_inputManager->controlEvent( ControlTileDrag ) )
+		else if ( g_inputManager.controlEvent( ControlTileDrag ) )
 		{
 			// The user "drags" the landscape around
 			m_newLandscapeX = mousePos3D.x - m_landscapeGrabX;
@@ -404,7 +404,7 @@ void LocationEditor::AdvanceModeLandFlat()
 	Vector3 mousePos3D = g_app->m_userInput->GetMousePos3d();
 
 	int newSelectionId = -1;
-	if ( g_inputManager->controlEvent( ControlTileSelect ) )
+	if ( g_inputManager.controlEvent( ControlTileSelect ) )
 	{
 		Vector3 mousePos = g_app->m_userInput->GetMousePos3d();
 		newSelectionId = IsPosInFlattenArea(mousePos);
@@ -432,7 +432,7 @@ void LocationEditor::AdvanceModeLandFlat()
 	{
 		Location *location = g_app->m_location;
 
-		if ( g_inputManager->controlEvent( ControlTileSelect ) )
+		if ( g_inputManager.controlEvent( ControlTileSelect ) )
 		{
 			if (newSelectionId == m_selectionId)
 			{
@@ -450,7 +450,7 @@ void LocationEditor::AdvanceModeLandFlat()
 				EclRemoveWindow("Flatten Area");
 			}
 		}
-		else if ( g_inputManager->controlEvent( ControlTileDrag ) )
+		else if ( g_inputManager.controlEvent( ControlTileDrag ) )
 		{
 			// The user "drags" the flatten area around
 			LandscapeFlattenArea *areaDef = g_app->m_location->m_levelFile->m_landscape.m_flattenAreas.GetData(m_selectionId);
@@ -470,7 +470,7 @@ void LocationEditor::AdvanceModeBuilding()
 
 	// Find the ID of the building the user is clicking on
 	int newSelectionId = -1;
-	if ( g_inputManager->controlEvent( ControlTileSelect ) )
+	if ( g_inputManager.controlEvent( ControlTileSelect ) )
 	{
 		Vector3 rayStart, rayDir;
 		cam->GetClickRay( g_target->X(), g_target->Y(), &rayStart, &rayDir );
@@ -513,7 +513,7 @@ void LocationEditor::AdvanceModeBuilding()
 		Building *building = location->GetBuilding(m_selectionId);
 
 
-		if ( g_inputManager->controlEvent( ControlTileSelect ) )                  // If left mouse is clicked then consider creating a new link
+		if ( g_inputManager.controlEvent( ControlTileSelect ) )                  // If left mouse is clicked then consider creating a new link
 		{
 			if (newSelectionId == -1)
 			{
@@ -526,7 +526,7 @@ void LocationEditor::AdvanceModeBuilding()
 				m_tool = ToolNone;
 			}
 		}
-		else if ( g_inputManager->controlEvent( ControlTileDrag ) && newSelectionId == -1 )  // Otherwise consider rotation and movement
+		else if ( g_inputManager.controlEvent( ControlTileDrag ) && newSelectionId == -1 )  // Otherwise consider rotation and movement
 		{
 			switch (m_tool)
 			{
@@ -553,7 +553,7 @@ void LocationEditor::AdvanceModeLight()
 {
 	Location *location = g_app->m_location;
 
-	if (location->m_lights.ValidIndex(m_selectionId) &&  g_inputManager->controlEvent( ControlTileDrag ) )
+	if (location->m_lights.ValidIndex(m_selectionId) &&  g_inputManager.controlEvent( ControlTileDrag ) )
 	{
 		Light *worldLight = location->m_lights.GetData(m_selectionId);
 		Vector3 front(worldLight->m_front[0], worldLight->m_front[1], worldLight->m_front[2]);
@@ -568,7 +568,7 @@ void LocationEditor::AdvanceModeInstantUnit()
 	Camera *cam = g_app->m_camera;
 
 	int newSelectionId = -1;
-	if ( g_inputManager->controlEvent( ControlTileSelect ) ) // TODO: Should be something else?
+	if ( g_inputManager.controlEvent( ControlTileSelect ) ) // TODO: Should be something else?
 	{
 		Vector3 rayStart, rayDir;
 		cam->GetClickRay( g_target->X(), g_target->Y(), &rayStart, &rayDir );
@@ -593,7 +593,7 @@ void LocationEditor::AdvanceModeInstantUnit()
 	}
 	else
 	{
-		if ( g_inputManager->controlEvent( ControlTileSelect ) ) // TODO: Something else?
+		if ( g_inputManager.controlEvent( ControlTileSelect ) ) // TODO: Something else?
 		{
 			if (newSelectionId != m_selectionId)
 			{
@@ -601,7 +601,7 @@ void LocationEditor::AdvanceModeInstantUnit()
 				EclRemoveWindow(LANGUAGEPHRASE("editor_instantuniteditor"));
 			}
 		}
-		else if ( g_inputManager->controlEvent( ControlTileDrag ) ) // TODO: Something else?
+		else if ( g_inputManager.controlEvent( ControlTileDrag ) ) // TODO: Something else?
 		{
 			InstantUnit *iu = g_app->m_location->m_levelFile->m_instantUnits.GetData(m_selectionId);
 			switch (m_tool)
@@ -621,7 +621,7 @@ void LocationEditor::AdvanceModeInstantUnit()
 
 void LocationEditor::AdvanceModeCameraMount()
 {
-  	if ( g_inputManager->controlEvent( ControlTileSelect ) )
+	if ( g_inputManager.controlEvent( ControlTileSelect ) )
 	{
 		CameraAnimSecondaryEditWindow *win = (CameraAnimSecondaryEditWindow*)
 												EclGetWindow(LANGUAGEPHRASE("editor_cameraanim"));
@@ -659,8 +659,8 @@ void LocationEditor::Advance()
     if( !EclGetWindow( g_target->X(), g_target->Y() ) )
     {
 	    if (m_waitingForRelease &&
-			( g_inputManager->controlEvent( ControlTileDrag ) ||
-			  g_inputManager->controlEvent( ControlTileDrop ) )) // TODO: Something else?
+			( g_inputManager.controlEvent( ControlTileDrag ) ||
+			  g_inputManager.controlEvent( ControlTileDrop ) )) // TODO: Something else?
 		{
 			return;
 		}
@@ -682,7 +682,7 @@ void LocationEditor::Advance()
 
 void LocationEditor::RenderUnit(InstantUnit *_iu)
 {
-	char *typeName = Entity::GetTypeName(_iu->m_type);
+	const char *typeName = Entity::GetTypeName(_iu->m_type);
 
 	float landHeight = g_app->m_location->m_landscape.m_heightMap->GetValue(_iu->m_posX, _iu->m_posZ);
 	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );

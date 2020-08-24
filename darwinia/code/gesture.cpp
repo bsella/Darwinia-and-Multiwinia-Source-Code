@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -433,7 +433,7 @@ void Gesture::RunComparison()
     }
 }
 
-void Gesture::LoadTrainingData( char *filename )
+void Gesture::LoadTrainingData( const char *filename )
 {
     TextReader *reader = g_app->m_resource->GetTextReader(filename);
     DarwiniaReleaseAssert(reader && reader->IsOpen(), "Couldn't open Gesture data file");
@@ -468,7 +468,7 @@ void Gesture::LoadTrainingData( char *filename )
     TrainSystem();
 }
 
-void Gesture::SaveTrainingData( char *filename )
+void Gesture::SaveTrainingData( const char *filename )
 {
     FileWriter *file = g_app->m_resource->GetFileWriter( filename, false );
 
@@ -496,7 +496,7 @@ void Gesture::SaveTrainingData( char *filename )
     delete file;
 }
 
-Gesture::Gesture( char *_filename )
+Gesture::Gesture( const char *_filename )
 {
 
     //

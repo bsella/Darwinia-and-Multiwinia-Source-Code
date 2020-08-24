@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <float.h>
 #include <math.h>
@@ -958,7 +958,6 @@ bool Landscape::RayHitCell(int x0, int z0,
 	return true;*/
 }
 
-
 // Returns the distance to the nearest point on the landscape if it is
 // within the specified radius. Otherwise returns -1.0f.
 float Landscape::SphereHit(Vector3 const &_centre, float _radius) const
@@ -972,10 +971,10 @@ float Landscape::SphereHit(Vector3 const &_centre, float _radius) const
 	int y1 = m_heightMap->GetMapIndexY(_centre.z - _radius);
 	int y2 = m_heightMap->GetMapIndexY(_centre.z + _radius);
 
-	clamp(x1, 0, m_heightMap->GetNumColumns());
-	clamp(x2, 0, m_heightMap->GetNumColumns());
-	clamp(y1, 0, m_heightMap->GetNumRows());
-	clamp(y2, 0, m_heightMap->GetNumRows());
+	//clamp(x1, 0, m_heightMap->GetNumColumns());
+	//clamp(x2, 0, m_heightMap->GetNumColumns());
+	//clamp(y1, 0, m_heightMap->GetNumRows());
+	//clamp(y2, 0, m_heightMap->GetNumRows());
 
 	float nearestSqrd = FLT_MAX;
 	Vector3 pos;

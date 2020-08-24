@@ -1,6 +1,8 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/input/input.h"
+#ifdef TARGET_MSVC
 #include "lib/input/win32_eventhandler.h"
+#endif
 #include "lib/profiler.h"
 #include "lib/text_renderer.h"
 #include "lib/window_manager.h"
@@ -45,7 +47,7 @@ StartSequence::StartSequence()
 }
 
 
-void StartSequence::RegisterCaption( char *_caption, float _x, float _y, float _size,
+void StartSequence::RegisterCaption( const char *_caption, float _x, float _y, float _size,
                                      float _startTime, float _endTime )
 {
     StartSequenceCaption *caption = new StartSequenceCaption();
@@ -73,16 +75,16 @@ bool StartSequence::Advance()
         g_app->m_camera->RequestMode(Camera::ModeSphereWorldIntro);
     }
 
-    g_inputManager->PollForEvents();
+	g_inputManager.PollForEvents();
 
-	if( !g_eventHandler->WindowHasFocus() )
-    {
-		Sleep(1);
-		g_app->m_userInput->Advance();
-		return false;
-    }
+	//if( !g_eventHandler->WindowHasFocus() )
+	//{
+	//	Sleep(1);
+	//	g_app->m_userInput->Advance();
+	//	return false;
+	//}
 
-    if( g_inputManager->controlEvent( ControlSkipMessage ) ||
+	if( g_inputManager.controlEvent( ControlSkipMessage ) ||
 		g_app->m_requestQuit ||
 		( GetHighResTime() - m_startTime ) > 90 )
     {

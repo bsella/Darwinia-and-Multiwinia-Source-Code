@@ -1,4 +1,4 @@
-#ifndef _INCLUDED_INSTANT_UNIT_WINDOW_H
+﻿#ifndef _INCLUDED_INSTANT_UNIT_WINDOW_H
 #define _INCLUDED_INSTANT_UNIT_WINDOW_H
 
 #ifdef LOCATION_EDITOR
@@ -13,7 +13,7 @@
 class InstantUnitEditWindow: public DarwiniaWindow
 {
 public:
-	InstantUnitEditWindow(char *name);
+	InstantUnitEditWindow(const char *name);
 	~InstantUnitEditWindow();
 
 	void Create();
@@ -27,7 +27,7 @@ public:
 class InstantUnitCreateWindow: public DarwiniaWindow
 {
 public:
-    InstantUnitCreateWindow( char *name );
+	InstantUnitCreateWindow( const char *name );
 	~InstantUnitCreateWindow();
 
 	void Create();

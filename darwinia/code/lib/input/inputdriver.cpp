@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <iostream>
 
@@ -7,7 +7,7 @@
 
 struct ConditionInfo {
 	inputtype_t type;     // InputType
-	char *name;
+	const char *name;
 	condition_t cond;     // InputCondition
 };
 
@@ -22,7 +22,7 @@ static ConditionInfo s_conditions[] = {
 	INPUT_TYPE_ANALOG, "move",     COND_MOVED,    // Analog is outside dead zone (return delta)
 	INPUT_TYPE_ANALOG, "zero",     COND_ZERO,     // Analog is still in dead zone
 	INPUT_TYPE_ANALOG, "read",     COND_READ,     // Analog always triggers (return default device info)
-	NULL,              NULL,       NULL
+	0,              NULL,       0
 };
 
 condition_t InputDriver::getDefaultConditionID( std::string const &name, inputtype_t &type )

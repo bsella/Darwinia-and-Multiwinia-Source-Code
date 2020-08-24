@@ -1,4 +1,4 @@
-#ifndef INCLUDED_SPIDER_H
+﻿#ifndef INCLUDED_SPIDER_H
 #define INCLUDED_SPIDER_H
 
 
@@ -94,7 +94,7 @@ public:
 	bool    RenderPixelEffect   (float _predictionTime);
 
     bool    IsInView            ();
-    void    ListSoundEvents     (LList<char *> *_list);
+	void    ListSoundEvents     (LList<const char *> *_list);
 };
 
 

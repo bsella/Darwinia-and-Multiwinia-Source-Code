@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/binary_stream_readers.h"
 #include "lib/bitmap.h"
@@ -818,7 +818,7 @@ bool Virii::IsInView()
 }
 
 
-void Virii::ListSoundEvents( LList<char *> *_list )
+void Virii::ListSoundEvents( LList<const char *> *_list )
 {
     Entity::ListSoundEvents( _list );
     _list->PutData( "ChangeDirection" );

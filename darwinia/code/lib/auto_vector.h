@@ -1,4 +1,4 @@
-#if !defined AUTO_VECTOR_H
+﻿#if !defined AUTO_VECTOR_H
 #define AUTO_VECTOR_H
 //------------------------------------
 // Reliable Software (c) 2003
@@ -28,7 +28,7 @@ public:
 		auto_lvalue (T * & p) : _p (p) {}
 		operator T * () const { return _p; }
 		T * operator-> () const { return _p; }
-		auto_lvalue & operator= (std::auto_ptr<T> ap)
+		auto_lvalue & operator= (std::unique_ptr<T> ap)
 		{
 			delete _p;
 			_p = ap.release ();
@@ -60,12 +60,13 @@ public:
 	{
 		return auto_lvalue (_arr [i]);
 	}
-	void assign (size_t i, std::auto_ptr<T> p);
+	void assign (size_t i, std::unique_ptr<T>& p);
 	void assign_direct (size_t i, T * p);
-	void insert (size_t idx, std::auto_ptr<T> p);
+	void insert (size_t idx, std::unique_ptr<T>& p);
 	// stack access
-	void push_back (std::auto_ptr<T> p);
-	std::auto_ptr<T> pop_back (); // non-standard
+	void push_back (T* v);
+	void push_back (std::unique_ptr<T>& p);
+	std::unique_ptr<T> pop_back (); // non-standard
 	T * back () { return _arr.back (); }
     T const * back () const { return _arr.back (); }
 	T * front () { return _arr.front (); }
@@ -113,19 +114,25 @@ auto_vector<T>::~auto_vector ()
 }
 
 template <class T>
-void auto_vector<T>::push_back (std::auto_ptr<T> ptr)
+void auto_vector<T>::push_back (T* ptr)
+{
+	_arr.push_back (ptr);
+}
+
+template <class T>
+void auto_vector<T>::push_back (std::unique_ptr<T>& ptr)
 {
     _arr.push_back (ptr.get ());
     ptr.release ();
 }
 
 template <class T>
-inline std::auto_ptr<T> auto_vector<T>::pop_back ()
+inline std::unique_ptr<T> auto_vector<T>::pop_back ()
 {
 	assert (size () != 0);
 	T * p = _arr.back ();
 	_arr.pop_back ();
-	return std::auto_ptr<T> (p);
+	return std::unique_ptr<T> (p);
 }
 
 template <class T>
@@ -155,7 +162,7 @@ inline void auto_vector<T>::assign_direct (size_t i, T * p)
 }
 
 template <class T>
-inline void auto_vector<T>::assign (size_t i, std::auto_ptr<T> p)
+inline void auto_vector<T>::assign (size_t i, std::unique_ptr<T>& p)
 {
     assert (i < size ());
 	if (_arr [i] != p.get ())
@@ -235,7 +242,7 @@ inline void auto_vector<T>::resize (unsigned int newSize)
 }
 
 template <class T>
-void auto_vector<T>::insert (size_t idx, std::auto_ptr<T> p)
+void auto_vector<T>::insert (size_t idx, std::unique_ptr<T>& p)
 {
 	assert (idx <= size ());
 	_arr.insert (ToIter (idx), p.get ());

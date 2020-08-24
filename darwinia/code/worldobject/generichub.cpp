@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
@@ -64,7 +64,7 @@ bool DynamicBase::Advance()
     return Building::Advance();
 }
 
-void DynamicBase::ListSoundEvents( LList<char *> *_list )
+void DynamicBase::ListSoundEvents( LList<const char *> *_list )
 {
     Building::ListSoundEvents( _list );
 
@@ -148,7 +148,7 @@ void DynamicHub::ReprogramComplete()
 }
 
 
-void DynamicHub::ListSoundEvents( LList<char *> *_list )
+void DynamicHub::ListSoundEvents( LList<const char *> *_list )
 {
     DynamicBase::ListSoundEvents( _list );
 
@@ -436,7 +436,7 @@ void DynamicNode::RenderAlphas( float _predictionTime )
 }
 
 
-void DynamicNode::ListSoundEvents( LList<char *> *_list )
+void DynamicNode::ListSoundEvents( LList<const char *> *_list )
 {
     DynamicBase::ListSoundEvents( _list );
 

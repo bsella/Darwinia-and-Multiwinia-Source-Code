@@ -1,6 +1,8 @@
-// See header file for module description
+﻿// See header file for module description
 
 #include "net_socket.h"
+
+#include <string.h>
 
 #ifdef TARGET_MSVC
 #define fdopen _fdopen
@@ -84,7 +86,7 @@ NetRetCode NetSocket::CheckTimeout(unsigned int *timeout, unsigned int *timedout
 }
 
 
-NetRetCode NetSocket::Connect(char *host, unsigned short port)
+NetRetCode NetSocket::Connect(const char *host, unsigned short port)
 {
 	NetRetCode ret = NetFailed;
 	
