@@ -14,7 +14,7 @@
 #include "interface/save_on_quit_window.h"
 
 #include "sound/sample_cache.h"
-#include "sound/sound_library_2d.h"	// FIXME
+#include "sound/sound_library_2d_sdl.h"	// FIXME
 #include "sound/sound_library_3d.h"
 #include "sound/soundsystem.h"
 #include "sound/sound_stream_decoder.h"
@@ -310,7 +310,7 @@ void SoundSystem::RestartSoundLibrary()
 	const char *libName   = g_prefsManager->GetString("SoundLibrary", "dsound");
 	int bufSize		= 20000;
 
-	g_soundLibrary2d = new SoundLibrary2d;
+	g_soundLibrary2d = new SoundLibrary2dSDL;
 	g_soundLibrary3d = NULL;
 
 #ifdef HAVE_DSOUND
@@ -358,7 +358,7 @@ bool SoundSystem::SoundLibraryMainCallback( unsigned int _channel, signed short 
     if( instance && instance->m_cachedSampleHandle )
     {
 #ifdef PROFILER_ENABLED
-		g_app->m_soundSystem->m_eventProfiler->StartProfile(instance->m_eventName);
+		g_app->m_soundSystem->m_eventProfiler->StartProfile(instance->m_eventName.c_str());
 #endif
 
 
@@ -413,7 +413,7 @@ bool SoundSystem::SoundLibraryMainCallback( unsigned int _channel, signed short 
         }
 
 #ifdef PROFILER_ENABLED
-		g_app->m_soundSystem->m_eventProfiler->EndProfile(instance->m_eventName);
+		g_app->m_soundSystem->m_eventProfiler->EndProfile(instance->m_eventName.c_str());
 #endif
 		return true;
     }
@@ -434,7 +434,7 @@ bool SoundSystem::SoundLibraryMusicCallback( signed short *_data, unsigned int _
     if( instance && instance->m_cachedSampleHandle )
     {
 #ifdef PROFILER_ENABLED
-		g_app->m_soundSystem->m_eventProfiler->StartProfile(instance->m_eventName);
+		g_app->m_soundSystem->m_eventProfiler->StartProfile(instance->m_eventName.c_str());
 #endif
 
 
@@ -489,7 +489,7 @@ bool SoundSystem::SoundLibraryMusicCallback( signed short *_data, unsigned int _
         }
 
 #ifdef PROFILER_ENABLED
-		g_app->m_soundSystem->m_eventProfiler->EndProfile(instance->m_eventName);
+		g_app->m_soundSystem->m_eventProfiler->EndProfile(instance->m_eventName.c_str());
 #endif
 		return true;
     }
@@ -947,7 +947,7 @@ bool SoundSystem::InitialiseSound( SoundInstance *_instance )
             {
                 SoundInstance *thisInstance = m_sounds[i];
                 if( thisInstance->m_instanceType != SoundInstance::Polyphonic &&
-                    stricmp( thisInstance->m_eventName, _instance->m_eventName ) == 0 )
+					stricmp( thisInstance->m_eventName.c_str(), _instance->m_eventName.c_str() ) == 0 )
                 {
                     for( int j = 0; j < _instance->m_objIds.Size(); ++j )
                     {
@@ -1208,7 +1208,7 @@ void SoundSystem::StopAllSounds( WorldObjectId _id, const char *_eventName )
 
                 if( instance->m_objId == _id )
                 {
-                    if( !_eventName || stricmp(instance->m_eventName, _eventName) == 0 )
+					if( !_eventName || stricmp(instance->m_eventName.c_str(), _eventName) == 0 )
                     {
                         if( instance->IsPlaying() )
                         {
@@ -1253,7 +1253,7 @@ int SoundSystem::NumInstancesPlaying( WorldObjectId _id, const char *_eventName 
 
         if( instance &&
             instanceMatch &&
-            stricmp( instance->m_eventName, _eventName ) == 0 )
+			stricmp( instance->m_eventName.c_str(), _eventName ) == 0 )
         {
             ++result;
         }
@@ -1276,7 +1276,7 @@ int SoundSystem::NumInstances( WorldObjectId _id, const char *_eventName )
 
             if( instance &&
                 instanceMatch &&
-                stricmp( instance->m_eventName, _eventName ) == 0 )
+				stricmp( instance->m_eventName.c_str(), _eventName ) == 0 )
             {
                 ++result;
             }
@@ -1482,7 +1482,7 @@ void SoundSystem::Advance()
 
             instance->m_calculatedPriority = instance->m_perceivedVolume;
 
-            BTree<float> *existingInstance = existingInstances.LookupTree( instance->m_eventName );
+			BTree<float> *existingInstance = existingInstances.LookupTree( instance->m_eventName.c_str() );
             if( existingInstance )
             {
                 instance->m_calculatedPriority *= existingInstance->data;
@@ -1490,7 +1490,7 @@ void SoundSystem::Advance()
             }
             else
             {
-                existingInstances.PutData( instance->m_eventName, 0.75f );
+				existingInstances.PutData( instance->m_eventName.c_str(), 0.75f );
             }
 
 

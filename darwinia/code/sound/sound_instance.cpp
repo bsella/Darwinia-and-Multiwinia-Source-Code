@@ -134,8 +134,7 @@ SoundInstance::SoundInstance()
     m_parent(NULL),
     m_adsrTimer(0.0f),
     m_adsrState(StateAttack),
-    m_loopDelayTimer(0.0f),
-    m_eventName(NULL),
+	m_loopDelayTimer(0.0f),
     m_restartOccured(true),
     m_restartAttempts(0)
 {
@@ -164,8 +163,6 @@ SoundInstance::~SoundInstance()
 
 	m_dspFX.EmptyAndDelete();
 
-	free(m_eventName);
-
     m_objIds.EmptyAndDelete();
 }
 
@@ -178,14 +175,10 @@ void SoundInstance::SetSoundName( char const *_name )
 
 void SoundInstance::SetEventName( char const *_entityName, char const *_eventName )
 {
-	DarwiniaDebugAssert(m_eventName == NULL);
     DarwiniaDebugAssert(_entityName && _eventName);
 	DarwiniaDebugAssert(g_app->m_soundSystem);
 
-	m_eventName = (char*)malloc(strlen(_entityName) + strlen(_eventName) + 2);
-	strcpy(m_eventName, _entityName);
-	strcat(m_eventName, " ");
-	strcat(m_eventName, _eventName);
+	m_eventName = std::string(_entityName) + " " +_eventName;
 }
 
 
@@ -263,8 +256,7 @@ void SoundInstance::Copy( SoundInstance *_copyMe )
     m_volume        = _copyMe->m_volume;
     m_minDistance   = _copyMe->m_minDistance;
 
-	DarwiniaDebugAssert(_copyMe->m_eventName);
-	m_eventName = strdup(_copyMe->m_eventName);
+	m_eventName = _copyMe->m_eventName;
 
     m_freq.Copy( &_copyMe->m_freq );
     UpdateParameter( m_freq );

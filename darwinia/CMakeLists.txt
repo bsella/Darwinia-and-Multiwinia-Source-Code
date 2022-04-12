@@ -209,6 +209,7 @@ add_executable(darwinia
 
 	code/sound/soundsystem.cpp
 	code/sound/sound_library_2d.cpp
+	code/sound/sound_library_2d_sdl.cpp
 	code/sound/sound_library_3d.cpp
 	code/sound/sound_library_3d_software.cpp
 	code/sound/sound_stream_decoder.cpp

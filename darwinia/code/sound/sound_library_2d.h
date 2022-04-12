@@ -50,17 +50,17 @@ public:
 	unsigned int	m_samplesPerBuffer;
     void			(*m_callback) (StereoSample *buf, unsigned int numSamples);
 
-	void			Stop();
+	virtual void Stop();
 
 public:
 	SoundLibrary2d();
 	~SoundLibrary2d();
 
-    void			SetCallback(void (*_callback) (StereoSample *, unsigned int));
-	void			TopupBuffer();
+	virtual void SetCallback(void (*_callback) (StereoSample *, unsigned int));
+	virtual void TopupBuffer();
 
-	void			StartRecordToFile(char const *_filename);
-	void			EndRecordToFile();
+	virtual void StartRecordToFile(char const *_filename);
+	virtual void EndRecordToFile();
 };
 
 

@@ -5,6 +5,8 @@
 #include "sound/sound_parameter.h"
 #include "worldobject/entity.h"
 
+#include <string>
+
 class SoundInstance;
 class SoundStreamDecoder;
 class DspEffect;
@@ -141,7 +143,7 @@ public:
 
     LList               <DspHandle *> m_dspFX;
 
-	char				*m_eventName;
+	std::string m_eventName;
 
     void    OpenStream  (bool _keepCurrentStream);  // Handles sound groups, file types etc
 
