@@ -28,7 +28,7 @@ private:
 	BTree       <LangPhrase*>	m_phrasesRaw;
 	HashTable   <int>          *m_phrasesKbd;
 	HashTable   <int>          *m_phrasesXin;
-	const char *                m_chunk;
+	std::string                 m_chunk;
 
 	bool specific_key_exists  (const char * _key, InputMode _mood);
 	bool RawDoesPhraseExist   (char const *_key);

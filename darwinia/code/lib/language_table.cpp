@@ -47,7 +47,6 @@ LangTable::LangTable(const char *_filename)
 
 	m_phrasesKbd = NULL;
 	m_phrasesXin = NULL;
-	m_chunk = NULL;
 
 	// Open the required language file
     ParseLanguageFile( _filename );
@@ -71,7 +70,6 @@ LangTable::~LangTable()
 		delete m_phrasesXin;
 	}
 	*/
-	if ( m_chunk ) delete [] m_chunk;
 }
 
 
@@ -216,17 +214,17 @@ void LangTable::RebuildTables()
 
 	RebuildTable( m_phrasesKbd, stream, INPUT_MODE_KEYBOARD );
 	RebuildTable( m_phrasesXin, stream, INPUT_MODE_GAMEPAD );
-	if ( m_chunk ) delete [] m_chunk;
-	m_chunk = stream.str().c_str();
+
+	m_chunk = stream.str();
 
 	if ( DEBUG_PRINT_LANGTABLE ) {
 		std::ofstream dbg_out( "langtable_debug.txt", std::ios::app );
 		dbg_out << "********** KEYBOARD MODE STRINGS **********" << std::endl;
-		if ( !printTable( m_phrasesKbd, m_chunk, dbg_out ) ) {
+		if ( !printTable( m_phrasesKbd, m_chunk.c_str(), dbg_out ) ) {
 			dbg_out << "KEYBOARD STRINGS NOT AVAILABLE." << std::endl;
 		}
 		dbg_out << std::endl << "********** GAMEPAD MODE STRINGS **********" << std::endl;
-		if ( !printTable( m_phrasesXin, m_chunk, dbg_out ) ) {
+		if ( !printTable( m_phrasesXin, m_chunk.c_str(), dbg_out ) ) {
 			dbg_out << "KEYBOARD STRINGS NOT AVAILABLE." << std::endl;
 		}
 		dbg_out << std::endl << "********** FINISHED ALL STRINGS **********" << std::endl
@@ -358,7 +356,7 @@ const char *LangTable::LookupPhrase(char const *_key)
 	HashTable<int> *phrases = GetCurrentTable();
 	const char *phrase = NULL;
 
-    if( !_key || !phrases || !m_chunk )
+	if( !_key || !phrases )
     {
         sprintf( m_notFound.m_string, "ERROR (null)" );
 		phrase = m_notFound.m_string;
@@ -367,7 +365,7 @@ const char *LangTable::LookupPhrase(char const *_key)
     {
 		int offset = phrases->GetData( _key );
 		if ( offset >= 0 )
-		    phrase = m_chunk + offset;
+			phrase = m_chunk.c_str() + offset;
 
 	    if ( !phrase )
 	    {
