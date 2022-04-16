@@ -1,44 +1,64 @@
 ﻿#include "lib/universal_include.h"
 
 #include <SDL/SDL.h>
-#include <SDL/SDL_version.h>
+#include <SDL/SDL_syswm.h>
+
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
-#include <fenv.h>
 
 #include "lib/debug_utils.h"
-#include "lib/input/input.h"
 #include "lib/preferences.h"
-#include "lib/window_manager.h"
-
+#include "window_manager_sdl.h"
+#include "lib/input/sdl_eventhandler.h"
+#include "lib/input/inputdriver_sdl_mouse.h"
+//#include "input.h"
+#include "network/server.h"
 #include "app.h"
-#include "main.h"
-#include "renderer.h"
+
+//#include "app.h"
+//#include "renderer.h"
 
 #ifdef TARGET_OS_LINUX
 //#include "prefix.h"
+#include "spawn.h"
 #endif
 
-#ifdef AMBROSIA_REGISTRATION
-#include "lib/ambrosia.h"
-#include "file_tool.h"
-#include "interface_tool.h"
-#include "platform.h"
+#ifdef TARGET_OS_MACOSX
+#include <ApplicationServices/ApplicationServices.h>
 #endif
 
-WindowManager g_windowManager;
+SDLMouseInputDriver *g_sdlMouseDriver = NULL;
+
+// Uncomment if you want lots of output in debug mode.
+//#define VERBOSE_DEBUG
 
 // *** Constructor
-WindowManager::WindowManager()
-	:	m_mousePointerVisible(true), m_invertY(true),
-	  //m_warpInvertY(false),
-	  m_windowed(false),
-		m_mouseCaptured(false)
+WindowManagerSDL::WindowManagerSDL()
+	:	m_tryingToCaptureMouse(false),
+		m_setVideoMode(false),
+		m_preventFullscreenStartup(false)
 {
-	m_win32Specific = NULL;
 	DarwiniaReleaseAssert(SDL_Init(SDL_INIT_VIDEO) == 0, "Couldn't initialise SDL");
 
+	ListAllDisplayModes();
+	SaveDesktop();
+}
+
+WindowManagerSDL::~WindowManagerSDL()
+{
+	while ( m_resolutions.ValidIndex ( 0 ) )
+	{
+		Resolution *res = m_resolutions.GetData ( 0 );
+		delete res;
+		m_resolutions.RemoveData ( 0 );
+	}
+	m_resolutions.EmptyAndDelete();
+	SDL_Quit();
+}
+
+void WindowManagerSDL::ListAllDisplayModes()
+{
 	SDL_Rect **validModes = SDL_ListModes(NULL, SDL_OPENGL|SDL_FULLSCREEN);
 
 	for (; *validModes; validModes++) {
@@ -49,106 +69,110 @@ WindowManager::WindowManager()
 	}
 }
 
-// Returns an index into the list of already registered resolutions
-int WindowManager::GetResolutionId(int _width, int _height)
-{
-        for (int i = 0; i < m_resolutions.Size(); ++i)
-        {
-                Resolution *res = m_resolutions[i];
-                if (res->m_width == _width && res->m_height == _height)
-                {
-                        return i;
-                }
-        }
 
-        return -1;
+void WindowManagerSDL::PreventFullscreenStartup()
+{
+	if (!m_setVideoMode)
+		m_preventFullscreenStartup = true;
 }
 
-Resolution *WindowManager::GetResolution( int _id )
-{
-    if( m_resolutions.ValidIndex(_id) )
-    {
-        return m_resolutions[_id];
-    }
 
-    return NULL;
+void WindowManagerSDL::SaveDesktop()
+{
+    const SDL_VideoInfo* info = SDL_GetVideoInfo();
+
+    m_desktopColourDepth = info->vfmt->BitsPerPixel;
+    m_desktopRefresh = 60;
+
+#ifdef TARGET_OS_MACOSX
+	CGRect rect = CGDisplayBounds( CGMainDisplayID() );
+    m_desktopScreenW = rect.size.width;
+    m_desktopScreenH = rect.size.height;
+#else
+	#warning "Need to do code for linux to determine default Resolution"
+
+    m_desktopScreenW = 1024;
+    m_desktopScreenH = 768;
+#endif
 }
 
-bool WindowManager::Windowed()
+
+void WindowManagerSDL::RestoreDesktop()
 {
-    return m_windowed;
 }
 
-WindowManager::~WindowManager()
+
+void WindowManagerSDL::NastySetMousePos(int x, int y)
 {
-	SDL_Quit();
+	m_x = x;
+	m_y = y;
 }
 
-bool WindowManager::CreateWin(int _width, int _height, bool _windowed, int _colourDepth, int, int _zDepth, bool)
+
+void WindowManagerSDL::NastyMoveMouse(int x, int y)
+{ }
+
+
+bool WindowManagerSDL::CreateWin(int _width, int _height, bool _windowed, int _colourDepth, int _refreshRate,
+								 int _zDepth, bool _waitVRT, bool _antiAlias, const wchar_t *_title)
 {
     int bpp = 0;
     int flags = 0;
 
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 	SDL_PixelFormat vfmt = *info->vfmt;
-
-    DarwiniaReleaseAssert(info, "SDL_GetVideoInfo failed: %s", SDL_GetError());
-
-	m_windowed = _windowed;
+	
+	DarwiniaReleaseAssert(info, "SDL_GetVideoInfo failed: %s", SDL_GetError());
+	
+	m_windowed = _windowed || m_preventFullscreenStartup;
+	m_preventFullscreenStartup = false;
 
 	// Set the flags for creating the mode
-    flags = SDL_OPENGL;
+    flags = SDL_OPENGL; 
 	if (!_windowed)
 	{
 		flags |= SDL_FULLSCREEN;
-		m_invertY = false;
-		//m_warpInvertY = false;
-
+		
 		// Look for the best valid video mode
 		if (_colourDepth != -1)
-			vfmt.BitsPerPixel = _colourDepth;
+			vfmt.BitsPerPixel = _colourDepth;	
 		SDL_Rect **validModes = SDL_ListModes(&vfmt, flags);
 		SDL_Rect *bestMode = NULL;
 		unsigned bestDiagonalDifference = (unsigned) -1;
-
+			
 		if (validModes == NULL)
 			return false;
 
 		for (; *validModes; validModes++) {
 			SDL_Rect *mode = *validModes;
-			unsigned diagonalDifference = (_width - mode->w) * (_width - mode->w) +
+			unsigned diagonalDifference = (_width - mode->w) * (_width - mode->w) + 
 										  (_height - mode->h) * (_height - mode->h);
-
+			
 			if (bestMode == NULL || diagonalDifference < bestDiagonalDifference) {
 				bestMode = mode;
 				bestDiagonalDifference = diagonalDifference;
 			}
 		}
 		DarwiniaReleaseAssert(bestMode != NULL, "Failed to find any valid video modes");
-
+	
 		m_screenW = bestMode->w;
-		m_screenH = bestMode->h;
+		m_screenH = bestMode->h;		
 		bpp = vfmt.BitsPerPixel;
 	}
 	else {
 #ifdef TARGET_OS_MACOSX
 		const SDL_version *linkedVersion = SDL_Linked_Version();
-		// SDL Version prior to 1.2.8 had to be inverted in windowed mode
-		m_invertY = linkedVersion->major * 1000 + linkedVersion->minor * 100 + linkedVersion->patch <= 1207;
-		// SDL Versions <= 1.2.8 still require warp Y coordinate to be inverted
-		m_warpInvertY = true;
-		printf("%sinverting Y coordinate in windowed mode\n", (m_invertY ? "" : "not "));
-		printf("%swarp-inverting Y coordinate in windowed mode\n", (m_warpInvertY ? "" : "not "));
-
-#endif
-#ifdef TARGET_OS_LINUX
-		m_invertY = false;
-		//m_warpInvertY = false;
+		// We ensure that the we are linked with SDL version >= 1.2.9 because
+		// previous versions had major problems with the coordinate system 
+		// when using OpenGL, in windowed and in full-screen mode.
+		
+		AppReleaseAssert(linkedVersion->major * 1000 + linkedVersion->minor * 100 + linkedVersion->patch >= 1209,
+			"App requires at to run with SDL version 1.2.9 or greater");		
 #endif
 		// Usually any combination is OK for windowed mode.
 		m_screenW = _width;
 		m_screenH = _height;
-
+		
 		// Add it to the list of screen resolutions if need be
 		Resolution *found = NULL;
 		for (int i = 0; i < m_resolutions.Size(); i++) {
@@ -158,22 +182,22 @@ bool WindowManager::CreateWin(int _width, int _height, bool _windowed, int _colo
 				break;
 			}
 		}
-
+		
 		if (!found) {
 			Resolution *res = new Resolution(_width, _height);
 			m_resolutions.PutData(res);
 		}
 		bpp = info->vfmt->BitsPerPixel;
-	}
-
-	switch (bpp) {
+	}	
+	
+	switch (bpp) {	
 		case 24:
 		case 32:
 			SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
 			SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
 			SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
 			break;
-
+	
 		case 16:
 		default:
 			SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
@@ -181,153 +205,204 @@ bool WindowManager::CreateWin(int _width, int _height, bool _windowed, int _colo
 			SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
 		break;
 	}
-
-    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
-	bool setVideoMode = false;
-
+	
+    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );	
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, _zDepth );
 
-	if (!_windowed && SDL_VideoModeOK(m_screenW, m_screenH, _colourDepth, flags))
-		bpp = _colourDepth;
+ 	if ( _antiAlias ) {		
+ 		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 2 );
+ 		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, 4 );
+ 	}
+	else {
+		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 0 );
+		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, 0 );
+	}
+	
+	// Synchronize to the vertical refresh rate of the monitor, typically 60Hz. This
+	// does end up causing graphics flushing to block eventually. But that's what we
+	// want.
+	SDL_GL_SetAttribute ( SDL_GL_SWAP_CONTROL, 1 );
+	
+	bpp = SDL_VideoModeOK(m_screenW, m_screenH, _colourDepth, flags);
+	if (!bpp)
+		return false;
+	
+	m_setVideoMode = SDL_SetVideoMode(m_screenW, m_screenH, bpp, flags);
 
-	setVideoMode = SDL_SetVideoMode(m_screenW, m_screenH, bpp, flags);
-
+	// Fall back to not antialiased
+	if (!m_setVideoMode && _antiAlias) {
+		_antiAlias = 0;
+		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 0 );
+		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, 0 );
+		m_setVideoMode = SDL_SetVideoMode(m_screenW, m_screenH, bpp, flags);
+	}
+	
 	// Fall back to a 16 bit Z-Buffer
-	if (!setVideoMode) {
+	if (!m_setVideoMode && _zDepth != 16) {
+		DebugOut ( "SDL_SetVideoMode failed with '%s'. Switching to 16-bit Z-Buffer.\n", SDL_GetError() );
 		_zDepth = 16;
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, _zDepth );
-		setVideoMode = SDL_SetVideoMode(m_screenW, m_screenH, bpp, flags);
+		m_setVideoMode = SDL_SetVideoMode(m_screenW, m_screenH, bpp, flags);
 	}
-
-	if (!setVideoMode)
+	
+	if (!m_setVideoMode)
+	{
+		DebugOut ( "SDL_SetVideoMode failed with '%s'. Can't continue.\n", SDL_GetError() );
 		return false;
+	}
 
 	// Pass back the actual values to the Renderer
 	_width = m_screenW;
 	_height = m_screenH;
-
-	// Hide the mouse pointer again
-	if (!m_mousePointerVisible)
-		HideMousePointer();
+	_colourDepth = bpp;
 
 	if (m_mouseCaptured)
 		CaptureMouse();
+	
+	//UnicodeString unicodeTitle(_title);
+	//const char *asciiTitle = unicodeTitle.GetCharArray();
+	//SDL_WM_SetCaption(asciiTitle, asciiTitle);
 
 	return true;
 }
 
-void WindowManager::DestroyWin()
+
+void WindowManagerSDL::DestroyWin()
 {
-	// Apparently no action required here
 }
 
-void WindowManager::Flip()
+
+void WindowManagerSDL::Flip()
 {
+	PollForMessages();
+	
+	if (m_tryingToCaptureMouse) 
+		g_windowManager->CaptureMouse();
+	
 	SDL_GL_SwapBuffers();
 }
 
-
-void WindowManager::NastyPollForMessages()
+void WindowManagerSDL::PollForMessages()
 {
-}
+	SDL_Event sdlEvent;
 
-extern void DiscardExtraneousMouseMotionEvents();
-
-void WindowManager::NastySetMousePos(int x, int y)
-{
-}
-
-bool WindowManager::Captured()
-{
-	return m_mouseCaptured;
-}
-
-bool WindowManager::MouseVisible()
-{
-	return m_mousePointerVisible;
-}
-
-void WindowManager::CaptureMouse()
-{
-	// Don't grab if we don't have focus
-	//if (!g_inputManager->m_windowHasFocus)
-	//	return;
-
-	SDL_WM_GrabInput(SDL_GRAB_ON);
-	m_mouseCaptured = true;
-}
-
-void WindowManager::EnsureMouseCaptured()
-{
-	if (!m_mouseCaptured)
+	while (SDL_PollEvent(&sdlEvent))
+		static_cast<SDLEventHandler *>(g_eventHandler)->HandleSDLEvent(sdlEvent);
+	
+	if (m_tryingToCaptureMouse)
 		CaptureMouse();
 }
 
-void WindowManager::UncaptureMouse()
+
+void WindowManagerSDL::EnsureMouseCaptured()
 {
+	if (g_app->m_gameMode != App::GameModeNone)
+		CaptureMouse();
+}
+
+
+void WindowManagerSDL::EnsureMouseUncaptured()
+{
+	UncaptureMouse();
+}
+
+
+void WindowManagerSDL::CaptureMouse()
+{
+	if (m_mouseCaptured)
+		return;
+		
+#ifdef TARGET_OS_MACOSX
+	// Important not to grab the mouse 
+	// until it's in the window proper. Otherwise
+	// we might end up doing some strange things on MAC OS X
+	 if (!(SDL_GetAppState() & SDL_APPMOUSEFOCUS)) {
+		m_tryingToCaptureMouse = true;
+		return;
+	}
+#endif
+		
+	// Don't grab if we don't have focus
+	if (!g_eventHandler->WindowHasFocus())
+		return;
+		
+	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+	SDL_WM_GrabInput(SDL_GRAB_ON);
+	SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
+
+	m_mouseCaptured = true;
+	m_tryingToCaptureMouse = false;
+}
+
+
+void WindowManagerSDL::UncaptureMouse()
+{
+	m_tryingToCaptureMouse = false;
+	if (!m_mouseCaptured)
+		return;
+		
+#ifdef VERBOSE_DEBUG
+	AppDebugOut("Uncapturing mouse\n");
+#endif
 	SDL_WM_GrabInput(SDL_GRAB_OFF);
+	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+	SDL_WarpMouse(m_x, m_y);
+	SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
+	g_sdlMouseDriver->SetMousePosNoVelocity(m_x, m_y);
+
 	m_mouseCaptured = false;
 }
 
-void WindowManager::EnsureMouseUncaptured()
-{
-	// Stay grabbed in fullscreen mode
-	// So that mouse doesn't jump to it's actual position, and
-	// for buggy linux Xinerama (see input_sdl.cpp)
-	if (!m_windowed)
-		return;
 
-	if (m_mouseCaptured)
-		UncaptureMouse();
-}
-
-bool WindowManager::EnableOpenGL(int _colourDepth, int _zDepth)
-{
-	//SDL_GL_SetAttribute( SDL_GL_RED_SIZE, _colourDepth);
-	//SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, _colourDepth);
-	//SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, _colourDepth);
-	//SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, _zDepth);
-	//SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-}
-
-void WindowManager::DisableOpenGL()
-{
-}
-
-void WindowManager::HideMousePointer()
+void WindowManagerSDL::HideMousePointer()
 {
 	SDL_ShowCursor(false);
 	m_mousePointerVisible = false;
 }
 
-void WindowManager::UnhideMousePointer()
+
+void WindowManagerSDL::UnhideMousePointer()
 {
 	SDL_ShowCursor(true);
 	m_mousePointerVisible = true;
 }
 
-void WindowManager::OpenWebsite( const char *_url )
+
+void WindowManagerSDL::SetMousePos(int x, int y)
 {
-#ifdef TARGET_OS_MACOSX
-#ifdef AMBROSIA_REGISTRATION
-	 IT_OpenBrowser(_url);
-#else
-	const char *cmd = "/usr/bin/open";
-	char buffer[strlen(_url) + 1 + strlen(cmd) + 1];
-	sprintf(buffer, "%s %s", cmd, _url);
-	system(buffer);
-#endif
+	if (!m_mouseCaptured)
+		SDL_WarpMouse(x, y);
+}
+
+
+void WindowManagerSDL::OpenWebsite( const char *_url )
+{	
+#ifdef TARGET_OS_MACOSX 
+	CFURLRef url = CFURLCreateWithBytes(NULL, (const UInt8 *)_url, strlen(_url),
+										kCFStringEncodingASCII, NULL);
+	if (url)
+	{
+		LSOpenCFURLRef(url, NULL);
+		CFRelease(url);
+	}
 #elif defined TARGET_OS_LINUX
-	const char *cmd = "/bin/sh open-www.sh";
-	char* buffer = new char[strlen(_url) + 1 + strlen(cmd) + 1];
-	sprintf(buffer, "%s %s", cmd, _url);
-	system(buffer);
-	delete[] buffer;
+	/* Child */
+	//char * const args[4] = { "/bin/sh", "open-www.sh", (char *)_url,  NULL };
+	//spawn("/bin/sh", args);
 #endif
 }
 
-#if defined(TARGET_OS_LINUX) || defined (TARGET_OS_MACOSX)
+void WindowManagerSDL::HideWin()
+{
+#ifdef TARGET_OS_MACOSX
+	ProcessSerialNumber me;
+	
+	GetCurrentProcess(&me);
+	ShowHideProcess(&me, false);
+#endif
+}
+
+#if defined(TARGET_OS_LINUX)
 void SetupMemoryAccessHandlers();
 void SetupPathToProgram(const char *program);
 
@@ -345,130 +420,30 @@ void ChangeToProgramDir(const char *program)
 	g_origWorkingDir = new char [PATH_MAX];
 	getcwd(g_origWorkingDir, PATH_MAX);
 
-	if (pos != std::string::npos)
+	if (pos != std::string::npos) 
 		dir.erase(pos);
 	DarwiniaReleaseAssert(
-		chdir(dir.c_str()) == 0,
+		chdir(dir.c_str()) == 0, 
 		"Failed to change directory to %s", dir.c_str());
 }
 
 #endif // TARGET_OS_LINUX || TARGET_OS_MACOSX
 
-#ifdef AMBROSIA_REGISTRATION
-
-#define NUM_PIRATED_CODES 20
-
-void CheckAllPirateCodes(bool *isValid, Uint64 licenseCode)
+void WindowManagerSDL::NastyPollForMessages()
 {
-	// Check all the pirate codes and display a message and quit if any bogus
-	UInt64 allPiratedCodes[NUM_PIRATED_CODES] = {
-		RT3_PIRATED_FAKE_01,
-		RT3_PIRATED_FAKE_02,
-		RT3_PIRATED_FAKE_03,
-		RT3_PIRATED_FAKE_04,
-		RT3_PIRATED_FAKE_05,
-		RT3_PIRATED_FAKE_06,
-		RT3_PIRATED_FAKE_07,
-		RT3_PIRATED_FAKE_08,
-		RT3_PIRATED_FAKE_09,
-		RT3_PIRATED_FAKE_10,
-		RT3_PIRATED_FAKE_11,
-		RT3_PIRATED_FAKE_12,
-		RT3_PIRATED_FAKE_13,
-		RT3_PIRATED_FAKE_14,
-		RT3_PIRATED_FAKE_15,
-		RT3_PIRATED_FAKE_16,
-		RT3_PIRATED_FAKE_17,
-		RT3_PIRATED_FAKE_18,
-		RT3_PIRATED_FAKE_19,
-		RT3_PIRATED_FAKE_20,
-	};
 
-	for (int i = 0; i < NUM_PIRATED_CODES; i++)
-		qRT3_LicenseTestPirate(licenseCode,allPiratedCodes[i],isValid[i]);
-
-	return isValid;
-}
-#endif
-
-void WindowManager::SuggestDefaultRes( int *_width, int *_height, int *_refresh, int *_depth )
-{
-	*_width = m_desktopScreenW;
-	*_height = m_desktopScreenH;
-	*_refresh = m_desktopRefresh;
-	*_depth = m_desktopColourDepth;
 }
 
-void WindowManager::NastyMoveMouse(int x, int y)
+PlatformWindow *WindowManagerSDL::Window()
 {
-	//SDL_GetMouseState(&x,&y);
-	///TODO
+	SDL_SysWMinfo *info = (SDL_SysWMinfo *)malloc(sizeof(SDL_SysWMinfo));
+	
+	SDL_VERSION(&(info->version));
+	if (SDL_GetWMInfo(info) != -1)
+		return (PlatformWindow *)info;
+	else
+	{
+		free(info);
+		return NULL;
+	}
 }
-
-//int main(int argc, char *argv[])
-//{
-//	// It's really important under linux at least that
-//	// SDL_Quit is called to restore fullscreen mode.
-//	//
-//	// So we make WindowManager a static object, so that
-//	// it's destructor will be called on all normal
-//	// exits.
-//
-//	g_windowManager	= new WindowManager;
-//
-//#if defined(TARGET_OS_LINUX)
-//	//SetupPathToProgram(SELFPATH);
-//	//ChangeToProgramDir(SELFPATH);
-//#endif
-//
-//	SDL_WM_SetCaption("Darwinia", NULL);
-//
-//	if (argc > 1) {
-//		if (strncmp(argv[1], "-v", 2) == 0) {
-//			puts(DARWINIA_VERSION_STRING);
-//			return 0;
-//		}
-//	}
-//
-//	SDL_version compiledVersion;
-//	SDL_VERSION(&compiledVersion);
-//	const SDL_version *linkedVersion = SDL_Linked_Version();
-//
-//	printf("SDL Version: Compiled against %d.%d.%d, running with %d.%d.%d\n",
-//		compiledVersion.major, compiledVersion.minor, compiledVersion.patch,
-//		linkedVersion->major, linkedVersion->minor, linkedVersion->patch);
-//
-//#ifdef AMBROSIA_REGISTRATION
-//	// Ambrosia Registration Tool
-//	RT3_Open(true, VERSION_3_CODES, RT3_PRODUCT_NAME, "Darwinia");
-//	SystemSetQuitProc(RT3_Close);
-//	atexit(RT3_Close);
-//
-//	// Ambrosia's Display Notice (Nag)
-//	Bool8 launchedRegApp;
-//	Result32 result = RT3_DisplayNotice(false, &launchedRegApp);
-//	DarwiniaReleaseAssert(result == 0, "Failed to display Ambrosia Registration Notice");
-//
-//	// Check for pirate registration codes
-//	bool isValid[NUM_PIRATED_CODES];
-//	memset(isValid, 0, sizeof(bool) * NUM_PIRATED_CODES);
-//	CheckAllPirateCodes(isValid, RT3_GetLicenseCode());
-//
-//	for (int i = 0; i < NUM_PIRATED_CODES; i++) {
-//		if (!isValid[i])
-//			FT_FileDelete(kPathRefPreferences, "Darwinia License");
-//		DarwiniaReleaseAssert(isValid[i], "Check registration code (1)");
-//	}
-//#endif // AMBROSIA_REGISTRATION
-//
-//#if defined(TARGET_OS_LINUX) || defined (TARGET_OS_MACOSX)
-//	// Setup illegal memory access handler
-//	// See debug_utils_gcc.cpp
-//	SetupMemoryAccessHandlers();
-//#endif
-//
-//	AppMain();
-//
-//	return 0;
-//}
-
