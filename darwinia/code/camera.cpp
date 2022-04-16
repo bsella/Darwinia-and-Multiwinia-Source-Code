@@ -2088,12 +2088,12 @@ void Camera::Advance()
 		   (m_debugMode == DebugModeAuto && EclGetWindows()->Size() > 0) ||
 		   m_framesInThisMode < 2 ) )
 	{
-		g_windowManager.EnsureMouseUncaptured();
+		g_windowManager->EnsureMouseUncaptured();
 		AdvanceDebugMode();
 	}
 	else
 	{
-		g_windowManager.EnsureMouseCaptured();
+		g_windowManager->EnsureMouseCaptured();
 		switch(m_mode)
 		{
 			case ModeSphereWorld:		    AdvanceSphereWorldMode();		    break;

@@ -1,6 +1,8 @@
 ﻿#include "lib/debug_utils.h"
 
-#include "lib/input/inputdriver_sdl.h"
+#include "lib/input/inputdriver_sdl_mouse.h"
+#include "lib/input/sdl_eventhandler.h"
+#include "lib/window_manager_sdl.h"
 #include <SDL/SDL.h>
 
 using std::string;
@@ -22,15 +24,87 @@ enum MouseControl {
 SDLMouseInputDriver::SDLMouseInputDriver()
 {
 	setName("SDLMouse");
-	//getSDLEventHandler()->AddEventProcessor(this);
-
+	getSDLEventHandler()->AddEventProcessor(this);
+	
 	memset(m_mb, 0, sizeof(m_mb));
 	memset(m_mbOld, 0, sizeof(m_mbOld));
 	memset(m_mbDeltas, 0, sizeof(m_mbDeltas));
+	
+	//memset(m_mousePos, 0, sizeof(m_mousePos));
+	//memset(m_mousePosOld, 0, sizeof(m_mousePosOld));
+	//memset(m_mouseVel, 0, sizeof(m_mouseVel));
+}
 
-	memset(m_mousePos, 0, sizeof(m_mousePos));
-	memset(m_mousePosOld, 0, sizeof(m_mousePosOld));
-	memset(m_mouseVel, 0, sizeof(m_mouseVel));
+int SDLMouseInputDriver::HandleSDLEvent(const SDL_Event & event)
+{
+	switch (event.type)
+	{
+		case SDL_MOUSEMOTION:
+		{
+			WindowManagerSDL *wm = static_cast<WindowManagerSDL*>(g_windowManager);
+			
+			m_mousePos[X] += event.motion.xrel;
+			m_mousePos[Y] += event.motion.yrel;
+			
+			// We can't seem to uncapture the mouse in fullscreen mode once it has
+			// been captured. So we must clip the mouse coords to the screen ourselves.
+			if (!wm->m_mouseCaptured)
+			{
+				m_mousePos[X] = max(0, min(wm->m_screenW, m_mousePos[X]));
+				m_mousePos[Y] = max(0, min(wm->m_screenH, m_mousePos[Y]));
+			}
+			
+			return 0;
+		}
+		
+		case SDL_MOUSEBUTTONDOWN:
+		{
+			switch (event.button.button)
+			{
+				case SDL_BUTTON_LEFT:
+					m_mb[LEFT] = true;
+					break;
+					
+				case SDL_BUTTON_MIDDLE:
+					m_mb[MIDDLE] = true;
+					break;
+				
+				case SDL_BUTTON_RIGHT:
+					m_mb[RIGHT] = true;
+					break;
+					
+				case SDL_BUTTON_WHEELUP:
+					m_mousePos[Z]++;
+					break;
+					
+				case SDL_BUTTON_WHEELDOWN:
+					m_mousePos[Z]--;
+					break;
+			}
+			return 0;
+		}
+			
+		case SDL_MOUSEBUTTONUP:
+		{
+			switch (event.button.button)
+			{
+				case SDL_BUTTON_LEFT:
+					m_mb[LEFT] = false;
+					break;
+					
+				case SDL_BUTTON_MIDDLE:
+					m_mb[MIDDLE] = false;
+					break;
+				
+				case SDL_BUTTON_RIGHT:
+					m_mb[RIGHT] = false;
+					break;
+			}
+			return 0;
+		}
+	}
+	
+	return -1; // unhandled
 }
 
 void SDLMouseInputDriver::Advance()
@@ -48,75 +122,7 @@ void SDLMouseInputDriver::Advance()
 
 void SDLMouseInputDriver::PollForEvents()
 {
-	SDL_Event event;
-	SDL_PollEvent(&event);
-	switch (event.type)
-	{
-		case SDL_MOUSEMOTION:
-		{
-			//WindowManagerSDL *wm = static_cast<WindowManagerSDL*>(g_windowManager);
-
-			m_mousePos[X] += event.motion.xrel;
-			m_mousePos[Y] += event.motion.yrel;
-
-			// We can't seem to uncapture the mouse in fullscreen mode once it has
-			// been captured. So we must clip the mouse coords to the screen ourselves.
-			//if (!wm->m_mouseCaptured)
-			//{
-			//	m_mousePos[X] = max(0, min(wm->m_screenW, m_mousePos[X]));
-			//	m_mousePos[Y] = max(0, min(wm->m_screenH, m_mousePos[Y]));
-			//}
-
-			return;
-		}
-
-		case SDL_MOUSEBUTTONDOWN:
-		{
-			switch (event.button.button)
-			{
-				case SDL_BUTTON_LEFT:
-					m_mb[LEFT] = true;
-					break;
-
-				case SDL_BUTTON_MIDDLE:
-					m_mb[MIDDLE] = true;
-					break;
-
-				case SDL_BUTTON_RIGHT:
-					m_mb[RIGHT] = true;
-					break;
-
-				case SDL_BUTTON_WHEELUP:
-					m_mousePos[Z]++;
-					break;
-
-				case SDL_BUTTON_WHEELDOWN:
-					m_mousePos[Z]--;
-					break;
-			}
-			return;
-		}
-
-		case SDL_MOUSEBUTTONUP:
-		{
-			switch (event.button.button)
-			{
-				case SDL_BUTTON_LEFT:
-					m_mb[LEFT] = false;
-					break;
-
-				case SDL_BUTTON_MIDDLE:
-					m_mb[MIDDLE] = false;
-					break;
-
-				case SDL_BUTTON_RIGHT:
-					m_mb[RIGHT] = false;
-					break;
-			}
-			return;
-		}
-		default: return;
-	}
+	// not implemented yet
 }
 
 bool SDLMouseInputDriver::acceptDriver( string const &name )
@@ -132,14 +138,14 @@ control_id_t SDLMouseInputDriver::getControlID( string const &name )
 	if ( name == "middle" ) return MOUSE_MIDBUTTON;
 	if ( name == "wheel" )  return MOUSE_WHEEL;
 	if ( name == "any" )    return MOUSE_ANY;
-
+	
 	return -1; // error
 }
 
 bool SDLMouseInputDriver::getInput( InputSpec const &spec, InputDetails &details )
 {
 	int button = -1;
-
+	
 	switch ( spec.control_id ) {
 		case MOUSE_LEFTBUTTON:  button = LEFT; details.type = INPUT_TYPE_BOOL; break;
 		case MOUSE_RIGHTBUTTON: button = RIGHT; details.type = INPUT_TYPE_BOOL; break;
@@ -242,17 +248,17 @@ inputtype_t SDLMouseInputDriver::getControlType( control_id_t control_id )
 	}
 }
 
-//void SDLMouseInputDriver::SetMousePosNoVelocity( int _x, int _y )
-//{
-//	// Warp Mouse without velocity
-//	m_mousePosOld[X] = m_mousePos[X] = _x;
-//	m_mousePosOld[Y] = m_mousePos[Y] = _y;
-//	m_mouseVel[X] = 0;
-//	m_mouseVel[Y] = 0;
-//}
+void SDLMouseInputDriver::SetMousePosNoVelocity( int _x, int _y )
+{
+	// Warp Mouse without velocity
+	m_mousePosOld[X] = m_mousePos[X] = _x;
+	m_mousePosOld[Y] = m_mousePos[Y] = _y;
+	m_mouseVel[X] = 0;
+	m_mouseVel[Y] = 0;
+}
 
 
 SDLMouseInputDriver::~SDLMouseInputDriver()
 {
-	//getSDLEventHandler()->RemoveEventProcessor(this);
+	getSDLEventHandler()->RemoveEventProcessor(this);
 }

@@ -155,13 +155,15 @@ add_executable(darwinia
 	code/lib/input/input.cpp
 	code/lib/input/inputdriver.cpp
 	code/lib/input/inputdriver_sdl_mouse.cpp
-	code/lib/input/inputdriver_sdl_keyboard.cpp
+	code/lib/input/inputdriver_sdl_key.cpp
 	code/lib/input/inputdriver_conjoin.cpp
 	code/lib/input/inputdriver_chord.cpp
 	code/lib/input/inputdriver_invert.cpp
 	code/lib/input/inputdriver_idle.cpp
 	code/lib/input/inputdriver_prefs.cpp
 	code/lib/input/inputdriver_alias.cpp
+	code/lib/input/eventhandler.cpp
+	code/lib/input/sdl_eventhandler.cpp
 	code/lib/input/file_paths.cpp
 	code/lib/input/transform.cpp
 	code/lib/input/input_types.cpp
@@ -178,7 +180,6 @@ add_executable(darwinia
 	code/lib/filesys_utils.cpp
 	code/lib/hi_res_time.cpp
 	code/lib/targetcursor.cpp
-	code/lib/window_manager_sdl.cpp
 	code/lib/preferences.cpp
 	code/lib/debug_utils.cpp
 	code/lib/language_table.cpp
@@ -198,6 +199,7 @@ add_executable(darwinia
 	code/lib/file_writer.cpp
 	code/lib/invert_matrix.cpp
 	code/lib/3d_sprite.cpp
+	code/lib/window_manager.cpp
 	code/lib/window_manager_sdl.cpp
 	code/lib/ogl_extensions.cpp
 	code/lib/poster_maker.cpp

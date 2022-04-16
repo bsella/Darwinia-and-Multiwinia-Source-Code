@@ -1,4 +1,4 @@
-#ifndef _included_script_h
+﻿#ifndef _included_script_h
 #define _included_script_h
 
 class TextReader;
@@ -135,8 +135,8 @@ public:
 
     void Advance            ();
     void AdvanceScript      ();
-    void RunScript          (char *_filename);
-	void TestScript			(char *_filename);
+	void RunScript          (const char *_filename);
+	void TestScript			(const char *_filename);
     bool IsRunningScript    ();
     bool Skip               ();
 

@@ -110,14 +110,14 @@ void Renderer::Initialise()
 
     if( m_screenW == 0 || m_screenH == 0 )
     {
-		g_windowManager.SuggestDefaultRes( &m_screenW, &m_screenH, &refreshRate, &colourDepth );
+		g_windowManager->SuggestDefaultRes( &m_screenW, &m_screenH, &refreshRate, &colourDepth );
 		g_prefsManager->SetInt( "ScreenWidth", m_screenW );
 		g_prefsManager->SetInt( "ScreenHeight", m_screenH );
 		g_prefsManager->SetInt( "ScreenRefresh", refreshRate );
 		g_prefsManager->SetInt( "ScreenColourDepth", colourDepth );
     }
 
-	bool success = g_windowManager.CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, waitVRT);
+	bool success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, true, true, L"Darwinia");
 
     if( !success )
     {
@@ -141,12 +141,12 @@ void Renderer::Initialise()
         zDepth = 16;
         refreshRate = 60;
 
-		success = g_windowManager.CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, waitVRT);
+		success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, true, true, L"Darwinia");
 		if(!success)
 		{
 			// next try with 24bit z (colour depth is automatic in windowed mode)
 			zDepth = 24;
-			success = g_windowManager.CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, waitVRT);
+			success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, true, true, L"Darwinia");
 		}
         DarwiniaReleaseAssert( success, "Failed to set screen mode" );
 
@@ -302,7 +302,7 @@ void Renderer::Render()
 				// reads from backbuffer
 				pm.AddFrame();
 				// flips back to front
-				g_windowManager.Flip();
+				g_windowManager->Flip();
 				++m_tileIndex;
 				if (m_tileIndex == posterResolution * posterResolution)
 				{
@@ -756,7 +756,7 @@ void Renderer::RenderFrame(bool withFlip)
     START_PROFILE(g_app->m_profiler, "GL Flip");
 
     if(withFlip)
-		g_windowManager.Flip();
+		g_windowManager->Flip();
 
     END_PROFILE(g_app->m_profiler, "GL Flip");
 

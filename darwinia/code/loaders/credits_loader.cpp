@@ -478,7 +478,7 @@ void CreditsLoader::FlipBuffers( float _alpha )
 	g_inputManager.PollForEvents();
 	g_inputManager.Advance();
 	glFinish();
-	g_windowManager.Flip();
+	g_windowManager->Flip();
 	glClear	(GL_DEPTH_BUFFER_BIT);
 
     float screenRatio = (float) g_app->m_renderer->ScreenH() / (float) g_app->m_renderer->ScreenW();

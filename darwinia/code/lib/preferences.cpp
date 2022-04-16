@@ -278,12 +278,12 @@ void PrefsManager::CreateDefaultValues()
 
     AddLine( "\n" );
 
-    //AddLine( "ScreenWidth = 1024" );
-    //AddLine( "ScreenHeight = 768" );
-    AddLine( "ScreenWindowed = 0" );
+	AddLine( "ScreenWidth = 1024" );
+	AddLine( "ScreenHeight = 768" );
+	AddLine( "ScreenWindowed = 0" );
     AddLine( "ScreenZDepth = 24" );
-    //AddLine( "ScreenColourDepth = 32" );
-    //AddLine( "ScreenRefresh = 60" );
+	AddLine( "ScreenColourDepth = 32" );
+	AddLine( "ScreenRefresh = 60" );
 
     AddLine( "\n" );
 

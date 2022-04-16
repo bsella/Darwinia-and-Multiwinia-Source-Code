@@ -216,7 +216,7 @@ void SoulLoader::Run()
         RenderAllSpirits();
         RenderMessage( timeThisFrame );
 
-		g_windowManager.Flip();
+		g_windowManager->Flip();
 		g_inputManager.Advance();
 		g_inputManager.PollForEvents();
         Sleep(1);

@@ -24,6 +24,7 @@ void DebugOut(const char *_fmt, ...)
     va_start (ap, _fmt);
     vsprintf(buf, _fmt, ap);
     OutputDebugString(buf);
+	va_end(ap);
 }
 
 

@@ -528,5 +528,5 @@ void DebugKeyBindings::ReallyQuitButton()
 void DebugKeyBindings::ToggleFullscreenButton()
 {
 	bool switchingToWindowed;
-	SetWindowed(!g_windowManager.Windowed(), true, switchingToWindowed);
+	SetWindowed(!g_windowManager->Windowed(), true, switchingToWindowed);
 }

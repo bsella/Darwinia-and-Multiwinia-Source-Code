@@ -694,7 +694,7 @@ void RayTraceLoader::Run()
 		if( g_inputManager.controlEvent( ControlLoaderHelp ) ) RenderHelp();
 		else RenderMessage();
 
-		g_windowManager.Flip();
+		g_windowManager->Flip();
 		g_inputManager.Advance();
 		g_inputManager.PollForEvents();
         AdvanceSound();

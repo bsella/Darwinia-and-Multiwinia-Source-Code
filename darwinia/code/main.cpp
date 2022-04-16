@@ -26,6 +26,7 @@
 #include "lib/text_renderer.h"
 #include "lib/vector3.h"
 #include "lib/window_manager.h"
+#include "lib/window_manager_sdl.h"
 #include "lib/avi_generator.h"
 #include "lib/resource.h"
 #include "lib/text_stream_readers.h"
@@ -36,7 +37,8 @@
 #include "lib/input/inputdriver_win32.h"
 #include "lib/input/inputdriver_xinput.h"
 #endif
-#include "lib/input/inputdriver_sdl.h"
+#include "lib/input/sdl_eventhandler.h"
+#include "lib/input/inputdriver_sdl_key.h"
 #include "lib/input/inputdriver_prefs.h"
 #include "lib/input/inputdriver_alias.h"
 #include "lib/input/inputdriver_conjoin.h"
@@ -981,7 +983,7 @@ void SetPreferenceOverrides()
 void InitialiseInputManager()
 {
 	g_inputManager.addDriver( new SDLKeyboardInputDriver() );
-	g_inputManager.addDriver( new SDLMouseInputDriver() );
+	g_inputManager.addDriver( g_sdlMouseDriver = new SDLMouseInputDriver() );
 	g_inputManager.addDriver( new ConjoinInputDriver() );
 	g_inputManager.addDriver( new ChordInputDriver() );
 	g_inputManager.addDriver( new InvertInputDriver() );
@@ -1000,7 +1002,7 @@ void InitialiseInputManager()
 		TextReader *inputPrefsReader = g_app->m_resource->GetTextReader( InputPrefs::GetSystemPrefsPath() );
 		if ( inputPrefsReader ) {
 			DarwiniaReleaseAssert( inputPrefsReader->IsOpen(), "Couldn't open input preferences file: %s\n",
-			                       InputPrefs::GetSystemPrefsPath() );
+								   InputPrefs::GetSystemPrefsPath().c_str() );
 			g_inputManager.parseInputPrefs( *inputPrefsReader );
 			delete inputPrefsReader;
 		}
@@ -1015,12 +1017,9 @@ void InitialiseInputManager()
 		}
 
 		// Override again with user specified bindings
-		TextReader *userInputPrefsReader = new TextFileReader( InputPrefs::GetUserPrefsPath() );
-		if ( userInputPrefsReader ) {
-			if ( userInputPrefsReader->IsOpen() ) {
-				g_inputManager.parseInputPrefs( *userInputPrefsReader, true );
-			}
-			delete userInputPrefsReader;
+		TextFileReader userInputPrefsReader( InputPrefs::GetUserPrefsPath() );
+		if ( userInputPrefsReader.IsOpen() ) {
+			g_inputManager.parseInputPrefs( userInputPrefsReader, true );
 		}
 
 	}
@@ -1095,6 +1094,8 @@ void DoVistaChecks()
 
 void Initialise()
 {
+	g_eventHandler = new SDLEventHandler();
+	g_windowManager = new WindowManagerSDL();
 	//
     // Initialise all our basic objects
 
@@ -1115,7 +1116,7 @@ void Initialise()
 	g_target = new TargetCursor();
 	//if( g_prefsManager->GetInt("ControlMethod")==0 ) getW32EventHandler()->BindAltTab();
     EntityBlueprint::Initialise();
-	g_windowManager.HideMousePointer();
+	g_windowManager->HideMousePointer();
 
 	//
 	// Start on a specific level if the prefs file tells us to
@@ -1174,15 +1175,15 @@ void RunBootLoaders()
 
 		if( stricmp( loaderName, "firsttime" ) == 0 )
 		{
-			//g_app->m_startSequence = new StartSequence();
-			//while( true )
-			//{
-			//	UpdateAdvanceTime();
-			//	bool amIDone = g_app->m_startSequence->Advance();
-			//	if( amIDone ) break;
-			//}
-			//
-			//delete g_app->m_startSequence;
+			g_app->m_startSequence = new StartSequence();
+			while( true )
+			{
+				UpdateAdvanceTime();
+				bool amIDone = g_app->m_startSequence->Advance();
+				if( amIDone ) break;
+			}
+
+			delete g_app->m_startSequence;
 			g_app->m_startSequence = NULL;
 
 			g_app->m_camera->SetTarget(Vector3(1000,500,1000), Vector3(0,-0.5f,-1));

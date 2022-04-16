@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/hi_res_time.h"
 #include "lib/resource.h"
 #include "lib/window_manager.h"
@@ -28,7 +28,7 @@ class BuyOnlineButton : public DarwiniaButton
      //   delete g_app->m_resource;
      //   delete g_windowManager;
 
-        WindowManager::OpenWebsite( "http://store.introversion.co.uk" );
+		g_windowManager->OpenWebsite( "http://store.introversion.co.uk" );
 
 		g_app->m_requestQuit = true;
     }

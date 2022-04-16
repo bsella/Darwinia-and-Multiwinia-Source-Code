@@ -1,8 +1,7 @@
-﻿#include "inputdriver_sdl.h"
+﻿#include "lib/debug_utils.h"
 
-#include "lib/debug_utils.h"
-
-//#include "lib/input/sdl_eventhandler.h"
+#include "lib/input/inputdriver_sdl_key.h"
+#include "lib/input/sdl_eventhandler.h"
 #include "lib/input/keynames.h"
 #include "lib/language_table.h"
 #include "app.h"
@@ -35,19 +34,19 @@ static int ConvertSDLKeyIdToWin32KeyId(SDLKey _keyCode)
 		case SDLK_CAPSLOCK: return KEY_CAPSLOCK;
 		case SDLK_BACKSLASH: return KEY_BACKSLASH;
 		case SDLK_BACKQUOTE: return KEY_TILDE;
-
+		
 		case SDLK_LSHIFT:
 		case SDLK_RSHIFT:
 			return KEY_SHIFT;
-
+			
 		case SDLK_LCTRL:
 		case SDLK_RCTRL:
 			return KEY_CONTROL;
-
+		
 		case SDLK_LMETA:
 		case SDLK_RMETA:
 			return KEY_META;
-
+		
 		case SDLK_LALT:
 		case SDLK_RALT:
 			return KEY_ALT;
@@ -65,16 +64,55 @@ static int ConvertSDLKeyIdToWin32KeyId(SDLKey _keyCode)
 SDLKeyboardInputDriver::SDLKeyboardInputDriver()
 {
 	setName("SDLKeyboard");
-	//getSDLEventHandler()->AddEventProcessor(this);
-	//On linux, we re-create the window on resolution change.
-	//I therefore enable Unicode in window_manager_sdl.cpp, not here.
-	#ifndef TARGET_OS_LINUX
+	getSDLEventHandler()->AddEventProcessor(this);
 	SDL_EnableUNICODE(1);
-	#endif
-
+	
 	memset(m_keys, 0, KEY_MAX * sizeof(bool));
 	memset(m_keyDeltas, 0, KEY_MAX * sizeof(int));
 	memset(m_keyNewDeltas, 0, KEY_MAX * sizeof(int));
+}
+
+int SDLKeyboardInputDriver::HandleSDLEvent(const SDL_Event & event)
+{
+	switch (event.type)
+	{
+		// Note that there are two paths for keystroke input into the game. One can either
+		// poll the keyboard state (m_keys) or read from the character stream (EclUpdateKeyboard()).
+		// The first uses method uses raw Windows key codes, but the second takes ASCII/Unicode values.
+		case SDL_KEYDOWN:
+		{
+			uint16_t unicode = event.key.keysym.unicode;
+			int keyCode = ConvertSDLKeyIdToWin32KeyId(event.key.keysym.sym);
+			if (unicode == SDLK_DELETE)
+				unicode = SDLK_BACKSPACE;
+			m_keys[keyCode] = true;
+			m_keyNewDeltas[keyCode] = 1;
+			
+			SDLMod modifiers = event.key.keysym.mod;
+			if (0 < unicode && unicode <= 255)
+			{
+#ifdef TARGET_OS_MACOSX
+				// Use the Command key, not Control, since that's what Mac users expect
+				int commandKeyMask = KMOD_META;
+#else
+				int commandKeyMask = KMOD_CTRL;
+#endif
+				//EclUpdateKeyboard(unicode, modifiers & KMOD_SHIFT, modifiers & commandKeyMask,
+				//				  modifiers & KMOD_ALT, unicode);
+			}
+			return 0;
+		}
+			
+		case SDL_KEYUP:
+		{
+			int keyCode = ConvertSDLKeyIdToWin32KeyId(event.key.keysym.sym);
+			m_keys[keyCode] = false;
+			m_keyNewDeltas[keyCode] = -1;
+			return 0;
+		}
+	}
+	
+	return -1; // unhandled
 }
 
 bool SDLKeyboardInputDriver::getFirstActiveInput( InputSpec &spec, bool instant )
@@ -82,7 +120,7 @@ bool SDLKeyboardInputDriver::getFirstActiveInput( InputSpec &spec, bool instant 
 	// Check for pressed keys
 	for ( unsigned i = 0; i <= KEY_META; ++i ) {
 		if ( 1 == m_keyDeltas[ i ] && // key was pressed
-			 strstr( getKeyNames()[ i ], " " ) == NULL ) { // Key is bindable
+		     strstr( getKeyNames()[ i ], " " ) == NULL ) { // Key is bindable
 			spec.control_id = i;
 			if ( instant )
 				spec.condition = COND_DOWN;
@@ -113,7 +151,7 @@ void SDLKeyboardInputDriver::Advance()
 			m_keyNewDeltas[keyCode] = -1;
 		}
 	}
-
+	
 	memcpy(m_keyDeltas, m_keyNewDeltas, sizeof(int) * KEY_MAX);
 	memset(m_keyNewDeltas, 0, sizeof(int) * KEY_MAX);
 }
@@ -121,54 +159,14 @@ void SDLKeyboardInputDriver::Advance()
 void SDLKeyboardInputDriver::PollForEvents()
 {
 	// not implemented yet
-	SDL_Event event;
-	SDL_PollEvent(&event);
-	switch (event.type)
-	{
-		// Note that there are two paths for keystroke input into the game. One can either
-		// poll the keyboard state (m_keys) or read from the character stream (EclUpdateKeyboard()).
-		// The first uses method uses raw Windows key codes, but the second takes ASCII/Unicode values.
-		case SDL_KEYDOWN:
-		{
-			uint16_t unicode = event.key.keysym.unicode;
-			int keyCode = ConvertSDLKeyIdToWin32KeyId(event.key.keysym.sym);
-			if (unicode == SDLK_DELETE)
-				unicode = SDLK_BACKSPACE;
-			m_keys[keyCode] = true;
-			m_keyNewDeltas[keyCode] = 1;
-
-			SDLMod modifiers = event.key.keysym.mod;
-			if (0 < unicode && unicode <= 255)
-			{
-#ifdef TARGET_OS_MACOSX
-				// Use the Command key, not Control, since that's what Mac users expect
-				int commandKeyMask = KMOD_META;
-#else
-				int commandKeyMask = KMOD_CTRL;
-#endif
-				EclUpdateKeyboard(unicode, modifiers & KMOD_SHIFT, modifiers & commandKeyMask,
-								  modifiers & KMOD_ALT);
-			}
-			return;
-		}
-
-		case SDL_KEYUP:
-		{
-			int keyCode = ConvertSDLKeyIdToWin32KeyId(event.key.keysym.sym);
-			m_keys[keyCode] = false;
-			m_keyNewDeltas[keyCode] = -1;
-			return;
-		}
-		default: return;
-	}
 }
 
-bool SDLKeyboardInputDriver::acceptDriver( const string &name )
+bool SDLKeyboardInputDriver::acceptDriver( string const &name )
 {
 	return ( name == "key" );
 }
 
-control_id_t SDLKeyboardInputDriver::getControlID( const string &name )
+control_id_t SDLKeyboardInputDriver::getControlID( string const &name )
 {
 	for ( control_id_t i = 0; i <= KEY_META; ++i ) {
 		if ( stricmp( name.c_str() , getKeyNames()[i] ) == 0 )
@@ -226,5 +224,5 @@ inputtype_t SDLKeyboardInputDriver::getControlType( control_id_t control_id )
 
 SDLKeyboardInputDriver::~SDLKeyboardInputDriver()
 {
-	//getSDLEventHandler()->RemoveEventProcessor(this);
+	getSDLEventHandler()->RemoveEventProcessor(this);
 }

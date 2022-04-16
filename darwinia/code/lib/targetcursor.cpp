@@ -34,7 +34,7 @@ TargetCursor::TargetCursor() {
 void TargetCursor::SetMousePos( int x, int y ) {
 	m_screenCoords[AXIS_X] = x;
 	m_screenCoords[AXIS_Y] = y;
-	g_windowManager.NastySetMousePos(x, y);
+	g_windowManager->NastySetMousePos(x, y);
 }
 
 
@@ -43,7 +43,7 @@ void TargetCursor::MoveCursor( int x, int y ) {
 	m_velocity[AXIS_Y] += y;
 	m_screenCoords[AXIS_X] += x;
 	m_screenCoords[AXIS_Y] += y;
-	g_windowManager.NastyMoveMouse(x, y);
+	g_windowManager->NastyMoveMouse(x, y);
 }
 
 

@@ -65,7 +65,7 @@ void Loader::FlipBuffers()
 	g_inputManager.PollForEvents();
 	g_inputManager.Advance();
 	glFinish();
-	g_windowManager.Flip();
+	g_windowManager->Flip();
     glClearColor(0,0,0,1);
 	glClear	(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	Sleep(1);

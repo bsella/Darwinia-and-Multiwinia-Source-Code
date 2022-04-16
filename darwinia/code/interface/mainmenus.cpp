@@ -332,7 +332,7 @@ public:
             g_prefsManager->SetInt( "ScreenWidth", 800 );
             g_prefsManager->SetInt( "ScreenHeight", 600 );
 
-			g_windowManager.DestroyWin();
+			g_windowManager->DestroyWin();
             delete g_app->m_renderer;
             g_app->m_renderer = new Renderer();
             g_app->m_renderer->Initialise();
@@ -350,7 +350,7 @@ public:
                                    g_app->m_renderer->ScreenH()/2 - m_parent->m_h/2 );
 
         }
-		g_windowManager.OpenWebsite( m_website );
+		g_windowManager->OpenWebsite( m_website );
     }
 };
 

@@ -511,7 +511,7 @@ void Script::RunCommand_PurityControl()
     //
     // Open up our store website
 
-	g_windowManager.OpenWebsite( "http://www.darwinia.co.uk/store/" );
+	g_windowManager->OpenWebsite( "http://www.darwinia.co.uk/store/" );
 
 
     //
@@ -569,7 +569,7 @@ void Script::RunCommand_ActivateTrunkPort( int _buildingId, bool _fullActivation
 
 // Opens a script file and returns. The script will only actually be run when
 // Script::Advance gets called
-void Script::RunScript(char *_filename)
+void Script::RunScript(const char *_filename)
 {
     if( strstr( _filename, ".txt" ) )
     {
@@ -848,7 +848,7 @@ void Script::AdvanceScript()
 
 
 #ifdef SCRIPT_TEST_ENABLED
-void Script::TestScript(char *_filename)
+void Script::TestScript(const char *_filename)
 {
 	char fullFilename[256] = "scripts/";
     strcat(fullFilename, _filename);

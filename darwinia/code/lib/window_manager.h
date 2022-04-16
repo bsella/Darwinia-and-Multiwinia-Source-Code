@@ -4,8 +4,9 @@
 
 #include <lib/llist.h>
 
-class WindowManagerWin32;
+typedef void* PlatformWindow;
 
+class WorkQueue;
 
 // ****************************************************************************
 // Class Resolution
@@ -30,31 +31,27 @@ class WindowManager
 {
 public:
 	LList		<Resolution *> m_resolutions;
-	WindowManagerWin32* m_win32Specific;
 	bool		m_mousePointerVisible;
 	bool		m_invertY;	// Whether the Y coordinate needs to be inverted or not.
 
 protected:
-	int			m_screenW;	// Cached values. Use Renderer::ScreenW() if you
-	int			m_screenH;	// want a value to inspect.
-    bool        m_windowed; //
-	bool        m_mouseCaptured;
-	bool		m_waitVRT;
-
 	int			m_mouseOffsetX;
 	int			m_mouseOffsetY;
 
-	int			m_borderWidth;
-	int			m_titleHeight;
-
-    int         m_desktopScreenW;           // Original starting values
+    bool        m_windowed;
+	bool        m_mouseCaptured;
+	int			m_screenW;
+	int			m_screenH;
+	
+	int         m_desktopScreenW;           // Original starting values
     int         m_desktopScreenH;           // Original starting values
     int         m_desktopColourDepth;       // Original starting values
     int         m_desktopRefresh;           // Original starting values
 
-	void ListAllDisplayModes();
-	bool EnableOpenGL(int _colourDepth, int _zDepth);
-	void DisableOpenGL();
+	virtual void ListAllDisplayModes();
+	
+private:
+	void AbstractListAllDisplayModes();
 
 public:
 	WindowManager();
@@ -62,45 +59,38 @@ public:
 
 	int GetResolutionId(int _width, int _height); // Returns -1 if resolution doesn't exist
     Resolution *GetResolution( int _id );
+	virtual void SuggestDefaultRes( int *_width, int *_height, int *_refresh, int *_depth );
 
-	bool CreateWin(int _width, int _height,		                // Set _colourDepth, _refreshRate and/or
-		           bool _windowed, int _colourDepth,		    // _zDepth to -1 to get default values
-		           int _refreshRate, int _zDepth,
-				   bool _waitVRT);
+	virtual bool CreateWin(int _width, int _height,		                // Set _colourDepth, _refreshRate and/or 
+						   bool _windowed, int _colourDepth,		    // _zDepth to -1 to get default values
+						   int _refreshRate, int _zDepth,  bool _waitVRT,
+						   bool _antiAlias, const wchar_t *_title) = 0;
 
-	void DestroyWin();
-	void Flip();
-	void NastyPollForMessages();
-	void NastySetMousePos(int x, int y);
-	void NastyMoveMouse(int x, int y);
+	virtual void DestroyWin() = 0;
+	virtual PlatformWindow *Window() = 0;
+	virtual void Flip() = 0;
+	virtual void NastySetMousePos(int x, int y) = 0;
+	virtual void NastyMoveMouse(int x, int y) = 0;
+	virtual void NastyPollForMessages() = 0;
 
-	void EnsureMouseCaptured();
-	void EnsureMouseUncaptured();
+	virtual void EnsureMouseCaptured();
+	virtual void EnsureMouseUncaptured();
 
-	void CaptureMouse();
-	void UncaptureMouse();
+	virtual void CaptureMouse() = 0;
+	virtual void UncaptureMouse() = 0;
 
-	void HideMousePointer();
-	void UnhideMousePointer();
+	virtual void HideMousePointer() = 0;
+	virtual void UnhideMousePointer() = 0;
 
     bool Windowed();
 	bool Captured();
-	bool MouseVisible();
-
-    void SaveDesktop();
-    void RestoreDesktop();
+    virtual void OpenWebsite( const char *_url ) = 0;
 
 	void WindowMoved();
-
-    void SuggestDefaultRes( int *_width, int *_height, int *_refresh, int *_depth );
-
-	static void OpenWebsite( const char *_url );
+    virtual void GetClosestResolution( int *_width, int *_height, int *_refresh );
 };
 
-
-void AppMain();
-
-extern WindowManager g_windowManager;
+extern WindowManager *g_windowManager;
 
 
 #endif
