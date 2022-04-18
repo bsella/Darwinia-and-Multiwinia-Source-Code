@@ -1,4 +1,4 @@
-#ifndef INCLUDED_INPUTDRIVER_ALIAS_H
+﻿#ifndef INCLUDED_INPUTDRIVER_ALIAS_H
 #define INCLUDED_INPUTDRIVER_ALIAS_H
 
 #include "lib/input/inputdriver.h"
@@ -25,9 +25,6 @@ public:
 
 	// Fill out a description of the input defined by spec
 	bool getInputDescription( InputSpec const &spec, InputDescription &desc );
-
-	// Get the name of the driver (debuggung purposes)
-	const std::string &getName();
 
 };
 

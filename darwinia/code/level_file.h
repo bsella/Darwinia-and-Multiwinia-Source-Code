@@ -46,9 +46,9 @@ public:
 
 public:
 	CamAnimNode()
-	:	m_mountName(NULL),
-		m_transitionMode(CamAnimNode::TransitionMove),
-		m_duration(1.0f)
+	: m_transitionMode(CamAnimNode::TransitionMove),
+	  m_mountName(NULL),
+	  m_duration(1.0f)
 	{
 	}
 

@@ -72,45 +72,46 @@ App *g_app = NULL;
 #endif
 
 App::App()
-:   m_camera(NULL),
-    m_location(NULL),
+:
+	m_userInput(NULL),
+	m_resource(NULL),
+	m_soundSystem(NULL),
+	m_particleSystem(NULL),
+	m_langTable(NULL),
+	m_aviGenerator(NULL),
+	m_profiler(NULL),
+	m_globalWorld(NULL),
+	m_location(NULL),
 	m_locationId(-1),
+	m_camera(NULL),
     m_server(NULL),
     m_clientToServer(NULL),
     m_renderer(NULL),
-    m_userInput(NULL),
-    m_profiler(NULL),
-    m_resource(NULL),
-    m_soundSystem(NULL),
 	m_locationInput(NULL),
 	m_locationEditor(NULL),
-    m_aviGenerator(NULL),
+	m_helpSystem(NULL),
+	m_tutorial(NULL),
 	m_effectProcessor(NULL),
-    m_globalWorld(NULL),
-    m_helpSystem(NULL),
-    m_tutorial(NULL),
-	m_particleSystem(NULL),
     m_taskManager(NULL),
     m_gesture(NULL),
     m_script(NULL),
     m_sepulveda(NULL),
     m_testHarness(NULL),
+	m_startSequence(NULL),
+	m_demoEndSequence(NULL),
+	m_attractMode(NULL),
+	m_controlHelpSystem(NULL),
+	m_gameMenu(NULL),
+	m_negativeRenderer(false),
+	m_difficultyLevel(0),
+	m_largeMenus(false),
     m_paused(false),
 	m_editing(false),
 	m_requestedLocationId(-1),
 	m_requestToggleEditing(false),
 	m_requestQuit(false),
-    m_negativeRenderer(false),
-	m_difficultyLevel(0),
-    m_levelReset(false),
-    m_langTable(NULL),
-    m_startSequence(NULL),
-    m_demoEndSequence(NULL),
-	m_largeMenus(false),
-	m_attractMode(NULL),
-    m_controlHelpSystem(NULL),
+	m_levelReset(false),
     m_atMainMenu(false),
-    m_gameMenu(NULL),
     m_gameMode(GameModeNone)
 #ifdef TARGET_OS_VISTA
 	,m_thumbnailScreenshot(NULL),
@@ -155,7 +156,8 @@ App::App()
 		"sounds.dat isn't in the working directory.");
 	delete ssd;
 
-    int textureId = m_resource->GetTexture("textures/editor_font_normal.bmp");
+	//int textureId =
+	m_resource->GetTexture("textures/editor_font_normal.bmp");
 
     m_gameCursor        = new GameCursor();
     m_soundSystem       = new SoundSystem();
@@ -265,7 +267,7 @@ App::App()
     //
     // Load save games
 
-    bool profileLoaded = LoadProfile();
+	LoadProfile();
 }
 
 App::~App()

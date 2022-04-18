@@ -69,26 +69,26 @@ protected:
 public:
     Engineer();
 
-    void Begin                  ();
-    bool Advance                ( Unit *_unit );
+	void Begin                  ()override;
+	bool Advance                ( Unit *_unit )override;
 
     void BeginBridge            ( Vector3 _to );
     void EndBridge              ();
 
-    void SetWaypoint            ( Vector3 const &_wayPoint );
-    void ChangeHealth           ( int amount );
+	void SetWaypoint            ( Vector3 const &_wayPoint ) override;
+	void ChangeHealth           ( int amount )override;
 
     int  GetNumSpirits          ();
     int  GetMaxSpirits          ();
     void CollectSpirit          ( int _spiritId );
 
-    void Render                 ( float predictionTime );
+	void Render                 ( float predictionTime )override;
     void RenderShape            ( float predictionTime );
-    bool RenderPixelEffect      ( float predictionTime );
+	bool RenderPixelEffect      ( float predictionTime )override;
 
 	const char *GetCurrentAction      ();
 
-	void ListSoundEvents        ( LList<const char *> *_list );
+	void ListSoundEvents        ( LList<const char *> *_list )override;
 };
 
 

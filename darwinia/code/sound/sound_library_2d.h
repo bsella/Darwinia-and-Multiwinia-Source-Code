@@ -54,7 +54,7 @@ public:
 
 public:
 	SoundLibrary2d();
-	~SoundLibrary2d();
+	virtual ~SoundLibrary2d();
 
 	virtual void SetCallback(void (*_callback) (StereoSample *, unsigned int));
 	virtual void TopupBuffer();

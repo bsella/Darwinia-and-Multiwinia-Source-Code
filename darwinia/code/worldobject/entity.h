@@ -81,20 +81,20 @@ public:
 
     void SetType					( unsigned char _type );         // Loads default stats from blueprint
 
-    virtual void Render				( float predictionTime );
+	virtual void Render				( float predictionTime )override;
 
-    virtual void Begin              ();
-    virtual bool Advance            ( Unit *_unit );
-    virtual bool AdvanceDead        ( Unit *_unit );
-    virtual void AdvanceInAir       ( Unit *_unit );
-    virtual void AdvanceInWater     ( Unit *_unit );
+	virtual void Begin              ();
+	virtual bool Advance            ( Unit *_unit );
+	virtual bool AdvanceDead        ( Unit *_unit );
+	virtual void AdvanceInAir       ( Unit *_unit );
+	virtual void AdvanceInWater     ( Unit *_unit );
 
     virtual void ChangeHealth       ( int amount );
     virtual void Attack             ( Vector3 const &pos );
 
     virtual bool IsInView ();
 
-	virtual void SetWaypoint( Vector3 const _waypoint );
+	virtual void SetWaypoint( Vector3 const& _waypoint );
 
     virtual Vector3 PushFromObstructions( Vector3 const &pos, bool killem = true );
     virtual Vector3 PushFromCliffs      ( Vector3 const &pos, Vector3 const &oldPos );

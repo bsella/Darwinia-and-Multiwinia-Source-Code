@@ -455,11 +455,13 @@ char* UnixSlashToDos(char *SrcName,char *DestName)
     strcpy(DestName,SrcName);
   for (char *s=SrcName;*s!=0;s=charnext(s))
   {
-    if (*s=='/')
+	if (*s=='/')
+	{
       if (DestName==NULL)
         *s='\\';
       else
         DestName[s-SrcName]='\\';
+	}
   }
   return(DestName==NULL ? SrcName:DestName);
 }
@@ -471,11 +473,13 @@ char* DosSlashToUnix(char *SrcName,char *DestName)
     strcpy(DestName,SrcName);
   for (char *s=SrcName;*s!=0;s=charnext(s))
   {
-    if (*s=='\\')
+	if (*s=='\\')
+	{
       if (DestName==NULL)
         *s='/';
       else
         DestName[s-SrcName]='/';
+	}
   }
   return(DestName==NULL ? SrcName:DestName);
 }

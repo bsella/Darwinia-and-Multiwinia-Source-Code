@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 // By Christopher Delay
 
@@ -226,9 +226,9 @@ template <class T>
 inline const T& DArray<T>::operator [] (int _index) const
 {
     DarwiniaDebugAssert( _index < m_arraySize && _index >= 0 );
-    DarwiniaDebugAssert( shadow[index] != 0 );
+	DarwiniaDebugAssert( shadow[_index] != 0 );
 
-    return array[index];
+	return array[_index];
 }
 
 

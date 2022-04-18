@@ -100,11 +100,11 @@ bool HelpIcon::Enabled( float &_iconAlpha ) const
 
 	_iconAlpha = 0.3f;
 
-	for (int i = 0; i < m_texts.size(); i++) {
-		if (m_texts[i].m_text) {
+	for (const auto& text : m_texts) {
+		if (text.m_text) {
 			enabled = true;
-			if (m_texts[i].m_alpha > _iconAlpha)
-				_iconAlpha = m_texts[i].m_alpha;
+			if (text.m_alpha > _iconAlpha)
+				_iconAlpha = text.m_alpha;
 		}
 	}
 
@@ -115,8 +115,8 @@ void HelpIcon::Clear()
 {
 	m_lastTexts = m_texts;
 
-	for (int i = 0; i < m_texts.size(); i++)
-		m_texts[i].m_text = NULL;
+	for (auto& text : m_texts)
+		text.m_text = NULL;
 }
 
 void HelpIcon::Set( int _index, const char *_helpText, float _alpha )
@@ -205,7 +205,7 @@ void HelpIcon::Render( const Vector2 &_setPosition, float _alpha )
 	// Render the associated text
 
 	if (enabled) {
-		for (int i = 0; i < m_texts.size(); i++) {
+		for (auto i = 0; i < m_texts.size(); i++) {
 			const char *text = m_texts[i].m_text;
 			const Vector2 &pos = m_texts[i].m_pos;
 
@@ -270,8 +270,8 @@ void HelpIconSet::Render( Vector2 &_setPosition )
 
 	float iconAlpha;
 
-	for (int i = 0; i < m_icons.size(); i++)
-		if (m_icons[i]->Enabled( iconAlpha )) {
+	for (const auto& icon : m_icons)
+		if (icon->Enabled( iconAlpha )) {
 			atLeastOneEnabled = true;
 			break;
 		}
@@ -306,8 +306,8 @@ void HelpIconSet::Render( Vector2 &_setPosition )
 	// If none enabled, we don't render the entire set
 	if (alpha > 0.0f) {
 		// Render
-		for (int i = 0; i < m_icons.size(); i++)
-			m_icons[i]->Render( _setPosition, alpha );
+		for (auto& icon : m_icons)
+			icon->Render( _setPosition, alpha );
 	}
 
 	// Adjust the y value

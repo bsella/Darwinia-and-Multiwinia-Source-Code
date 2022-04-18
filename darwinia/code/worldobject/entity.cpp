@@ -762,7 +762,7 @@ Vector3 Entity::GetCameraFocusPoint()
 	return m_pos + m_vel;
 }
 
-void Entity::SetWaypoint( Vector3 const _waypoint )
+void Entity::SetWaypoint( Vector3 const& _waypoint )
 {
 }
 

@@ -106,7 +106,7 @@ void Renderer::Initialise()
 	int colourDepth = g_prefsManager->GetInt("ScreenColourDepth", 32);
 	int refreshRate = g_prefsManager->GetInt("ScreenRefresh", 75);
 	int zDepth = g_prefsManager->GetInt("ScreenZDepth", 24);
-	bool waitVRT = g_prefsManager->GetInt("WaitVerticalRetrace", 1);
+	//bool waitVRT = g_prefsManager->GetInt("WaitVerticalRetrace", 1);
 
     if( m_screenW == 0 || m_screenH == 0 )
     {
@@ -462,7 +462,7 @@ void Renderer::RenderFrame(bool withFlip)
 		glClear			(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	END_PROFILE(g_app->m_profiler, "Render Clear");
 
-	bool deformStarted = false;
+	//bool deformStarted = false;
 
     if (g_app->m_editing)
 	{
@@ -712,9 +712,9 @@ void Renderer::RenderFrame(bool withFlip)
         glEnable( GL_BLEND );
         glColor4f( alpha, alpha, alpha, 0.0f );
 
-        for( float dx = -4; dx <= 4; dx += 4 )
+		for( float dx = -4.f; dx <= 4.f; dx += 4.f )
         {
-            for( float dy = -4; dy <= 4; dy += 4 )
+			for( float dy = -4.f; dy <= 4.f; dy += 4.f )
             {
                 glBegin( GL_QUADS );
 			        glTexCoord2i(0,1);      glVertex2f( x+dx, y+dy );
@@ -784,8 +784,8 @@ void Renderer::SetupProjMatrixFor3D() const
 
 	if (m_renderingPoster == PosterMakerTiling)
 	{
-		int const screenH = ScreenH();
-		int const screenW = ScreenW();
+		//int const screenH = ScreenH();
+		//int const screenW = ScreenW();
         int posterResolution = g_prefsManager->GetInt( "RenderPosterResolution", 1 );
 
 		float scale = g_app->m_camera->GetFov() / 78.0f;
@@ -944,10 +944,10 @@ void Renderer::CheckOpenGLState() const
 	{
 		for (int i = 0; i < g_app->m_location->m_lights.Size(); i++)
 		{
-			Light *light = g_app->m_location->m_lights.GetData(i);
+			//Light *light = g_app->m_location->m_lights.GetData(i);
 
-			float amb = 0.0f;
-			GLfloat ambCol1[] = { amb, amb, amb, 1.0f };
+			//float amb = 0.0f;
+			//GLfloat ambCol1[] = { amb, amb, amb, 1.0f };
 
 			GLfloat pos1_actual[4];
 			GLfloat ambient1_actual[4];
@@ -1124,7 +1124,7 @@ void Renderer::PreRenderPixelEffect()
 	}
 	// memset(m_pixelEffectGrid, 0, sizeof(m_pixelEffectGrid));
 
-    float timeSinceAdvance = g_predictionTime;
+	//float timeSinceAdvance = g_predictionTime;
 
     //
     // Blend our old glow texture into place
@@ -1142,7 +1142,7 @@ void Renderer::PreRenderPixelEffect()
 
     g_editorFont.BeginText2D();
 
-    float upSpeed = 2.0f;
+	//float upSpeed = 2.0f;
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     glDisable           (GL_TEXTURE_2D); // *
     glEnable( GL_BLEND );

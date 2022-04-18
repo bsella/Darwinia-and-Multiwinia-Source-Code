@@ -1,10 +1,7 @@
-#ifndef _RAR_OS_
+﻿#ifndef _RAR_OS_
 #define _RAR_OS_
 
 #include "raros.h"
-
-#define false 0
-#define true  1
 
 #ifdef __EMX__
   #define INCL_BASE

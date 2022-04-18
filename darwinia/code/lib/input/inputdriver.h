@@ -1,4 +1,4 @@
-#ifndef INCLUDED_INPUTDRIVER_H
+﻿#ifndef INCLUDED_INPUTDRIVER_H
 #define INCLUDED_INPUTDRIVER_H
 
 #include <string>
@@ -98,8 +98,8 @@ public:
 	// Fill out a description of the input defined by spec
 	virtual bool getInputDescription( InputSpec const &spec, InputDescription &desc );
 
-	// Get the name of the driver (debuggung purposes)
-	virtual const std::string &getName() const;
+	// Get the name of the driver (debugging purposes)
+	const std::string &getName() const;
 
 };
 

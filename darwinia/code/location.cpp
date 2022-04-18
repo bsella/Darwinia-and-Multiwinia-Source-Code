@@ -1497,7 +1497,6 @@ void Location::RemoveTeam( unsigned char _teamId )
 {
     if( _teamId < NUM_TEAMS )
     {
-        Team *team = &m_teams[_teamId];
         m_teams[_teamId].m_teamType = Team::TeamTypeUnused;
     }
 
@@ -2051,7 +2050,7 @@ void Location::WaterReflect()
 {
 	for (int i = 0; i < m_lights.Size(); i++)
 	{
-		Light *light = m_lights.GetData(i);
+		//Light *light = m_lights.GetData(i);
 		//light->m_front[0] = -light->m_front[0];
 		//light->m_front[1] = -light->m_front[1];
 		//light->m_front[2] = -light->m_front[2];

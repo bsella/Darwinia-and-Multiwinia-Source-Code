@@ -441,7 +441,7 @@ bool SoundSystem::SoundLibraryMusicCallback( signed short *_data, unsigned int _
 		//
         // Fill the space with sample data
 
-		int numSamplesWritten = instance->m_cachedSampleHandle->Read( _data, _numSamples );
+		auto numSamplesWritten = instance->m_cachedSampleHandle->Read( _data, _numSamples );
 
         if( numSamplesWritten < _numSamples )
         {

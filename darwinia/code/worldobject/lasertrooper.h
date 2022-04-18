@@ -1,4 +1,4 @@
-
+﻿
 #ifndef _included_lasertrooper_h
 #define _included_lasertrooper_h
 
@@ -15,7 +15,7 @@ public:
 
 public:
 
-    void Begin      ();
+	void Begin      ()override;
 
     bool Advance    ( Unit *_unit );
     void Render     ( float _predictionTime, int _teamId );

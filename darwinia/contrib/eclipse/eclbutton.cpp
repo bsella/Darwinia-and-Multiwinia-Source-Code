@@ -89,7 +89,7 @@ void EclButton::SetParent ( EclWindow *_parent )
     m_parent = _parent;
 }
 
-void EclButton::Render ( int realX, int realY, bool highlighted, bool clicked )
+void EclButton::Render ( int, int, bool, bool )
 {
 }
 
@@ -105,7 +105,7 @@ void EclButton::MouseMove ()
 {
 }
 
-void EclButton::Keypress ( int keyCode, bool shift, bool ctrl, bool alt )
+void EclButton::Keypress ( int, bool, bool, bool )
 {
 }
 
