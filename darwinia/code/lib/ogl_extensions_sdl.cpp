@@ -1,8 +1,8 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include "lib/ogl_extensions.h"
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <string.h>
 
 MultiTexCoord2fARB gglMultiTexCoord2fARB = NULL;

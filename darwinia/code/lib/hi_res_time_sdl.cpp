@@ -1,9 +1,5 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
-#include <SDL.h>
-
-static unsigned int g_ticksPerSec = 0;
-static double g_tickInterval = 1.0;
 static double g_lastGetHighResTime = 0.0;
 static double g_timeShift = 0.0;
 static bool g_usingFakeTimeMode = false;

@@ -178,7 +178,7 @@ add_executable(darwinia
 	code/lib/resource.cpp
 	code/lib/text_renderer.cpp
 	code/lib/filesys_utils.cpp
-	code/lib/hi_res_time.cpp
+	code/lib/hi_res_time_sdl.cpp
 	code/lib/targetcursor.cpp
 	code/lib/preferences.cpp
 	code/lib/debug_utils.cpp
@@ -201,7 +201,7 @@ add_executable(darwinia
 	code/lib/3d_sprite.cpp
 	code/lib/window_manager.cpp
 	code/lib/window_manager_sdl.cpp
-	code/lib/ogl_extensions.cpp
+	code/lib/ogl_extensions_sdl.cpp
 	code/lib/poster_maker.cpp
 	code/lib/persisting_debug_render.cpp
 	code/lib/texture_uv.cpp

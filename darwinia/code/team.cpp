@@ -210,6 +210,7 @@ Entity *Team::GetMyEntity()const
 
 Unit *Team::NewUnit(int _troopType, int _numEntities, int *_unitId, Vector3 const &_pos)
 {
+	*_unitId = m_units.size();
 	Unit *unit = nullptr;
 
 	if (_troopType == Entity::TypeInsertionSquadie)
