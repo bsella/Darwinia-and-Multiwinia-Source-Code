@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 #include "lib/debug_render.h"
 #include "lib/file_writer.h"
 #include "lib/math_utils.h"
@@ -200,14 +200,14 @@ bool AI::Advance( Unit *_unit )
     // We can't do this for every darwinian every frame, so just do it for some
 
     Team *team = &g_app->m_location->m_teams[m_id.GetTeamId()];
-    int numRemaining = team->m_others.Size() * 0.02f;
+	int numRemaining = team->m_others.size() * 0.02f;
     numRemaining = max( numRemaining, 1 );
 
     while( numRemaining > 0 )
     {
-        int index = syncrand() % team->m_others.Size();
-        if( team->m_others.ValidIndex(index) )
-        {
+		int index = syncrand() % team->m_others.size();
+		try
+		{
             Entity *entity = team->m_others[index];
             if( entity && entity->m_type == TypeDarwinian )
             {
@@ -234,7 +234,7 @@ bool AI::Advance( Unit *_unit )
                     }
                 }
             }
-        }
+		}catch(const std::out_of_range&){}
 
         --numRemaining;
     }
@@ -336,8 +336,8 @@ void AI::Render( float _predictionTime )
         pos.y = 400.0f;
         RenderSphere( pos, 20.0f, teamCol );
 
-        int numGreen = g_app->m_location->m_teams[0].m_others.NumUsed();
-        int numRed = g_app->m_location->m_teams[1].m_others.NumUsed();
+		auto numGreen = g_app->m_location->m_teams[0].m_others.size();
+		auto numRed = g_app->m_location->m_teams[1].m_others.size();
 
         glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
         g_editorFont.DrawText3DCentre( pos-Vector3(0,30,0), 25, "Green : %d", numGreen );

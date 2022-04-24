@@ -1,11 +1,11 @@
-#ifndef _included_unit_h
+﻿#ifndef _included_unit_h
 #define _included_unit_h
 
-#include "lib/slice_darray.h"
 #include "lib/vector3.h"
 
 #include "worldobject/entity.h"
 
+#include <vector>
 
 class Unit
 {
@@ -18,7 +18,7 @@ public:
     int                 m_teamId;
     int                 m_unitId;
     int                 m_troopType;
-    SliceDArray         <Entity *> m_entities;
+	std::vector         <Entity *> m_entities;
 
     Vector3             m_centrePos;
     Vector3             m_vel;
@@ -50,9 +50,9 @@ public:
     virtual ~Unit();
 
     virtual void    Begin           ();
-    virtual bool    Advance         ( int _slice );
+	virtual bool    Advance         ( );
     virtual void    Attack          ( Vector3 pos, bool withGrenade );
-    virtual void    AdvanceEntities ( int _slice );
+	virtual void    AdvanceEntities ( );
     virtual void    Render          ( float _predictionTime );
 
     virtual bool    IsInView        ();

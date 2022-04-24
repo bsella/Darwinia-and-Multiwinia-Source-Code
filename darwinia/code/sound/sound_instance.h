@@ -6,6 +6,7 @@
 #include "worldobject/entity.h"
 
 #include <string>
+#include <vector>
 
 class SoundInstance;
 class SoundStreamDecoder;
@@ -130,10 +131,10 @@ public:
     float               m_loopDelayTimer;
     bool                m_restartOccured;
 
-    Vector3                 m_pos;
-    Vector3                 m_vel;
-    LList<WorldObjectId *>  m_objIds;
-    WorldObjectId           m_objId;                // The selected objId from the list
+	Vector3               m_pos;
+	Vector3               m_vel;
+	std::vector<WorldObjectId>  m_objIds;
+	WorldObjectId         m_objId;                // The selected objId from the list
 
     float               m_calculatedPriority;
     int                 m_channelIndex;

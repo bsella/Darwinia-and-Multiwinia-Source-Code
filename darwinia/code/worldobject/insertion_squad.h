@@ -82,20 +82,20 @@ protected:
 public:
     Squadie();
 
-    void Begin                  ();
-    bool Advance                ( Unit *_unit );
-    void ChangeHealth           ( int _amount );
-    void Attack                 ( Vector3 const &_pos );
+	void Begin                  ()override;
+	bool Advance                ( Unit *_unit )override;
+	void ChangeHealth           ( int _amount )override;
+	void Attack                 ( Vector3 const &_pos )override;
 
-    void Render                 ( float _predictionTime );
-    bool RenderPixelEffect      ( float _predictionTime );
+	void Render                 ( float _predictionTime )override;
+	bool RenderPixelEffect      ( float _predictionTime )override;
 
     bool HasSecondaryWeapon     ();
     void FireSecondaryWeapon    ( Vector3 const &_pos );
 
-	void ListSoundEvents	    ( LList<const char *> *_list );
+	void ListSoundEvents        ( LList<const char *> *_list )override;
 
-	Vector3 GetCameraFocusPoint	();
+	Vector3 GetCameraFocusPoint ()override;
 
 	Vector3 GetSecondaryWeaponTarget();
 };

@@ -57,34 +57,31 @@ void Centipede::Begin()
         //
         // Link every centipede in this unit into one long centipede
 
-        Team *myTeam = &g_app->m_location->m_teams[ m_id.GetTeamId() ];
         Unit *myUnit = NULL;
-        if( myTeam->m_units.ValidIndex(m_id.GetUnitId()) )
-        {
-            myUnit = myTeam->m_units[ m_id.GetUnitId() ];
-        }
+		try
+		{
+			Team *myTeam = &g_app->m_location->m_teams[ m_id.GetTeamId() ];
+			myUnit = myTeam->m_units[ m_id.GetUnitId() ];
+		}catch(const std::out_of_range&){}
 
         if( myUnit )
         {
-            float size = 0.2f * pow(1.1f, myUnit->m_entities.Size() );
+			float size = 0.2f * pow(1.1f, myUnit->m_entities.size() );
             size = min( size, 10.0f );
 
             Centipede *prev = NULL;
 
-            for( int i = 0; i < myUnit->m_entities.Size(); ++i )
+			for (auto* ent : myUnit->m_entities)
             {
-                if( myUnit->m_entities.ValidIndex(i) )
-                {
-                    Centipede *centipede = (Centipede *) myUnit->m_entities[i];
-                    centipede->m_size = size;
-                    size /= 1.1f;
-                    if( prev )
-                    {
-                        prev->m_prev = centipede->m_id;
-                        centipede->m_next = prev->m_id;
-                    }
-                    prev = centipede;
-                }
+				Centipede *centipede = (Centipede *) ent;
+				centipede->m_size = size;
+				size /= 1.1f;
+				if( prev )
+				{
+					prev->m_prev = centipede->m_id;
+					centipede->m_next = prev->m_id;
+				}
+				prev = centipede;
             }
         }
     }

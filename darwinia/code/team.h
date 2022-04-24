@@ -1,4 +1,4 @@
-#ifndef _INCLUDED_TEAM_H
+﻿#ifndef _INCLUDED_TEAM_H
 #define _INCLUDED_TEAM_H
 
 #include "lib/fast_darray.h"
@@ -7,6 +7,8 @@
 
 #include "worldobject/worldobject.h"
 #include "worldobject/entity.h"
+
+#include <vector>
 
 class Unit;
 class InsertionSquad;
@@ -30,9 +32,9 @@ public:
     int                         m_teamId;
     int                         m_teamType;
 
-    FastDArray  <Unit *>        m_units;
-    SliceDArray <Entity *>      m_others;
-    LList       <WorldObjectId> m_specials;             // Officers and tanks for quick lookup
+	std::vector<Unit *>        m_units;
+	std::vector<Entity *>      m_others;
+	std::vector<WorldObjectId> m_specials;             // Officers and tanks for quick lookup
 
     RGBAColour               m_colour;
 
@@ -50,12 +52,12 @@ public:
 
     void SelectUnit     (int _unitId, int _entityId, int _buildingId );
 
-    void RegisterSpecial    ( WorldObjectId _id );
-    void UnRegisterSpecial  ( WorldObjectId _id );
+	void RegisterSpecial    ( const WorldObjectId& _id );
+	void UnRegisterSpecial  ( const WorldObjectId& _id );
 
-	Entity *RayHitEntity(Vector3 const &_rayStart, Vector3 const &_rayEnd);
-    Unit   *GetMyUnit   ();
-    Entity *GetMyEntity ();
+	Entity *RayHitEntity(Vector3 const &_rayStart, Vector3 const &_rayEnd)const;
+	Unit   *GetMyUnit   ()const;
+	Entity *GetMyEntity ()const;
     Unit   *NewUnit     (int _troopType, int _numEntities, int *_unitId, Vector3 const &_pos);
     Entity *NewEntity   (int _troopType, int _unitId, int *_index);
 

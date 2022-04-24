@@ -25,7 +25,7 @@ public:
 public:
     ViriiUnit(int teamId, int unitId, int numEntities, Vector3 const &_pos);
 
-    bool Advance( int _slice );
+	bool Advance();
     void Render( float _predictionTime );
 };
 
@@ -75,20 +75,20 @@ protected:
 
 public:
     Virii();
-    ~Virii();
+	~Virii()override;
 
-    bool Advance            ( Unit *_unit );
-    bool AdvanceIdle        ();
-    bool AdvanceAttacking   ();
-    bool AdvanceToSpirit    ();
-    bool AdvanceToEgg       ();
-    bool AdvanceDead        ();
+	bool Advance            ( Unit *_unit )override;
+	bool AdvanceIdle        ();
+	bool AdvanceAttacking   ();
+	bool AdvanceToSpirit    ();
+	bool AdvanceToEgg       ();
+	bool AdvanceDead        ();
 
-    bool IsInView           ();
+	bool IsInView           ()override;
 
     void Render             ( float predictionTime, int teamId, int _detail );
 
-	void ListSoundEvents    ( LList<const char *> *_list );
+	void ListSoundEvents    ( LList<const char *> *_list )override;
 };
 
 

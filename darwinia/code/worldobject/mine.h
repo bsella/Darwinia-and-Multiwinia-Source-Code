@@ -42,10 +42,10 @@ protected:
 public:
     MineBuilding();
 
-    void Initialise     ( Building *_template );
-    bool Advance        ();
+	void Initialise     ( Building *_template )override;
+	bool Advance        ()override;
 
-    bool IsInView       ();
+	bool IsInView       ()override;
 
     void Render         ( float _predictionTime );
     void RenderAlphas   ( float _predictionTime );
@@ -56,13 +56,13 @@ public:
 
     virtual void TriggerCart ( MineCart *_cart, float _initValue );
 
-	void ListSoundEvents    ( LList<const char *> *_list );
+	void ListSoundEvents    ( LList<const char *> *_list )override;
 
-    void Read   ( TextReader *_in, bool _dynamic );
-    void Write  ( FileWriter *_out );
+	void Read   ( TextReader *_in, bool _dynamic )override;
+	void Write  ( FileWriter *_out )override;
 
-    int  GetBuildingLink();
-    void SetBuildingLink( int _buildingId );
+	int  GetBuildingLink()override;
+	void SetBuildingLink( int _buildingId )override;
 
 };
 
@@ -89,7 +89,7 @@ class TrackLink : public MineBuilding
 public:
     TrackLink();
 
-    bool Advance();
+	bool Advance()override;
 };
 
 
@@ -105,16 +105,16 @@ public:
 public:
     TrackJunction();
 
-    void Initialise     ( Building *_template );
+	void Initialise     ( Building *_template )override;
 
-    void Render         ( float _predictionTime );
-    void TriggerCart    ( MineCart *_cart, float _initValue );
+	void Render         ( float _predictionTime )override;
+	void TriggerCart    ( MineCart *_cart, float _initValue )override;
 
-    void RenderLink     ();
-    void SetBuildingLink( int _buildingId );
+	void RenderLink     ()override;
+	void SetBuildingLink( int _buildingId )override;
 
-    void Read   ( TextReader *_in, bool _dynamic );
-    void Write  ( FileWriter *_out );
+	void Read   ( TextReader *_in, bool _dynamic )override;
+	void Write  ( FileWriter *_out )override;
 };
 
 
@@ -130,12 +130,12 @@ public:
 public:
     TrackStart();
 
-    void Initialise     ( Building *_template );
-    bool Advance        ();
-    void RenderAlphas   ( float _predictionTime );
+	void Initialise     ( Building *_template )override;
+	bool Advance        ()override;
+	void RenderAlphas   ( float _predictionTime )override;
 
-    void Read   ( TextReader *_in, bool _dynamic );
-    void Write  ( FileWriter *_out );
+	void Read   ( TextReader *_in, bool _dynamic )override;
+	void Write  ( FileWriter *_out )override;
 };
 
 
@@ -151,13 +151,13 @@ public:
 public:
     TrackEnd();
 
-    void Initialise     ( Building *_template );
-    bool Advance();
+	void Initialise     ( Building *_template )override;
+	bool Advance()override;
 
-    void RenderAlphas   ( float _predictionTime );
+	void RenderAlphas   ( float _predictionTime )override;
 
-    void Read   ( TextReader *_in, bool _dynamic );
-    void Write  ( FileWriter *_out );
+	void Read   ( TextReader *_in, bool _dynamic )override;
+	void Write  ( FileWriter *_out )override;
 };
 
 
@@ -176,12 +176,12 @@ protected:
 public:
     Refinery();
 
-    bool Advance();
-    void Render         ( float _predictionTime );
+	bool Advance()override;
+	void Render ( float _predictionTime )override;
 
-	const char *GetObjectiveCounter();
+	const char *GetObjectiveCounter()override;
 
-    void TriggerCart    ( MineCart *_cart, float _initValue );
+	void TriggerCart( MineCart *_cart, float _initValue )override;
 };
 
 
@@ -198,9 +198,9 @@ protected:
 public:
     Mine();
 
-    void Render         ( float _predictionTime );
+	void Render     ( float _predictionTime )override;
 
-    void TriggerCart    ( MineCart *_cart, float _initValue );
+	void TriggerCart( MineCart *_cart, float _initValue )override;
 };
 
 #endif

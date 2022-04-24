@@ -23,6 +23,8 @@
 #include "worldobject/teleport.h"
 #include "worldobject/insertion_squad.h"
 
+#include <stdexcept>
+
 LList<TeleportMap> Teleport::m_teleportMap;
 
 
@@ -228,14 +230,13 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
 
                 if( newUnitId != -1 )
                 {
-                    if( g_app->m_location->m_teams[ _id.GetTeamId() ].m_units.ValidIndex( newUnitId ) )
-                    {
-                        newUnit = g_app->m_location->m_teams[ _id.GetTeamId() ].m_units[ newUnitId ];
-                    }
-                    else
-                    {
-                        newUnitId = -1;
-                    }
+					try
+					{
+						newUnit = g_app->m_location->m_teams[ _id.GetTeamId() ].m_units[ newUnitId ];
+					}catch(const std::out_of_range&)
+					{
+						newUnitId = -1;
+					}
                 }
 
                 if( newUnitId == -1 )
@@ -243,7 +244,7 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
                     //
                     // Oh well, i'm the first, so create a new unit
                     newUnit = g_app->m_location->m_teams[ _id.GetTeamId() ].NewUnit( oldUnit->m_troopType,
-                                                                                  oldUnit->m_entities.NumUsed(),
+																				  oldUnit->m_entities.size(),
                                                                                   &newUnitId,
 																			      m_pos);
 
@@ -347,7 +348,7 @@ bool Teleport::GetEntrance( Vector3 &_pos, Vector3 &_front )
     return true;
 }
 
-bool Teleport::GetExit( Vector3 &_pos, Vector3 &_front )
+bool Teleport::GetExit( Vector3 &, Vector3 & )
 {
     DarwiniaDebugAssert( false );
     return false;

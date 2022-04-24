@@ -164,18 +164,14 @@ void GodDish::Activate()
 
     Team *team = &g_app->m_location->m_teams[0];
 
-    for( int i = 0; i < team->m_others.Size(); ++i )
+	for( auto* entity : team->m_others )
     {
-        if( team->m_others.ValidIndex(i) )
-        {
-            Entity *entity = team->m_others[i];
-            if( entity && entity->m_type == Entity::TypeDarwinian )
-            {
-                Darwinian *darwinian = (Darwinian *) entity;
-                darwinian->WatchSpectacle( m_id.GetUniqueId() );
-                darwinian->CastShadow( m_id.GetUniqueId() );
-            }
-        }
+		if( entity && entity->m_type == Entity::TypeDarwinian )
+		{
+			Darwinian *darwinian = (Darwinian *) entity;
+			darwinian->WatchSpectacle( m_id.GetUniqueId() );
+			darwinian->CastShadow( m_id.GetUniqueId() );
+		}
     }
 
 

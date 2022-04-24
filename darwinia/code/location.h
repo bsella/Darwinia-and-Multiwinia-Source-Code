@@ -132,21 +132,21 @@ public:
                               unsigned char _type, int _numEntities, Vector3 const &_vel,
                               float _spread, float _range=-1.0f, int _routeId = -1, int _routeWaypointId = -1 );
 
-    int         GetSpirit   ( WorldObjectId _id );
+	int         GetSpirit   ( const WorldObjectId& _id )const;
 
-    bool        IsFriend    ( unsigned char _teamId1, unsigned char _teamId2 );
+	bool        IsFriend    ( unsigned char _teamId1, unsigned char _teamId2 )const;
 
-    Team        *GetMyTeam	();
-	Entity		*GetEntity	( Vector3 const &_rayStart, Vector3 const &_rayDir );
-	Building	*GetBuilding( Vector3 const &_rayStart, Vector3 const &_rayDir );
+	Team        *GetMyTeam	()const;
+	Entity		*GetEntity	( Vector3 const &_rayStart, Vector3 const &_rayDir )const;
+	Building	*GetBuilding( Vector3 const &_rayStart, Vector3 const &_rayDir )const;
 
-    WorldObject *GetWorldObject ( WorldObjectId _id );
-    Entity		*GetEntity      ( WorldObjectId _id );
-    Entity      *GetEntitySafe  ( WorldObjectId _id, unsigned char _type );                 // Safe to cast
-    Unit        *GetUnit        ( WorldObjectId _id );
-    WorldObject *GetEffect      ( WorldObjectId _id );
-    Building    *GetBuilding    ( int _id );
-    Spirit      *GetSpirit      ( int _index );
+	WorldObject *GetWorldObject ( const WorldObjectId& _id )const;
+	Entity		*GetEntity      ( const WorldObjectId& _id )const;
+	Entity      *GetEntitySafe  ( const WorldObjectId& _id, unsigned char _type )const;                 // Safe to cast
+	Unit        *GetUnit        ( const WorldObjectId& _id )const;
+	WorldObject *GetEffect      ( const WorldObjectId& _id )const;
+	Building    *GetBuilding    ( int _id )const;
+	Spirit*      GetSpirit      ( int _index )const;
 
     void SetupFog			();
     void SetupLights		();

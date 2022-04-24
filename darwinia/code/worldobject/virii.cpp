@@ -32,13 +32,13 @@ ViriiUnit::ViriiUnit(int teamId, int unitId, int numEntities, Vector3 const &_po
 }
 
 
-bool ViriiUnit::Advance( int _slice )
+bool ViriiUnit::Advance()
 {
     float searchRadius = m_radius + VIRII_MAXSEARCHRANGE;
 
     m_enemiesFound = g_app->m_location->m_entityGrid->AreEnemiesPresent( m_centrePos.x, m_centrePos.z, searchRadius, m_teamId );
 
-    return Unit::Advance( _slice );
+	return Unit::Advance();
 }
 
 
@@ -85,28 +85,10 @@ void ViriiUnit::Render( float _predictionTime )
     //
 	// Render all the entities that are up-to-date with server advances
 
-    int lastUpdated = m_entities.GetLastUpdated();
-    for (int i = 0; i <= lastUpdated; i++)
+	for (auto* ent : m_entities)
 	{
-        if (m_entities.ValidIndex(i))
-        {
-            Virii *virii = (Virii *) m_entities[i];
-            virii->Render( _predictionTime, m_teamId, viriiDetail );
-        }
-	}
-
-    //
-	// Render all the entities that are one step out-of-date with server advances
-
-	int size = m_entities.Size();
-	_predictionTime += SERVER_ADVANCE_PERIOD;
-	for (int i = lastUpdated + 1; i < size; i++)
-	{
-        if (m_entities.ValidIndex(i))
-        {
-            Virii *virii = (Virii *) m_entities[i];
-            virii->Render( _predictionTime, m_teamId, viriiDetail );
-        }
+		Virii *virii = (Virii *) ent;
+		virii->Render( _predictionTime, m_teamId, viriiDetail );
 	}
 
     glEnd           ();
@@ -539,12 +521,15 @@ bool Virii::SearchForEnemies()
 {
 	START_PROFILE(g_app->m_profiler, "SearchForEnemies");
 
-    ViriiUnit *unit = (ViriiUnit *) g_app->m_location->GetUnit( m_id );
-    if( unit && !unit->m_enemiesFound )
-    {
-    	END_PROFILE(g_app->m_profiler, "SearchForEnemies");
-        return false;
-    }
+	if(Unit* unit = g_app->m_location->GetUnit( m_id ))
+	{
+		ViriiUnit *viriiunit = dynamic_cast<ViriiUnit *>(unit);
+		if( viriiunit && !viriiunit->m_enemiesFound )
+		{
+			END_PROFILE(g_app->m_profiler, "SearchForEnemies");
+			return false;
+		}
+	}
 
     WorldObjectId bestEnemyId = g_app->m_location->m_entityGrid->GetBestEnemy( m_pos.x, m_pos.z,
                                                                             VIRII_MINSEARCHRANGE,
@@ -791,8 +776,8 @@ bool Virii::AdvanceDead()
 {
     for( int i = 0; i < m_positionHistory.Size(); ++i )
     {
-        Vector3 *thisPos = &m_positionHistory[i]->m_pos;
-        *thisPos = AdvanceDeadPositionVector( i, *thisPos, SERVER_ADVANCE_PERIOD );
+		Vector3& thisPos = m_positionHistory[i]->m_pos;
+		thisPos = AdvanceDeadPositionVector( i, thisPos, SERVER_ADVANCE_PERIOD );
     }
     return true;
 }

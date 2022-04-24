@@ -1176,73 +1176,44 @@ void Renderer::PreRenderPixelEffect()
     {
         if( g_app->m_location->m_teams[t].m_teamType != Team::TeamTypeUnused )
         {
-            for( int i = 0; i < g_app->m_location->m_teams[t].m_units.Size(); ++i )
+			for(auto* unit : g_app->m_location->m_teams[t].m_units)
             {
-                if( g_app->m_location->m_teams[t].m_units.ValidIndex(i) )
-                {
-                    Unit *unit = g_app->m_location->m_teams[t].m_units[i];
-                    if( unit->m_troopType == Entity::TypeInsertionSquadie ||
-                        unit->m_troopType == Entity::TypeCentipede )
-                    {
-                        if( unit->IsInView() )
-                        {
-                            float distance = ( unit->m_centrePos - camPos ).Mag();
-                            if( distance < cutoff )
-                            {
-                                for( int j = 0; j < unit->m_entities.Size(); ++j )
-                                {
-                                    if( unit->m_entities.ValidIndex(j) )
-                                    {
-                                        Entity *entity = unit->m_entities[j];
-                                        bool rendered = false;
-                                        if( j <= unit->m_entities.GetLastUpdated() )
-                                        {
-                                            rendered = entity->RenderPixelEffect( g_predictionTime );
-                                        }
-                                        else
-                                        {
-                                            rendered = entity->RenderPixelEffect( g_predictionTime+SERVER_ADVANCE_PERIOD );
-                                        }
-                                        if( rendered )
-                                        {
-                                            float distance = (entity->m_pos - g_app->m_camera->GetPos()).Mag();
-                                            if( distance < nearest ) nearest = distance;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+				if( unit->m_troopType == Entity::TypeInsertionSquadie ||
+					unit->m_troopType == Entity::TypeCentipede )
+				{
+					if( unit->IsInView() )
+					{
+						float distance = ( unit->m_centrePos - camPos ).Mag();
+						if( distance < cutoff )
+						{
+							for( auto* entity : unit->m_entities )
+							{
+								if( entity->RenderPixelEffect( g_predictionTime+SERVER_ADVANCE_PERIOD ) )
+								{
+									float distance = (entity->m_pos - g_app->m_camera->GetPos()).Mag();
+									if( distance < nearest ) nearest = distance;
+								}
+							}
+						}
+					}
+				}
             }
 
-            for( int i = 0; i < g_app->m_location->m_teams[t].m_others.Size(); ++i )
-            {
-                if( g_app->m_location->m_teams[t].m_others.ValidIndex(i) )
-                {
-                    Entity *entity = g_app->m_location->m_teams[t].m_others[i];
-                    if( entity->IsInView() )
-                    {
-                        float distance = ( entity->m_pos - camPos ).Mag();
-                        if( distance < cutoff )
-                        {
-                            bool rendered = false;
-                            if( i <= g_app->m_location->m_teams[t].m_others.GetLastUpdated() )
-                            {
-                                rendered = entity->RenderPixelEffect( g_predictionTime );
-                            }
-                            else
-                            {
-                                rendered = entity->RenderPixelEffect( g_predictionTime+SERVER_ADVANCE_PERIOD );
-                            }
-                            if( rendered )
-                            {
-                                float distance = (entity->m_pos - g_app->m_camera->GetPos()).Mag();
-                                if( distance < nearest ) nearest = distance;
-                            }
-                        }
-                    }
-                }
+			for( auto* entity : g_app->m_location->m_teams[t].m_others )
+			{
+				if( entity->IsInView() )
+				{
+					float distance = ( entity->m_pos - camPos ).Mag();
+					if( distance < cutoff )
+					{
+						bool rendered = entity->RenderPixelEffect( g_predictionTime+SERVER_ADVANCE_PERIOD );
+						if( rendered )
+						{
+							float distance = (entity->m_pos - g_app->m_camera->GetPos()).Mag();
+							if( distance < nearest ) nearest = distance;
+						}
+					}
+				}
             }
         }
     }

@@ -1,4 +1,4 @@
-#include "lib/universal_include.h"
+﻿#include "lib/universal_include.h"
 
 #include <math.h>
 
@@ -23,6 +23,9 @@
 #include "worldobject/worldobject.h"
 #include "worldobject/lasertrooper.h"
 
+#include <tuple>
+#include <list>
+
 Unit::Unit(int troopType, int teamId, int unitId, int numEntities, Vector3 const &_pos)
 :   m_troopType(troopType),
     m_teamId(teamId),
@@ -39,9 +42,7 @@ Unit::Unit(int troopType, int teamId, int unitId, int numEntities, Vector3 const
     m_targetDir(1,0,0),
     m_attackAccumulator(0.0f)
 {
-    m_entities.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
-    m_entities.SetStepSize( 100 );
-    m_entities.SetSize( numEntities );
+	m_entities.reserve( numEntities );
 }
 
 Unit::~Unit()
@@ -60,13 +61,15 @@ void Unit::Begin()
 Entity *Unit::NewEntity( int *_index )
 {
     Entity *entity = Entity::NewEntity( m_troopType );
-    *_index = m_entities.PutData( entity );
+	m_entities.push_back( entity );
+	*_index = m_entities.size();
     return entity;
 }
 
 int Unit::AddEntity( Entity *_entity )
 {
-    return m_entities.PutData( _entity );
+	m_entities.push_back( _entity );
+	return m_entities.size();
 }
 
 // Removes an entity from the unit's array of entities. Also removes the
@@ -75,50 +78,54 @@ int Unit::AddEntity( Entity *_entity )
 // with the EntityGrid.
 void Unit::RemoveEntity( int _index, float _posX, float _posZ )
 {
-    if( m_entities.ValidIndex( _index ) )
-    {
-        Entity *entity = m_entities[ _index ];
+	Entity *entity = nullptr;
+	try
+	{
+		entity = m_entities.at( _index );
+	}
+	catch(const std::out_of_range&){return;}
 
-		WorldObjectId myId( m_teamId, m_unitId, _index, entity->m_id.GetUniqueId() );
+	WorldObjectId myId( m_teamId, m_unitId, _index, entity->m_id.GetUniqueId() );
 
-		g_app->m_location->m_entityGrid->RemoveObject( myId, _posX, _posZ, entity->m_radius );
+	g_app->m_location->m_entityGrid->RemoveObject( myId, _posX, _posZ, entity->m_radius );
 
-		m_entities.MarkNotUsed( _index );
-        delete entity;
-    }
+	delete entity;
+
+	m_entities.erase(std::next(m_entities.begin(),_index));
 }
 
-void Unit::AdvanceEntities(int _slice)
+void Unit::AdvanceEntities()
 {
-    int startIndex, endIndex;
-    m_entities.GetNextSliceBounds(_slice, &startIndex, &endIndex);
+	std::vector<std::tuple<int, float, float>> entities_to_remove;
 
-    for (int i = startIndex; i <= endIndex; i++)
-    {
-        if (m_entities.ValidIndex(i))
-        {
-            Entity *s = m_entities[i];
+	int i = 0;
+	for (auto* s : m_entities)
+	{
+		if( s->m_enabled )
+		{
+			Vector3 oldPos( s->m_pos );
 
-            if( s->m_enabled )
-            {
-                Vector3 oldPos( s->m_pos );
+			START_PROFILE( g_app->m_profiler, Entity::GetTypeName( s->m_type ) );
+			bool amIdead = s->Advance( this );
+			END_PROFILE( g_app->m_profiler, Entity::GetTypeName( s->m_type ) );
 
-                START_PROFILE( g_app->m_profiler, Entity::GetTypeName( s->m_type ) );
-                bool amIdead = s->Advance( this );
-                END_PROFILE( g_app->m_profiler, Entity::GetTypeName( s->m_type ) );
-
-                if( amIdead )
-                {
-                    RemoveEntity( i, oldPos.x, oldPos.z );
-                }
-                else
-                {
-					WorldObjectId myId( m_teamId, m_unitId, i, s->m_id.GetUniqueId() );
-                    g_app->m_location->m_entityGrid->UpdateObject( myId, oldPos.x, oldPos.z, s->m_pos.x, s->m_pos.z, s->m_radius );
-                }
-            }
-        }
+			if( amIdead )
+			{
+				entities_to_remove.push_back({i, oldPos.x, oldPos.z});
+			}
+			else
+			{
+				WorldObjectId myId( m_teamId, m_unitId, i, s->m_id.GetUniqueId() );
+				g_app->m_location->m_entityGrid->UpdateObject( myId, oldPos.x, oldPos.z, s->m_pos.x, s->m_pos.z, s->m_radius );
+			}
+		}
+		i++;
     }
+
+	for(auto& entity : entities_to_remove)
+	{
+		RemoveEntity(std::get<0>(entity),std::get<1>(entity),std::get<2>(entity));
+	}
 }
 
 
@@ -131,32 +138,15 @@ bool Unit::IsInView()
 void Unit::Render( float _predictionTime )
 {
 	// Render all the entities that are up-to-date with server advances
-    int lastUpdated = m_entities.GetLastUpdated();
-    for (int i = 0; i <= lastUpdated; i++)
+	for (auto* entity : m_entities)
 	{
-        if (m_entities.ValidIndex(i))
-        {
-            Entity *entity = m_entities[i];
-            entity->Render( _predictionTime );
-        }
-	}
-
-	// Render all the entities that are one step out-of-date with server advances
-	int size = m_entities.Size();
-	_predictionTime += SERVER_ADVANCE_PERIOD;
-	for (int i = lastUpdated + 1; i < size; i++)
-	{
-        if (m_entities.ValidIndex(i))
-        {
-            Entity *entity = m_entities[i];
-            entity->Render(_predictionTime);
-        }
+		entity->Render( _predictionTime );
 	}
 
     glEnable        ( GL_CULL_FACE );
 }
 
-bool Unit::Advance( int _slice )
+bool Unit::Advance( )
 {
     //
     // Maintain our centre and radius values
@@ -167,7 +157,7 @@ bool Unit::Advance( int _slice )
     m_vel = (m_centrePos - oldPos) / SERVER_ADVANCE_PERIOD;
     m_radius = sqrtf( m_accumulatedRadiusSquared );
 
-    if( m_entities.NumUsed() == 0 )
+	if( m_entities.empty() )
     {
         m_radius = 0.0f;
         return true;
@@ -192,34 +182,31 @@ bool Unit::Advance( int _slice )
 
     if( m_troopType == Entity::TypeLaserTroop )
     {
-        for (int i = 0; i < m_entities.Size(); i++)
+		for (auto* entity : m_entities)
         {
-            if (m_entities.ValidIndex(i))
-            {
-                LaserTrooper *l = (LaserTrooper *) m_entities[i];
+			LaserTrooper *l = (LaserTrooper *) entity;
 
-                if( (l->m_pos - l->m_targetPos).Mag() < leadDistance / 5.0f )
-                {
-                    Vector3 pos = l->m_pos;
-//                    Vector3 targetPos = m_wayPoint;
-//                    targetPos += GetFormationOffset( FormationRectangle, l->m_unitIndex );
-//                    targetPos = l->PushFromObstructions( targetPos );
-//                    //targetPos = l->PushFromEachOther( targetPos );
-//                    l->m_unitTargetPos = targetPos;
+			if( (l->m_pos - l->m_targetPos).Mag() < leadDistance / 5.0f )
+			{
+				Vector3 pos = l->m_pos;
+//              Vector3 targetPos = m_wayPoint;
+//              targetPos += GetFormationOffset( FormationRectangle, l->m_unitIndex );
+//              targetPos = l->PushFromObstructions( targetPos );
+//              //targetPos = l->PushFromEachOther( targetPos );
+//              l->m_unitTargetPos = targetPos;
 
-                    Vector3 targetPos = l->m_unitTargetPos;
-                    Vector3 desiredDirection = (targetPos - pos).Normalise();
-                    float distance = (targetPos - pos).Mag();
-                    float amountToMove = leadDistance;
-                    if( amountToMove > distance ) amountToMove = distance;
-                    pos += desiredDirection * amountToMove;
-                    pos.y = g_app->m_location->m_landscape.m_heightMap->GetValue( pos.x, pos.z );
-                    pos = l->PushFromObstructions( pos );
-                    //pos = l->PushFromEachOther( pos );
+				Vector3 targetPos = l->m_unitTargetPos;
+				Vector3 desiredDirection = (targetPos - pos).Normalise();
+				float distance = (targetPos - pos).Mag();
+				float amountToMove = leadDistance;
+				if( amountToMove > distance ) amountToMove = distance;
+				pos += desiredDirection * amountToMove;
+				pos.y = g_app->m_location->m_landscape.m_heightMap->GetValue( pos.x, pos.z );
+				pos = l->PushFromObstructions( pos );
+				//pos = l->PushFromEachOther( pos );
 
-                    l->m_targetPos = pos;
-                }
-            }
+				l->m_targetPos = pos;
+			}
         }
     }
 
@@ -228,7 +215,7 @@ bool Unit::Advance( int _slice )
 
 int Unit::NumEntities()
 {
-    return m_entities.NumUsed();
+	return m_entities.size();
 }
 
 
@@ -236,13 +223,9 @@ int Unit::NumAliveEntities()
 {
     int result = 0;
 
-    for( int i = 0; i < m_entities.Size(); ++i )
+	for( auto* entity : m_entities )
     {
-        if( m_entities.ValidIndex(i) )
-        {
-            Entity *entity = m_entities[i];
-            if( !entity->m_dead ) ++result;
-        }
+		if( !entity->m_dead ) ++result;
     }
 
     return result;
@@ -262,21 +245,17 @@ void Unit::Attack( Vector3 pos, bool _withGrenade )
         //
         // Find the entity nearest to the target that has a grenade
 
-        for( int i = 0; i < m_entities.Size(); ++i )
+		for( auto* ent : m_entities )
         {
-            if( m_entities.ValidIndex(i) )
-            {
-                Entity *ent = m_entities[i];
-                if( !ent->m_dead )
-                {
-                    float distance = (ent->m_pos - pos).Mag();
-                    if( distance < nearest )
-                    {
-                        nearest = distance;
-                        nearestEnt = ent;
-                    }
-                }
-            }
+			if( !ent->m_dead )
+			{
+				float distance = (ent->m_pos - pos).Mag();
+				if( distance < nearest )
+				{
+					nearest = distance;
+					nearestEnt = ent;
+				}
+			}
         }
 
         if( nearestEnt )
@@ -289,23 +268,21 @@ void Unit::Attack( Vector3 pos, bool _withGrenade )
     //
     // Build a list of entities that can attack now
 
-    LList<int> canAttack;
-    for( int i = 0; i < m_entities.Size(); ++i )
+	std::list<int> canAttack;
+	int i = 0;
+	for( auto* ent : m_entities )
     {
-        if( m_entities.ValidIndex(i) )
-        {
-            Entity *ent = m_entities[i];
-            if( ent->m_enabled &&
-                !ent->m_dead &&
-                ent->m_reloading == 0.0f )
-            {
-                canAttack.PutData( i );
-            }
-        }
+		if( ent->m_enabled &&
+			!ent->m_dead &&
+			ent->m_reloading == 0.0f )
+		{
+			canAttack.push_back( i );
+		}
+		i++;
     }
 
 
-    if( canAttack.Size() > 0 )
+	if( !canAttack.empty() )
     {
         //
         // Decide the maximum number of entities
@@ -319,12 +296,13 @@ void Unit::Attack( Vector3 pos, bool _withGrenade )
         //
         // Pick guys randomly to attack
 
-        while( canAttack.Size() > 0 && m_attackAccumulator >= 1.0f )
+		while( !canAttack.empty() && m_attackAccumulator >= 1.0f )
         {
             m_attackAccumulator -= 1.0f;
-            int randomIndex = syncfrand(canAttack.Size());
-            int entityIndex = canAttack[randomIndex];
-            canAttack.RemoveData(randomIndex);
+			int randomIndex = syncfrand(canAttack.size());
+			auto entityIt = std::next(canAttack.begin(), randomIndex);
+			int entityIndex = *entityIt;
+			canAttack.erase(entityIt);
             Entity *ent = m_entities[entityIndex];
     		ent->Attack( pos );
         }
@@ -449,37 +427,30 @@ void Unit::RecalculateOffsets()
 {
     int offset = 0;
 
-    for( int i = 0; i < m_entities.Size(); ++i )
+	for( auto* ent : m_entities )
     {
-        if( m_entities.ValidIndex(i) )
-        {
-            Entity *ent = m_entities[i];
-            if( !ent->m_dead )
-            {
-                ent->m_formationIndex = offset;
-                ++offset;
-            }
-			else
-			{
-				ent->m_formationIndex = -1;
-			}
-        }
+		if( !ent->m_dead )
+		{
+			ent->m_formationIndex = offset;
+			++offset;
+		}
+		else
+		{
+			ent->m_formationIndex = -1;
+		}
     }
 
     if( m_troopType == Entity::TypeLaserTroop )
     {
-        for (int i = 0; i < m_entities.Size(); i++)
+		for (auto* ent : m_entities)
         {
-            if (m_entities.ValidIndex(i))
-            {
-                LaserTrooper *l = (LaserTrooper *) m_entities[i];
-                Vector3 pos = l->m_pos;
-                Vector3 targetPos = m_wayPoint;
-                targetPos += GetFormationOffset( FormationRectangle, l->m_id.GetIndex() );
-                targetPos = l->PushFromObstructions( targetPos );
-                //targetPos = l->PushFromEachOther( targetPos );
-                l->m_unitTargetPos = targetPos;
-            }
+			LaserTrooper *l = (LaserTrooper *) ent;
+			Vector3 pos = l->m_pos;
+			Vector3 targetPos = m_wayPoint;
+			targetPos += GetFormationOffset( FormationRectangle, l->m_id.GetIndex() );
+			targetPos = l->PushFromObstructions( targetPos );
+			//targetPos = l->PushFromEachOther( targetPos );
+			l->m_unitTargetPos = targetPos;
         }
     }
 }
@@ -521,21 +492,18 @@ void Unit::FollowRoute()
 
 Entity *Unit::RayHit(Vector3 const &_rayStart, Vector3 const &_rayDir)
 {
-	for (unsigned int i = 0; i < m_entities.Size(); ++i)
+	for (auto* ent : m_entities)
 	{
-		if (m_entities.ValidIndex(i))
+		if (ent->RayHit(_rayStart, _rayDir))
 		{
-			if (m_entities[i]->RayHit(_rayStart, _rayDir))
-			{
-				return m_entities[i];
-			}
+			return ent;
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
-void Unit::DirectControl( TeamControls const& _teamControls )
+void Unit::DirectControl( TeamControls const& )
 {
 }
 

@@ -105,7 +105,7 @@ public:
     Building();
 
     virtual void Initialise( Building *_template );
-    virtual bool Advance();
+	virtual bool Advance()override;
 
     virtual void SetShape       ( Shape *_shape );
     void         SetShapeLights ( ShapeFragment *_fragment );   // Recursivly search for lights
@@ -115,7 +115,7 @@ public:
 
     virtual bool IsInView       ();
 
-    virtual void Render         ( float predictionTime );
+	virtual void Render         ( float predictionTime )override;
     virtual void RenderAlphas   ( float predictionTime );
     virtual void RenderLights   ();
     virtual void RenderPorts    ();

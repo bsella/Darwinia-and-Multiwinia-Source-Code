@@ -17,8 +17,8 @@ public:
 
 	void Begin      ()override;
 
-    bool Advance    ( Unit *_unit );
-    void Render     ( float _predictionTime, int _teamId );
+	bool Advance ( Unit *_unit )override;
+	void Render  ( float _predictionTime, int _teamId );
 
     void AdvanceVictoryDance();
 };

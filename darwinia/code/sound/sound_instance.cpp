@@ -163,7 +163,7 @@ SoundInstance::~SoundInstance()
 
 	m_dspFX.EmptyAndDelete();
 
-    m_objIds.EmptyAndDelete();
+	m_objIds.clear();
 }
 
 
@@ -969,51 +969,49 @@ WorldObject *SoundInstance::GetAttachedObject()
             //
             // Prune our objIds list of invalid EntityIds
 
-            for( int i = 0; i < m_objIds.Size(); ++i )
-            {
-                WorldObjectId *id = m_objIds[i];
-                WorldObject *obj = g_app->m_location->GetWorldObject( *id );
+			for( auto it = m_objIds.begin(); it != m_objIds.end(); )
+			{
+				WorldObject *obj = g_app->m_location->GetWorldObject( *it );
                 if( !obj )
                 {
-                    m_objIds.RemoveData(i);
-                    delete id;
-                    --i;
-                }
+					m_objIds.erase(it);
+				}else{
+					++it;
+				}
             }
 
 
             //
             // Now select an object from our list depending on our instance type
 
-            if( m_objIds.Size() > 0 )
+			if( !m_objIds.empty() )
             {
                 switch( m_instanceType )
                 {
                     case Polyphonic:
                     {
-                        m_objId = *m_objIds[0];
+						m_objId = m_objIds[0];
                         break;
                     }
 
                     case MonophonicRandom:
                     {
-                        int index = darwiniaRandom() % m_objIds.Size();
-                        m_objId = *m_objIds[index];
+						int index = darwiniaRandom() % m_objIds.size();
+						m_objId = m_objIds[index];
                         break;
                     }
 
                     case MonophonicNearest:
                     {
                         float nearest = 99999.9f;
-                        for( int i = 0; i < m_objIds.Size(); ++i )
-                        {
-                            WorldObjectId *id = m_objIds[i];
-                            WorldObject *obj = g_app->m_location->GetWorldObject( *id );
+						for( const auto& id : m_objIds )
+						{
+							WorldObject *obj = g_app->m_location->GetWorldObject( id );
                             float distance = ( g_app->m_camera->GetPos() - obj->m_pos ).MagSquared();
                             if( distance < nearest )
                             {
                                 nearest = distance;
-                                m_objId = *id;
+								m_objId = id;
                             }
                         }
                         break;
