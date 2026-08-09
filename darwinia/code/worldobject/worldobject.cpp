@@ -37,7 +37,7 @@ WorldObjectId::WorldObjectId(const WorldObjectId& o):
 	m_teamId(o.m_teamId),
 	m_unitId(o.m_unitId),
 	m_index(o.m_index),
-	m_uniqueId(m_uniqueId)
+	m_uniqueId(o.m_uniqueId)
 {
 }
 
