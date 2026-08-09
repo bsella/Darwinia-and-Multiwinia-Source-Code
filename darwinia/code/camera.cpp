@@ -1745,7 +1745,7 @@ void Camera::SetupProjectionMatrix(float _nearPlane, float _farPlane)
 	//DarwiniaDebugAssert(m_fov > 0.0f);
 	//DarwiniaDebugAssert(m_fov < 180.0f);
 
-	std::clamp( m_fov, 1.f, 180.f );
+	m_fov = std::clamp( m_fov, 1.f, 180.f );
 
 	g_app->m_renderer->SetNearAndFar(_nearPlane, _farPlane);
 	g_app->m_renderer->SetupProjMatrixFor3D();

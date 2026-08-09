@@ -1584,10 +1584,10 @@ void Renderer::RasteriseSphere(Vector3 const &_pos, float _radius)
 	int y1 = floorf(bottomRight.y * screenToGridFactor);
 	int y2 = ceilf(topLeft.y * screenToGridFactor);
 
-	std::clamp(x1, 0, PIXEL_EFFECT_GRID_RES);
-	std::clamp(x2, 0, PIXEL_EFFECT_GRID_RES);
-	std::clamp(y1, 0, PIXEL_EFFECT_GRID_RES);
-	std::clamp(y2, 0, PIXEL_EFFECT_GRID_RES);
+	x1 = std::clamp(x1, 0, PIXEL_EFFECT_GRID_RES);
+	x2 = std::clamp(x2, 0, PIXEL_EFFECT_GRID_RES);
+	y1 = std::clamp(y1, 0, PIXEL_EFFECT_GRID_RES);
+	y2 = std::clamp(y2, 0, PIXEL_EFFECT_GRID_RES);
 
 	float const nearestZ = centre.z - _radius;
 

@@ -26,6 +26,7 @@
 #include "location.h"
 #include "water.h"
 
+#include <algorithm>
 
 // ****************************************************************************
 // Class LandscapeTile
@@ -971,10 +972,10 @@ float Landscape::SphereHit(Vector3 const &_centre, float _radius) const
 	int y1 = m_heightMap->GetMapIndexY(_centre.z - _radius);
 	int y2 = m_heightMap->GetMapIndexY(_centre.z + _radius);
 
-	//clamp(x1, 0, m_heightMap->GetNumColumns());
-	//clamp(x2, 0, m_heightMap->GetNumColumns());
-	//clamp(y1, 0, m_heightMap->GetNumRows());
-	//clamp(y2, 0, m_heightMap->GetNumRows());
+	x1 = std::clamp(x1, 0, (int)m_heightMap->GetNumColumns());
+	x2 = std::clamp(x2, 0, (int)m_heightMap->GetNumColumns());
+	y1 = std::clamp(y1, 0, (int)m_heightMap->GetNumRows());
+	y2 = std::clamp(y2, 0, (int)m_heightMap->GetNumRows());
 
 	float nearestSqrd = FLT_MAX;
 	Vector3 pos;
