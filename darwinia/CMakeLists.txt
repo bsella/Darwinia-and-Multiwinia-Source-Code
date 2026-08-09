@@ -336,5 +336,5 @@ target_link_libraries(darwinia
 	-lSDL
 	-lGL
 	-lGLU
-	-lglut
+	#-lglut
 	)
