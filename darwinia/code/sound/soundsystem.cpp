@@ -949,9 +949,10 @@ bool SoundSystem::InitialiseSound( SoundInstance *_instance )
                 if( thisInstance->m_instanceType != SoundInstance::Polyphonic &&
 					stricmp( thisInstance->m_eventName.c_str(), _instance->m_eventName.c_str() ) == 0 )
                 {
-					for( const auto& id : _instance->m_objIds )
+                    for( int j = 0; j < _instance->m_objIds.Size(); ++j )
                     {
-						thisInstance->m_objIds.push_back( id );
+                        WorldObjectId *id = _instance->m_objIds[j];
+                        thisInstance->m_objIds.PutData( new WorldObjectId(*id) );
                     }
                     createNewSound = false;
                     break;
@@ -1066,7 +1067,7 @@ void SoundSystem::TriggerEntityEvent( Entity *_entity, const char *_eventName )
                 DarwiniaDebugAssert( seb->m_instance );
                 SoundInstance *instance = new SoundInstance();
                 instance->Copy( seb->m_instance );
-				instance->m_objIds.push_back( objId );
+                instance->m_objIds.PutData( new WorldObjectId(objId) );
                 instance->m_pos = _entity->m_pos;
                 instance->m_vel = _entity->m_vel;
                 bool success = InitialiseSound  ( instance );
@@ -1094,7 +1095,7 @@ void SoundSystem::TriggerBuildingEvent( Building *_building, const char *_eventN
                 DarwiniaDebugAssert( seb->m_instance );
                 SoundInstance *instance = new SoundInstance();
                 instance->Copy( seb->m_instance );
-				instance->m_objIds.push_back( _building->m_id );
+                instance->m_objIds.PutData( new WorldObjectId(_building->m_id) );
                 instance->m_pos = _building->m_pos;
                 bool success = InitialiseSound  ( instance );
                 if( !success ) ShutdownSound    ( instance );
@@ -1152,7 +1153,7 @@ void SoundSystem::TriggerOtherEvent( WorldObject *_other, const char *_eventName
 					if( _other )
 					{
 						instance->m_pos = _other->m_pos;
-						instance->m_objIds.push_back( _other->m_id );
+						instance->m_objIds.PutData( new WorldObjectId( _other->m_id ) );
 					}
 					bool success = InitialiseSound  ( instance );
 					if( !success ) ShutdownSound    ( instance );
@@ -1173,9 +1174,10 @@ void SoundSystem::TriggerDuplicateSound ( SoundInstance *_instance )
     newInstance->m_pos = _instance->m_pos;
     newInstance->m_vel = _instance->m_vel;
 
-	for( const auto& id : _instance->m_objIds )
+    for( int i = 0; i < _instance->m_objIds.Size(); ++i )
     {
-		newInstance->m_objIds.push_back( id );
+        WorldObjectId *id = _instance->m_objIds[i];
+        newInstance->m_objIds.PutData( new WorldObjectId(*id) );
     }
 
     bool success = InitialiseSound( newInstance );

@@ -418,9 +418,7 @@ void Officer::Absorb()
             Entity *entity = g_app->m_location->GetEntity( nearestId );
 
             g_app->m_location->m_entityGrid->RemoveObject( nearestId, entity->m_pos.x, entity->m_pos.z, entity->m_radius );
-
-			auto& others = g_app->m_location->m_teams[nearestId.GetTeamId()].m_others;
-			others.erase(std::next(others.begin(), nearestId.GetIndex()));
+            g_app->m_location->m_teams[nearestId.GetTeamId()].m_others.MarkNotUsed( nearestId.GetIndex() );
             ++m_shield;
             m_absorbTimer = 1.0f;
         }

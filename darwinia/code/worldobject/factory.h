@@ -1,4 +1,4 @@
-﻿#ifndef _included_factory_h
+#ifndef _included_factory_h
 #define _included_factory_h
 
 #include "worldobject/building.h"
@@ -37,22 +37,22 @@ public:
 public:
     Factory();
 
-	void Initialise( Building *_template )override;
+    void Initialise( Building *_template );
 
-	void Render         ( float predictionTime )override;
+    void Render         ( float predictionTime );
     void RenderAlphas   ( float predictionTime );
 
-	bool Advance()override;
+    bool Advance();
     void AdvanceStateUnused();
     void AdvanceStateCreating();
     void AdvanceStateRecharging();
 
-	void SetTeamId( int _teamId )override;
+    void SetTeamId( int _teamId );
 
     void RequestUnit( unsigned char _troopType, int _numToCreate );
 
-	void Read(TextReader *_in, bool _dynamic)override;
-	void Write(FileWriter *_out)override;
+	void Read(TextReader *_in, bool _dynamic);
+	void Write(FileWriter *_out);
 };
 
 #endif

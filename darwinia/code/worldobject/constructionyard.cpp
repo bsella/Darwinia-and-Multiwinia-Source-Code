@@ -1,4 +1,4 @@
-﻿#include "lib/universal_include.h"
+#include "lib/universal_include.h"
 #include "lib/debug_render.h"
 #include "lib/math_utils.h"
 #include "lib/profiler.h"
@@ -335,8 +335,9 @@ bool ConstructionYard::IsPopulationLocked()
     Team *team = g_app->m_location->GetMyTeam();
 
     int numArmour = 0;
-	for( const auto& id : team->m_specials )
+    for( int i = 0; i < team->m_specials.Size(); ++i )
     {
+        WorldObjectId id = *team->m_specials.GetPointer(i);
         Entity *entity = g_app->m_location->GetEntity(id);
         if( entity && entity->m_type == Entity::TypeArmour )
         {

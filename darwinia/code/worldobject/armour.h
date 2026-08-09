@@ -41,11 +41,11 @@ public:
     Armour();
     ~Armour();
 
-	void Begin              ()override;
-	bool Advance            ( Unit *_unit )override;
-	void Render             ( float _predictionTime )override;
+    void Begin              ();
+    bool Advance            ( Unit *_unit );
+    void Render             ( float _predictionTime );
 
-	void ChangeHealth       ( int _amount )override;
+    void ChangeHealth       ( int _amount );
 
     void SetOrders          ( Vector3 const &_orders );
     void SetWayPoint        ( Vector3 const &_wayPoint );
@@ -64,7 +64,7 @@ public:
 
     int Capacity();
 
-	void ListSoundEvents    ( LList<const char *> *_list )override;
+	void ListSoundEvents    ( LList<const char *> *_list );
 
     void GetEntrance( Vector3 &_exitPos, Vector3 &_exitDir );
 };

@@ -630,13 +630,17 @@ bool Demo2Tutorial::AdvanceCurrentChapter()
             if( currentUnit && currentUnit->m_troopType == Entity::TypeInsertionSquadie )
             {
                 bool activeFound = false;
-				for (auto* ent : currentUnit->m_entities)
+                for( int i = 0; i < currentUnit->m_entities.Size(); ++i )
                 {
-					if( ent->m_enabled && !ent->m_dead )
-					{
-						activeFound = true;
-						break;
-					}
+                    if( currentUnit->m_entities.ValidIndex(i) )
+                    {
+                        Entity *ent = currentUnit->m_entities[i];
+                        if( ent->m_enabled && !ent->m_dead )
+                        {
+                            activeFound = true;
+                            break;
+                        }
+                    }
                 }
                 if( !activeFound )
                 {

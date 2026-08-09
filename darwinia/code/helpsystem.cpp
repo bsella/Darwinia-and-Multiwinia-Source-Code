@@ -323,11 +323,15 @@ namespace {
 
 			if( spaceAvailable && researchAvailable )
 			{
-				for( auto* entity : g_app->m_location->m_teams[0].m_others)
+				for( int i = 0; i < g_app->m_location->m_teams[0].m_others.Size(); ++i )
 				{
-					if( entity->m_type == Entity::TypeDarwinian )
+					if( g_app->m_location->m_teams[0].m_others.ValidIndex(i) )
 					{
-						return true;
+						Entity *entity = g_app->m_location->m_teams[0].m_others[i];
+						if( entity->m_type == Entity::TypeDarwinian )
+						{
+							return true;
+						}
 					}
 				}
 			}

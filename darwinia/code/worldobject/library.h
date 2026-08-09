@@ -1,4 +1,4 @@
-﻿
+
 #ifndef _included_library_h
 #define _included_library_h
 
@@ -16,7 +16,7 @@ public:
 public:
     Library();
 
-	bool Advance()override;
+    bool Advance();
 };
 
 

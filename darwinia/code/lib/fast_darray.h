@@ -43,9 +43,9 @@ public:
 	void MarkUsed		( int index );						// SLOW
 	inline void MarkNotUsed	( int index );					// FAST
 
-	inline T *GetPointer();                            // FAST Returns next free element, sets to 'used'
-	inline T *GetPointer(int index)const;                   // FAST Returns next free element, sets to 'used'
-	inline int GetNextFree();								// FAST Sets the returned index to 'used'
+    inline T *GetPointer();                                 // FAST Returns next free element, sets to 'used'
+    inline T *GetPointer(int index);                        // FAST Returns next free element, sets to 'used'
+    inline int GetNextFree();								// FAST Sets the returned index to 'used'
 
     inline int NumUsed() const;								// FAST Returns the number of used entries
 

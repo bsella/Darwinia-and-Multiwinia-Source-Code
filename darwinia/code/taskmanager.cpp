@@ -389,10 +389,14 @@ void Task::Stop()
             Unit *unit = g_app->m_location->GetUnit( m_objId );
             if( unit )
             {
-				for( auto* entity : unit->m_entities )
-				{
-					int health = entity->m_stats[Entity::StatHealth];
-					entity->ChangeHealth( -1000 );
+                for( int i = 0; i < unit->m_entities.Size(); ++i )
+                {
+                    if( unit->m_entities.ValidIndex(i) )
+                    {
+                        Entity *entity = unit->m_entities[i];
+                        int health = entity->m_stats[Entity::StatHealth];
+                        entity->ChangeHealth( -1000 );
+                    }
                 }
             }
             break;
@@ -441,7 +445,7 @@ TaskManager::TaskManager()
 
 bool TaskManager::RunTask( Task *_task )
 {
-	if( CapacityUsed() < Capacity() )
+    if( CapacityUsed() < Capacity() )
     {
         _task->m_id = m_nextTaskId;
         ++m_nextTaskId;
@@ -851,16 +855,20 @@ LList <TaskTargetArea> *TaskManager::GetTargetArea( int _id )
             case GlobalResearch::TypeEngineer:
             {
                 Team *team = g_app->m_location->GetMyTeam();
-				for( auto* unit : team->m_units )
+                for( int i = 0; i < team->m_units.Size(); ++i )
                 {
-					if( unit->m_troopType == Entity::TypeInsertionSquadie )
-					{
-						TaskTargetArea tta;
-						tta.m_centre = unit->m_centrePos;
-						tta.m_radius = 100.0f;
-						tta.m_stationary = false;
-						result->PutData( tta );
-					}
+                    if( team->m_units.ValidIndex(i) )
+                    {
+                        Unit *unit = team->m_units[i];
+                        if( unit->m_troopType == Entity::TypeInsertionSquadie )
+                        {
+                            TaskTargetArea tta;
+                            tta.m_centre = unit->m_centrePos;
+                            tta.m_radius = 100.0f;
+                            tta.m_stationary = false;
+                            result->PutData( tta );
+                        }
+                    }
                 }
                 //break;                // DELIBERATE FALL THROUGH
             }

@@ -132,10 +132,14 @@ bool GameCursor::GetSelectedObject( WorldObjectId &_id, Vector3 &_pos )
                 _id.Set( selected->m_teamId, selected->m_unitId, -1, -1 );
 
                 // Add the centre pos
-				for (auto* ent : selected->m_entities)
-				{
-					_pos += ent->m_centrePos;
-					break; //???
+                for( int i = 0; i < selected->m_entities.Size(); ++i )
+                {
+                    if( selected->m_entities.ValidIndex(i) )
+                    {
+                        Entity *ent = selected->m_entities[i];
+                        _pos += ent->m_centrePos;
+                        break;
+                    }
                 }
 
                 return true;
@@ -159,7 +163,7 @@ bool GameCursor::GetHighlightedObject( WorldObjectId &_id, Vector3 &_pos, float 
     }
     else
     {
-		Task *task = g_app->m_taskManager->GetTask( g_app->m_taskManagerInterface->m_highlightedTaskId );
+        Task *task = g_app->m_taskManager->GetTask( g_app->m_taskManagerInterface->m_highlightedTaskId );
         if( task && task->m_objId.IsValid() )
         {
             id = task->m_objId;
@@ -201,10 +205,14 @@ bool GameCursor::GetHighlightedObject( WorldObjectId &_id, Vector3 &_pos, float 
                 found = true;
 
                 // Add the centre pos
-				for (auto* ent : unit->m_entities)
+                for( int i = 0; i < unit->m_entities.Size(); ++i )
                 {
-					_pos += ent->m_centrePos;
-					break;//???
+                    if( unit->m_entities.ValidIndex(i) )
+                    {
+                        Entity *ent = unit->m_entities[i];
+                        _pos += ent->m_centrePos;
+                        break;
+                    }
                 }
             }
         }
@@ -212,13 +220,11 @@ bool GameCursor::GetHighlightedObject( WorldObjectId &_id, Vector3 &_pos, float 
         {
             // Found an entity
             Entity *entity = g_app->m_location->GetEntity(id);
-			if(entity){
-				_id = id;
-				_pos = entity->m_pos + entity->m_vel * g_predictionTime + entity->m_centrePos;
-				_radius = entity->m_radius*1.5f;
-				if( entity->m_type == Entity::TypeDarwinian ) _radius = entity->m_radius*2.0f;
-				found = true;
-			}
+            _id = id;
+            _pos = entity->m_pos + entity->m_vel * g_predictionTime + entity->m_centrePos;
+            _radius = entity->m_radius*1.5f;
+            if( entity->m_type == Entity::TypeDarwinian ) _radius = entity->m_radius*2.0f;
+            found = true;
         }
     }
 

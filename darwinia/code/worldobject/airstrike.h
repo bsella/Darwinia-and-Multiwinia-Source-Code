@@ -30,11 +30,11 @@ public:
 public:
     AirstrikeUnit(int teamId, int unitId, int numEntities, Vector3 const &_pos);
 
-	void Begin      ()override;
+    void Begin      ();
     bool Advance    ( int _slice );
-	void Render     ( float _predictionTime )override;
+    void Render     ( float _predictionTime );
 
-	bool IsInView   ()override;
+    bool IsInView   ();
 };
 
 

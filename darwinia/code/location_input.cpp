@@ -399,71 +399,74 @@ void LocationInput::AdvanceTeamControl()
 	else
 	{
 		// Controlling a unit
-		try{
-			Unit *unit = team->m_units.at(team->m_currentUnitId);
-			if( unit->m_troopType == Entity::TypeInsertionSquadie )
-			{
-				if( !g_app->m_taskManagerInterface->m_visible )
-					{
-					InsertionSquad *squad = (InsertionSquad *)unit;
-					int currentWeapon = -1;
-					LList<int> weaponList;
-					if( g_app->m_globalWorld->m_research->HasResearch( GlobalResearch::TypeGrenade ) )
-					{
-						if( squad->m_weaponType == GlobalResearch::TypeGrenade ) currentWeapon = weaponList.Size();
-						weaponList.PutData( GlobalResearch::TypeGrenade );
-					}
-					if( g_app->m_globalWorld->m_research->HasResearch( GlobalResearch::TypeRocket ) )
-					{
-						if( squad->m_weaponType == GlobalResearch::TypeRocket ) currentWeapon = weaponList.Size();
-						weaponList.PutData( GlobalResearch::TypeRocket );
-					}
+        if( team->m_units.ValidIndex(team->m_currentUnitId) )
+        {
+		    Unit *unit = team->m_units.GetData(team->m_currentUnitId);
+            if( unit->m_troopType == Entity::TypeInsertionSquadie )
+            {
+                if( !g_app->m_taskManagerInterface->m_visible )
+                    {
+                    InsertionSquad *squad = (InsertionSquad *)unit;
+                    int currentWeapon = -1;
+                    LList<int> weaponList;
+                    if( g_app->m_globalWorld->m_research->HasResearch( GlobalResearch::TypeGrenade ) )
+                    {
+                        if( squad->m_weaponType == GlobalResearch::TypeGrenade ) currentWeapon = weaponList.Size();
+                        weaponList.PutData( GlobalResearch::TypeGrenade );
+                    }
+                    if( g_app->m_globalWorld->m_research->HasResearch( GlobalResearch::TypeRocket ) )
+                    {
+                        if( squad->m_weaponType == GlobalResearch::TypeRocket ) currentWeapon = weaponList.Size();
+                        weaponList.PutData( GlobalResearch::TypeRocket );
+                    }
 
-					if( g_app->m_globalWorld->m_research->HasResearch( GlobalResearch::TypeAirStrike ) )
-					{
-						if( squad->m_weaponType == GlobalResearch::TypeAirStrike ) currentWeapon = weaponList.Size();
-						weaponList.PutData( GlobalResearch::TypeAirStrike );
-					}
-					if( g_app->m_globalWorld->m_research->HasResearch( GlobalResearch::TypeController ) )
-					{
-						if( squad->m_weaponType == GlobalResearch::TypeController ) currentWeapon = weaponList.Size();
-						weaponList.PutData( GlobalResearch::TypeController );
-					}
+                    if( g_app->m_globalWorld->m_research->HasResearch( GlobalResearch::TypeAirStrike ) )
+                    {
+                        if( squad->m_weaponType == GlobalResearch::TypeAirStrike ) currentWeapon = weaponList.Size();
+                        weaponList.PutData( GlobalResearch::TypeAirStrike );
+                    }
+                    if( g_app->m_globalWorld->m_research->HasResearch( GlobalResearch::TypeController ) )
+                    {
+                        if( squad->m_weaponType == GlobalResearch::TypeController ) currentWeapon = weaponList.Size();
+                        weaponList.PutData( GlobalResearch::TypeController );
+                    }
 
-					if( weaponList.Size() > 1 )
-					{
-						int oldWeapon = currentWeapon;
+                    if( weaponList.Size() > 1 )
+                    {
+                        int oldWeapon = currentWeapon;
 						if( g_inputManager.controlEvent( ControlWeaponCycleLeft ) )
-						{
-							currentWeapon--;
-							if( currentWeapon < 0 )
-							{
-								currentWeapon = weaponList.Size() - 1;
-							}
-						}
+                        {
+                            currentWeapon--;
+                            if( currentWeapon < 0 )
+                            {
+                                currentWeapon = weaponList.Size() - 1;
+                            }
+                        }
 
 						if( g_inputManager.controlEvent( ControlWeaponCycleRight ) )
-						{
-							currentWeapon++;
-							if( currentWeapon >= weaponList.Size() )
-							{
-								currentWeapon = 0;
-							}
-						}
+                        {
+                            currentWeapon++;
+                            if( currentWeapon >= weaponList.Size() )
+                            {
+                                currentWeapon = 0;
+                            }
+                        }
 
-						if( oldWeapon != currentWeapon )
-						{
-							g_app->m_clientToServer->RequestRunProgram( squad->m_teamId, weaponList[currentWeapon] );
-							g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
-							g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
-						}
-					}
-				}
-			}
-		}catch(const std::out_of_range&){
+                        if( oldWeapon != currentWeapon )
+                        {
+                            g_app->m_clientToServer->RequestRunProgram( squad->m_teamId, weaponList[currentWeapon] );
+                            g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
+                            g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
 			g_app->m_clientToServer->RequestSelectUnit( team->m_teamId, -1, -1, -1 );
 			g_app->m_camera->RequestMode(Camera::ModeFreeMovement);
-        }
+		}
 	}
 }
 

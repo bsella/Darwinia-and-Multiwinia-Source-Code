@@ -38,7 +38,6 @@
 #include "worldobject/insertion_squad.h"
 #include "worldobject/teleport.h"
 
-#include <list>
 
 unsigned int HistoricWayPoint::s_lastId = 0;
 
@@ -66,15 +65,19 @@ InsertionSquad::~InsertionSquad()
 
 Entity *InsertionSquad::GetPointMan()
 {
-	for (auto* entity : m_entities)
+	for (int i = 0; i < m_entities.Size(); ++i)
 	{
-		if (entity->m_formationIndex == 0)
+		if (m_entities.ValidIndex(i))
 		{
-			return entity;
+			Entity *entity = m_entities.GetData(i);
+			if (entity->m_formationIndex == 0)
+			{
+				return entity;
+			}
 		}
 	}
 
-	return nullptr;
+	return NULL;
 }
 
 /*Entity *InsertionSquad::GetFirstValidUnit()
@@ -222,18 +225,21 @@ void InsertionSquad::Attack( Vector3 pos, bool withGrenade )
         //
         // Find the entity nearest to the target that has a grenade
 
-		for (auto* entity : m_entities)
+        for( int i = 0; i < m_entities.Size(); ++i )
         {
-			Squadie *ent = (Squadie *)entity;
-			if( !ent->m_dead && ent->m_enabled && ent->HasSecondaryWeapon() )
-			{
-				float distance = (ent->m_pos - pos).Mag();
-				if( distance < nearest )
-				{
-					nearest = distance;
-					nearestEnt = ent;
-				}
-			}
+            if( m_entities.ValidIndex(i) )
+            {
+                Squadie *ent = (Squadie *) m_entities[i];
+                if( !ent->m_dead && ent->m_enabled && ent->HasSecondaryWeapon() )
+                {
+                    float distance = (ent->m_pos - pos).Mag();
+                    if( distance < nearest )
+                    {
+                        nearest = distance;
+                        nearestEnt = ent;
+                    }
+                }
+            }
         }
 
         if( nearestEnt )
@@ -246,44 +252,44 @@ void InsertionSquad::Attack( Vector3 pos, bool withGrenade )
     //
     // Build a list of squadies that can attack now
 
-	std::list<int> canAttack;
-	int i =0;
-	for (auto* entity : m_entities)
+    LList<int> canAttack;
+    for( int i = 0; i < m_entities.Size(); ++i )
     {
-		Squadie *ent = (Squadie *) entity;
-		if( ent->m_enabled &&
-			!ent->m_dead &&
-			ent->m_reloading == 0.0f )
-		{
-			canAttack.push_back( i );
-		}
-		i++;
+        if( m_entities.ValidIndex(i) )
+        {
+            Squadie *ent = (Squadie *) m_entities[i];
+            if( ent->m_enabled &&
+                !ent->m_dead &&
+                ent->m_reloading == 0.0f )
+            {
+                canAttack.PutData( i );
+            }
+        }
     }
 
 
-	if( !canAttack.empty() )
+    if( canAttack.Size() > 0 )
     {
         //
         // Decide the maximum number of entities
         // that can attack now without pauses appearing in fire rate
 
         float reloadTime = EntityBlueprint::GetStat( m_troopType, Entity::StatRate );
-		float timeToWait = (float) reloadTime / (float) canAttack.size();
+        float timeToWait = (float) reloadTime / (float) canAttack.Size();
         m_attackAccumulator += ( (float) SERVER_ADVANCE_PERIOD / timeToWait );
 
 
         //
         // Pick guys randomly to attack
 
-		while( !canAttack.empty() && m_attackAccumulator >= 1.0f )
+        while( canAttack.Size() > 0 && m_attackAccumulator >= 1.0f )
         {
-			m_attackAccumulator -= 1.0f;
-			int randomIndex = syncfrand(canAttack.size());
-			auto entityIt = std::next(canAttack.begin(), randomIndex);
-			int entityIndex = *entityIt;
-			canAttack.erase(entityIt);
-			Entity *ent = m_entities[entityIndex];
-			ent->Attack( pos );
+            m_attackAccumulator -= 1.0f;
+            int randomIndex = syncfrand(canAttack.Size());
+            int entityIndex = canAttack[randomIndex];
+            canAttack.RemoveData(randomIndex);
+            Entity *ent = m_entities[entityIndex];
+    		ent->Attack( pos );
         }
     }
 }

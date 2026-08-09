@@ -1,4 +1,4 @@
-﻿#ifndef _included_ai_h
+#ifndef _included_ai_h
 #define _included_ai_h
 
 #include "location.h"
@@ -47,9 +47,9 @@ public:
 public:
     AITarget();
 
-	bool    Advance ()override;
-	void    Render          ( float _predictionTime )override;
-	void    RenderAlphas    ( float _predictionTime )override;
+    bool    Advance ();
+    void    Render          ( float _predictionTime );
+    void    RenderAlphas    ( float _predictionTime );
 
     void    RecalculateNeighbours();
     void    RecountTeams();
@@ -58,8 +58,8 @@ public:
 
     float   IsNearTo        ( int _aiTargetId );                            // returns distance or -1
 
-	bool DoesSphereHit          (Vector3 const &_pos, float _radius)override;
-	bool DoesShapeHit           (Shape *_shape, Matrix34 _transform)override;
+    bool DoesSphereHit          (Vector3 const &_pos, float _radius);
+    bool DoesShapeHit           (Shape *_shape, Matrix34 _transform);
 };
 
 

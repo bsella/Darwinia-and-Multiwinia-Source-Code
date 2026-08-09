@@ -700,11 +700,11 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
     m_highlightedTaskId = -1;
     if( m_currentScreenZone != -1 )
     {
-		ScreenZone *currentZone = m_screenZones[m_currentScreenZone];
+        ScreenZone *currentZone = m_screenZones[m_currentScreenZone];
         if( currentZone )
-		{
-			if( stricmp( currentZone->m_name, "SelectTask" ) == 0 &&
-				g_app->m_taskManager->m_tasks.ValidIndex(currentZone->m_data) )
+        {
+            if( stricmp( currentZone->m_name, "SelectTask" ) == 0 &&
+                g_app->m_taskManager->m_tasks.ValidIndex(currentZone->m_data) )
             {
                 Task *task = g_app->m_taskManager->m_tasks[currentZone->m_data];
                 m_highlightedTaskId = task->m_id;

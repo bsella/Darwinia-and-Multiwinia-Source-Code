@@ -438,7 +438,7 @@ bool MasterSpawnPoint::Advance()
 
     if( g_app->m_location->m_teams[1].m_teamType != Team::TeamTypeUnused )
     {
-		auto numRed = g_app->m_location->m_teams[1].m_others.size();
+        int numRed = g_app->m_location->m_teams[1].m_others.NumUsed();
         if( numRed < 10 )
         {
             GlobalBuilding *gb = g_app->m_globalWorld->GetBuilding( m_id.GetUniqueId(), g_app->m_locationId );
@@ -475,7 +475,7 @@ char *MasterSpawnPoint::GetObjectiveCounter()
 
     if( g_app->m_location->m_teams[1].m_teamType != Team::TeamTypeUnused )
     {
-		auto numRed = g_app->m_location->m_teams[1].m_others.size();
+        int numRed = g_app->m_location->m_teams[1].m_others.NumUsed();
         sprintf( result, "%s : %d", LANGUAGEPHRASE("objective_redpopulation"), numRed );
     }
     else

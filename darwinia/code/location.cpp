@@ -88,7 +88,7 @@ Location::Location()
     m_effects.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
     m_buildings.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
 
-	m_spirits.SetSize( 100 );
+    m_spirits.SetSize( 100 );
 
 	m_lights.SetStepSize(1);
 	m_buildings.SetStepSize(10);
@@ -157,12 +157,12 @@ void Location::Empty()
     m_lasers.Empty();
     m_effects.Empty();
 
-	delete m_levelFile;			m_levelFile = nullptr;
-	delete [] m_teams;			m_teams = nullptr;
-	delete m_entityGrid;		m_entityGrid = nullptr;
-	delete m_obstructionGrid;	m_obstructionGrid = nullptr;
-	delete m_clouds;			m_clouds = nullptr;
-	delete m_water;				m_water = nullptr;
+	delete m_levelFile;			m_levelFile = NULL;
+	delete [] m_teams;			m_teams = NULL;
+	delete m_entityGrid;		m_entityGrid = NULL;
+	delete m_obstructionGrid;	m_obstructionGrid = NULL;
+	delete m_clouds;			m_clouds = NULL;
+	delete m_water;				m_water = NULL;
 }
 
 
@@ -364,7 +364,7 @@ int Location::SpawnSpirit( Vector3 const &_pos, Vector3 const &_vel, unsigned ch
 
 
 //  *** GetSpirit
-int Location::GetSpirit( const WorldObjectId& _id )const
+int Location::GetSpirit( WorldObjectId _id )
 {
     if( !_id.IsValid() )
     {
@@ -387,7 +387,7 @@ int Location::GetSpirit( const WorldObjectId& _id )const
 }
 
 
-WorldObject *Location::GetWorldObject( const WorldObjectId& _id )const
+WorldObject *Location::GetWorldObject( WorldObjectId _id )
 {
     switch( _id.GetUnitId() )
     {
@@ -399,18 +399,18 @@ WorldObject *Location::GetWorldObject( const WorldObjectId& _id )const
 }
 
 
-Spirit *Location::GetSpirit( int _index )const
+Spirit *Location::GetSpirit( int _index )
 {
     if( m_spirits.ValidIndex( _index ) )
     {
-		return (Spirit *)&m_spirits[_index];
+        return &m_spirits[_index];
     }
 
-	return nullptr;
+    return NULL;
 }
 
 
-WorldObject *Location::GetEffect( const WorldObjectId& _id )const
+WorldObject *Location::GetEffect( WorldObjectId _id )
 {
     if( m_effects.ValidIndex(_id.GetIndex()) )
     {
@@ -421,11 +421,11 @@ WorldObject *Location::GetEffect( const WorldObjectId& _id )const
         }
     }
 
-	return nullptr;
+    return NULL;
 }
 
 
-Entity *Location::GetEntity( const WorldObjectId& _id )const
+Entity *Location::GetEntity( WorldObjectId _id )
 {
     unsigned char const teamId = _id.GetTeamId();
     int const unitId = _id.GetUnitId();
@@ -435,39 +435,39 @@ Entity *Location::GetEntity( const WorldObjectId& _id )const
     if( teamId >= NUM_TEAMS ||
         m_teams[teamId].m_teamType == Team::TeamTypeUnused )
     {
-		return nullptr;
+        return NULL;
     }
 
-	if(m_teams[teamId].m_units.size() > unitId && unitId >= 0)
-	{
-		Unit *unit = m_teams[teamId].m_units[unitId];
-		if(unit->m_entities.size() > index && index >= 0)
-		{
-			Entity *entity = unit->m_entities[index];
-			if( entity->m_id.GetUniqueId() == uniqueId )
-			{
-				return entity;
-			}
-		}
-	}
+    if( m_teams[teamId].m_units.ValidIndex(unitId) )
+    {
+        Unit *unit = m_teams[teamId].m_units[unitId];
+        if( unit->m_entities.ValidIndex( index ) )
+        {
+            Entity *entity = unit->m_entities[index];
+            if( entity->m_id.GetUniqueId() == uniqueId )
+            {
+                return entity;
+            }
+        }
+    }
 
     if( unitId == -1 )
     {
-		if(m_teams[teamId].m_others.size() > index && index >= 0)
-		{
-			Entity *entity = m_teams[teamId].m_others.at(index);
-			if( entity->m_id.GetUniqueId() == uniqueId )
-			{
-				return entity;
-			}
-		}
+        if( m_teams[teamId].m_others.ValidIndex(index) )
+        {
+            Entity *entity = m_teams[teamId].m_others[index];
+            if( entity->m_id.GetUniqueId() == uniqueId )
+            {
+                return entity;
+            }
+        }
     }
 
-	return nullptr;
+    return NULL;
 }
 
 
-Entity *Location::GetEntity(Vector3 const &_rayStart, Vector3 const &_rayDir)const
+Entity *Location::GetEntity(Vector3 const &_rayStart, Vector3 const &_rayDir)
 {
 	for (unsigned int i = 0; i < NUM_TEAMS; ++i)
 	{
@@ -482,7 +482,7 @@ Entity *Location::GetEntity(Vector3 const &_rayStart, Vector3 const &_rayDir)con
 }
 
 
-Entity *Location::GetEntitySafe( const WorldObjectId& _id, unsigned char _type )const
+Entity *Location::GetEntitySafe( WorldObjectId _id, unsigned char _type )
 {
     WorldObject *wobj = GetEntity( _id );
     Entity *ent = (Entity *) wobj;
@@ -496,7 +496,7 @@ Entity *Location::GetEntitySafe( const WorldObjectId& _id, unsigned char _type )
 }
 
 
-Unit *Location::GetUnit( const WorldObjectId& _id )const
+Unit *Location::GetUnit( WorldObjectId _id )
 {
     unsigned char teamId = _id.GetTeamId();
     int unitId = _id.GetUnitId();
@@ -504,16 +504,20 @@ Unit *Location::GetUnit( const WorldObjectId& _id )const
     if( teamId >= NUM_TEAMS ||
         m_teams[teamId].m_teamType == Team::TeamTypeUnused )
     {
-		return nullptr;
+        return NULL;
     }
 
-	if(unitId == -1) return nullptr;
+    if( m_teams[teamId].m_units.ValidIndex(unitId) )
+    {
+        Unit *unit = m_teams[teamId].m_units[unitId];
+        return unit;
+    }
 
-	return m_teams[teamId].m_units[unitId];
+    return NULL;
 }
 
 
-Building *Location::GetBuilding( int _id )const
+Building *Location::GetBuilding( int _id )
 {
     if( _id == -1 ) return NULL;
 
@@ -540,7 +544,7 @@ Building *Location::GetBuilding( int _id )const
 }
 
 
-Building *Location::GetBuilding(Vector3 const &_rayStart, Vector3 const &_rayDir )const
+Building *Location::GetBuilding(Vector3 const &_rayStart, Vector3 const &_rayDir )
 {
 	for (unsigned int i = 0; i < m_buildings.Size(); ++i)
 	{
@@ -942,7 +946,7 @@ void Location::RenderSpirits()
     glDepthMask     ( false );
 
     float timeSinceAdvance = g_predictionTime;
-	//float numPerSlice = m_spirits.Size() / (float)NUM_SLICES_PER_FRAME;
+    float numPerSlice = m_spirits.Size() / (float)NUM_SLICES_PER_FRAME;
 
     for( int i = 0; i < m_spirits.Size(); ++i )
     {
@@ -1471,11 +1475,11 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
 
                 SpawnEntities( pos, _teamId, unitId, Entity::TypeInsertionSquadie, program->m_count, g_zeroVector, 10.0f );
 
-				int s = 0;
-				for( auto* entity : squad->m_entities)
-				{
+                for( int s = 0; s < squad->m_entities.Size(); ++s )
+                {
+                    DarwiniaDebugAssert( squad->m_entities.ValidIndex(s) );
+                    Entity *entity = squad->m_entities[s];
                     entity->m_stats[Entity::StatHealth] = program->m_health[s];
-					s++;
                 }
 
                 Task *task = new Task();
@@ -1612,35 +1616,41 @@ int Location::GetUnitId( Vector3 const &startRay, Vector3 const &direction, unsi
     // zoom in and perform ray-sphere checks against each entity, because a unit
     // can become seperated so its bounding sphere covers a very large area.
 
-	int unit = 0;
-	for( auto* theUnit : m_teams[team].m_units)
-	{
-		bool rayHit = RaySphereIntersection( startRay, direction, theUnit->m_centrePos, theUnit->m_radius*1.5f );
-		if( rayHit && theUnit->NumAliveEntities() > 0 )
-		{
-			for( auto* entity : theUnit->m_entities )
-			{
-				Vector3 spherePos = entity->m_pos+entity->m_centrePos;
-				float sphereRadius = entity->m_radius * 1.5f;
-				Vector3 hitPos;
+    for( int unit = 0; unit < m_teams[team].m_units.Size(); ++unit )
+    {
+        if( m_teams[team].m_units.ValidIndex(unit) )
+        {
+            Unit *theUnit = m_teams[team].m_units.GetData( unit );
+            bool rayHit = RaySphereIntersection( startRay, direction, theUnit->m_centrePos, theUnit->m_radius*1.5f );
+            if( rayHit && theUnit->NumAliveEntities() > 0 )
+            {
+                for( int i = 0; i < theUnit->m_entities.Size(); ++i )
+                {
+                    if( theUnit->m_entities.ValidIndex(i) )
+                    {
+                        Entity *entity = theUnit->m_entities[i];
+                        Vector3 spherePos = entity->m_pos+entity->m_centrePos;
+                        float sphereRadius = entity->m_radius * 1.5f;
+                        Vector3 hitPos;
 
-				bool entityHit = RaySphereIntersection( startRay, direction, spherePos, sphereRadius, 1e10, &hitPos );
-				if( entityHit && !entity->m_dead )
-				{
-					float centrePosX, centrePosY, rayHitX, rayHitY;
-					g_app->m_camera->Get2DScreenPos( spherePos, &centrePosX, &centrePosY );
-					g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
+                        bool entityHit = RaySphereIntersection( startRay, direction, spherePos, sphereRadius, 1e10, &hitPos );
+                        if( entityHit && !entity->m_dead )
+                        {
+                            float centrePosX, centrePosY, rayHitX, rayHitY;
+                            g_app->m_camera->Get2DScreenPos( spherePos, &centrePosX, &centrePosY );
+                            g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
 
-					float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
-					if( rangeSqd < closestRangeSqd )
-					{
-						closestRangeSqd = rangeSqd;
-						unitId = unit;
-					}
-				}
-			}
-		}
-		unit++;
+                            float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
+                            if( rangeSqd < closestRangeSqd )
+                            {
+                                closestRangeSqd = rangeSqd;
+                                unitId = unit;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     if( _range && unitId != -1 )
@@ -1659,28 +1669,33 @@ WorldObjectId Location::GetEntityId( Vector3 const &startRay, Vector3 const &dir
     float closestRangeSqd = FLT_MAX;
     WorldObjectId entId;
 
-	for( auto* ent : m_teams[teamId].m_others)
-	{
-		if( !ent->m_dead )
-		{
-			Vector3 spherePos = ent->m_pos+ent->m_centrePos;
-			float sphereRadius = ent->m_radius * 1.5f;
-			Vector3 hitPos;
-			bool rayHit = RaySphereIntersection( startRay, direction, spherePos, sphereRadius, 1e10, &hitPos );
-			if( rayHit )
-			{
-				float centrePosX, centrePosY, rayHitX, rayHitY;
-				g_app->m_camera->Get2DScreenPos( spherePos, &centrePosX, &centrePosY );
-				g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
+	int numEntities = m_teams[teamId].m_others.Size();
+    for( int i = 0; i < numEntities; ++i )
+    {
+        if( m_teams[teamId].m_others.ValidIndex(i) )
+        {
+            Entity *ent = m_teams[teamId].m_others.GetData(i);
+            if( !ent->m_dead )
+            {
+                Vector3 spherePos = ent->m_pos+ent->m_centrePos;
+                float sphereRadius = ent->m_radius * 1.5f;
+                Vector3 hitPos;
+                bool rayHit = RaySphereIntersection( startRay, direction, spherePos, sphereRadius, 1e10, &hitPos );
+                if( rayHit )
+                {
+                    float centrePosX, centrePosY, rayHitX, rayHitY;
+                    g_app->m_camera->Get2DScreenPos( spherePos, &centrePosX, &centrePosY );
+                    g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
 
-				float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
-				if( rangeSqd < closestRangeSqd )
-				{
-					closestRangeSqd = rangeSqd;
-					entId = ent->m_id;
-				}
-			}
-		}
+                    float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
+                    if( rangeSqd < closestRangeSqd )
+                    {
+                        closestRangeSqd = rangeSqd;
+                        entId = ent->m_id;
+                    }
+                }
+            }
+        }
     }
 
     if( _range && entId.IsValid() )
@@ -1881,7 +1896,7 @@ void Location::FireLaser( Vector3 const &_pos, Vector3 const &_vel, unsigned cha
 }
 
 
-Team *Location::GetMyTeam()const
+Team *Location::GetMyTeam()
 {
     if (g_app->m_globalWorld->m_myTeamId == 255)
     {
@@ -2109,7 +2124,7 @@ int Location::ChristmasModEnabled()
 }
 
 
-bool Location::IsFriend( unsigned char _teamId1, unsigned char _teamId2 )const
+bool Location::IsFriend( unsigned char _teamId1, unsigned char _teamId2 )
 {
     if( _teamId1 == 255 || _teamId2 == 255 ) return false;
 

@@ -274,7 +274,7 @@ T *FastDArray<T>::GetPointer ()
 
 
 template <class T>
-T *FastDArray<T>::GetPointer(int index)const
+T *FastDArray<T>::GetPointer(int index)
 {
 	return DArray<T>::GetPointer(index);
 }

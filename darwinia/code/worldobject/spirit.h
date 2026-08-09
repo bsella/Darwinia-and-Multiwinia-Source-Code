@@ -1,4 +1,4 @@
-﻿#ifndef _included_spirit_h
+#ifndef _included_spirit_h
 #define _included_spirit_h
 
 #include "worldobject/entity.h"
@@ -43,11 +43,11 @@ protected:
 public:
 
     Spirit();
-	~Spirit()override;
+    ~Spirit();
 
     void Begin      ();
-	bool Advance    ()override;
-	void Render     ( float predictionTime )override;
+    bool Advance    ();
+    void Render     ( float predictionTime );
 
     void CollectorArrives   ();                             // A collector is above me and picks me up
     void CollectorDrops     ();                             // My collector has dropped me

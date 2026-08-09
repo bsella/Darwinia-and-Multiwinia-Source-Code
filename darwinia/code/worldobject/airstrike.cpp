@@ -154,12 +154,12 @@ bool AirstrikeUnit::Advance( int _slice )
 
         case StateLeaving:
         {
-			AdvanceToTargetPosition( m_exitPosition );
+            bool amIThere = AdvanceToTargetPosition( m_exitPosition );
             break;
         }
     };
 
-	return Unit::Advance();
+    return Unit::Advance( _slice );
 }
 
 

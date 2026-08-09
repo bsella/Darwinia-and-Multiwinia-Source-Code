@@ -486,8 +486,8 @@ void SpamInfection::AdvanceAttackingEntity()
             {
                 g_app->m_location->SpawnEntities( target->m_pos, 1, -1, Entity::TypeDarwinian, 1, target->m_vel, 0.0f );
                 g_app->m_location->m_entityGrid->RemoveObject( m_targetId, target->m_pos.x, target->m_pos.z, target->m_radius );
+                g_app->m_location->m_teams[0].m_others.MarkNotUsed( m_targetId.GetIndex() );
                 delete target;
-				g_app->m_location->m_teams[0].m_others.erase(std::next(g_app->m_location->m_teams[0].m_others.begin(),m_targetId.GetIndex() ));
             }
             else
             {

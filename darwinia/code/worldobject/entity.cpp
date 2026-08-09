@@ -200,7 +200,7 @@ void Entity::Attack( Vector3 const &pos )
 }
 
 
-bool Entity::AdvanceDead( Unit * )
+bool Entity::AdvanceDead( Unit *_unit )
 {
     int newHealth = m_stats[StatHealth];
     if( m_onGround ) newHealth -= 40 * SERVER_ADVANCE_PERIOD;
@@ -276,7 +276,7 @@ int Entity::EnterTeleports( int _requiredId )
 }
 
 
-void Entity::AdvanceInAir( Unit * )
+void Entity::AdvanceInAir( Unit *_unit )
 {
     m_vel += Vector3(0,-15.0,0) * SERVER_ADVANCE_PERIOD;
     m_pos += m_vel * SERVER_ADVANCE_PERIOD;
@@ -404,7 +404,7 @@ bool Entity::Advance(Unit *_unit)
 }
 
 
-void Entity::Render(float)
+void Entity::Render(float predictionTime)
 {
 }
 
@@ -753,7 +753,7 @@ bool Entity::RayHit(Vector3 const &_rayStart, Vector3 const &_rayDir)
 }
 
 
-void Entity::DirectControl( TeamControls const& )
+void Entity::DirectControl( TeamControls const& _teamControls )
 {
 }
 
@@ -762,7 +762,7 @@ Vector3 Entity::GetCameraFocusPoint()
 	return m_pos + m_vel;
 }
 
-void Entity::SetWaypoint( Vector3 const& )
+void Entity::SetWaypoint( Vector3 const& _waypoint )
 {
 }
 

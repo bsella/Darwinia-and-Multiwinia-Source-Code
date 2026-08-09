@@ -93,8 +93,8 @@ public:
     virtual ~WorldObject            ();
 	void BounceOffLandscape			();
 
-	virtual bool Advance			();
-	virtual void Render				( float _time );
+    virtual bool Advance			();
+    virtual void Render				( float _time );
 	virtual bool RenderPixelEffect	( float predictionTime );               // Return true if you did anything
 };
 
