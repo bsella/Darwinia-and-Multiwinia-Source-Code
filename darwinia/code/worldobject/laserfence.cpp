@@ -1,17 +1,12 @@
-﻿#include "lib/universal_include.h"
-
-#include <math.h>
+﻿#include <math.h>
 
 #include "lib/math_utils.h"
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
-#include "lib/matrix33.h"
-#include "lib/profiler.h"
 #include "lib/shape.h"
 #include "lib/resource.h"
 #include "lib/text_stream_readers.h"
 #include "lib/ogl_extensions.h"
-#include "lib/debug_render.h"
 #include "lib/preferences.h"
 
 #include "main.h"
@@ -23,8 +18,6 @@
 #include "obstruction_grid.h"
 #include "team.h"
 #include "particle_system.h"
-
-#include "network/clienttoserver.h"
 
 #include "sound/soundsystem.h"
 

@@ -1,13 +1,9 @@
-#include "lib/universal_include.h"
-#include "lib/debug_render.h"
 #include "lib/math_utils.h"
 
 #include "app.h"
 #include "location.h"
 #include "team.h"
 #include "unit.h"
-#include "user_input.h"
-#include "entity_grid.h"
 #include "camera.h"
 
 #include "worldobject/lasertrooper.h"

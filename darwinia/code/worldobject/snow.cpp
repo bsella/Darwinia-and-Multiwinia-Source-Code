@@ -1,12 +1,10 @@
 #include "lib/universal_include.h"
 #include "lib/hi_res_time.h"
-#include "lib/debug_render.h"
 #include "lib/3d_sprite.h"
 #include "lib/resource.h"
 
 #include "worldobject/snow.h"
 
-#include "main.h"
 #include "globals.h"
 #include "app.h"
 #include "location.h"

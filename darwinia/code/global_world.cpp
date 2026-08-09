@@ -2,7 +2,6 @@
 
 #include <float.h>
 
-#include "lib/debug_render.h"
 #include "lib/debug_utils.h"
 #include "lib/language_table.h"
 #include "lib/filesys_utils.h"
@@ -13,7 +12,6 @@
 #include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
-#include "lib/sphere_renderer.h"
 #include "lib/string_utils.h"
 #include "lib/text_renderer.h"
 #include "lib/text_stream_readers.h"
@@ -32,20 +30,14 @@
 #include "renderer.h"
 #include "script.h"
 #include "sepulveda.h"
-#include "testharness.h"
 #include "user_input.h"
 #include "helpsystem.h"
-#include "startsequence.h"
 #include "taskmanager.h"
 #include "taskmanager_interface.h"
 #include "tutorial.h"
 
 #include "worldobject/building.h"
 #include "worldobject/trunkport.h"
-
-#include "lib/window_manager.h"
-#include "lib/preferences.h"
-#include "lib/preference_names.h"
 
 #include "interface/buynow_window.h"
 

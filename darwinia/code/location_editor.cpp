@@ -33,7 +33,6 @@
 #include "level_file.h"
 #include "location_editor.h"
 #include "renderer.h"
-#include "routing_system.h"
 #include "team.h"
 #include "user_input.h"
 

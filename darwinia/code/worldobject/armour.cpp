@@ -4,11 +4,7 @@
 #include "lib/shape.h"
 #include "lib/hi_res_time.h"
 #include "lib/math_utils.h"
-#include "lib/debug_render.h"
 #include "lib/text_renderer.h"
-
-#include "lib/input/input.h"
-#include "lib/input/input_types.h"
 
 #include "worldobject/armour.h"
 #include "worldobject/gunturret.h"

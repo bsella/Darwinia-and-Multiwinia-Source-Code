@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "texture_uv.h"
 
 

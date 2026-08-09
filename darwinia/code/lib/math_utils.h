@@ -5,6 +5,8 @@
 
 #include "lib/random.h"
 
+#include <cmath>
+
 class Vector3;
 class Vector2;
 class Matrix34;

@@ -1,10 +1,7 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/debug_utils.h"
+﻿#include "lib/debug_utils.h"
 #include "lib/file_writer.h"
 #include "lib/hi_res_time.h"
 #include "lib/math_utils.h"
-#include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/text_renderer.h"
@@ -14,7 +11,6 @@
 
 #include "worldobject/generator.h"
 #include "worldobject/constructionyard.h"
-#include "worldobject/darwinian.h"
 #include "worldobject/controltower.h"
 #include "worldobject/rocket.h"
 #include "worldobject/switch.h"
@@ -23,7 +19,6 @@
 #include "location.h"
 #include "camera.h"
 #include "global_world.h"
-#include "particle_system.h"
 #include "main.h"
 #include "entity_grid.h"
 #include "user_input.h"

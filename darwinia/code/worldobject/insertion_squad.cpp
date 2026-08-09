@@ -1,16 +1,10 @@
-﻿#include "lib/universal_include.h"
-#include "lib/hi_res_time.h"
+﻿#include "limits.h"
 
-#include "limits.h"
-
-#include "lib/bitmap.h"
 #include "lib/debug_utils.h"
 #include "lib/math_utils.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
-#include "lib/debug_render.h"
 #include "lib/text_renderer.h"
-#include "lib/rgb_colour.h"
 
 #include "lib/input/input.h"
 #include "lib/input/input_types.h"
@@ -29,7 +23,6 @@
 #include "entity_grid.h"
 #include "obstruction_grid.h"
 #include "main.h"
-#include "gamecursor.h"
 
 #include "global_world.h"
 

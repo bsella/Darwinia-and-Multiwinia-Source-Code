@@ -5,19 +5,15 @@
 #include <math.h>
 
 #include "lib/debug_utils.h"
-#include "lib/debug_render.h"
 #include "lib/math_utils.h"
-#include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
-#include "lib/texture_uv.h"
 #include "lib/text_stream_readers.h"
 #include "lib/language_table.h"
 
 #include "app.h"
 #include "camera.h"
 #include "main.h"
-#include "particle_system.h"
 #include "user_input.h"
 #include "renderer.h"
 #include "sound/soundsystem.h"

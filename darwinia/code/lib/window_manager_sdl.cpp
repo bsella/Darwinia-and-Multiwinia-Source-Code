@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <SDL/SDL.h>
+﻿#include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
 
 #include <limits.h>
@@ -8,12 +6,10 @@
 #include <stdlib.h>
 
 #include "lib/debug_utils.h"
-#include "lib/preferences.h"
 #include "window_manager_sdl.h"
 #include "lib/input/sdl_eventhandler.h"
 #include "lib/input/inputdriver_sdl_mouse.h"
 //#include "input.h"
-#include "network/server.h"
 #include "app.h"
 
 //#include "app.h"
@@ -21,7 +17,6 @@
 
 #ifdef TARGET_OS_LINUX
 //#include "prefix.h"
-#include "spawn.h"
 #endif
 
 #ifdef TARGET_OS_MACOSX

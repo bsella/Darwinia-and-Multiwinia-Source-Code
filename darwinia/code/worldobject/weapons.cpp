@@ -4,11 +4,9 @@
 
 #include "lib/math_utils.h"
 #include "lib/resource.h"
-#include "lib/profiler.h"
 #include "lib/vector2.h"
 #include "lib/shape.h"
 #include "lib/hi_res_time.h"
-#include "lib/debug_render.h"
 
 #include "worldobject/weapons.h"
 #include "worldobject/insertion_squad.h"
@@ -17,13 +15,11 @@
 #include "worldobject/armour.h"
 
 
-#include "explosion.h"
 #include "app.h"
 #include "camera.h"
 #include "entity_grid.h"
 #include "obstruction_grid.h"
 #include "location.h"
-#include "main.h"
 #include "particle_system.h"
 #include "renderer.h"
 #include "team.h"
@@ -33,7 +29,6 @@
 #include "taskmanager.h"
 
 #include "sound/soundsystem.h"
-#include "sound/sound_library_3d.h"
 
 
 // ****************************************************************************

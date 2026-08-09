@@ -3,21 +3,13 @@
 #include <float.h>
 #include <math.h>
 
-#include "lib/binary_stream_readers.h"
-#include "lib/bitmap.h"
-#include "lib/debug_render.h"
 #include "lib/debug_utils.h"
-#include "lib/hi_res_time.h"
 #include "lib/math_utils.h"
 #include "lib/preferences.h"
-#include "lib/profiler.h"
-#include "lib/resource.h"
-#include "lib/rgb_colour.h"
 #include "lib/vector2.h"
 #include "lib/vector3.h"
 
 #include "app.h"
-#include "camera.h"
 #include "global_world.h"
 #include "landscape.h"
 #include "landscape_renderer.h"

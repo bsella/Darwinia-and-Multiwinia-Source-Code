@@ -1,15 +1,11 @@
-﻿#include "lib/universal_include.h"
+﻿#include <limits.h>
 
-#include <limits.h>
-
-#include "lib/debug_utils.h"
-
-#include "lib/input/input.h"
 #include "lib/window_manager.h"
 //#include "lib/work_queue.h"
 
+#include <cmath>
 
-WindowManager *g_windowManager = NULL;
+WindowManager *g_windowManager = nullptr;
 
 
 WindowManager::WindowManager()
@@ -70,7 +66,7 @@ Resolution *WindowManager::GetResolution( int _id )
         return m_resolutions[_id];
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -148,7 +144,7 @@ static int WindowManagerGetClosestRefreshRate( Resolution *res, int _refresh )
 
 void WindowManager::GetClosestResolution( int *_width, int *_height, int *_refresh )
 {
-    Resolution *closestRes = NULL;
+    Resolution *closestRes = nullptr;
     for (int i = 0; i < m_resolutions.Size(); ++i)
     {
         Resolution *res = m_resolutions[i];
@@ -157,7 +153,7 @@ void WindowManager::GetClosestResolution( int *_width, int *_height, int *_refre
             *_refresh = WindowManagerGetClosestRefreshRate( res, *_refresh );
             return;
         }
-        else if (closestRes == NULL ||
+        else if (closestRes == nullptr ||
                  ( abs(res->m_height - *_height) + abs(res->m_width - *_width) ) <
                  ( abs(closestRes->m_height - *_height) + abs(closestRes->m_width - *_width) ) )
         {
@@ -165,7 +161,7 @@ void WindowManager::GetClosestResolution( int *_width, int *_height, int *_refre
         }
     }
 
-    if (closestRes != NULL)
+    if (closestRes != nullptr)
     {
         *_width = closestRes->m_width;
         *_height = closestRes->m_height;

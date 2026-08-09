@@ -2,9 +2,7 @@
 
 #include <float.h>
 
-#include "lib/debug_render.h"
 #include "lib/math_utils.h"
-#include "lib/persisting_debug_render.h"
 #include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"

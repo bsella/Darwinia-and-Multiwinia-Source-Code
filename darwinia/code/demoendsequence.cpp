@@ -10,7 +10,6 @@
 #include "main.h"
 #include "renderer.h"
 #include "demoendsequence.h"
-#include "user_input.h"
 #include "location.h"
 #include "level_file.h"
 #include "global_world.h"

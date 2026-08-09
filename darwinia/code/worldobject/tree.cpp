@@ -3,7 +3,6 @@
 #include "lib/debug_render.h"
 #include "lib/file_writer.h"
 #include "lib/math_utils.h"
-#include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/text_stream_readers.h"
 #include "lib/debug_utils.h"
@@ -21,9 +20,7 @@
 #include "camera.h"
 #include "particle_system.h"
 #include "location.h"
-#include "obstruction_grid.h"
 #include "global_world.h"
-#include "main.h"
 
 #ifdef USE_DIRECT3D
 #include "lib/opengl_directx_internals.h"

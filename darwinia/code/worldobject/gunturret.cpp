@@ -1,21 +1,16 @@
-﻿#include "lib/universal_include.h"
-
-#include <math.h>
+﻿#include <math.h>
 
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/math_utils.h"
 #include "lib/text_renderer.h"
-#include "lib/debug_render.h"
 
 #include "lib/input/input.h"
-#include "lib/input/input_types.h"
 
 #include "globals.h"
 #include "app.h"
 #include "location.h"
 #include "team.h"
-#include "unit.h"
 #include "entity_grid.h"
 #include "camera.h"
 #include "user_input.h"
@@ -25,8 +20,6 @@
 #include "explosion.h"
 
 #include "worldobject/gunturret.h"
-#include "worldobject/darwinian.h"
-#include "worldobject/ai.h"
 
 #include "sound/soundsystem.h"
 

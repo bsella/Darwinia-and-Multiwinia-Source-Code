@@ -5,7 +5,6 @@
 #include "lib/debug_render.h"
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
-#include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/text_stream_readers.h"

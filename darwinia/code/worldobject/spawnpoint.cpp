@@ -21,8 +21,6 @@
 #include "main.h"
 
 #include "worldobject/spawnpoint.h"
-#include "worldobject/darwinian.h"
-
 
 SpawnBuilding::SpawnBuilding()
 :   Building(),

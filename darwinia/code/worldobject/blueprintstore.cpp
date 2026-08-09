@@ -3,13 +3,11 @@
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/text_stream_readers.h"
-#include "lib/debug_render.h"
 #include "lib/file_writer.h"
 #include "lib/text_renderer.h"
 #include "lib/language_table.h"
 
 #include "worldobject/blueprintstore.h"
-#include "worldobject/darwinian.h"
 
 #include "app.h"
 #include "location.h"

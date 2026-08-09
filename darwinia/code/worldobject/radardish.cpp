@@ -2,7 +2,6 @@
 
 #include <math.h>
 
-#include "lib/debug_render.h"
 #include "lib/math_utils.h"
 #include "lib/ogl_extensions.h"
 #include "lib/profiler.h"
@@ -15,7 +14,6 @@
 #include "globals.h"
 #include "location.h"
 #include "main.h"
-#include "particle_system.h"
 #include "renderer.h"
 #include "team.h"
 #include "global_world.h"

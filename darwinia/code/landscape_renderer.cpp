@@ -15,7 +15,6 @@
 #include "lib/vector3.h"
 
 #include "app.h"
-#include "camera.h"
 #include "landscape_renderer.h"
 #include "location.h"	// For SetupFog
 #include "renderer.h"

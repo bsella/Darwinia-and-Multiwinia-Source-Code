@@ -1,12 +1,9 @@
-#include "lib/universal_include.h"
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "lib/binary_stream_readers.h"
 #include "lib/bitmap.h"
-#include "lib/debug_utils.h"
 #include "lib/filesys_utils.h"
 #include "lib/resource.h"
 #include "lib/vector3.h"

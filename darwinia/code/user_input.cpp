@@ -1,40 +1,27 @@
 ﻿#include "lib/universal_include.h"
 
-#include <stdio.h>
 #include <math.h>
 #include <float.h>
 
 #include <eclipse.h>
 
-#include "lib/avi_generator.h"
-#include "lib/debug_utils.h"
-#include "lib/hi_res_time.h"
 #include "lib/input/input.h"
 #include "lib/targetcursor.h"
 #include "lib/math_utils.h"
 #include "lib/profiler.h"
-#include "lib/resource.h"
-#include "lib/shape.h"
 #include "lib/text_renderer.h"
 #include "lib/preferences.h"
 #include "lib/language_table.h"
 
 #include "interface/debugmenu.h"
 
-#include "worldobject/worldobject.h"
-#include "worldobject/engineer.h"
-
 #include "network/clienttoserver.h"
 
 #include "app.h"
 #include "camera.h"
-#include "globals.h"
 #include "global_world.h"
 #include "location.h"
-#include "main.h"
 #include "renderer.h"
-#include "sound/soundsystem.h"
-#include "unit.h"
 #include "user_input.h"
 
 

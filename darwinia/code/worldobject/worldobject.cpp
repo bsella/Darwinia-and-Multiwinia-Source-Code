@@ -1,7 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <math.h>
-#include <stdio.h>
+﻿#include <math.h>
 
 #include "lib/debug_utils.h"
 #include "lib/math_utils.h"
@@ -9,8 +6,6 @@
 #include "app.h"
 #include "location.h"
 #include "worldobject.h"
-#include "main.h"
-
 
 #define COEF_OF_RESTITUTION	0.85f
 

@@ -1,12 +1,10 @@
-﻿#include "lib/universal_include.h"
-
+﻿
 #include "lib/text_stream_readers.h"
 #include "lib/shape.h"
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
 #include "lib/resource.h"
 #include "lib/math_utils.h"
-#include "lib/profiler.h"
 #include "lib/debug_render.h"
 #include "lib/text_renderer.h"
 #include "lib/3d_sprite.h"
@@ -24,11 +22,7 @@
 #include "global_world.h"
 #include "location.h"
 #include "main.h"
-#include "particle_system.h"
 #include "renderer.h"
-#include "team.h"
-#include "taskmanager.h"
-#include "gamecursor.h"
 
 #include "sound/soundsystem.h"
 

@@ -1,16 +1,11 @@
-﻿#include "lib/universal_include.h"
-#include "lib/resource.h"
-#include "lib/debug_render.h"
+﻿#include "lib/resource.h"
 #include "lib/shape.h"
-#include "lib/hi_res_time.h"
 
 #include "worldobject/airstrike.h"
 
 #include "app.h"
-#include "explosion.h"
 #include "location.h"
 #include "renderer.h"
-#include "camera.h"
 
 #include "sound/soundsystem.h"
 

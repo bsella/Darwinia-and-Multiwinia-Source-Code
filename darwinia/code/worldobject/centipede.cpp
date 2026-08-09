@@ -3,7 +3,6 @@
 #include "lib/matrix34.h"
 #include "lib/shape.h"
 #include "lib/math_utils.h"
-#include "lib/debug_render.h"
 #include "lib/text_renderer.h"
 #include "lib/profiler.h"
 
@@ -16,7 +15,6 @@
 #include "team.h"
 #include "unit.h"
 #include "main.h"
-#include "particle_system.h"
 #include "renderer.h"
 
 #include "sound/soundsystem.h"

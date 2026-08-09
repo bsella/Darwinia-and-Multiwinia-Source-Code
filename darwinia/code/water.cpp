@@ -18,15 +18,12 @@
 #include "lib/ogl_extensions.h"
 #include "lib/profiler.h"
 #include "lib/preferences.h"
-#include "lib/render_utils.h"
 #include "lib/resource.h"
 
 #include "app.h"
-#include "camera.h"
 #include "main.h"
 #include "renderer.h"
 #include "water.h"
-#include "water_reflection.h"
 #include "location.h"
 #include "level_file.h"
 

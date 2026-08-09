@@ -1,11 +1,6 @@
 #include "lib/universal_include.h"
 #include "lib/math_utils.h"
-#include "lib/matrix34.h"
 #include "lib/vector3.h"
-#include "lib/debug_render.h"
-
-#include "app.h" // DELETEME
-#include "camera.h" // DELETEME
 
 #include "3d_sierpinski_gasket.h"
 

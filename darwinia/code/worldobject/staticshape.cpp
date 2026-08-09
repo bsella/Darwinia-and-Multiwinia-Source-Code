@@ -5,7 +5,6 @@
 #include "lib/text_stream_readers.h"
 #include "lib/shape.h"
 #include "lib/debug_render.h"
-#include "lib/language_table.h"
 
 #include "worldobject/staticshape.h"
 

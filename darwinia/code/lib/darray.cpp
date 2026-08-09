@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-// By Christopher Delay
+﻿// By Christopher Delay
 
 #include <stdlib.h>
 

@@ -1,7 +1,5 @@
 #include "lib/universal_include.h"
-#include "lib/debug_render.h"
 #include "lib/math_utils.h"
-#include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/text_renderer.h"
@@ -9,17 +7,14 @@
 #include "lib/preferences.h"
 
 #include "worldobject/constructionyard.h"
-#include "worldobject/researchitem.h"
 #include "worldobject/armour.h"
 
 #include "app.h"
 #include "main.h"
 #include "global_world.h"
-#include "particle_system.h"
 #include "location.h"
 #include "camera.h"
 #include "renderer.h"
-#include "explosion.h"
 #include "team.h"
 
 

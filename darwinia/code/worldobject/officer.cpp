@@ -2,14 +2,8 @@
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/math_utils.h"
-#include "lib/debug_render.h"
 #include "lib/hi_res_time.h"
 #include "lib/text_renderer.h"
-#include "lib/preferences.h"
-#include "lib/profiler.h"
-
-#include "lib/input/input.h"
-#include "lib/input/input_types.h"
 
 #include "worldobject/officer.h"
 #include "worldobject/teleport.h"
@@ -19,7 +13,6 @@
 #include "team.h"
 #include "renderer.h"
 #include "main.h"
-#include "taskmanager.h"
 #include "camera.h"
 #include "particle_system.h"
 #include "explosion.h"

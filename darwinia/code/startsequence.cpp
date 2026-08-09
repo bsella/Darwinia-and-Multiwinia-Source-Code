@@ -5,13 +5,10 @@
 #endif
 #include "lib/profiler.h"
 #include "lib/text_renderer.h"
-#include "lib/window_manager.h"
 #include "lib/hi_res_time.h"
 #include "lib/language_table.h"
 
 #include <eclipse.h>
-
-#include "interface/mainmenus.h"
 
 #include "startsequence.h"
 #include "app.h"

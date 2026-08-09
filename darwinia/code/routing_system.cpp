@@ -11,7 +11,7 @@
 #include "routing_system.h"
 #include "location.h"
 
-#include "worldobject/radardish.h"
+#include "worldobject/teleport.h"
 
 
 // ****************************************************************************

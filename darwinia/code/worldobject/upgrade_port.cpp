@@ -1,7 +1,4 @@
-#include "lib/universal_include.h"
 #include "lib/resource.h"
-
-#include "lib/debug_utils.h"
 
 #include "worldobject/upgrade_port.h"
 

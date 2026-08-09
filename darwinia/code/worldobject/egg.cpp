@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-#include "lib/debug_render.h"
 #include "lib/math_utils.h"
 #include "lib/resource.h"
 
@@ -10,7 +8,6 @@
 #include "app.h"
 #include "camera.h"
 #include "location.h"
-#include "main.h"
 #include "team.h"
 
 

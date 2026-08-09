@@ -1,15 +1,10 @@
-﻿#include "lib/universal_include.h"
-#include "lib/debug_render.h"
-#include "lib/language_table.h"
+﻿#include "lib/language_table.h"
 #include "lib/math_utils.h"
 #include "lib/resource.h"
 #include "lib/text_renderer.h"
-#include "lib/hi_res_time.h"
 #include "lib/preferences.h"
 #include "lib/input/input.h"
 #include "lib/input/input_types.h"
-#include "lib/binary_stream_readers.h"
-#include "lib/bitmap.h"
 
 #include "control_help.h"
 #include "gamecursor.h"
@@ -29,7 +24,6 @@
 
 #include "interface/prefs_other_window.h"
 
-#include "worldobject/radardish.h"
 #include "worldobject/insertion_squad.h"
 
 #include <vector>

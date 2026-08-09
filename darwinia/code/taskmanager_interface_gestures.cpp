@@ -10,10 +10,8 @@
 #include "lib/profiler.h"
 #include "lib/hi_res_time.h"
 #include "lib/language_table.h"
-#include "lib/debug_render.h"
 #include "lib/ogl_extensions.h"
 #include "lib/binary_stream_readers.h"
-#include "lib/preferences.h"
 
 #include "network/clienttoserver.h"
 
@@ -31,7 +29,6 @@
 #include "sepulveda.h"
 #include "level_file.h"
 #include "main.h"
-#include "routing_system.h"
 #include "entity_grid.h"
 #include "particle_system.h"
 #include "helpsystem.h"
@@ -42,10 +39,6 @@
 #include "sound/soundsystem.h"
 
 #include "worldobject/insertion_squad.h"
-#include "worldobject/officer.h"
-#include "worldobject/darwinian.h"
-#include "worldobject/researchitem.h"
-#include "worldobject/trunkport.h"
 #include "worldobject/engineer.h"
 
 

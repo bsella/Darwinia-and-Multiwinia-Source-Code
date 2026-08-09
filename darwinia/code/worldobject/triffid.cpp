@@ -6,7 +6,6 @@
 #include "lib/hi_res_time.h"
 #include "lib/math_utils.h"
 #include "lib/text_stream_readers.h"
-#include "lib/debug_render.h"
 #include "lib/text_renderer.h"
 #include "lib/profiler.h"
 #include "lib/language_table.h"

@@ -5,8 +5,8 @@
 template <class T>
 LListItem<T>::LListItem()
 {
-    m_next = NULL;
-    m_previous = NULL;
+    m_next = nullptr;
+    m_previous = nullptr;
 }
 
 
@@ -23,10 +23,10 @@ LListItem<T>::~LListItem()
 template <class T>
 LList<T>::LList()
 {
-    m_first = NULL;
-    m_last = NULL;
+    m_first = nullptr;
+    m_last = nullptr;
     m_numItems = 0;
-    m_previous = NULL;
+    m_previous = nullptr;
     m_previousIndex = -1;
 }
 
@@ -39,8 +39,8 @@ LList<T>::~LList()
 
 template <class T>
 LList<T>::LList( const LList<T> &source )
-	: m_first(NULL), m_last(NULL),
-	  m_previous(NULL), m_previousIndex(-1),
+	: m_first(nullptr), m_last(nullptr),
+	  m_previous(nullptr), m_previousIndex(-1),
 	  m_numItems(0)
 {
 	// Deep copy: copy the links, and the items.
@@ -76,14 +76,14 @@ void LList<T>::PutDataAtEnd( const T &newdata )
     // Create the new data entry
     LListItem <T> *li = new LListItem <T> ();
     li->m_data = newdata;
-    li->m_next = NULL;
+    li->m_next = nullptr;
     ++m_numItems;
 
-    if ( m_last == NULL )
+    if ( m_last == nullptr )
 	{
         // No items added yet - this is the only one
 
-        li->m_previous = NULL;
+        li->m_previous = nullptr;
         m_first = li;
         m_last = li;
     }
@@ -96,7 +96,7 @@ void LList<T>::PutDataAtEnd( const T &newdata )
     }
 
     m_previousIndex = -1;
-    m_previous = NULL;
+    m_previous = nullptr;
 }
 
 
@@ -106,14 +106,14 @@ void LList<T>::PutDataAtStart( const T &newdata )
     // Create the new data entry
     LListItem <T> *li = new LListItem <T> ();
     li->m_data = newdata;
-    li->m_previous = NULL;
+    li->m_previous = nullptr;
     ++m_numItems;
 
-    if ( m_last == NULL )
+    if ( m_last == nullptr )
 	{
         // No items added yet - this is the only one
 
-        li->m_next = NULL;
+        li->m_next = nullptr;
         m_first = li;
         m_last = li;
     }
@@ -126,7 +126,7 @@ void LList<T>::PutDataAtStart( const T &newdata )
     }
 
     m_previousIndex = -1;
-    m_previous = NULL;
+    m_previous = nullptr;
 }
 
 
@@ -163,7 +163,7 @@ void LList<T>::PutDataAtIndex( const T &newdata, int index )
         current->m_next = li;
         ++m_numItems;
         m_previousIndex = -1;
-        m_previous = NULL;
+        m_previous = nullptr;
     }
 }
 
@@ -188,7 +188,7 @@ T LList<T>::GetData( int index ) const
         m_previous = m_previous->m_next;
         m_previousIndex++;
 
-        if ( m_previous == NULL ) return (T) 0;
+        if ( m_previous == nullptr ) return (T) 0;
         else return m_previous->m_data;
     }
     else if ( m_previous && m_previousIndex != -1 && index == m_previousIndex )
@@ -205,7 +205,7 @@ T LList<T>::GetData( int index ) const
 
         for ( int i = 0; i < index; ++i )
 		{
-            if ( current == NULL )
+            if ( current == nullptr )
                 return (T) 0;
 
             current = current->m_next;
@@ -213,7 +213,7 @@ T LList<T>::GetData( int index ) const
 
         m_previous = current;
 
-        if ( current == NULL )
+        if ( current == nullptr )
 		{
             m_previousIndex = -1;
             return (T) 0;
@@ -230,7 +230,7 @@ T LList<T>::GetData( int index ) const
 template <class T>
 T *LList<T>::GetPointer( int index )
 {
-    if( !ValidIndex(index) ) return NULL;
+    if( !ValidIndex(index) ) return nullptr;
 
     if ( m_previous && m_previousIndex != -1 && index == m_previousIndex + 1 )
 	{
@@ -240,7 +240,7 @@ T *LList<T>::GetPointer( int index )
         m_previous = m_previous->m_next;
         m_previousIndex++;
 
-        if ( m_previous == NULL ) return NULL;
+        if ( m_previous == nullptr ) return nullptr;
         else return &(m_previous->m_data);
     }
     else if ( m_previous && m_previousIndex != -1 && index == m_previousIndex )
@@ -258,17 +258,17 @@ T *LList<T>::GetPointer( int index )
 
         for ( int i = 0; i < index; ++i )
         {
-            if ( current == NULL ) return NULL;
+            if ( current == nullptr ) return nullptr;
 
             current = current->m_next;
         }
 
         m_previous = current;
 
-        if ( current == NULL )
+        if ( current == nullptr )
 		{
             m_previousIndex = -1;
-            return NULL;
+            return nullptr;
         }
         else
 		{
@@ -312,10 +312,10 @@ void LList<T>::Empty()
         current = m_next;
     }
 
-    m_first = NULL;
-    m_last = NULL;
+    m_first = nullptr;
+    m_last = nullptr;
     m_numItems = 0;
-    m_previous = NULL;
+    m_previous = nullptr;
     m_previousIndex = -1;
 }
 
@@ -350,21 +350,21 @@ void LList<T>::RemoveData( int index )
 
     for ( int i = 0; i < index; ++i )
 	{
-        if ( current == NULL ) return;
+        if ( current == nullptr ) return;
 
         current = current->m_next;
     }
 
-    if ( current == NULL )				return;
-    if ( current->m_previous == NULL )	m_first = current->m_next;
-    if ( current->m_next == NULL )      m_last = current->m_previous;
+    if ( current == nullptr )				return;
+    if ( current->m_previous == nullptr )	m_first = current->m_next;
+    if ( current->m_next == nullptr )      m_last = current->m_previous;
     if ( current->m_previous )			current->m_previous->m_next = current->m_next;
     if ( current->m_next )				current->m_next->m_previous = current->m_previous;
 
     delete current;
 
     m_previousIndex = -1;
-    m_previous = NULL;
+    m_previous = nullptr;
 
     --m_numItems;
 }

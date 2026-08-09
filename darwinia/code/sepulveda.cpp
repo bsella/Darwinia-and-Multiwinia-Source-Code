@@ -9,14 +9,11 @@
 #include "lib/targetcursor.h"
 #include "lib/language_table.h"
 #include "lib/llist.h"
-#include "lib/mouse_cursor.h"
 #include "lib/preferences.h"
 #include "lib/resource.h"
 #include "lib/text_renderer.h"
-#include "lib/debug_render.h"
 #include "lib/profiler.h"
 #include "lib/math_utils.h"
-#include "lib/shape.h"
 #include "lib/string_utils.h"
 
 #include "app.h"
@@ -27,11 +24,8 @@
 #include "main.h"
 #include "renderer.h"
 #include "sepulveda.h"
-#include "taskmanager.h"
 #include "taskmanager_interface.h"
-#include "tutorial.h"
 #include "script.h"
-#include "control_help.h"
 
 #include "sound/soundsystem.h"
 

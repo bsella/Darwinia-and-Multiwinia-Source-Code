@@ -2,7 +2,6 @@
 
 #include <math.h>
 
-#include "lib/debug_render.h"
 #include "lib/math_utils.h"
 #include "lib/ogl_extensions.h"
 #include "lib/profiler.h"
@@ -13,7 +12,6 @@
 
 #include "app.h"
 #include "camera.h"
-#include "globals.h"
 #include "location.h"
 #include "main.h"
 #include "renderer.h"

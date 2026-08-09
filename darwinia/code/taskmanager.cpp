@@ -3,22 +3,10 @@
 #include "lib/math_utils.h"
 #include "lib/vector2.h"
 #include "lib/debug_utils.h"
-#include "lib/resource.h"
-#include "lib/bitmap.h"
-#include "lib/profiler.h"
-#include "lib/hi_res_time.h"
-#include "lib/language_table.h"
-#include "lib/debug_render.h"
-#include "lib/ogl_extensions.h"
-#include "lib/binary_stream_readers.h"
 #include "lib/preferences.h"
-#include "lib/targetcursor.h"
-
-#include "network/clienttoserver.h"
 
 #include "app.h"
 #include "gamecursor.h"
-#include "gesture.h"
 #include "global_world.h"
 #include "location.h"
 #include "renderer.h"
@@ -28,13 +16,11 @@
 #include "unit.h"
 #include "sepulveda.h"
 #include "level_file.h"
-#include "main.h"
 #include "routing_system.h"
 #include "entity_grid.h"
 #include "particle_system.h"
 #include "helpsystem.h"
 #include "camera.h"
-#include "script.h"
 #include "location_input.h"
 
 #include "sound/soundsystem.h"
@@ -44,10 +30,7 @@
 #include "worldobject/insertion_squad.h"
 #include "worldobject/officer.h"
 #include "worldobject/darwinian.h"
-#include "worldobject/researchitem.h"
 #include "worldobject/trunkport.h"
-#include "worldobject/engineer.h"
-
 
 Task::Task()
 :   m_type(GlobalResearch::TypeSquad),

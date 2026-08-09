@@ -1,6 +1,3 @@
-#include "lib/universal_include.h"
-
-
 #include "lib/fast_darray.h"
 #include "lib/math_utils.h"
 #include "lib/profiler.h"

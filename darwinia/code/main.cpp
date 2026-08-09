@@ -2,8 +2,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <exception>
-#include <memory>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -13,7 +11,6 @@
 #include <shellapi.h>
 #endif
 
-#include "lib/avi_generator.h"
 #include "lib/debug_utils.h"
 #include "lib/hi_res_time.h"
 #include "lib/input/input.h"
@@ -27,7 +24,6 @@
 #include "lib/vector3.h"
 #include "lib/window_manager.h"
 #include "lib/window_manager_sdl.h"
-#include "lib/avi_generator.h"
 #include "lib/resource.h"
 #include "lib/text_stream_readers.h"
 #include "lib/language_table.h"
@@ -46,8 +42,6 @@
 #include "lib/input/inputdriver_invert.h"
 #include "lib/input/inputdriver_idle.h"
 #include "lib/input/inputdriver_value.h"
-
-#include "interface/prefs_other_window.h"
 
 #include "sound/sound_library_2d.h"
 #include "sound/sound_library_3d_software.h"

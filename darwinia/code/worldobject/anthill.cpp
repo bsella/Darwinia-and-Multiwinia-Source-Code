@@ -1,10 +1,6 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/debug_render.h"
-#include "lib/file_writer.h"
+﻿#include "lib/file_writer.h"
 #include "lib/hi_res_time.h"
 #include "lib/math_utils.h"
-#include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/text_stream_readers.h"
 #include "lib/text_renderer.h"

@@ -6,7 +6,6 @@
 #include "lib/matrix34.h"
 #include "lib/shape.h"
 #include "lib/math_utils.h"
-#include "lib/debug_render.h"
 #include "lib/text_renderer.h"
 
 #include "worldobject/sporegenerator.h"

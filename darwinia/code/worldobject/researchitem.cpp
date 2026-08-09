@@ -19,7 +19,6 @@
 #include "renderer.h"
 #include "globals.h"
 #include "location.h"
-#include "taskmanager.h"
 #include "taskmanager_interface.h"
 
 #include "sound/soundsystem.h"

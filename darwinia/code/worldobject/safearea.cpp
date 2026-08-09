@@ -14,8 +14,6 @@
 #include "location.h"
 #include "team.h"
 #include "entity_grid.h"
-#include "main.h"
-#include "particle_system.h"
 #include "global_world.h"
 
 

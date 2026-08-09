@@ -4,7 +4,6 @@
 
 #include "lib/math_utils.h"
 #include "lib/debug_utils.h"
-#include "lib/debug_render.h"
 
 #include "app.h"
 #include "camera.h"

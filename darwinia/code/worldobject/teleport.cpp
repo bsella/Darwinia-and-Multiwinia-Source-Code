@@ -5,7 +5,6 @@
 #include "lib/debug_utils.h"
 #include "lib/shape.h"
 #include "lib/math_utils.h"
-#include "lib/debug_render.h"
 
 #include "app.h"
 #include "camera.h"
@@ -18,7 +17,6 @@
 #include "taskmanager.h"
 #include "global_world.h"
 #include "routing_system.h"
-#include "particle_system.h"
 
 #include "worldobject/teleport.h"
 #include "worldobject/insertion_squad.h"

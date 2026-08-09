@@ -14,10 +14,8 @@
 #include "sound/soundsystem.h"
 
 #include "app.h"
-#include "team.h"
 #include "location.h"
 #include "global_world.h"
-#include "particle_system.h"
 #include "main.h"
 #include "renderer.h"
 

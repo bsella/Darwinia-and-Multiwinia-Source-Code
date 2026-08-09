@@ -13,14 +13,11 @@
 #include "lib/math_utils.h"
 #include "lib/matrix33.h"
 #include "lib/profiler.h"
-#include "lib/debug_render.h"
 
 #include "lib/preferences.h"
 #include "interface/prefs_other_window.h"
 
 #include "eclipse.h"
-
-#include "network/clienttoserver.h"
 
 #include "app.h"
 #include "camera.h"
@@ -37,10 +34,9 @@
 #include "helpsystem.h"
 #include "script.h"
 #include "sepulveda.h"
-#include "gamecursor.h"
 #include "control_help.h"
 
-#include "loaders/credits_loader.h"
+#include "loaders/loader.h"
 
 #include "worldobject/teleport.h"
 #include "worldobject/insertion_squad.h"

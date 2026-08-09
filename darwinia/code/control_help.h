@@ -2,11 +2,6 @@
 #ifndef _included_controlhelp_h
 #define _included_controlhelp_h
 
-#include "lib/llist.h"
-#include "lib/darray.h"
-#include "lib/bounded_array.h"
-#include "worldobject/worldobject.h"
-
 class HelpIcon;
 class HelpIconSet;
 
@@ -75,7 +70,7 @@ private:
 	HelpIcon *m_icons[MaxIcons];
 	HelpIconSet *m_sets[MaxSets];
 
-	typedef struct TextIndicator {
+	struct TextIndicator {
 		TextIndicator()
 			: m_icon( 0 ),
 			  m_text( 0 ),

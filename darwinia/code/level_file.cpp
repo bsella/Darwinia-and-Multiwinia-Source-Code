@@ -2,15 +2,12 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <ctype.h>
 
 #include "lib/debug_utils.h"
 #include "lib/filesys_utils.h"
 #include "lib/file_writer.h"
 #include "lib/resource.h"
 #include "lib/text_stream_readers.h"
-#include "lib/preferences.h"
-#include "interface/prefs_other_window.h"
 
 #include "worldobject/researchitem.h"
 #include "worldobject/darwinian.h"

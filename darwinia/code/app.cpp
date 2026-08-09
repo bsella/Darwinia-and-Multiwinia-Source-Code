@@ -13,10 +13,7 @@
 #ifdef TARGET_OS_VISTA
 #include "lib/poster_maker.h"
 #endif
-#include "lib/avi_generator.h"
-#include "lib/hi_res_time.h"
 #include "lib/language_table.h"
-#include "lib/mouse_cursor.h"
 #include "lib/preferences.h"
 #include "lib/profiler.h"
 #include "lib/resource.h"
@@ -24,7 +21,6 @@
 #include "lib/text_renderer.h"
 #include "lib/filesys_utils.h"
 #include "lib/bitmap.h"
-#include "lib/file_writer.h"
 #include "interface/prefs_other_window.h"
 
 #include "sound/sound_stream_decoder.h"
@@ -32,15 +28,12 @@
 
 #include "app.h"
 #include "camera.h"
-#include "effect_processor.h"
 #include "gesture.h"
 #include "global_world.h"
 #include "helpsystem.h"
 #include "tutorial.h"
-#include "keygen.h"
 #include "location.h"
 #include "location_input.h"
-#include "main.h"
 #include "particle_system.h"
 #include "renderer.h"
 #include "script.h"
@@ -51,8 +44,6 @@
 #include "taskmanager_interface_icons.h"
 #include "gamecursor.h"
 #include "level_file.h"
-#include "demoendsequence.h"
-#include "attract.h"
 #include "control_help.h"
 #include "game_menu.h"
 

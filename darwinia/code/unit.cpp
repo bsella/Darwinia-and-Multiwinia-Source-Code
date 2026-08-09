@@ -3,11 +3,7 @@
 #include <math.h>
 
 #include "lib/debug_utils.h"
-#include "lib/resource.h"
 #include "lib/math_utils.h"
-#include "lib/shape.h"
-#include "lib/debug_render.h"
-#include "lib/hi_res_time.h"
 #include "lib/profiler.h"
 
 #include "app.h"

@@ -17,8 +17,6 @@
 #include "app.h"
 #include "sepulveda.h"
 
-#include "lib/hi_res_time.h"
-
 #ifdef TARGET_MSVC
 	#define snprintf _snprintf
 #endif

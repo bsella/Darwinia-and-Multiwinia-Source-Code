@@ -1,6 +1,5 @@
 ﻿#include "lib/universal_include.h"
 
-#include "lib/debug_render.h"
 #include "lib/math_utils.h"
 #include "lib/profiler.h"
 #include "lib/resource.h"

@@ -12,6 +12,8 @@
 #include "lib/rgb_colour.h"
 #include "worldobject/worldobject.h"
 
+#include "lib/llist.h"
+
 class MouseCursor;
 class MouseCursorMarker;
 

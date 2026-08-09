@@ -5,7 +5,6 @@
 #include "lib/input/input.h"
 
 #include "lib/3d_sprite.h"
-#include "lib/avi_generator.h"
 #include "lib/bitmap.h"
 #include "lib/debug_utils.h"
 #include "lib/hi_res_time.h"
@@ -14,7 +13,6 @@
 #endif
 #include "lib/poster_maker.h"
 #include "lib/math_utils.h"
-#include "lib/mouse_cursor.h"
 #include "lib/ogl_extensions.h"
 #include "lib/persisting_debug_render.h"
 #include "lib/preferences.h"
@@ -23,13 +21,10 @@
 #include "lib/text_renderer.h"
 #include "lib/window_manager.h"
 #include "lib/language_table.h"
-#include "lib/user_info.h"
 #include "lib/resource.h"
-#include "lib/debug_render.h"
 
 #include "app.h"
 #include "camera.h"
-#include "deform.h"
 #include "explosion.h"
 #include "global_world.h"
 #include "helpsystem.h"
@@ -40,13 +35,10 @@
 #include "particle_system.h"
 #include "renderer.h"
 #include "sepulveda.h"
-#include "taskmanager.h"
 #include "taskmanager_interface.h"
 #include "team.h"
 #include "unit.h"
 #include "user_input.h"
-#include "water.h"
-#include "water_reflection.h"
 #include "gamecursor.h"
 #include "startsequence.h"
 #include "demoendsequence.h"
@@ -57,14 +49,7 @@
 
 #include "eclipse.h"
 
-#include "network/clienttoserver.h"
-
 #include "interface/message_dialog.h"
-
-#include "worldobject/insertion_squad.h"
-#include "worldobject/virii.h"
-#include "worldobject/engineer.h"
-
 
 #ifdef USE_DIRECT3D
     #define USE_PIXEL_EFFECT_GRID_OPTIMISATION	1

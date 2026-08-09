@@ -4,13 +4,9 @@
 
 #include <eclipse.h>
 
-#include "lib/hi_res_time.h"
-#include "lib/matrix34.h"
-#include "lib/shape.h"
 #include "lib/text_renderer.h"
 #include "lib/targetcursor.h"
 #include "lib/input/input.h"
-#include "lib/input/input_types.h"
 
 #include "network/clienttoserver.h"
 
@@ -18,7 +14,6 @@
 
 #include "worldobject/building.h"
 #include "worldobject/switch.h"
-#include "worldobject/engineer.h"
 #include "worldobject/radardish.h"
 #include "worldobject/officer.h"
 #include "worldobject/insertion_squad.h"
@@ -29,7 +24,6 @@
 #include "global_world.h"
 #include "location.h"
 #include "location_input.h"
-#include "main.h"
 #include "unit.h"
 #include "user_input.h"
 #include "taskmanager.h"

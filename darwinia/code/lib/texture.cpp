@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #ifdef USE_DIRECT3D
 
 #include "lib/texture.h"

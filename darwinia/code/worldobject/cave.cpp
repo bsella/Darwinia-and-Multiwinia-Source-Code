@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/math_utils.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
@@ -11,7 +9,6 @@
 #include "location.h"
 #include "renderer.h"
 #include "team.h"
-#include "unit.h"
 
 #include "worldobject/cave.h"
 

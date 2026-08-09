@@ -1,4 +1,3 @@
-#include "lib/universal_include.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/debug_utils.h"

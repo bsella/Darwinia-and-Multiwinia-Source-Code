@@ -5,7 +5,6 @@
 
 #include "worldobject/goddish.h"
 #include "worldobject/spam.h"
-#include "worldobject/researchitem.h"
 #include "worldobject/darwinian.h"
 
 #include "app.h"

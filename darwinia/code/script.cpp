@@ -21,17 +21,14 @@
 #include "renderer.h"
 #include "script.h"
 #include "sepulveda.h"
-#include "testharness.h"
-#include "taskmanager.h"
 #include "taskmanager_interface.h"
 #include "demoendsequence.h"
 #include "tutorial.h"
 
-#include "loaders/credits_loader.h"
+#include "loaders/loader.h"
 
 #include "sound/soundsystem.h"
 
-#include "worldobject/constructionyard.h"
 #include "worldobject/goddish.h"
 #include "worldobject/rocket.h"
 

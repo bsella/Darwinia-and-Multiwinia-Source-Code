@@ -1,12 +1,8 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/file_writer.h"
+﻿#include "lib/file_writer.h"
 #include "lib/math_utils.h"
-#include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/text_renderer.h"
-#include "lib/debug_render.h"
 
 #include "app.h"
 #include "globals.h"

@@ -5,7 +5,6 @@
 #include "lib/resource.h"
 #include "lib/profiler.h"
 #include "lib/hi_res_time.h"
-#include "lib/debug_render.h"
 #include "lib/binary_stream_readers.h"
 
 #include <eclipse.h>
@@ -26,7 +25,6 @@
 #include "entity_grid.h"
 #include "sepulveda.h"
 
-#include "worldobject/armour.h"
 #include "worldobject/radardish.h"
 #include "worldobject/insertion_squad.h"
 

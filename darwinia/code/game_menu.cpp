@@ -1,27 +1,14 @@
 ﻿#include "lib/universal_include.h"
 
-#include "lib/hi_res_time.h"
-#include "lib/input/input.h"
-#include "lib/input/keydefs.h"
-#include "lib/language_table.h"
-#include "lib/preferences.h"
-#include "lib/resource.h"
-#include "lib/targetcursor.h"
 #include "lib/text_renderer.h"
-#include "lib/text_stream_readers.h"
-
-#include "interface/drop_down_menu.h"
-#include "interface/input_field.h"
 
 #include "game_menu.h"
 
 #include "app.h"
 #include "camera.h"
-#include "demoendsequence.h"
 #include "global_world.h"
 #include "global_internet.h"
 #include "renderer.h"
-#include "tutorial.h"
 
 // *************************
 // Button Classes

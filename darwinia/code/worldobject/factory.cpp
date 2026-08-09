@@ -1,16 +1,12 @@
-#include "lib/universal_include.h"
-
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
 #include "lib/text_stream_readers.h"
 #include "lib/math_utils.h"
-#include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 
 #include "app.h"
 #include "globals.h"
-#include "main.h"
 #include "location.h"
 #include "renderer.h"
 #include "sound/soundsystem.h"
@@ -18,8 +14,6 @@
 #include "unit.h"
 
 #include "worldobject/factory.h"
-#include "worldobject/insertion_squad.h"
-
 
 Factory::Factory()
 :   Building(),

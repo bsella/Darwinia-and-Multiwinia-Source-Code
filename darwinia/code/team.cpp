@@ -2,19 +2,14 @@
 
 #include <math.h>
 
-#include "lib/hi_res_time.h"
 #include "lib/math_utils.h"
 #include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/debug_utils.h"
 #include "lib/text_renderer.h"
-#include "lib/shape.h"
 #include "lib/preferences.h"
-#include "lib/debug_render.h"
 #include "lib/bitmap.h"
 #include "lib/binary_stream_readers.h"
-
-#include "network/clienttoserver.h"
 
 #include "sound/soundsystem.h"
 
@@ -32,7 +27,6 @@
 #include "taskmanager.h"
 #include "control_help.h"
 
-#include "worldobject/engineer.h"
 #include "worldobject/entity.h"
 #include "worldobject/insertion_squad.h"
 #include "worldobject/virii.h"

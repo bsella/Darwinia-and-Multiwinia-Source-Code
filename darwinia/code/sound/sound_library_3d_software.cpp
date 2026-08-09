@@ -9,9 +9,6 @@
 #include "sound/sound_library_3d_software.h"
 #include "sound/sound_library_2d.h"
 
-#include "app.h"
-
-
 
 //*****************************************************************************
 // Class SoundLibFilterSoftware

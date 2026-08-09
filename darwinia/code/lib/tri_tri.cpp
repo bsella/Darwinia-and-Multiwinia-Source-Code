@@ -24,7 +24,6 @@
  * isectpt1, isectpt2 are the endpoints of the line of intersection
  */
 
-#include "lib/universal_include.h"
 #include <math.h>
 
 #include "lib/vector3.h"

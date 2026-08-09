@@ -8,11 +8,7 @@
 #include "lib/shape.h"
 #include "lib/debug_utils.h"
 #include "lib/text_renderer.h"
-#include "lib/debug_render.h"
 #include "lib/language_table.h"
-
-#include "lib/input/input.h"
-#include "lib/input/input_types.h"
 
 #include "app.h"
 #include "explosion.h"

@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/hi_res_time.h"
+﻿#include "lib/hi_res_time.h"
 #include "lib/text_renderer.h"
 #include "lib/input/input.h"
 #include "lib/language_table.h"
@@ -10,18 +9,9 @@
 #include "app.h"
 #include "script.h"
 #include "renderer.h"
-#include "level_file.h"
 #include "location.h"
 #include "camera.h"
-#include "taskmanager.h"
-#include "global_world.h"
 #include "team.h"
-#include "unit.h"
-#include "entity_grid.h"
-
-#include "worldobject/controltower.h"
-#include "worldobject/officer.h"
-
 
 Tutorial::Tutorial()
 :   m_chapter(0),

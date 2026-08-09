@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
 #include "lib/math_utils.h"
@@ -12,7 +10,6 @@
 #include "location.h"
 #include "renderer.h"
 #include "team.h"
-#include "main.h"
 
 #include "worldobject/bridge.h"
 

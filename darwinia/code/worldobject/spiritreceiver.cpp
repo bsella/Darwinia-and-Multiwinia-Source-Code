@@ -3,28 +3,21 @@
 #include "lib/file_writer.h"
 #include "lib/hi_res_time.h"
 #include "lib/math_utils.h"
-#include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/text_renderer.h"
 #include "lib/text_stream_readers.h"
-#include "lib/debug_render.h"
 #include "lib/preferences.h"
 #include "lib/language_table.h"
 
 #include "worldobject/spiritreceiver.h"
-#include "worldobject/darwinian.h"
 
 #include "app.h"
 #include "location.h"
 #include "camera.h"
 #include "global_world.h"
-#include "particle_system.h"
-#include "main.h"
-#include "team.h"
 #include "renderer.h"
 #include "entity_grid.h"
-#include "water_reflection.h"
 
 #include "sound/soundsystem.h"
 
