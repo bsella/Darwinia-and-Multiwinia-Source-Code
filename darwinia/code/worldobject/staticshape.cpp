@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/file_writer.h"
 #include "lib/resource.h"
 #include "lib/text_stream_readers.h"
@@ -35,7 +33,7 @@ void StaticShape::Initialise( Building *_template )
 }
 
 
-void StaticShape::SetDetail( int _detail )
+void StaticShape::SetDetail( int )
 {
     m_pos.y = g_app->m_location->m_landscape.m_heightMap->GetValue(m_pos.x, m_pos.z);
 
@@ -72,7 +70,7 @@ void StaticShape::SetShapeName( char *_shapeName )
 
 
 bool StaticShape::DoesRayHit(Vector3 const &_rayStart, Vector3 const &_rayDir,
-                          float _rayLen, Vector3 *_pos, Vector3 *norm )
+                          float _rayLen, Vector3 *, Vector3 * )
 {
 	if (m_shape)
 	{

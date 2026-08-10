@@ -66,7 +66,7 @@ public:
 
     void ReprogramComplete();
 
-    char *GetObjectiveCounter();
+    const char *GetObjectiveCounter();
 
 	void ListSoundEvents( LList<const char *> *_list );
 

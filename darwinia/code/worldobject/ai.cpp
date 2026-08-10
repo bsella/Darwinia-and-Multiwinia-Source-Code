@@ -31,7 +31,7 @@ AI::AI()
 }
 
 
-void AI::ChangeHealth( int _amount )
+void AI::ChangeHealth( int )
 {
 }
 
@@ -77,7 +77,7 @@ void AI::Begin()
                 for( int n = 0; n < a->m_neighbours.Size(); ++n )
                 {
                     int cId = a->m_neighbours[n];
-                    AITarget *c = (AITarget *) g_app->m_location->GetBuilding(cId);
+                    [[maybe_unused]]AITarget *c = (AITarget *) g_app->m_location->GetBuilding(cId);
                     DarwiniaDebugAssert( c && c->m_type == Building::TypeAITarget );
                     float distanceAtoC = a->IsNearTo( cId );
 
@@ -193,7 +193,7 @@ int AI::FindNearestTarget( Vector3 const &_fromPos )
 }
 
 
-bool AI::Advance( Unit *_unit )
+bool AI::Advance( Unit * )
 {
     //
     // Try to get Darwinians to stay near AI Targets
@@ -282,7 +282,6 @@ bool AI::Advance( Unit *_unit )
     {
         int buildingIndex = m_wellDefendedIds[i];
         AITarget *target = (AITarget *) g_app->m_location->m_buildings[ buildingIndex ];
-        int numFriends = target->m_friendCount[ m_id.GetTeamId() ];
         int numIdle = target->m_idleCount[ m_id.GetTeamId() ];
 
         int targetBuildingId = FindTargetBuilding( target->m_id.GetUniqueId(), m_id.GetTeamId() );
@@ -326,7 +325,7 @@ bool AI::Advance( Unit *_unit )
 }
 
 
-void AI::Render( float _predictionTime )
+void AI::Render( [[maybe_unused]] float _predictionTime )
 {
     if( g_app->m_editing )
     {
@@ -565,7 +564,7 @@ void AITarget::Render( float _predictionTime )
 }
 
 
-void AITarget::RenderAlphas( float _predictionTime )
+void AITarget::RenderAlphas( [[maybe_unused]] float _predictionTime )
 {
     //Building::RenderAlphas( _predictionTime );
 
@@ -626,13 +625,13 @@ void AITarget::RenderAlphas( float _predictionTime )
 }
 
 
-bool AITarget::DoesSphereHit(Vector3 const &_pos, float _radius)
+bool AITarget::DoesSphereHit(Vector3 const &, float)
 {
     return false;
 }
 
 
-bool AITarget::DoesShapeHit(Shape *_shape, Matrix34 _transform)
+bool AITarget::DoesShapeHit(Shape *, Matrix34 )
 {
     return false;
 }
@@ -643,14 +642,14 @@ bool AITarget::DoesShapeHit(Shape *_shape, Matrix34 _transform)
 
 AISpawnPoint::AISpawnPoint()
 :   Building(),
+    m_timer(0.0f),
+    m_online(false),
+    m_numSpawned(0.0f),
+    m_populationLock(-1),
     m_entityType( Entity::TypeDarwinian ),
     m_count(20),
     m_period(60),
-    m_timer(0.0f),
-    m_numSpawned(0.0f),
     m_activatorId(-1),
-    m_online(false),
-    m_populationLock(-1),
     m_spawnLimit(-1),
 	m_routeId(-1)
 {
@@ -810,7 +809,7 @@ bool AISpawnPoint::Advance()
 }
 
 
-void AISpawnPoint::RenderAlphas( float _predictionTime )
+void AISpawnPoint::RenderAlphas( [[maybe_unused]]float _predictionTime )
 {
     if( g_app->m_editing )
     {
@@ -867,13 +866,13 @@ void AISpawnPoint::Write( FileWriter *_out )
 }
 
 
-bool AISpawnPoint::DoesSphereHit(Vector3 const &_pos, float _radius)
+bool AISpawnPoint::DoesSphereHit(Vector3 const &, float )
 {
     return false;
 }
 
 
-bool AISpawnPoint::DoesShapeHit(Shape *_shape, Matrix34 _transform)
+bool AISpawnPoint::DoesShapeHit(Shape *, Matrix34 )
 {
     return false;
 }

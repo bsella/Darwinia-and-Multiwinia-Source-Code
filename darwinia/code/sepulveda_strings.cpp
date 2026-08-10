@@ -158,7 +158,7 @@ bool consumeMarker( char const *_baseString, char *_dest, CaptionParserMode &_mo
 }
 
 
-bool consumeIfMarker( char const *_baseString, char *_dest, CaptionParserMode &_mode ) {
+bool consumeIfMarker( char const *_baseString, char *, CaptionParserMode &_mode ) {
 	TRACE_FUNC( "consumeIfMarker", head( _baseString + _mode.inOffset ) << ", ..." );
 
 	bool done = false;

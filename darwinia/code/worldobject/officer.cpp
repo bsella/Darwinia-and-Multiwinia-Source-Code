@@ -27,12 +27,12 @@
 
 Officer::Officer()
 :   Entity(),
-    m_demoted(false),
-    m_ordersBuildingId(-1),
     m_wayPointTeleportId(-1),
     m_shield(0),
+    m_demoted(false),
     m_absorb(false),
-    m_absorbTimer(2.0f)
+    m_absorbTimer(2.0f),
+    m_ordersBuildingId(-1)
 {
     m_type = TypeOfficer;
     m_state = StateIdle;

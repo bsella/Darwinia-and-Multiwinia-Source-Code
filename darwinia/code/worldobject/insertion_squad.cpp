@@ -301,10 +301,7 @@ void InsertionSquad::DirectControl( TeamControls const& _teamControls )
 	}
 	Squadie *pointMan = (Squadie *)point;
 
-	Vector3 right = g_app->m_camera->GetControlVector();
-	Vector3 front = g_upVector ^ -right;
-
-	if( _teamControls.m_directUnitMove )
+    if( _teamControls.m_directUnitMove )
     {
         Vector3 t = pointMan->m_pos;
 
@@ -560,8 +557,6 @@ void Squadie::Render( float _predictionTime )
         predictedPos.y = g_app->m_location->m_landscape.m_heightMap->GetValue( predictedPos.x, predictedPos.z );
     }
 
-    float size = 0.5f;
-
     Vector3 entityUp = g_upVector;          //g_app->m_location->m_landscape.m_normalMap->GetValue( predictedPos.x, predictedPos.z );
     Vector3 entityFront = m_front;
     entityFront.Normalise();
@@ -620,8 +615,6 @@ bool Squadie::RenderPixelEffect( float _predictionTime )
     {
         predictedPos.y = g_app->m_location->m_landscape.m_heightMap->GetValue( predictedPos.x, predictedPos.z );
     }
-
-    float size = 0.5f;
 
     Vector3 entityUp = g_upVector;          //g_app->m_location->m_landscape.m_normalMap->GetValue( predictedPos.x, predictedPos.z );
     Vector3 entityFront = m_front;

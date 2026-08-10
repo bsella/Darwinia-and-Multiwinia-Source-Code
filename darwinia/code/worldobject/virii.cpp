@@ -124,10 +124,10 @@ void ViriiUnit::Render( float _predictionTime )
 
 Virii::Virii()
 :   Entity(),
-    m_retargetTimer(-1),
     m_state(StateIdle),
-    m_spiritId(-1),
     m_hoverHeight(0.1f),
+    m_retargetTimer(-1),
+    m_spiritId(-1),
     m_historyTimer(0.0f),
     m_prevPosTimer(0.0f)
 {
@@ -286,7 +286,6 @@ void Virii::RecordHistoryPosition( bool _required )
 
     float totalDistance = 0.0f;
     int removeFrom = -1;
-    int entityDetail = g_prefsManager->GetInt( "RenderEntityDetail", 1 );
     float tailLength = 175.0f;          // - (entityDetail-1) * 50.0f;
     for( int i = 0; i < m_positionHistory.Size(); ++i )
     {
@@ -823,7 +822,7 @@ void Virii::ListSoundEvents( LList<const char *> *_list )
 }
 
 
-void Virii::Render( float predictionTime, int teamId, int _detail )
+void Virii::Render( float predictionTime, [[maybe_unused]] int teamId, int _detail )
 {
     predictionTime += SERVER_ADVANCE_PERIOD;
 

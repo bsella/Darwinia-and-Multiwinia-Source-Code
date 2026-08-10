@@ -26,15 +26,15 @@
 
 LaserFence::LaserFence()
 :   Building(),
-    m_nextLaserFenceId(-1),
     m_status(0.0f),
-    m_mode(ModeDisabled),
-    m_scale(1.0f),
-    m_marker1(NULL),
-    m_marker2(NULL),
+    m_nextLaserFenceId(-1),
     m_sparkTimer(0.0f),
     m_radiusSet(false),
-	m_nextToggled(false)
+    m_marker1(NULL),
+    m_marker2(NULL),
+	m_nextToggled(false),
+    m_mode(ModeDisabled),
+    m_scale(1.0f)
 {
     m_type = Building::TypeLaserFence;
 
@@ -487,7 +487,7 @@ void LaserFence::SetBuildingLink( int _buildingId )
 }
 
 
-void LaserFence::Electrocute( Vector3 const &_pos )
+void LaserFence::Electrocute( Vector3 const & )
 {
     g_app->m_soundSystem->TriggerBuildingEvent( this, "Electrocute" );
 }

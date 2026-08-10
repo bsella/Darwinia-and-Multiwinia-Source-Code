@@ -23,10 +23,10 @@
 Spirit::Spirit()
 :   WorldObject(),
     m_teamId(255),
-    m_positionOffset(0.0f),
     m_state(StateUnknown),
-    m_eggSearchTimer(0.0f),
     m_numNearbyEggs(0),
+    m_eggSearchTimer(0.0f),
+    m_positionOffset(0.0f),
     m_pushFromBuildings(true)
 {
 }
@@ -120,7 +120,7 @@ bool Spirit::Advance()
         };
     }
 
-    Vector3 oldPos = m_pos;
+    //Vector3 oldPos = m_pos;
 
     if( m_pushFromBuildings &&
         m_state != StateInStore &&

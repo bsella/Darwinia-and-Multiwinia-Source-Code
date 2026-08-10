@@ -5,6 +5,7 @@
 
 #include "app.h"
 #include "location.h"
+#include "unit.h"
 #include "worldobject.h"
 
 #define COEF_OF_RESTITUTION	0.85f
@@ -112,9 +113,9 @@ void WorldObjectId::GenerateUniqueId()
 
 // *** Constructor
 WorldObject::WorldObject()
-:   m_onGround(false),
-    m_enabled(true),
-    m_type(0)
+:   m_type(0),
+    m_onGround(false),
+    m_enabled(true)
 {
 }
 
@@ -145,18 +146,23 @@ void WorldObject::BounceOffLandscape()
 }
 
 
+bool WorldObject::Advance(Unit*)
+{
+    return false;
+}
+
 bool WorldObject::Advance()
 {
     return false;
 }
 
 
-void WorldObject::Render( float _time )
+void WorldObject::Render( float )
 {
 }
 
 
-bool WorldObject::RenderPixelEffect( float predictionTime )
+bool WorldObject::RenderPixelEffect( float )
 {
     return false;
 }

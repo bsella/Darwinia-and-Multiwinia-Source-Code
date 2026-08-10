@@ -21,10 +21,10 @@
 ScriptTrigger::ScriptTrigger()
 :   Building(),
     m_range(100.0f),
-    m_timer(0.0f),
     m_entityType(SCRIPTRIGGER_RUNNEVER),
     m_linkId(-1),
-    m_triggered(0)
+    m_triggered(0),
+    m_timer(0.0f)
 {
     m_type = TypeScriptTrigger;
 
@@ -164,7 +164,7 @@ bool ScriptTrigger::Advance()
 }
 
 
-void ScriptTrigger::RenderAlphas( float predictionTime )
+void ScriptTrigger::RenderAlphas( [[maybe_unused]]float predictionTime )
 {
     if( g_app->m_editing )
     {
@@ -187,13 +187,13 @@ void ScriptTrigger::RenderAlphas( float predictionTime )
 };
 
 
-bool ScriptTrigger::DoesSphereHit(Vector3 const &_pos, float _radius)
+bool ScriptTrigger::DoesSphereHit(Vector3 const &, float )
 {
     return false;
 }
 
 
-bool ScriptTrigger::DoesShapeHit(Shape *_shape, Matrix34 _transform)
+bool ScriptTrigger::DoesShapeHit(Shape *, Matrix34 )
 {
     return false;
 }

@@ -5,7 +5,6 @@
 #include "lib/input/keynames.h"
 #include "lib/language_table.h"
 #include "app.h"
-#include "eclipse.h"
 
 #include <SDL/SDL.h>
 
@@ -88,14 +87,14 @@ int SDLKeyboardInputDriver::HandleSDLEvent(const SDL_Event & event)
 			m_keys[keyCode] = true;
 			m_keyNewDeltas[keyCode] = 1;
 			
-			SDLMod modifiers = event.key.keysym.mod;
+			//SDLMod modifiers = event.key.keysym.mod;
 			if (0 < unicode && unicode <= 255)
 			{
 #ifdef TARGET_OS_MACOSX
 				// Use the Command key, not Control, since that's what Mac users expect
-				int commandKeyMask = KMOD_META;
+				//int commandKeyMask = KMOD_META;
 #else
-				int commandKeyMask = KMOD_CTRL;
+				//int commandKeyMask = KMOD_CTRL;
 #endif
 				//EclUpdateKeyboard(unicode, modifiers & KMOD_SHIFT, modifiers & commandKeyMask,
 				//				  modifiers & KMOD_ALT, unicode);
@@ -217,7 +216,7 @@ bool SDLKeyboardInputDriver::getInputDescription( InputSpec const &spec, InputDe
 	}
 }
 
-inputtype_t SDLKeyboardInputDriver::getControlType( control_id_t control_id )
+inputtype_t SDLKeyboardInputDriver::getControlType( control_id_t )
 {
 	return INPUT_TYPE_BOOL;
 }

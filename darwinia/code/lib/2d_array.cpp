@@ -5,16 +5,16 @@ template <class T>
 Array2D<T>::Array2D()
 :	m_numColumns(0),
 	m_numRows(0),
-	m_data(NULL)
+	m_data(nullptr)
 {
 }
 
 
 template <class T>
 Array2D<T>::Array2D(unsigned short _numColumns, unsigned short _numRows, T _outsideValue)
-:	m_numColumns(_numColumns),
-	m_numRows(_numRows),
-	m_outsideValue(_outsideValue)
+:	m_outsideValue(_outsideValue),
+	m_numColumns(_numColumns),
+	m_numRows(_numRows)
 {
 	m_data = new T[_numColumns * _numRows];
 }

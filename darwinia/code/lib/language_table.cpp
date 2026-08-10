@@ -1,13 +1,11 @@
-﻿#include "lib/universal_include.h"
-
-#include <sstream>
+﻿#include <sstream>
 #include <iostream>
 #include <fstream>
 
 #include "lib/debug_utils.h"
 #include "lib/language_table.h"
+#include "lib/input/input_types.h"
 #include "lib/resource.h"
-#include "lib/text_renderer.h"
 #include "lib/text_stream_readers.h"
 
 #include "app.h"
@@ -142,6 +140,8 @@ bool wrong_suffix( const char * key, InputMode _mood )
 {
 	if ( key ) {
 		switch ( _mood ) {
+			case INPUT_MODE_NONE:
+				break;
 			case INPUT_MODE_KEYBOARD:
 				return is_suffix( key, "_xin" ); break;
 			case INPUT_MODE_GAMEPAD:
@@ -190,7 +190,7 @@ bool buildCaption(char const *_baseString, char *_dest, InputMode _mood); // see
 bool printTable( HashTable<int> const *keys, const char *table, std::ostream &out )
 {
 	if ( keys && table && out.good() ) {
-		for ( int i = 0; i < keys->Size(); ++i ) {
+		for ( unsigned int i = 0; i < keys->Size(); ++i ) {
 			if ( keys->ValidIndex( i ) ) {
 				out << keys->GetName( i ) << '\t'
 				    << ( table + keys->GetData( i ) ) << std::endl;
@@ -290,6 +290,9 @@ HashTable<int> *LangTable::GetCurrentTable( InputMode _mood )
 		RebuildTables();
 
 	switch ( _mood ) {
+		case INPUT_MODE_NONE:
+			break;
+
 		case INPUT_MODE_KEYBOARD:
 			return m_phrasesKbd;
 
@@ -326,6 +329,7 @@ bool LangTable::RawDoesPhraseExist(char const *_key, InputMode _mood)
 			char *key = new char[ len + 5 ];
 			strcpy( key, _key );
 			switch( _mood ) {
+				case INPUT_MODE_NONE: break;
 				case INPUT_MODE_KEYBOARD: strcpy( key + len, "_kbd" ); break;
 				case INPUT_MODE_GAMEPAD: strcpy( key + len, "_xin" ); break;
 			}
@@ -361,7 +365,7 @@ const char *LangTable::LookupPhrase(char const *_key)
         sprintf( m_notFound.m_string, "ERROR (null)" );
 		phrase = m_notFound.m_string;
     }
-    else
+	else
     {
 		int offset = phrases->GetData( _key );
 		if ( offset >= 0 )
@@ -406,6 +410,7 @@ char *LangTable::RawLookupPhrase(char const *_key, InputMode _mood)
 			char *key = new char[ len + 5 ];
 			strcpy( key, _key );
 			switch( _mood ) {
+				case INPUT_MODE_NONE: break;
 				case INPUT_MODE_KEYBOARD: strcpy( key + len, "_kbd" ); break;
 				case INPUT_MODE_GAMEPAD: strcpy( key + len, "_xin" ); break;
 			}

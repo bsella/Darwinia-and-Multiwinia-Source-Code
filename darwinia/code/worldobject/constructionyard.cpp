@@ -22,9 +22,9 @@ ConstructionYard::ConstructionYard()
 :   Building(),
     m_numPrimitives(0),
     m_numSurges(0),
-    m_timer(-1.0f),
-    m_fractionPopulated(0.0f),
     m_numTanksProduced(0),
+    m_fractionPopulated(0.0f),
+    m_timer(-1.0f),
     m_alpha(0.0f)
 {
     m_type = TypeYard;

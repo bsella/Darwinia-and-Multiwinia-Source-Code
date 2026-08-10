@@ -1,7 +1,5 @@
 ﻿#include "lib/universal_include.h"
 
-#include <algorithm>
-
 #include "lib/preferences.h"
 #include "lib/input/inputdriver_prefs.h"
 
@@ -27,7 +25,7 @@ InputParserState PrefsInputDriver::parseInputSpecification( InputSpecTokens cons
 		                                                    InputSpec &spec )
 {
 	InputParserState state = STATE_WANT_DRIVER;
-	int idx = 0;
+	unsigned int idx = 0;
 	if ( ( idx >= tokens.length() ) ||
 	     ( tokens[idx++] != "pref" ) ) return state;
 
@@ -98,7 +96,7 @@ const std::string &PrefsInputDriver::getLastParseError( InputParserState state )
 }
 
 
-bool PrefsInputDriver::getInputDescription( InputSpec const &spec, InputDescription &desc )
+bool PrefsInputDriver::getInputDescription( InputSpec const &spec, InputDescription & )
 {
 	InputDetails details;
 	return getInput( spec, details );

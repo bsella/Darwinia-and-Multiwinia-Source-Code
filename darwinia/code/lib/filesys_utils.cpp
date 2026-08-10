@@ -14,10 +14,10 @@
 #include <string.h>
 #include <stdlib.h>                     // needed for errno definition
 
-#include "lib/debug_utils.h"
 #include "lib/filesys_utils.h"
 #include "lib/string_utils.h"
 
+#include <string>
 
 //*****************************************************************************
 // Misc directory and filename functions
@@ -125,14 +125,15 @@ LList <char *> *ListDirectory( char const *_dir, char const *_filter, bool _full
 		return result;
 	for (struct dirent *entry; (entry = readdir(dir)) != NULL; ) {
 		if (FilterMatch(entry->d_name, _filter)) {
-			char fullname[strlen(_dir) + strlen(entry->d_name) + 2];
-			sprintf(fullname, "%s%s%s",
+			std::string fullname;
+			fullname.resize(strlen(_dir) + strlen(entry->d_name) + 2);
+			sprintf(fullname.data(), "%s%s%s",
 				_dir,
 				_dir[0] ? "/" : "",
 				entry->d_name);
-			if (!IsDirectory(fullname)) {
+			if (!IsDirectory(fullname.c_str())) {
 				result->PutData(
-					NewStr(_fullFilename ? fullname : entry->d_name));
+					NewStr(_fullFilename ? fullname.c_str() : entry->d_name));
 			}
 		}
 	}
@@ -174,13 +175,14 @@ LList <char *> *ListSubDirectoryNames(char const *_dir)
 		if (entry->d_name[0] == '.')
 			continue;
 
-		char fullname[strlen(_dir) + strlen(entry->d_name) + 2];
-		sprintf(fullname, "%s%s%s",
+		std::string fullname;
+		fullname.resize(strlen(_dir) + strlen(entry->d_name) + 2);
+		sprintf(fullname.data(), "%s%s%s",
 			_dir,
 			_dir[0] ? "/" : "",
 			entry->d_name);
 
-		if (IsDirectory(fullname))
+		if (IsDirectory(fullname.c_str()))
 			result->PutData( strdup(entry->d_name) );
 	}
 	closedir(dir);

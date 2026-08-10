@@ -251,7 +251,7 @@ bool AirStrikeMarker::Advance()
 
     if( GetHighResTime() > m_birthTime + 2.0f )
     {
-        if( m_airstrikeUnit.GetTeamId() != -1 &&
+        if( m_airstrikeUnit.GetTeamId() != 255 &&
             m_airstrikeUnit.GetUnitId() != -1 )
         {
             // Air strike unit has been created
@@ -347,8 +347,8 @@ bool ControllerGrenade::Advance()
 // ****************************************************************************
 
 Rocket::Rocket(Vector3 _startPos, Vector3 _targetPos)
-:   m_target(_targetPos),
-    m_fromTeamId(255)
+:   m_fromTeamId(255),
+    m_target(_targetPos)
 {
     m_pos = _startPos + Vector3(0,2,0);
     m_vel = ( _targetPos - m_pos ).Normalise() * 50.0f;
@@ -611,7 +611,7 @@ bool Laser::Advance()
                     {
 						//entity->ChangeHealth(-1);
 					}
-					else
+                    else
 					{
 						float damage = 20.0f + syncfrand(20.0f);
 						entity->ChangeHealth( (int)-damage );
@@ -684,10 +684,10 @@ void Laser::Render( float predictionTime )
 // ****************************************************************************
 
 Shockwave::Shockwave( int _teamId, float _size )
-:   m_teamId(_teamId),
+:   m_shape(NULL),
+    m_teamId(_teamId),
     m_size(_size),
-    m_life(_size),
-    m_shape(NULL)
+    m_life(_size)
 {
 //    m_shape = g_app->m_resource->GetShape( "shockwave.shp" );
     m_type = EffectShockwave;
@@ -1017,7 +1017,6 @@ bool Missile::Advance()
     vel.y += syncsfrand(2.0f);
     vel.z += syncsfrand(2.0f);
     float size = 50.0f + syncfrand(150.0f);
-    float backPos = syncfrand(3.0f);
 
     Matrix34 mat( m_front, m_up, m_pos );
     Vector3 boosterPos = m_booster->GetWorldMatrix(mat).pos;

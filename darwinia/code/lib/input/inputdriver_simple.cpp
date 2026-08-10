@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <string>
+﻿#include <string>
 
 #include "lib/input/inputspec.h"
 #include "lib/input/inputdriver_simple.h"
@@ -91,12 +89,12 @@ condition_t SimpleInputDriver::getConditionID( string const &name, inputtype_t &
 }
 
 
-InputParserState SimpleInputDriver::writeExtraSpecInfo( InputSpec &spec ) {
+InputParserState SimpleInputDriver::writeExtraSpecInfo( InputSpec & ) {
 	return STATE_DONE; // No extra info to write. We're done.
 }
 
-InputParserState SimpleInputDriver::parseExtraToken( std::string const &token,
-                                                     InputSpec &spec ) {
+InputParserState SimpleInputDriver::parseExtraToken( std::string const &,
+                                                     InputSpec &) {
 	return STATE_BAD_EXTRA; // Got into STATE_WANT_MODIFIER with no handler.
 }
 

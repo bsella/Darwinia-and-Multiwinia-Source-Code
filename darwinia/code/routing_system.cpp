@@ -20,8 +20,8 @@
 
 // *** Constructor
 WayPoint::WayPoint(int _type, Vector3 const &_pos)
-:	m_type(_type),
-	m_pos(_pos),
+:	m_pos(_pos),
+	m_type(_type),
 	m_buildingId(-1)
 {
 }
@@ -144,7 +144,7 @@ int	Route::GetIdOfNearestWayPoint(Vector3 const &_pos)
 
 
 // Returns the id of the first waypoint of the nearest edge
-int	Route::GetIdOfNearestEdge(Vector3 const &_pos, float *_dist)
+int	Route::GetIdOfNearestEdge(Vector3 const &_pos, float *)
 {
 	int idOfNearest = 0;
 	float distToNearest = FLT_MAX;

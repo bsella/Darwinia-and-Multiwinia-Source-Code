@@ -225,10 +225,10 @@ void PowerBuilding::SetBuildingLink( int _buildingId )
 
 Generator::Generator()
 :   PowerBuilding(),
-    m_throughput(0.0f),
     m_timerSync(0.0f),
     m_numThisSecond(0),
-    m_enabled(false)
+    m_enabled(false),
+    m_throughput(0.0f)
 {
     m_type = TypeGenerator;
     SetShape( g_app->m_resource->GetShape( "generator.shp" ) );
@@ -247,7 +247,7 @@ void Generator::TriggerSurge( float _initValue )
 }
 
 
-char *Generator::GetObjectiveCounter()
+const char *Generator::GetObjectiveCounter()
 {
     static char result[256];
     sprintf( result, "%s : %d Gq/s", LANGUAGEPHRASE("objective_output"),
@@ -396,7 +396,6 @@ bool PylonStart::Advance()
     bool generatorOnline = false;
 
     int generatorLocationId = g_app->m_globalWorld->GetLocationId("generator");
-    GlobalBuilding *globalRefinery = NULL;
     for( int i = 0; i < g_app->m_globalWorld->m_buildings.Size(); ++i )
     {
         if( g_app->m_globalWorld->m_buildings.ValidIndex(i) )
@@ -476,7 +475,7 @@ PylonEnd::PylonEnd()
 };
 
 
-void PylonEnd::TriggerSurge( float _initValue )
+void PylonEnd::TriggerSurge( [[maybe_unused]] float _initValue )
 {
     Building *building = g_app->m_location->GetBuilding( m_powerLink );
 
@@ -494,7 +493,7 @@ void PylonEnd::TriggerSurge( float _initValue )
 }
 
 
-void PylonEnd::RenderAlphas( float _predictionTime )
+void PylonEnd::RenderAlphas( [[maybe_unused]]float _predictionTime )
 {
     // Do nothing
 }

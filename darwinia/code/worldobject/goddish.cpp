@@ -22,10 +22,10 @@
 
 GodDish::GodDish()
 :   Building(),
+    m_activated(false),
     m_timer(0.0f),
     m_numSpawned(0),
-    m_spawnSpam(false),
-    m_activated(false)
+    m_spawnSpam(false)
 {
     m_type = TypeGodDish;
     SetShape( g_app->m_resource->GetShape( "goddish.shp" ) );

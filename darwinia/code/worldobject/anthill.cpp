@@ -24,13 +24,13 @@ AntHill::AntHill()
 :   Building(),
     m_objectiveTimer(0),
     m_spawnTimer(0),
-    m_numAntsInside(0),
-    m_numSpiritsInside(0),
     m_eggConvertTimer(0),
     m_health(100),
     m_unitId(-1),
     m_populationLock(-1),
-    m_renderDamaged(false)
+    m_renderDamaged(false),
+    m_numAntsInside(0),
+    m_numSpiritsInside(0)
 {
     m_type = TypeAntHill;
 

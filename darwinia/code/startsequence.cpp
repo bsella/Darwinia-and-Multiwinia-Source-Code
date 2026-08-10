@@ -211,8 +211,6 @@ void StartSequence::Render()
     float zStart = -4000.0f*r;
     float zEnd = 4000.0f + 4000.0f*r;
 
-    float fogColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
     if( timeNow > 50.0f )
     {
         glPushMatrix();

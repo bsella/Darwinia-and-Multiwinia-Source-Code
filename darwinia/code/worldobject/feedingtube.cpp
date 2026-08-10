@@ -62,7 +62,7 @@ bool FeedingTube::Advance ()
 }
 
 
-Vector3 FeedingTube::GetDishPos( float _predictionTime )
+Vector3 FeedingTube::GetDishPos( [[maybe_unused]]float _predictionTime )
 {
 	Matrix34 rootMat(m_front, g_upVector, m_pos);
     Matrix34 worldMat = m_focusMarker->GetWorldMatrix(rootMat);

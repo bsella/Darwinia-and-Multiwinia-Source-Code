@@ -335,7 +335,7 @@ void BitmapRGBA::SaveBmp(char const *_filename)
 }
 
 
-void BitmapRGBA::SavePng(char const *_filename, bool _saveAlpha)
+void BitmapRGBA::SavePng(char const *_filename, bool)
 {
 	FILE *_out = fopen(_filename, "wb");
 	DarwiniaReleaseAssert(_out, "Couldn't create image file %s", _filename);
@@ -513,7 +513,6 @@ void BitmapRGBA::Initialise(char const *_filename)
 {
 	BinaryFileReader in(_filename);
 
-	char const *extension = GetExtensionPart(_filename);
 	DarwiniaDebugAssert(stricmp(extension, "bmp") == 0);
 	LoadBmp(&in);
 }
@@ -868,7 +867,7 @@ int BitmapRGBA::ConvertToTexture(bool _mipmapping) const
 	glTexParameteri	(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri	(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 
-    if (_mipmapping)
+	if (_mipmapping)
 	{
 		int newWidth = 1 << (int) ceil(log((float) m_width)/log(2.0f));
 		int newHeight = 1 << (int) ceil(log((float) m_height)/log(2.0f));

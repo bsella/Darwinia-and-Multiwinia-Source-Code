@@ -35,7 +35,7 @@ void InvertInputDriver::Advance()
 }
 
 
-const string &InvertInputDriver::getLastParseError( InputParserState state )
+const string &InvertInputDriver::getLastParseError( InputParserState )
 {
 	return lastError;
 }

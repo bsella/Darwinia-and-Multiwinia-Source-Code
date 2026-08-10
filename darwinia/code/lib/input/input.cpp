@@ -35,7 +35,6 @@ InputManager::~InputManager()
 
 void InputManager::parseInputPrefs( TextReader &reader, bool replace )
 {
-	int line = 1;
 #ifdef TARGET_DEBUG
 	ofstream derr( "inputprefs_debug.txt" );
 #else

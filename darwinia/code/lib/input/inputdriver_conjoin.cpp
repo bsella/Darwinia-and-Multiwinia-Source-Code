@@ -1,7 +1,5 @@
 ﻿#include "lib/universal_include.h"
 
-#include <algorithm>
-
 #include "lib/input/inputdriver_conjoin.h"
 #include "lib/input/input.h"
 
@@ -29,7 +27,7 @@ InputParserState ConjoinInputDriver::parseInputSpecification( InputSpecTokens co
 
 	spec.type = INPUT_TYPE_BOOL;
 
-	for ( int i = 0; i <= tokens.length(); ++i ) {
+	for ( unsigned int i = 0; i <= tokens.length(); ++i ) {
 		if ( i < tokens.length() && tokens[ i ] != "&&" ) s += " " + tokens[ i ];
 		else {
 			if ( !hasParts &&  tokens.length() == i ) return STATE_ERROR; // Not a conjunction
@@ -91,7 +89,7 @@ void ConjoinInputDriver::Advance()
 }
 
 
-const string &ConjoinInputDriver::getLastParseError( InputParserState state )
+const string &ConjoinInputDriver::getLastParseError( InputParserState )
 {
 	return lastError;
 }

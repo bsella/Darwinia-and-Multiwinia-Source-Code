@@ -203,7 +203,7 @@ BlueprintStore::BlueprintStore()
 }
 
 
-char *BlueprintStore::GetObjectiveCounter()
+const char *BlueprintStore::GetObjectiveCounter()
 {
     static char result[256];
 
@@ -689,7 +689,7 @@ void BlueprintRelay::Initialise( Building *_template )
 }
 
 
-void BlueprintRelay::SetDetail( int _detail )
+void BlueprintRelay::SetDetail( int )
 {
     m_pos.y = m_altitude;
 

@@ -33,8 +33,8 @@
 #include "worldobject/trunkport.h"
 
 Task::Task()
-:   m_type(GlobalResearch::TypeSquad),
-    m_id(-1),
+:   m_id(-1),
+    m_type(GlobalResearch::TypeSquad),
     m_state(StateIdle),
     m_route(NULL)
 {
@@ -146,7 +146,7 @@ WorldObjectId Task::Promote( WorldObjectId _id )
     // Spawn an Officer
 
     WorldObjectId spawnedId = g_app->m_location->SpawnEntities( entity->m_pos, teamId, -1, Entity::TypeOfficer, 1, entity->m_vel, 0 );
-    Officer *officer = (Officer *) g_app->m_location->GetEntity( spawnedId );
+    [[maybe_unused]] Officer *officer = (Officer *) g_app->m_location->GetEntity( spawnedId );
     DarwiniaDebugAssert( officer );
 
 
@@ -232,8 +232,6 @@ WorldObjectId Task::FindDarwinian( Vector3 const &_pos )
 
 void Task::TargetOfficer( Vector3 const &_pos )
 {
-    int teamId = g_app->m_globalWorld->m_myTeamId;
-
     //
     // We will not upgrade people if we're controlling something right now
 
@@ -377,7 +375,6 @@ void Task::Stop()
                     if( unit->m_entities.ValidIndex(i) )
                     {
                         Entity *entity = unit->m_entities[i];
-                        int health = entity->m_stats[Entity::StatHealth];
                         entity->ChangeHealth( -1000 );
                     }
                 }
@@ -391,7 +388,6 @@ void Task::Stop()
             Entity *entity = (Entity *) g_app->m_location->GetEntity( m_objId );
             if( entity )
             {
-                int health = entity->m_stats[Entity::StatHealth];
                 entity->ChangeHealth( -1000 );
             }
             break;

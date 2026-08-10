@@ -123,7 +123,7 @@ int BinaryFileReader::ReadS32()
 
 unsigned int BinaryFileReader::ReadBytes(unsigned int _count, unsigned char *_buffer)
 {
-	int bytesRead = fread(_buffer, 1, _count, m_file);
+	unsigned int bytesRead = fread(_buffer, 1, _count, m_file);
 	if (bytesRead < _count)
 	{
 		m_eof = true;
@@ -151,10 +151,10 @@ int BinaryFileReader::Tell()
 
 BinaryDataReader::BinaryDataReader(unsigned char const *_data, unsigned int _dataSize,
 								   char const *_filename)
-:	BinaryReader(),
-	m_data(_data),
-	m_dataSize(_dataSize),
-	m_offset(0)
+: BinaryReader()
+, m_offset(0)
+, m_data(_data)
+, m_dataSize(_dataSize)
 {
 	strncpy(m_filename, _filename, sizeof(m_filename) - 1);
 }

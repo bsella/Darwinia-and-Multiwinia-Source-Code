@@ -29,9 +29,6 @@
 UserInput::UserInput()
 :	m_removeTopLevelMenu(false)
 {
-	int const screenH = g_app->m_renderer->ScreenH();
-	int const screenW = g_app->m_renderer->ScreenW();
-
     EclInitialise( g_app->m_renderer->ScreenW(), g_app->m_renderer->ScreenH() );
 }
 
@@ -199,7 +196,7 @@ void UserInput::RecalcMousePos3d()
 	{
 		landscapeHit = g_app->m_location->m_landscape.RayHit( rayStart, rayDir, &m_mousePos3d );
 	}
-    else
+	else
     {
         // We are in the global world
         // So hit against the outer sphere
@@ -227,7 +224,7 @@ void UserInput::RecalcMousePos3d()
 
 		float sphereRadius = g_app->m_globalWorld->GetSize() * 40.0f;
 
-        float dist = (rayStart - sphereCentre).Mag();
+        //float dist = (rayStart - sphereCentre).Mag();
         //DarwiniaDebugAssert(dist < sphereRadius);
 
 		rayStart += rayDir * (sphereRadius * 4.0f);

@@ -17,14 +17,14 @@
 
 Factory::Factory()
 :   Building(),
-    m_state(StateUnused),
     m_troopType(Entity::TypeInvalid),
 	m_initialCapacity(10),
     m_unitId(-1),
     m_numToCreate(-1),
     m_numCreated(-1),
     m_timeToCreate(0.0f),
-    m_timeSoFar(0.0f)
+    m_timeSoFar(0.0f),
+    m_state(StateUnused)
 {
     m_type = TypeFactory;
 	SetShape( g_app->m_resource->GetShape("factory.shp") );
@@ -96,7 +96,7 @@ void Factory::RequestUnit( unsigned char _troopType, int _numToCreate )
     m_timeToCreate      = m_numToCreate * 0.1f;
     m_timeSoFar         = 0.0f;
 
-	if( _troopType < Entity::TypeEngineer ||
+    if( _troopType < Entity::TypeEngineer ||
         _troopType == Entity::TypeInsertionSquadie)
     {
         Team *team          = &g_app->m_location->m_teams[m_id.GetTeamId()];

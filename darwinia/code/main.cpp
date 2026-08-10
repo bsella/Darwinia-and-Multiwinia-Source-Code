@@ -71,12 +71,8 @@
 #include "taskmanager_interface_gestures.h"
 #include "team.h"
 #include "user_input.h"
-#include "testharness.h"
 #include "startsequence.h"
 #include "tutorial.h"
-#include "gamecursor.h"
-#include "unit.h"
-#include "attract.h"
 #include "control_help.h"
 #include "water.h"
 #include "game_menu.h"
@@ -84,17 +80,13 @@
 
 #include "loaders/loader.h"
 
-#include "interface/pokey_window.h"
 #include "interface/globalworldeditor_window.h"
 #include "interface/mainmenus.h"
-#include "interface/updateavailable_window.h"
-#include "interface/debugmenu.h"
+#include "interface/message_dialog.h"
 
 #include "network/clienttoserver.h"
 #include "network/server.h"
 #include "network/servertoclientletter.h"
-
-#include "worldobject/darwinian.h"
 
 #define TARGET_FRAME_RATE_INCREMENT 0.25f
 
@@ -447,9 +439,6 @@ void LocationGameLoop()
 
     double nextServerAdvanceTime = GetHighResTime();
     double nextIAmAliveMessage = GetHighResTime();
-    double heavyWeightAdvanceStartTime = -1;
-	//double serverAdvanceStartTime = -1;
-    double lastRenderTime = GetHighResTime();
 
 	TeamControls teamControls;
 
@@ -638,7 +627,6 @@ void LocationGameLoop()
 						}
 
 						g_sliceNum = 0;
-						heavyWeightAdvanceStartTime = timeNow;
 						g_lastServerAdvance = (float)letter->GetSequenceId() * SERVER_ADVANCE_PERIOD + g_startTime;
 						g_lastProcessedSequenceId = letter->GetSequenceId();
 						delete letter;
@@ -660,14 +648,12 @@ void LocationGameLoop()
 					else
 					{
 						g_sliceNum = -1;
-						heavyWeightAdvanceStartTime = -1.0;
 					}
 				}
 			}
 
 			// Render
 			UpdateAdvanceTime();
-			lastRenderTime = GetHighResTime();
 #ifdef PROFILER_ENABLED
 			g_app->m_profiler->Advance();
 #endif // PROFILER_ENABLED

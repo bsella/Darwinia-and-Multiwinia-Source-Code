@@ -27,13 +27,13 @@
 
 RadarDish::RadarDish()
 :   Teleport(),
-    m_signal(0.0f),
-    m_range(0.0f),
     m_receiverId(-1),
+    m_range(0.0f),
+    m_signal(0.0f),
+    m_newlyCreated(true),
     m_horizontallyAligned(true),
     m_verticallyAligned(true),
-    m_movementSoundsPlaying(false),
-    m_newlyCreated(true)
+    m_movementSoundsPlaying(false)
 {
     m_type = Building::TypeRadarDish;
     m_target.Zero();
@@ -226,7 +226,7 @@ bool RadarDish::Advance ()
 }
 
 
-Vector3 RadarDish::GetDishPos( float _predictionTime )
+Vector3 RadarDish::GetDishPos( [[maybe_unused]]float _predictionTime )
 {
 	Matrix34 rootMat(m_front, g_upVector, m_pos);
     Matrix34 worldMat = m_focusMarker->GetWorldMatrix(rootMat);
@@ -487,8 +487,6 @@ bool RadarDish::UpdateEntityInTransit( Entity *_entity )
 {
     Vector3 dishPos = GetDishPos(0.0f);
     Vector3 dishFront = GetDishFront(0.0f);
-    Vector3 targetPos = dishPos + dishFront * m_range;
-    Vector3 ourOffset = ( targetPos - _entity->m_pos );
 
     WorldObjectId id( _entity->m_id );
 

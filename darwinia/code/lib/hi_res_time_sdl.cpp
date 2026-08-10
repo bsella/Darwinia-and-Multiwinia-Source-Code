@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-static double g_lastGetHighResTime = 0.0;
+﻿static double g_lastGetHighResTime = 0.0;
 static double g_timeShift = 0.0;
 static bool g_usingFakeTimeMode = false;
 static double g_fakeTime;

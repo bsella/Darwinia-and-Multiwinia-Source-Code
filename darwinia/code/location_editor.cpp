@@ -43,12 +43,12 @@
 
 
 LocationEditor::LocationEditor()
-:	m_tool(ToolNone),
+:	m_mode(ModeNone),
+	m_moveBuildingsWithLandscape(1),
 	m_waitingForRelease(false),
+	m_tool(ToolNone),
 	m_selectionId(-1),
-	m_subSelectionId(-1),
-	m_mode(ModeNone),
-    m_moveBuildingsWithLandscape(1)
+	m_subSelectionId(-1)
 {
 	MainEditWindow *mainWin = new MainEditWindow(LANGUAGEPHRASE("editor_mainedit"));
 	mainWin->m_w = 150;
@@ -140,7 +140,6 @@ int LocationEditor::DoesRayHitCameraMount(Vector3 const &rayStart, Vector3 const
 
 int	LocationEditor::IsPosInLandTile(Vector3 const &pos)
 {
-	Landscape *land = &g_app->m_location->m_landscape;
 	LList<LandscapeTile *> *tiles = &g_app->m_location->m_levelFile->m_landscape.m_tiles;
 	int smallestId = -1;
 	int smallestSize = INT_MAX;
@@ -172,8 +171,6 @@ int	LocationEditor::IsPosInLandTile(Vector3 const &pos)
 int	LocationEditor::IsPosInFlattenArea(Vector3 const &pos)
 {
 	LList<LandscapeFlattenArea *> *areas = &g_app->m_location->m_levelFile->m_landscape.m_flattenAreas;
-	Landscape *land = &g_app->m_location->m_landscape;
-
 	for (int i = 0; i < areas->Size(); ++i)
 	{
 		LandscapeFlattenArea *area = areas->GetData(i);
@@ -322,7 +319,6 @@ void LocationEditor::AdvanceModeLandTile()
 	{
 		// No selection
 
-		Landscape *land = &g_app->m_location->m_landscape;
 		LList<LandscapeTile *> *tiles = &g_app->m_location->m_levelFile->m_landscape.m_tiles;
 
 		// Has the user selected a tile
@@ -373,7 +369,6 @@ void LocationEditor::AdvanceModeLandTile()
 			if (newSelectionId == m_selectionId)
 			{
 				// The user "grabs" the landscape at this position
-				LandscapeDef *landscapeDef = &(g_app->m_location->m_levelFile->m_landscape);
 				LandscapeTile *tileDef = g_app->m_location->m_levelFile->m_landscape.m_tiles.GetData(m_selectionId);
 				m_landscapeGrabX = mousePos3D.x - tileDef->m_posX;
 				m_landscapeGrabZ = mousePos3D.z - tileDef->m_posZ;
@@ -429,14 +424,11 @@ void LocationEditor::AdvanceModeLandFlat()
 	}
 	else
 	{
-		Location *location = g_app->m_location;
-
 		if ( g_inputManager.controlEvent( ControlTileSelect ) )
 		{
 			if (newSelectionId == m_selectionId)
 			{
 				// The user "grabs" the landscape at this position
-				LandscapeDef *landscapeDef = &(g_app->m_location->m_levelFile->m_landscape);
 				LandscapeFlattenArea *areaDef = g_app->m_location->m_levelFile->m_landscape.m_flattenAreas.GetData(m_selectionId);
 				m_landscapeGrabX = mousePos3D.x - areaDef->m_centre.x;
 				m_landscapeGrabZ = mousePos3D.z - areaDef->m_centre.z;
@@ -766,7 +758,6 @@ void LocationEditor::RenderUnit(InstantUnit *_iu)
 void LocationEditor::RenderModeLandTile()
 {
 	Vector3 mousePos3D = g_app->m_userInput->GetMousePos3d();
-	Landscape *land = &g_app->m_location->m_landscape;
 
 	// Highlight any tile under our mouse cursor
 	LList<LandscapeTile *> *tiles = &g_app->m_location->m_levelFile->m_landscape.m_tiles;
@@ -890,9 +881,6 @@ void LocationEditor::RenderModeLandTile()
 
 void LocationEditor::RenderModeLandFlat()
 {
-	Vector3 mousePos3D = g_app->m_userInput->GetMousePos3d();
-	Landscape *land = &g_app->m_location->m_landscape;
-
 	// Highlight any flatten area under our mouse cursor
 	LList<LandscapeFlattenArea *> *areas = &g_app->m_location->m_levelFile->m_landscape.m_flattenAreas;
 	for (int i = 0; i < areas->Size(); ++i)
@@ -900,11 +888,6 @@ void LocationEditor::RenderModeLandFlat()
 		if (i == m_selectionId) continue;
 
 		LandscapeFlattenArea *area = areas->GetData(i);
-		float worldX = area->m_centre.x;
-		float worldZ = area->m_centre.z;
-		float sizeX = area->m_size;
-		float sizeY = area->m_centre.y;
-		float sizeZ = area->m_size;
 		float x = area->m_centre.x;
 		float y = area->m_centre.y;
 		float z = area->m_centre.z;
@@ -916,7 +899,6 @@ void LocationEditor::RenderModeLandFlat()
 
 	if (m_selectionId != -1)
 	{
-		LandscapeDef *landscapeDef = &(g_app->m_location->m_levelFile->m_landscape);
 		LandscapeFlattenArea *areaDef = g_app->m_location->m_levelFile->m_landscape.m_flattenAreas.GetData(m_selectionId);
 		float x = areaDef->m_centre.x;
 		float y = areaDef->m_centre.y;

@@ -37,9 +37,9 @@ Shape *FuelBuilding::s_fuelPipe = NULL;
 
 FuelBuilding::FuelBuilding()
 :   Building(),
+    m_fuelMarker(NULL),
     m_fuelLink(-1),
-    m_currentLevel(0.0f),
-    m_fuelMarker(NULL)
+    m_currentLevel(0.0f)
 {
     if( !s_fuelPipe )
     {
@@ -273,11 +273,11 @@ void FuelBuilding::Destroy( float _intensity )
 
 FuelGenerator::FuelGenerator()
 :   FuelBuilding(),
-    m_surges(0.0f),
     m_pump(NULL),
     m_pumpTip(NULL),
     m_pumpMovement(0.0f),
-    m_previousPumpPos(0.0f)
+    m_previousPumpPos(0.0f),
+    m_surges(0.0f)
 {
     m_type = TypeFuelGenerator;
 
@@ -405,7 +405,7 @@ void FuelGenerator::RenderAlphas( float _predictionTime )
 }
 
 
-char *FuelGenerator::GetObjectiveCounter()
+const char *FuelGenerator::GetObjectiveCounter()
 {
     static char buffer[256];
     sprintf( buffer, "%s %d%%", LANGUAGEPHRASE("objective_fuelpressure"), int( m_currentLevel * 100 ) );
@@ -578,7 +578,7 @@ void FuelStation::Render( float _predictionTime )
 }
 
 
-void FuelStation::RenderAlphas( float _predictionTime )
+void FuelStation::RenderAlphas( float )
 {
     // Prevent FuelBuilding::RenderAlphas from being called
 
@@ -700,8 +700,6 @@ void FuelStation::RenderAlphas( float _predictionTime )
                 pos.y += sinf( g_gameTime + i ) * 15;
                 pos.z += cosf( g_gameTime + i ) * 15;
 
-                float blue = 0.5f + fabs( sinf(g_gameTime * i) ) * 0.5f;
-
                 glBegin( GL_QUADS );
                     glColor4f( 1.0f, 0.4f, 0.2f, 0.4f );
                     glTexCoord2f(1,0);      glVertex3fv( (ourPos - lineTheirPos).GetData() );
@@ -738,17 +736,17 @@ bool FuelStation::PerformDepthSort( Vector3 &_centrePos )
 
 EscapeRocket::EscapeRocket()
 :   FuelBuilding(),
+    m_booster(NULL),
+    m_shadowTimer(0.0f),
+    m_cameraShake(0.0f),
+    m_state(StateRefueling),
     m_fuel(0.0f),
     m_pipeCount(0),
     m_passengers(0),
     m_countdown(-1.0f),
-    m_booster(NULL),
-    m_shadowTimer(0.0f),
-    m_state(StateRefueling),
     m_damage(0.0f),
     m_spawnBuildingId(-1),
-    m_spawnCompleted(false),
-    m_cameraShake(0.0f)
+    m_spawnCompleted(false)
 {
     m_type = TypeEscapeRocket;
 
@@ -793,7 +791,7 @@ void EscapeRocket::SetupSounds()
         case StateRefueling:
             if( m_currentLevel > 0.2f )     requiredSoundName = "Refueling";
             else                            requiredSoundName = "Unhappy";
-                                            break;
+        break;
 
         case StateLoading:
         case StateIgnition:
@@ -801,15 +799,15 @@ void EscapeRocket::SetupSounds()
         case StateCountdown:
             if( m_damage < 10 )             requiredSoundName = "Happy";
             else                            requiredSoundName = "Malfunction";
-                                            break;
+        break;
 
         case StateExploding:
             if( m_fuel > 0.0f )             requiredSoundName = "Malfunction";
             else                            requiredSoundName = "Unhappy";
-                                            break;
+        break;
 
         case StateFlight:                   requiredSoundName = "Flight";
-                                            break;
+        break;
     }
 
     char fullName[256];
@@ -876,7 +874,7 @@ void EscapeRocket::Initialise( Building *_template )
 }
 
 
-char *EscapeRocket::GetObjectiveCounter()
+const char *EscapeRocket::GetObjectiveCounter()
 {
     static char buffer[256];
     sprintf( buffer, "%s %d%%, %s %d%%", LANGUAGEPHRASE("objective_fuel"),
@@ -887,7 +885,7 @@ char *EscapeRocket::GetObjectiveCounter()
 }
 
 
-bool EscapeRocket::BoardRocket( WorldObjectId _id )
+bool EscapeRocket::BoardRocket( WorldObjectId )
 {
     if( m_state == StateLoading )
     {
@@ -1058,7 +1056,7 @@ void EscapeRocket::AdvanceCountdown()
     {
         m_state = StateFlight;
 
-        GlobalBuilding *gb = g_app->m_globalWorld->GetBuilding( m_id.GetUniqueId(), g_app->m_locationId );
+        //GlobalBuilding *gb = g_app->m_globalWorld->GetBuilding( m_id.GetUniqueId(), g_app->m_locationId );
         //if( gb ) gb->m_online = true;
     }
 }

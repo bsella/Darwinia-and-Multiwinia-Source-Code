@@ -55,7 +55,7 @@ bool Lander::Advance( Unit *_unit )
     return false;
 }
 
-void Lander::ChangeHealth( int amount )
+void Lander::ChangeHealth( [[maybe_unused]]int amount )
 {
     g_app->m_particleSystem->CreateParticle( m_pos, g_zeroVector, Particle::TypeMuzzleFlash );
 }

@@ -410,10 +410,10 @@ void ReceiverBuilding::EndRenderUnprocessedSpirits()
 
 SpiritProcessor::SpiritProcessor()
 :   ReceiverBuilding(),
-    m_throughput(0.0f),
     m_timerSync(0.0f),
     m_numThisSecond(0),
-    m_spawnSync(0.0f)
+    m_spawnSync(0.0f),
+    m_throughput(0.0f)
 {
     m_type = TypeSpiritProcessor;
     SetShape( g_app->m_resource->GetShape( "spiritprocessor.shp" ) );
@@ -441,7 +441,7 @@ void SpiritProcessor::Initialise( Building *_building )
 }
 
 
-char *SpiritProcessor::GetObjectiveCounter()
+const char *SpiritProcessor::GetObjectiveCounter()
 {
     static char result[256];
     sprintf( result, "%s : %2.2f", LANGUAGEPHRASE("objective_throughput"), m_throughput );
@@ -805,8 +805,6 @@ void SpiritReceiver::RenderAlphas( float _predictionTime )
     ReceiverBuilding::RenderAlphas( _predictionTime );
 
     //RenderHitCheck();
-
-    float fractionOccupied = (float) GetNumPortsOccupied() / (float) GetNumPorts();
 }
 
 
@@ -882,8 +880,6 @@ bool UnprocessedSpirit::Advance()
             if( m_timeSync <= 0.0f ) return true;
             break;
     }
-
-    Vector3 oldPos = m_pos;
 
     m_pos += m_vel * SERVER_ADVANCE_PERIOD;
     m_pos += m_hover * SERVER_ADVANCE_PERIOD;

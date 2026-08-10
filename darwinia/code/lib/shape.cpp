@@ -9,7 +9,6 @@
 #include "lib/debug_utils.h"
 #include "lib/debug_render.h"
 #include "lib/math_utils.h"
-#include "lib/matrix33.h"
 #include "lib/matrix34.h"
 #include "lib/shape.h"
 #include "lib/text_stream_readers.h"
@@ -368,7 +367,7 @@ void ShapeFragment::BuildDisplayList()
 
 void ShapeFragment::WriteToFile(FILE *_out) const
 {
-    int i;
+    unsigned int i;
 
 	if (stricmp(m_name, "SceneRoot") != 0)
 	{

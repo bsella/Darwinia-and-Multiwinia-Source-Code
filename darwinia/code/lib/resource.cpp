@@ -13,7 +13,6 @@
 #include "lib/text_renderer.h"
 #include "lib/text_stream_readers.h"
 #include "lib/preferences.h"
-#include "lib/hi_res_time.h"
 
 #include "sound/sound_stream_decoder.h"
 #include "sound/soundsystem.h"
@@ -23,7 +22,6 @@
 #include "landscape_renderer.h"
 #include "location.h"
 #include "renderer.h"
-#include "water.h"
 
 
 Resource::Resource()
@@ -58,7 +56,7 @@ void Resource::ParseArchive( char const *_dataFile, char const *_password )
 		return;
 	}
 
-	for (int i = 0; i < mainData->m_numFiles; ++i)
+	for (unsigned int i = 0; i < mainData->m_numFiles; ++i)
 	{
 		MemMappedFile *file = mainData->m_files[i];
 		if (file->m_size > 0)
@@ -81,7 +79,7 @@ void Resource::ParseArchive( char const *_dataFile, char const *_password )
 }
 
 
-void Resource::AddBitmap( char const *_name, BitmapRGBA const &_bmp, bool _mipMapping )
+void Resource::AddBitmap( char const *_name, BitmapRGBA const &_bmp, bool )
 {
 	// Only insert if a bitmap with no other bitmap is already using that name
 	if (m_bitmaps.GetIndex(_name) == -1)
@@ -474,7 +472,7 @@ void Resource::FlushOpenGlState()
 {
 #if 1 // Try to catch crash on shutdown bug
 		// Tell OpenGL to delete the display lists
-		for (int i = 0; i < m_displayLists.Size(); ++i)
+		for (unsigned int i = 0; i < m_displayLists.Size(); ++i)
 		{
 			if (m_displayLists.ValidIndex(i))
 			{
@@ -483,7 +481,7 @@ void Resource::FlushOpenGlState()
 		}
 
 		// Tell OpenGL to delete the textures
-		for (int i = 0; i < m_textures.Size(); ++i)
+		for (unsigned int i = 0; i < m_textures.Size(); ++i)
 		{
 			if (m_textures.ValidIndex(i))
 			{
@@ -513,7 +511,7 @@ void Resource::RegenerateOpenGlState()
 	g_gameFont.BuildOpenGlState();
 
 	// Tell all the shapes to generate a new display list
-	for (int i = 0; i < m_shapes.Size(); ++i)
+	for (unsigned int i = 0; i < m_shapes.Size(); ++i)
 	{
 		if (!m_shapes.ValidIndex(i)) continue;
 
@@ -624,7 +622,7 @@ FileWriter *Resource::GetFileWriter( char const *_filename, bool _encrypt )
         sprintf( fullFilename, "%smods/%s/%s", g_app->GetProfileDirectory(), m_modName, _filename );
 
         char *nextSlash = fullFilename;
-        while( nextSlash = strchr( nextSlash, '/' ) )
+        while( (nextSlash = strchr( nextSlash, '/' )) != 0 )
         {
             *nextSlash = 0;
             bool result = CreateDirectory( fullFilename );

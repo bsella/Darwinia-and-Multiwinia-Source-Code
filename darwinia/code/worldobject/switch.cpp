@@ -32,12 +32,12 @@ FenceSwitch::FenceSwitch()
 :   Building(),
     m_linkedBuildingId(-1),
     m_linkedBuildingId2(-1),
-    m_switchValue(-1),
     m_switchable(false),
     m_timer(20.0f),
+    m_connectionLocation(NULL),
 	m_locked(false),
 	m_lockable(0),
-    m_connectionLocation(NULL)
+    m_switchValue(-1)
 {
     m_type = Building::TypeFenceSwitch;
 	SetShape( g_app->m_resource->GetShape("fenceswitch.shp") );
@@ -242,7 +242,7 @@ void FenceSwitch::Render( float predictionTime )
 	Building::Render(predictionTime);
 }
 
-void FenceSwitch::RenderAlphas( float predictionTime )
+void FenceSwitch::RenderAlphas( [[maybe_unused]] float predictionTime )
 {
     Building *building = g_app->m_location->GetBuilding( m_linkedBuildingId );
     if( building &&
@@ -440,7 +440,7 @@ void FenceSwitch::RenderLights()
 	            {
 		            glColor3f( 0.0f, 1.0f, 0.0f );
 	            }
-	            else
+                else
 	            {
 		            glColor3f( 1.0f, 0.0f, 0.0f );
 	            }

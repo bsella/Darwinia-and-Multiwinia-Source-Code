@@ -345,7 +345,7 @@ bool Teleport::GetEntrance( Vector3 &_pos, Vector3 &_front )
     return true;
 }
 
-bool Teleport::GetExit( Vector3 &_pos, Vector3 &_front )
+bool Teleport::GetExit( Vector3 &, Vector3 & )
 {
     DarwiniaDebugAssert( false );
     return false;
@@ -363,7 +363,7 @@ Vector3 Teleport::GetEndPoint()
     return Vector3();
 }
 
-bool Teleport::UpdateEntityInTransit( Entity *_entity )
+bool Teleport::UpdateEntityInTransit( Entity * )
 {
     DarwiniaDebugAssert(false);
     return false;

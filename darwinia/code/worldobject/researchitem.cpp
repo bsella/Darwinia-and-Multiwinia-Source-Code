@@ -26,12 +26,12 @@
 
 ResearchItem::ResearchItem()
 :   Building(),
-    m_researchType(-1),
-    m_inLibrary(false),
     m_reprogrammed(100.0f),
     m_end1(NULL),
     m_end2(NULL),
-    m_level(1)
+    m_researchType(-1),
+    m_level(1),
+    m_inLibrary(false)
 {
     m_type = TypeResearchItem;
     m_researchType = GlobalResearch::TypeEngineer;
@@ -54,7 +54,7 @@ void ResearchItem::Initialise ( Building *_template )
 }
 
 
-void ResearchItem::SetDetail( int _detail )
+void ResearchItem::SetDetail( int )
 {
     m_pos.y = g_app->m_location->m_landscape.m_heightMap->GetValue(m_pos.x, m_pos.z);
     m_pos.y += 20.0f;
@@ -291,7 +291,7 @@ void ResearchItem::RenderAlphas( float _predictionTime )
 }
 
 
-bool ResearchItem::RenderPixelEffect(float _predictionTime)
+bool ResearchItem::RenderPixelEffect([[maybe_unused]] float _predictionTime)
 {
 //	Matrix34 mat(m_front, m_up, m_pos);
 //	m_shape->Render(0.0f, mat);
@@ -330,20 +330,20 @@ void ResearchItem::ListSoundEvents( LList<const char *> *_list )
 }
 
 
-bool ResearchItem::DoesSphereHit(Vector3 const &_pos, float _radius)
+bool ResearchItem::DoesSphereHit([[maybe_unused]]Vector3 const &_pos, [[maybe_unused]]float _radius)
 {
     return false;
 }
 
 
-bool ResearchItem::DoesShapeHit(Shape *_shape, Matrix34 _transform)
+bool ResearchItem::DoesShapeHit(Shape *, Matrix34 )
 {
     return false;
 }
 
 
 bool ResearchItem::DoesRayHit(Vector3 const &_rayStart, Vector3 const &_rayDir,
-                              float _rayLen, Vector3 *_pos, Vector3 *norm )
+                              float _rayLen, Vector3 *, Vector3 * )
 {
     return RaySphereIntersection(_rayStart, _rayDir, m_pos, m_radius, _rayLen);
 }

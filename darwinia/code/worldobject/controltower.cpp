@@ -334,7 +334,7 @@ void ControlTower::RenderAlphas ( float _predictionTime )
 	{
 		colour.Set( 128, 128, 128, 255 );
 	}
-	else
+    else
 	{
 		colour = g_app->m_location->m_teams[ m_id.GetTeamId() ].m_colour;
 	}

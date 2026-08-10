@@ -115,9 +115,9 @@ void DynamicBase::SetShapeName( char *_shapeName )
 DynamicHub::DynamicHub()
 :   DynamicBase(),
     m_enabled(false),
-    m_activeLinks(0),
-    m_numLinks(-1),
     m_reprogrammed(false),
+    m_numLinks(-1),
+    m_activeLinks(0),
     m_currentScore(0),
     m_requiredScore(0),
     m_minActiveLinks(0)
@@ -286,7 +286,7 @@ void DynamicHub::Write( FileWriter *_out )
     _out->printf( "%-8d", m_minActiveLinks );
 }
 
-char *DynamicHub::GetObjectiveCounter()
+const char *DynamicHub::GetObjectiveCounter()
 {
     static char result[256];
 

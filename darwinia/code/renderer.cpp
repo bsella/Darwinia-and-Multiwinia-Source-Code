@@ -62,23 +62,22 @@ enum
 	PosterMakerInactive,
 	PosterMakerTiling,
 	PosterMakerPixelEffect
-} PosterMakerState;
-
+};
 
 Renderer::Renderer()
 :   m_fps(60),
 	m_displayFPS(false),
+    m_renderDebug(false),
 	m_displayInputMode(false),
+	m_renderingPoster(PosterMakerInactive),
+    m_renderDarwinLogo(-1.0f),
     m_nearPlane(5.0f),
     m_farPlane(150000.0f),
-    m_renderDebug(false),
-	m_renderingPoster(PosterMakerInactive),
 	m_tileIndex(0),
 	m_fadedness(0.0f),
 	m_fadeRate(0.0f),
 	m_fadeDelay(0.0f),
-    m_pixelSize(256),
-    m_renderDarwinLogo(-1.0f)
+    m_pixelSize(256)
 {
 }
 
@@ -437,19 +436,19 @@ void Renderer::RenderFrame(bool withFlip)
     START_PROFILE(g_app->m_profiler, "Render Clear");
 		RGBAColour *col = &g_app->m_backgroundColour;
 		if( g_app->m_location )
-        {
-            glClearColor(col->r/255.0f, col->g/255.0f, col->b/255.0f, col->a/255.0f);
-        }
-        else
-        {
-            glClearColor(0.05f, 0.0f, 0.05f, 0.1f);
-        }
-		glClear			(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		{
+			glClearColor(col->r/255.0f, col->g/255.0f, col->b/255.0f, col->a/255.0f);
+		}
+		else
+		{
+			glClearColor(0.05f, 0.0f, 0.05f, 0.1f);
+		}
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	END_PROFILE(g_app->m_profiler, "Render Clear");
 
 	//bool deformStarted = false;
 
-    if (g_app->m_editing)
+	if (g_app->m_editing)
 	{
 		if (g_app->m_locationId != -1)
 		{
@@ -507,9 +506,9 @@ void Renderer::RenderFrame(bool withFlip)
 						PreRenderPixelEffect();
 						break;
 				}
-            }
-            else
-            {
+			}
+			else
+			{
     			g_app->m_location->Render();
             }
 		}

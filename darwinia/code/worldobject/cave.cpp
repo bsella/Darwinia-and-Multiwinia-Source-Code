@@ -35,7 +35,7 @@ bool Cave::Advance()
 {
     if( m_dead ) return true;
 
-    if( m_id.GetTeamId() < 0 || m_id.GetTeamId() >= NUM_TEAMS ) return false;
+    if( m_id.GetTeamId() >= NUM_TEAMS ) return false;
     if( g_app->m_location->m_teams[ m_id.GetTeamId() ].m_teamType == Team::TeamTypeUnused ) return false;
 
     m_spawnTimer -= SERVER_ADVANCE_PERIOD;
@@ -51,11 +51,11 @@ bool Cave::Advance()
         spawnPoint.y = g_app->m_location->m_landscape.m_heightMap->GetValue( spawnPoint.x, spawnPoint.z );
 
         int numFound;
-        WorldObjectId *objs = g_app->m_location->m_entityGrid->GetFriends( spawnPoint.x, spawnPoint.z, 100.0f, &numFound, m_id.GetTeamId() );
+        g_app->m_location->m_entityGrid->GetFriends( spawnPoint.x, spawnPoint.z, 100.0f, &numFound, m_id.GetTeamId() );
         if( numFound < 30 )
         {
             //int numToCreate = int( syncfrand(5.0f) + 3.0f );
-            Team *team = &g_app->m_location->m_teams[m_id.GetTeamId()];
+            //Team *team = &g_app->m_location->m_teams[m_id.GetTeamId()];
 
             //Unit *unit = team->NewUnit( m_troopType, numToCreate, &m_unitId );
             //unit->m_wayPoint = spawnPoint + worldMat.f * 25.0f;

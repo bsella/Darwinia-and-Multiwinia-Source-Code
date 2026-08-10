@@ -467,7 +467,7 @@ void MasterSpawnPoint::RenderAlphas ( float _predictionTime )
 
 
 
-char *MasterSpawnPoint::GetObjectiveCounter()
+const char *MasterSpawnPoint::GetObjectiveCounter()
 {
     static char result[256];
 
@@ -489,10 +489,10 @@ char *MasterSpawnPoint::GetObjectiveCounter()
 
 SpawnPoint::SpawnPoint()
 :   SpawnBuilding(),
-    m_spawnTimer(0.0f),
     m_evaluateTimer(0.0f),
-    m_numFriendsNearby(0),
-    m_populationLock(-1)
+    m_spawnTimer(0.0f),
+    m_populationLock(-1),
+    m_numFriendsNearby(0)
 {
     m_type = Building::TypeSpawnPoint;
 
@@ -879,12 +879,12 @@ bool SpawnPopulationLock::Advance()
 }
 
 
-void SpawnPopulationLock::Render( float _predictionTime )
+void SpawnPopulationLock::Render( float )
 {
 }
 
 
-void SpawnPopulationLock::RenderAlphas( float _predictionTime )
+void SpawnPopulationLock::RenderAlphas( float )
 {
     if( g_app->m_editing )
     {
@@ -936,13 +936,13 @@ void SpawnPopulationLock::Write( FileWriter *_out )
 }
 
 
-bool SpawnPopulationLock::DoesSphereHit(Vector3 const &_pos, float _radius)
+bool SpawnPopulationLock::DoesSphereHit(Vector3 const &, float)
 {
     return false;
 }
 
 
-bool SpawnPopulationLock::DoesShapeHit(Shape *_shape, Matrix34 _transform)
+bool SpawnPopulationLock::DoesShapeHit(Shape *, Matrix34)
 {
     return false;
 }

@@ -58,13 +58,13 @@
 
 // *** Constructor
 Location::Location()
-:   m_missionComplete(false),
+:	m_lastSliceProcessed(0),
+	m_missionComplete(false),
 	m_entityGrid(NULL),
     m_obstructionGrid(NULL),
 	m_levelFile(NULL),
     m_clouds(NULL),
     m_water(NULL),
-    m_lastSliceProcessed(0),
 	m_teams(NULL),
     m_christmasTimer(-99.9f)
 {
@@ -254,7 +254,7 @@ WorldObjectId Location::SpawnEntities( Vector3 const &_pos, unsigned char _teamI
         s->m_pos         = FindValidSpawnPosition( _pos, _spread );
         s->m_onGround    = false;
         s->m_vel         = _vel;
-        if (s->m_vel.MagSquared() > 0.0f)
+		if (s->m_vel.MagSquared() > 0.0f)
 		{
 			s->m_front       = _vel;
 			s->m_front.Normalise();
@@ -531,7 +531,7 @@ Building *Location::GetBuilding( int _id )
 
 Building *Location::GetBuilding(Vector3 const &_rayStart, Vector3 const &_rayDir )
 {
-	for (unsigned int i = 0; i < m_buildings.Size(); ++i)
+	for (int i = 0; i < m_buildings.Size(); ++i)
 	{
 		if (m_buildings.ValidIndex(i))
 		{
@@ -831,8 +831,6 @@ void Location::Advance( int _slice )
 
     m_lastSliceProcessed = _slice;
 
-	#undef for
-	#pragma omp parallel for schedule(dynamic)
 	for(int step=0;step<=4;step++)
 	{
 		switch(step)
@@ -931,7 +929,6 @@ void Location::RenderSpirits()
     glDepthMask     ( false );
 
     float timeSinceAdvance = g_predictionTime;
-    float numPerSlice = m_spirits.Size() / (float)NUM_SLICES_PER_FRAME;
 
     for( int i = 0; i < m_spirits.Size(); ++i )
     {
@@ -972,8 +969,8 @@ void Location::Render(bool renderWaterAndClouds)
     //
     // Render all solid objects
 
-    if( renderWaterAndClouds ) RenderClouds();
-		else {glBegin( GL_QUADS ); for(unsigned i=0;i<4;i++) glVertex2f(0,0); glEnd();} // necessary for correct reflection. why???
+	if( renderWaterAndClouds ) RenderClouds();
+	else {glBegin( GL_QUADS ); for(unsigned i=0;i<4;i++) glVertex2f(0,0); glEnd();} // necessary for correct reflection. why???
 	CHECK_OPENGL_STATE();
     RenderLandscape();
 	CHECK_OPENGL_STATE();
@@ -2117,10 +2114,10 @@ bool Location::IsFriend( unsigned char _teamId1, unsigned char _teamId2 )
                                         /*  green   red     player  player  */
 
     bool friends[NUM_TEAMS][NUM_TEAMS] = {
-                                            true,   false,  true,   false,  // Green
-                                            false,  true,   false,  false,  // Red
-                                            true,   false,  true,   true,   // Player
-                                            true,   false,  true,   true    // Player
+                                            {true,   false,  true,   false,},  // Green
+                                            {false,  true,   false,  false,},  // Red
+                                            {true,   false,  true,   true, },  // Player
+                                            {true,   false,  true,   true, },  // Player
                                          };
 
 

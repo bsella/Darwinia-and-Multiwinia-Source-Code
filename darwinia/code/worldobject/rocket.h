@@ -69,7 +69,7 @@ public:
 
 	void ListSoundEvents( LList<const char *> *_list );
 
-    char *GetObjectiveCounter();
+    const char *GetObjectiveCounter();
 };
 
 
@@ -184,7 +184,7 @@ public:
     void Read           ( TextReader *_in, bool _dynamic );
     void Write          ( FileWriter *_out );
 
-    char *GetObjectiveCounter();
+    const char *GetObjectiveCounter();
 
 	void ListSoundEvents( LList<const char *> *_list );
 

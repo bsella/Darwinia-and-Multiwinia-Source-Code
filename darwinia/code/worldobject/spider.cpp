@@ -68,13 +68,13 @@
 
 Spider::Spider()
 :	m_state(StateIdle),
+	m_eggLay(NULL),
 	m_nextLegMoveTime(-1.0f),
 	m_speed(0.0f),
 	m_targetHoverHeight(HOVER_HEIGHT),
 	m_up(g_upVector),
     m_retargetTimer(0.0f),
-    m_spiritId(-1),
-    m_eggLay(NULL)
+    m_spiritId(-1)
 {
 	m_stats[StatHealth] = 200;
 
@@ -142,8 +142,6 @@ void Spider::Begin()
 
 void Spider::ChangeHealth(int _amount)
 {
-	bool dead = m_dead;
-
 	if (!m_dead && _amount < -1)
 	{
 		Entity::ChangeHealth(_amount);
@@ -369,7 +367,7 @@ bool Spider::FaceTarget()
 	{
 		Vector3 rotation = m_front ^ toTargetNormalised;
 		if( dotProd < 0.9f ) rotation.SetLength(TURN_RATE);
-        else                 rotation.SetLength(TURN_RATE/2.0f);
+		else                 rotation.SetLength(TURN_RATE/2.0f);
 		m_front.RotateAround(rotation);
 		m_front.Normalise();
         m_vel.Zero();
@@ -395,8 +393,6 @@ bool Spider::AdvanceToTarget()
 	{
 		return true;
 	}
-
-    bool facingTarget = FaceTarget();
 
 	Vector3 toTargetNormalised = toTarget / toTargetMag;
 	float dotProd = toTargetNormalised * m_front;
@@ -694,7 +690,7 @@ bool Spider::Advance(Unit *_unit)
 	    //
 	    // Adjust body height
 
-        if( m_state == StatePouncing )
+		if( m_state == StatePouncing )
 		{
 	        UpdateLegsPouncing();
 		}

@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/input/inputfilter_direction.h"
 
 
@@ -12,9 +10,9 @@ enum CompassDirection {
 
 
 // Apply the filter to a set of InputDetails to get another InputDetails
-bool DirectionInputFilter::filter( InputDetailsList const &inDetails,
-                                   InputFilterSpec const &filterSpec,
-                                   InputDetails &outDetails )
+bool DirectionInputFilter::filter( InputDetailsList const &,
+                                   InputFilterSpec const &,
+                                   InputDetails & )
 {
 	return false;
 }
@@ -48,7 +46,7 @@ bool DirectionInputFilter::parseFilterSpecification( InputSpecTokens const &toke
 }
 
 
-void DirectionInputFilter::calcDetails( InputFilterSpec const &spec, InputDetails &details )
+void DirectionInputFilter::calcDetails( InputFilterSpec const &, InputDetails &)
 {
 	// Um.
 }

@@ -58,8 +58,8 @@ void Tumbler::Advance()
 
 Explosion::Explosion(ShapeFragment *_frag, Matrix34 const &_transform, float _fraction)
 :	m_numTumblers(NUM_TUMBLERS),
-	m_numTris(0),
-    m_tris(NULL)
+	m_tris(NULL),
+	m_numTris(0)
 {
 	m_tumblers = new Tumbler[m_numTumblers];
 
@@ -70,7 +70,7 @@ Explosion::Explosion(ShapeFragment *_frag, Matrix34 const &_transform, float _fr
 	Matrix34 totalTransform = _frag->m_transform * _transform;
 	Vector3 transformedFragCentre = totalTransform * _frag->m_centre;
 
-	for (int j = 0; j < _frag->m_numTriangles; ++j)
+	for (unsigned int j = 0; j < _frag->m_numTriangles; ++j)
 	{
         if( _fraction < 1.0f && frand(1.0f) > _fraction )
         {
@@ -118,7 +118,7 @@ Explosion::Explosion(ShapeFragment *_frag, Matrix34 const &_transform, float _fr
 		tri.m_vel.y += INITIAL_VERTICAL_SPEED;
 		tri.m_pos = centre;
 		tri.m_tumbler = &m_tumblers[darwiniaRandom() % NUM_TUMBLERS];
-		float const minFragLife = EXPLOSION_LIFETIME * MIN_FRAG_LIFE;
+		//float const minFragLife = EXPLOSION_LIFETIME * MIN_FRAG_LIFE;
 		//tri.m_timeToDie = frand(EXPLOSION_LIFETIME - minFragLife) + g_gameTime + minFragLife;
         tri.m_timeToDie = g_gameTime + EXPLOSION_LIFETIME;
 
@@ -151,13 +151,13 @@ bool Explosion::Advance()
 	float deltaVelY = ACCEL_DUE_TO_GRAV * g_advanceTime;
 
 	// Advance all tumblers
-	for (int i = 0; i < m_numTumblers; ++i)
+	for (unsigned int i = 0; i < m_numTumblers; ++i)
 	{
 		m_tumblers[i].Advance();
 	}
 
 	// Advance all ExplodingTriangles
-	for (int i = 0; i < m_numTris; ++i)
+	for (unsigned int i = 0; i < m_numTris; ++i)
 	{
 		if (g_gameTime > m_tris[i].m_timeToDie) continue;
 
@@ -191,7 +191,7 @@ void Explosion::Render()
 	float age = (EXPLOSION_LIFETIME + (g_gameTime - m_timeToDie)) / EXPLOSION_LIFETIME;
 
 	glBegin(GL_TRIANGLES);
-	for (int i = 0; i < m_numTris; ++i)
+	for (unsigned int i = 0; i < m_numTris; ++i)
 	{
 		if (g_gameTime > m_tris[i].m_timeToDie) continue;
 
@@ -218,7 +218,7 @@ Vector3 Explosion::GetCenter() const
 {
 	Vector3 sum = Vector3(0,0,0);
 	unsigned summed = 0;
-	for (int i = 0; i < m_numTris; ++i)
+	for (unsigned int i = 0; i < m_numTris; ++i)
 	{
 		if (g_gameTime > m_tris[i].m_timeToDie) continue;
 		sum += m_tris[i].m_pos;
@@ -266,7 +266,7 @@ void ExplosionManager::AddExplosion(ShapeFragment *_frag,
 	{
 		Matrix34 totalMatrix = _frag->m_transform * _transform;
 
-		for (unsigned int i = 0; i < _frag->m_childFragments.Size(); ++i)
+		for (int i = 0; i < _frag->m_childFragments.Size(); ++i)
 		{
 			ShapeFragment *child = _frag->m_childFragments[i];
 			AddExplosion(child, totalMatrix, true, _fraction);
@@ -291,7 +291,7 @@ void ExplosionManager::Advance()
 {
 	START_PROFILE(g_app->m_profiler, "Advance Explosions");
 
-	for (unsigned int i = 0; i < m_explosions.Size(); ++i)
+	for (int i = 0; i < m_explosions.Size(); ++i)
 	{
 		if (m_explosions[i]->Advance())
 		{
@@ -310,7 +310,7 @@ void ExplosionManager::Render()
 {
 	START_PROFILE(g_app->m_profiler, "Render Explosions");
 
-	int numExplosions = m_explosions.Size();
+	unsigned int numExplosions = m_explosions.Size();
 
 	if (numExplosions > 0) {
 

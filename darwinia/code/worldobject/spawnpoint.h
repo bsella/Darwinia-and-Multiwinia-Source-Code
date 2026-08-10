@@ -83,7 +83,7 @@ public:
 
     void RequestSpirit( int _targetBuildingId );
 
-    char *GetObjectiveCounter();
+    const char *GetObjectiveCounter();
 
     static MasterSpawnPoint *GetMasterSpawnPoint();
 };

@@ -12,10 +12,10 @@
 
 AirstrikeUnit::AirstrikeUnit(int teamId, int unitId, int numEntities, Vector3 const &_pos)
 :   Unit( Entity::TypeSpaceInvader, teamId, unitId, numEntities, _pos ),
-    m_numInvaders(numEntities),
-    m_state(StateApproaching),
     m_speed(0.0f),
-    m_effectId(-1)
+    m_effectId(-1),
+    m_numInvaders(numEntities),
+    m_state(StateApproaching)
 {
     m_attackPosition = _pos;
     m_attackPosition.y = g_app->m_location->m_landscape.m_heightMap->GetValue( m_attackPosition.x, m_attackPosition.z ) + 70.0f;
@@ -149,7 +149,7 @@ bool AirstrikeUnit::Advance( int _slice )
 
         case StateLeaving:
         {
-            bool amIThere = AdvanceToTargetPosition( m_exitPosition );
+            AdvanceToTargetPosition( m_exitPosition );
             break;
         }
     };
@@ -252,7 +252,7 @@ bool SpaceInvader::Advance( Unit *_unit )
 }
 
 
-void SpaceInvader::ChangeHealth( int _amount )
+void SpaceInvader::ChangeHealth( int )
 {
     // Space invaders are now INVINCIBLE
 

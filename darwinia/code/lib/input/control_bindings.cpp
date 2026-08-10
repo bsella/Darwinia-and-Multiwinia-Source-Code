@@ -5,8 +5,6 @@
 #include "lib/input/input_types.h"
 #include "lib/input/control_bindings.h"
 
-using std::auto_ptr;
-
 // This has to be in the same order as the enum in
 // control_types.h
 // These are the names of the control actions as they

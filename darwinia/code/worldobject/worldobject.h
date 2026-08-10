@@ -55,6 +55,8 @@ public:
 };
 
 
+class Unit;
+
 // ****************************************************************************
 //  Class WorldObject
 // ****************************************************************************
@@ -99,6 +101,7 @@ public:
     // Making sure the class is not movable to be able to use pointers without worrying
     WorldObject(WorldObject&&) = delete;
 
+    virtual bool Advance			(Unit*);
     virtual bool Advance			();
     virtual void Render				( float _time );
 	virtual bool RenderPixelEffect	( float predictionTime );               // Return true if you did anything

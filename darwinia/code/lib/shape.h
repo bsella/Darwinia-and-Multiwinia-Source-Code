@@ -8,6 +8,8 @@
 #include "lib/rgb_colour.h"
 #include "lib/vector3.h"
 
+#include <vector>
+
 
 class TextReader;
 class ShapeFragment;

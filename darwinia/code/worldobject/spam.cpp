@@ -28,8 +28,8 @@ Spam::Spam()
 :   Building(),
     m_timer(0.0f),
     m_damage(SPAM_DAMAGE),
-    m_onGround(true),
     m_research(false),
+    m_onGround(true),
     m_activated(true)
 {
     m_type = TypeSpam;
@@ -47,7 +47,7 @@ void Spam::Initialise( Building *_template )
 }
 
 
-void Spam::SetDetail( int _detail )
+void Spam::SetDetail( int )
 {
     if( m_onGround )
     {

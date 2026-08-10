@@ -130,12 +130,12 @@ void LandscapeRenderer::BuildNormArray()
 			m_verts[nextNormId++].m_norm = norm1;
 			m_verts[nextNormId++].m_norm = norm2;
 
-			int vertIndex = strip->m_firstVertIndex + j + 2;
+			[[maybe_unused]]int vertIndex = strip->m_firstVertIndex + j + 2;
 			DarwiniaDebugAssert(nextNormId - 2 == vertIndex);
 		}
 	}
 
-	int vertIndex = m_verts.NumUsed();
+	[[maybe_unused]]int vertIndex = m_verts.NumUsed();
 	DarwiniaDebugAssert(nextNormId == vertIndex);
 }
 
@@ -450,7 +450,7 @@ void LandscapeRenderer::RenderMainSlow()
 
 	if (m_renderMode == RenderModeVertexBufferObject)
     {
-		gglBindBufferARB( GL_ARRAY_BUFFER_ARB, NULL );
+		gglBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 	}
 
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -537,7 +537,7 @@ void LandscapeRenderer::RenderOverlaySlow()
 
 	switch (m_renderMode) {
 		case RenderModeVertexBufferObject:
-			gglBindBufferARB( GL_ARRAY_BUFFER_ARB, NULL );
+			gglBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 			break;
 	}
 

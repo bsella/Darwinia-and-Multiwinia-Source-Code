@@ -27,8 +27,8 @@
 
 SporeGenerator::SporeGenerator()
 :   Entity(),
-    m_eggTimer(0.0f),
     m_retargetTimer(0.0f),
+    m_eggTimer(0.0f),
     m_state(StateIdle)
 {
     SetType( TypeSporeGenerator );
@@ -174,7 +174,6 @@ bool SporeGenerator::AdvancePanic()
 
 bool SporeGenerator::AdvanceToTargetPosition()
 {
-    float heightAboveGround = m_pos.y - g_app->m_location->m_landscape.m_heightMap->GetValue( m_pos.x, m_pos.z );
     Vector3 toTarget = m_pos - m_targetPos;
     float distanceToTarget = toTarget.Mag();
 
@@ -238,7 +237,7 @@ bool SporeGenerator::AdvanceIdle()
     }
 
 
-    bool arrived = AdvanceToTargetPosition();
+    AdvanceToTargetPosition();
 
     return false;
 }
@@ -468,10 +467,6 @@ bool SporeGenerator::RenderPixelEffect( float _predictionTime )
                                             cosf( g_gameTime*panicFraction + i + j ) * 5.0f,
                                             cosf( g_gameTime*panicFraction + i + j ) * 5.0f );
             }
-
-            float size = 1.0f - (float) j / (float) numTailParts;
-            size *= 2.0f;
-            size += sinf(g_gameTime+i+j) * 0.3f;
 
 			Vector3 pos = (prevTailPos + thisTailPos) * 0.5f;
 			Vector3 diff = prevTailPos - thisTailPos;

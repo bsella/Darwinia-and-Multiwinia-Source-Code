@@ -1,6 +1,4 @@
-﻿#include "lib/debug_utils.h"
-
-#include "lib/input/inputdriver_sdl_mouse.h"
+﻿#include "lib/input/inputdriver_sdl_mouse.h"
 #include "lib/input/sdl_eventhandler.h"
 #include "lib/window_manager_sdl.h"
 #include <SDL/SDL.h>
@@ -168,6 +166,7 @@ bool SDLMouseInputDriver::getInput( InputSpec const &spec, InputDetails &details
 	switch ( spec.condition ) {
 		case COND_READ:
 			reading = true;
+			//fallthrough
 		case COND_MOVED:
 			if ( MOUSE_MOVEMENT == spec.control_id ) {
 				details.x = m_mouseVel[X];

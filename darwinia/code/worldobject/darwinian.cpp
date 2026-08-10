@@ -36,21 +36,21 @@
 Darwinian::Darwinian()
 :   Entity(),
     m_state(StateIdle),
+    m_promoted(false),
     m_retargetTimer(0.0f),
     m_spiritId(-1),
     m_buildingId(-1),
     m_portId(-1),
+    m_threatRange(DARWINIAN_SEARCHRANGE_THREATS),
+    m_scared(true),
     m_controllerId(-1),
     m_wayPointId(-1),
     m_teleportRequired(false),
     m_ordersBuildingId(-1),
     m_ordersSet(false),
-    m_promoted(false),
-    m_scared(true),
-    m_shadowBuildingId(-1),
-    m_threatRange(DARWINIAN_SEARCHRANGE_THREATS),
     m_grenadeTimer(0.0f),
-    m_officerTimer(0.0f)
+    m_officerTimer(0.0f),
+    m_shadowBuildingId(-1)
 {
     SetType( TypeDarwinian );
     m_grenadeTimer = syncfrand( 5.0f );
@@ -169,11 +169,11 @@ bool Darwinian::Advance( Unit *_unit )
         m_retargetTimer -= SERVER_ADVANCE_PERIOD;
         if( m_retargetTimer <= 0.0 )
         {
-            bool newTaskFound = SearchForNewTask();
+            SearchForNewTask();
 
             if( m_state == StateIdle )
             {
-                bool victoryDance = BeginVictoryDance();
+                BeginVictoryDance();
             }
 
             m_retargetTimer = 1.0f + syncfrand(1.0f);
@@ -256,7 +256,6 @@ bool Darwinian::AdvanceWatchingSpectacle()
     //
     // Face the spectacle
 
-    float amountToTurn = SERVER_ADVANCE_PERIOD * 4.0f;
     Vector3 targetPos = building->m_centrePos;
     targetPos += Vector3( sinf(g_gameTime) * 30.0f,
                           cosf(g_gameTime) * 20.0f,
@@ -1131,8 +1130,7 @@ bool Darwinian::AdvanceAttackingBuilding()
     Vector3 moveVector = (m_pos - building->m_pos);
     moveVector.SetLength( 100 + syncfrand(50.0f) );
     m_wayPoint = building->m_pos + moveVector;
-    bool arrived = AdvanceToTargetPosition();
-
+    AdvanceToTargetPosition();
 
     //
     // Shoot at the building if we are in range
@@ -2070,8 +2068,7 @@ void Darwinian::Render( float _predictionTime, float _highDetail )
         return;
     }
 
-    RGBAColour colour;
-    if( m_id.GetTeamId() >= 0 ) colour = g_app->m_location->m_teams[ m_id.GetTeamId() ].m_colour;
+    RGBAColour colour = g_app->m_location->m_teams[ m_id.GetTeamId() ].m_colour;
 
     Vector3 predictedPos = m_pos + m_vel * _predictionTime;;
     Vector3 entityUp = g_upVector;

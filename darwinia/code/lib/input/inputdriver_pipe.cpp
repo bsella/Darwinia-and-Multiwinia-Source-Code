@@ -1,6 +1,5 @@
 #include "lib/universal_include.h"
 
-#include <algorithm>
 #include <sstream>
 
 #include "lib/input/inputdriver_pipe.h"
@@ -146,7 +145,7 @@ void PipeInputDriver::Advance()
 }
 
 
-const string &PipeInputDriver::getLastParseError( InputParserState state )
+const string &PipeInputDriver::getLastParseError( InputParserState )
 {
 	return lastError;
 }

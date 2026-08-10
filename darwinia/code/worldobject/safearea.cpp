@@ -22,9 +22,9 @@ SafeArea::SafeArea()
 :   Building(),
     m_size(50.0f),
     m_entitiesRequired(0),
+    m_entityTypeRequired(Entity::TypeDarwinian),
     m_recountTimer(0.0f),
-    m_entitiesCounted(0),
-    m_entityTypeRequired(Entity::TypeDarwinian)
+    m_entitiesCounted(0)
 {
     m_type = TypeSafeArea;
 }
@@ -90,7 +90,7 @@ bool SafeArea::Advance()
 }
 
 
-void SafeArea::Render( float predictionTime )
+void SafeArea::Render( float )
 {
     if( g_app->m_editing )
     {
@@ -145,13 +145,13 @@ void SafeArea::Render( float predictionTime )
 }
 
 
-bool SafeArea::DoesSphereHit(Vector3 const &_pos, float _radius)
+bool SafeArea::DoesSphereHit(Vector3 const &, float )
 {
     return false;
 }
 
 
-bool SafeArea::DoesShapeHit(Shape *_shape, Matrix34 _transform)
+bool SafeArea::DoesShapeHit(Shape *, Matrix34 )
 {
     return false;
 }
@@ -171,7 +171,7 @@ bool SafeArea::DoesRayHit(Vector3 const &_rayStart, Vector3 const &_rayDir,
 }
 
 
-char *SafeArea::GetObjectiveCounter()
+const char *SafeArea::GetObjectiveCounter()
 {
     static char result[256];
     sprintf( result, "%s : %d", LANGUAGEPHRASE("objective_currentcount"), m_entitiesCounted );

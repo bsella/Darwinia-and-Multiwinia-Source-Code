@@ -71,7 +71,7 @@ public:
 
     void TriggerSpirit ( float _initValue );
 
-    char *GetObjectiveCounter();
+    const char *GetObjectiveCounter();
 
     void Initialise( Building *_building );
     bool Advance();

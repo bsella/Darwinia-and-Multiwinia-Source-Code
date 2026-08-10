@@ -89,7 +89,7 @@ void ChordInputDriver::Advance()
 }
 
 
-const string &ChordInputDriver::getLastParseError( InputParserState state )
+const string &ChordInputDriver::getLastParseError( InputParserState )
 {
 	return lastError;
 }
