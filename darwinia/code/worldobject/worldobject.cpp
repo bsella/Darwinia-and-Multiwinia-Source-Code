@@ -29,15 +29,6 @@ WorldObjectId::WorldObjectId()
 {
 }
 
-WorldObjectId::WorldObjectId(const WorldObjectId& o):
-	m_teamId(o.m_teamId),
-	m_unitId(o.m_unitId),
-	m_index(o.m_index),
-	m_uniqueId(o.m_uniqueId)
-{
-}
-
-
 WorldObjectId::WorldObjectId( unsigned char _teamId,
                               int _unitId,
                               int _index,
@@ -88,17 +79,6 @@ bool WorldObjectId::operator == (WorldObjectId const &w) const
              m_index == w.m_index &&
              m_uniqueId == w.m_uniqueId );
 }
-
-
-WorldObjectId const &WorldObjectId::operator = (WorldObjectId const &w)
-{
-    m_teamId = w.m_teamId;
-    m_unitId = w.m_unitId;
-    m_index = w.m_index;
-    m_uniqueId = w.m_uniqueId;
-    return *this;
-}
-
 
 void WorldObjectId::GenerateUniqueId()
 {

@@ -27,7 +27,6 @@ protected:
     static int      s_nextUniqueId;
 
 public:
-	WorldObjectId(const WorldObjectId&);
     WorldObjectId();
     WorldObjectId( unsigned char _teamId, int _unitId, int _index, int _uniqueId );
     void			Set( unsigned char _teamId, int _unitId, int _index, int _uniqueId );
@@ -51,7 +50,6 @@ public:
 
 	bool operator != (WorldObjectId const &w) const;
 	bool operator == (WorldObjectId const &w) const;
-    WorldObjectId const &operator = (WorldObjectId const &w);
 };
 
 

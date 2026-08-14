@@ -52,15 +52,6 @@ TextureUV TextureUV::operator / (float const _b) const
 }
 
 
-// *** Operator =
-TextureUV const &TextureUV::operator = (TextureUV const &_b)
-{
-	u = _b.u;
-	v = _b.v;
-	return *this;
-}
-
-
 // *** Operator *=
 TextureUV const &TextureUV::operator *= (float const _b)
 {

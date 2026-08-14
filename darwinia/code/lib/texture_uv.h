@@ -16,7 +16,6 @@ public:
 	TextureUV operator * (float const b) const;
 	TextureUV operator / (float const b) const;
 
-    TextureUV const &operator = (TextureUV const &b);
 	TextureUV const &operator *= (float const b);
 	TextureUV const &operator /= (float const b);
 	TextureUV const &operator += (TextureUV const &b);

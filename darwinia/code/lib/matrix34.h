@@ -27,17 +27,6 @@ public:
 		SetToIdentity();
 	}
 
-
-	constexpr Matrix34( const Matrix34 &_other ):
-		r(_other.r),
-		u(_other.u),
-		f(_other.f),
-		pos(_other.pos)
-	{
-		//memcpy(this, &_other, sizeof(Matrix34));
-	}
-
-
 	Matrix34( Matrix33 const &_or, Vector3 const &_pos )
 	:	r(_or.r),
 		u(_or.u),
@@ -126,21 +115,7 @@ public:
 
 	// Operators
 	bool operator == (Matrix34 const &b) const;		// Uses FLT_EPSILON
-//	Matrix34 const &operator =  ( Matrix34 const &_o );
-//	Matrix34 const &Matrix34::operator = ( Matrix34 const &_o )
-//	{
-//		memcpy(this, &_o, sizeof(Matrix34));
-//		return *this;
-//	}
-
-
-	Matrix34& operator =(const Matrix34& _other){
-		r=_other.r;
-		u=_other.u;
-		f=_other.f;
-		pos=_other.pos;
-		return *this;
-	}
+	
 	Matrix34 const &operator *= ( Matrix34 const &_o );
 	Matrix34		operator *  ( Matrix34 const &b ) const
 	{

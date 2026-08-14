@@ -96,8 +96,6 @@ public:
 	char *GetByteStream(int *_linearSize);
 
 //    void SendToDebugStream(FILE *_out, int _seqNum);
-
-    NetworkUpdate const &operator = (NetworkUpdate const &n);
 };
 
 // Inlines

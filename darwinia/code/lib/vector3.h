@@ -30,10 +30,6 @@ public:
 	{
 	}
 
-	constexpr Vector3(const Vector3&b): x(b.x), y(b.y), z(b.z)
-	{
-	}
-
 	Vector3(float _x, float _y, float _z)
 	:	x(_x), y(_y), z(_z)
 	{
@@ -90,14 +86,6 @@ public:
 	{
 		float multiplier = 1.0f / b;
 		return Vector3(x * multiplier, y * multiplier, z * multiplier);
-	}
-
-	Vector3 const &operator = (Vector3 const &b)
-	{
-		x = b.x;
-		y = b.y;
-		z = b.z;
-		return *this;
 	}
 
 	Vector3 const &operator *= (float const b)

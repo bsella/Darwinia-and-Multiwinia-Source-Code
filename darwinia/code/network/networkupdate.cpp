@@ -329,11 +329,3 @@ char *NetworkUpdate::GetByteStream(int *_linearSize)
 //    }
 //    _ostr << "\n";
 //}
-
-
-// *** Operator =
-NetworkUpdate const &NetworkUpdate::operator = (NetworkUpdate const &n)
-{
-    memcpy( this, &n, sizeof(NetworkUpdate) );
-    return *this;
-}
