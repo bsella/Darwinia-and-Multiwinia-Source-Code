@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <math.h>
 #ifdef _OPENMP
 #include <omp.h>
@@ -76,7 +74,6 @@
 #include "control_help.h"
 #include "water.h"
 #include "game_menu.h"
-#include "demoendsequence.h"
 
 #include "loaders/loader.h"
 
@@ -205,11 +202,6 @@ int GetNumSlicesToAdvance()
 
 int GetNumSlicesToAdvance()
 {
-    int numUpdatesToProcess = g_app->m_clientToServer->m_lastValidSequenceIdFromServer - g_lastProcessedSequenceId;
-    int numSlicesPending = numUpdatesToProcess * NUM_SLICES_PER_FRAME;
-    if( g_sliceNum != -1 ) numSlicesPending -= g_sliceNum;
-    else if( g_sliceNum == -1 ) numSlicesPending -= 10;
-
     float timeSinceStartOfAdvance = g_gameTime - g_lastServerAdvance;
 	//int numSlicesThatShouldBePending = 10 - timeSinceStartOfAdvance * 10.0f;
 

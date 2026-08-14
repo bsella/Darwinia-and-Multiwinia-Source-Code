@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <memory>
+﻿#include <memory>
 
 #include <eclipse.h>
 
@@ -33,12 +31,12 @@
 
 Sepulveda::Sepulveda()
 :   m_timeSync(0.0),
-	m_gestureDemo(NULL),
-	m_mouseCursor(NULL),
     m_fade(0.0f),
     m_previousNumChars(0),
     m_cutsceneMode(false),
-    m_scrollbarOffset(0)
+    m_scrollbarOffset(0),
+	m_gestureDemo(NULL),
+	m_mouseCursor(NULL)
 {
 	m_mouseCursor = new MouseCursor("icons/mouse_main.bmp");
 
@@ -811,7 +809,6 @@ void Sepulveda::RenderTextBoxTaskManagerMode()
     // Current text appearing on screen
 
     float yPos = m_screenH - 56;
-    float alpha = 1.0f;
     float textX = textBoxX+15;
 
     if( m_caption[0] != '\0' )
@@ -1306,7 +1303,6 @@ void Sepulveda::RenderScrollBar()
     gluOrtho2D(0, m_screenW, m_screenH, 0);
 	glMatrixMode(GL_MODELVIEW);
 
-    float textH = 12.0f;
     float textBoxW = 600;
     float textBoxX = m_screenW/2-textBoxW/2;
     float textBoxH = 100;

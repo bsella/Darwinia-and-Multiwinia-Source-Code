@@ -3,8 +3,6 @@
 #define _included_gamemenu_h
 
 #include "interface/darwinia_window.h"
-#include "interface/drop_down_menu.h"
-#include "interface/input_field.h"
 
 #define MAX_GAME_TYPES 6
 

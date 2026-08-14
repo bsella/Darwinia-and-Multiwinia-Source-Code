@@ -273,7 +273,7 @@ bool Resource::DoesTextureExist(char const *_name)
 
 void Resource::DeleteTexture(char const *_name)
 {
-	int id = m_textures.GetData(_name);
+	int id = m_textures.GetData(_name, 0);
 	if (id > 0)
 	{
 		unsigned int id2 = id;
@@ -727,7 +727,7 @@ LList <char *> *Resource::ListResources(char const *_dir, char const *_filter, b
 
 		DArray <char *> *unfilteredResults = m_resourceFiles.ConvertIndexToDArray();
 
-		for (unsigned int i = 0; i < unfilteredResults->Size(); ++i)
+		for (int i = 0; i < unfilteredResults->Size(); ++i)
 		{
 			if (!unfilteredResults->ValidIndex(i)) continue;
 

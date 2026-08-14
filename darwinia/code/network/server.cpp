@@ -1,10 +1,7 @@
-﻿#include "lib/universal_include.h"
-
-#include "net_lib.h"
+﻿#include "net_lib.h"
 #include "net_mutex.h"
 #include "net_socket.h"
 #include "net_socket_listener.h"
-#include "net_thread.h"
 #include "net_udp_packet.h"
 
 #include "lib/debug_utils.h"
@@ -13,8 +10,6 @@
 
 #include "app.h"
 #include "globals.h"
-#include "main.h"
-#include "team.h"
 
 #include "network/generic.h"
 #include "network/server.h"
@@ -85,7 +80,7 @@ Server::~Server()
 }
 
 
-static NetCallBackRetType ListenThread(void *)
+[[maybe_unused]] static NetCallBackRetType ListenThread(void *)
 {
     NetSocketListener *m_listener = new NetSocketListener( 4000 );
 	m_listener->StartListening( reinterpret_cast<void*(*)(void*)>(ListenCallback) );
@@ -415,7 +410,7 @@ void Server::Advance()
 
                 if( m_sync.ValidIndex(sequenceId) )
                 {
-					//unsigned char lastKnownSync = m_sync[sequenceId];
+					unsigned char lastKnownSync = m_sync[sequenceId];
                     DarwiniaDebugAssert( lastKnownSync == sync );
                     //DebugOut( "Sync %02d verified as %03d\n", sequenceId, sync );
                 }

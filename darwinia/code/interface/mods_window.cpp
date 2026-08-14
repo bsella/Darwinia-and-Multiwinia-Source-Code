@@ -1,11 +1,9 @@
-#include "lib/universal_include.h"
 #include "lib/filesys_utils.h"
 #include "lib/text_renderer.h"
 #include "lib/resource.h"
 #include "lib/language_table.h"
 
 #include "interface/mods_window.h"
-#include "interface/debugmenu.h"
 #include "interface/input_field.h"
 
 #include "app.h"

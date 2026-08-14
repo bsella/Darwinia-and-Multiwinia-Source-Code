@@ -14,12 +14,12 @@
 
 SoundStreamDecoder::SoundStreamDecoder(BinaryReader *_in)
 :	m_in(_in),
+	m_vorbisFile(NULL),
 	m_bits(0),
+	m_fileType(TypeUnknown),
 	m_numChannels(0),
 	m_freq(0),
-	m_numSamples(0),
-	m_fileType(TypeUnknown),
-    m_vorbisFile(NULL)
+	m_numSamples(0)
 {
 	char *fileType = _in->GetFileType();
 	if (stricmp(fileType, "wav") == 0)
@@ -117,7 +117,7 @@ void SoundStreamDecoder::ReadWavHeader()
 		// Skip the remainder of the chunk
 		while (chunkLength > 0)
 		{
-			if (m_in->ReadU8() == EOF)
+			if (m_in->ReadS8() == EOF)
 			{
 				break;
 			}
@@ -142,7 +142,7 @@ static int SeekFunc(void *datasource, ogg_int64_t _offset, int _origin)
 }
 
 
-static int CloseFunc(void *datasource)
+static int CloseFunc([[maybe_unused]] void *datasource)
 {
 	return 0;
 }
@@ -263,6 +263,7 @@ unsigned int SoundStreamDecoder::Read(signed short *_data, unsigned int _numSamp
 	{
 	case TypeUnknown:
 		DarwiniaReleaseAssert(0, "Unknown format of sound file %s", m_in->m_filename);
+		break;
 	case TypeWav:
 		return ReadWavData(_data, _numSamples);
 	case TypeOgg:

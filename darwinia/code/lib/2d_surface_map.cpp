@@ -1,5 +1,6 @@
 ﻿#include "lib/2d_surface_map.h"
 
+#include <cmath>
 
 template <class T>
 SurfaceMap2D<T>::SurfaceMap2D()

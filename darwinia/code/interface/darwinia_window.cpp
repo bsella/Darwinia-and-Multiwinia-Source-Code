@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <string.h>
 
 #include "lib/text_renderer.h"
@@ -12,11 +10,6 @@
 
 #include "app.h"
 #include "renderer.h"
-#include "globals.h"
-#include "lib/input/control_bindings.h"
-
-#include "lib/targetcursor.h"
-
 
 
 // ****************************************************************************
@@ -701,7 +694,7 @@ void CloseButton::Render( int realX, int realY, bool highlighted, bool clicked )
 // Class InvertexBox
 // ****************************************************************************
 
-void InvertedBox::Render( int realX, int realY, bool highlighted, bool clicked )
+void InvertedBox::Render( int realX, int realY, [[maybe_unused]] bool highlighted, [[maybe_unused]] bool clicked )
 {
     //DarwiniaButton::Render( realX, realY, highlighted, clicked );
 
@@ -741,7 +734,7 @@ void InvertedBox::Render( int realX, int realY, bool highlighted, bool clicked )
 
 
 
-void LabelButton::Render( int realX, int realY, bool highlighted, bool clicked )
+void LabelButton::Render( int realX, int realY, [[maybe_unused]] bool highlighted, [[maybe_unused]] bool clicked )
 {
 	if (m_disabled)
 		glColor4f( 0.5f, 0.5f, 0.5f, 1.0f );

@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <math.h>
+﻿#include <math.h>
 #include <string.h>
 #include <float.h>
 
@@ -218,8 +216,6 @@ void Camera::AdvanceSphereWorldMode()
 
     Vector3 idealPos = focusPos - m_front * 30000;
     if( idealPos.Mag() > 35000.0f ) idealPos.SetLength( 35000.0f );
-    Vector3 toIdealPos = idealPos - m_pos;
-	float distToIdealPos = toIdealPos.Mag();
 	m_pos = idealPos * factor1 + m_pos * factor2;
 
     // Set up viewing matrices
@@ -258,12 +254,9 @@ void Camera::AdvanceSphereWorldMode()
 
 void Camera::AdvanceSphereWorldScriptedMode()
 {
-    int b = 10;
-
     m_height = 50.0f;
 
 	int const screenH = g_app->m_renderer->ScreenH();
-	int const screenW = g_app->m_renderer->ScreenW();
 
 	Vector3 focusPos = Vector3(0, m_height * -400,0);
     focusPos.x += sinf( g_gameTime*0.5f ) * 4000.0f;
@@ -303,8 +296,6 @@ void Camera::AdvanceSphereWorldScriptedMode()
 
     Vector3 idealPos = focusPos - m_front * 30000;
     if( idealPos.Mag() > 35000.0f ) idealPos.SetLength( 35000.0f );
-    Vector3 toIdealPos = idealPos - m_pos;
-	float distToIdealPos = toIdealPos.Mag();
 	m_pos = idealPos * factor1 + m_pos * factor2;
 
     glPopMatrix();
@@ -457,7 +448,6 @@ void Camera::AdvanceSphereWorldOutroMode()
     }
 
     Vector3 targetFront = (targetPos - m_pos) * -1.0f;
-    float distance = targetFront.Mag();
 
     float forwardSpeed = sqrtf(m_pos.Mag()) * 4;
 	forwardSpeed = std::fmax( forwardSpeed, 1000.f );
@@ -518,8 +508,6 @@ void Camera::AdvanceSphereWorldFocusMode()
 {
     m_targetFov = 100;
 
-    Vector3 oldPos = m_pos;
-
     m_trackRange = 100000;
     m_trackHeight = 50000;
 
@@ -572,7 +560,7 @@ float Camera::DistanceToBlockage(Vector3 const &_dir, float const _maxDist)
 
 	unsigned int const numSteps = 40;
 	float const distStep = _maxDist / (float)numSteps;
-	for (int i = 1; i <= numSteps; ++i)
+	for (unsigned int i = 1; i <= numSteps; ++i)
 	{
 		float x = m_pos.x + _dir.x * distStep * (float)i;
 		float z = m_pos.z + _dir.z * distStep * (float)i;
@@ -605,7 +593,7 @@ void Camera::AdvanceFreeMovementMode()
 		    RequestEntityTrackMode( selection );
 		    return;
         }
-        else
+		else
         {
             m_objectId = WorldObjectId();
         }
@@ -636,7 +624,6 @@ void Camera::AdvanceFreeMovementMode()
 		Vector3 accelRight = GetRight();
 		accelRight.y = 0.0f;
 		accelRight.Normalise();
-        Vector3 accelUp = g_upVector;
 
 		// TODO: Support mouse/joystick
 		if( g_inputManager.controlEvent( ControlCameraSpeedup ) ) moveRate *= 4.0f;
@@ -800,8 +787,6 @@ void Camera::Render()
 
 void Camera::AdvanceBuildingFocusMode()
 {
-    Vector3 oldPos = m_pos;
-
     //
     // Target a point that slowly rotates around the building
 
@@ -1086,10 +1071,6 @@ bool Camera::AdvanceRopeModel( Vector3 &cameraTarget )
 		return true;
     }
 
-    // Distance to stay outside of
-
-    float cameraHeight = m_pos.y - m_predictedEntityPos.y;
-
 
     // outsideD should be dependent on the camera height
     // (oustideD = h / tan theta, where theta is the angle of elevation of the camera from the entity's point of view)
@@ -1242,7 +1223,7 @@ void Camera::GetHighestTangentPoint( Vector3 const &_from, Vector3 const &_to, f
     float maxGradient = 0.0f;
 	float distanceTravelled = 0.0f;
 
-	for (int i = 1; i <= numSteps; ++i)
+	for (unsigned int i = 1; i <= numSteps; ++i)
 	{
 		x += deltaX;
 		z += deltaZ;
@@ -1269,7 +1250,7 @@ void Camera::GetHighestPoint( Vector3 const &_from, Vector3 const &_to, float _m
 
     float maxHeight = 0.0f;
 
-	for (int i = 1; i <= numSteps; ++i)
+	for (unsigned int i = 1; i <= numSteps; ++i)
 	{
 		float x = _from.x + dir.x * distStep * (float)i;
 		float z = _from.z + dir.z * distStep * (float)i;
@@ -1304,7 +1285,7 @@ float Camera::DirectDistanceToBlockage(Vector3 const &_from, Vector3 const &_to,
 	float const deltaY = distStep * dir.y;
 	float const deltaZ = distStep * dir.z;
 
-	for (int i = 1; i <= numSteps; ++i)
+	for (unsigned int i = 1; i <= numSteps; ++i)
 	{
 		x += deltaX;
 		y += deltaY;
@@ -1372,8 +1353,6 @@ void Camera::AdvanceRadarAimMode()
 	horiCamFront.y = 0.0f;
 	horiCamFront.Normalise();
 	idealPos -= horiCamFront * (0.0f + m_height * 1.5f);
-    Vector3 toIdealPos = idealPos - m_pos;
-	float distToIdealPos = toIdealPos.Mag();
 	m_pos = idealPos * factor1 + m_pos * factor2;
 
     // Set up viewing matrices
@@ -1418,7 +1397,7 @@ void Camera::AdvanceTurretAimMode()
 
 	Vector3 groundPos = m_targetPos;
     groundPos.y += 20.0f;
-    float minY = g_app->m_location->m_landscape.m_heightMap->GetValue(groundPos.x, groundPos.z);
+    //float minY = g_app->m_location->m_landscape.m_heightMap->GetValue(groundPos.x, groundPos.z);
 
     groundPos -= m_front * m_height;
     //groundPos.y = max( groundPos.y, minY );
@@ -1466,8 +1445,6 @@ void Camera::AdvanceTurretAimMode()
 	horiCamFront.y = 0.0f;
 	horiCamFront.Normalise();
 	idealPos -= horiCamFront * (0.0f + m_height * 0.4f);
-    Vector3 toIdealPos = idealPos - m_pos;
-	float distToIdealPos = toIdealPos.Mag();
 	m_pos = idealPos * factor1 + m_pos * factor2;
 
     // Set up viewing matrices
@@ -1536,7 +1513,7 @@ void Camera::AdvanceFirstPersonMode()
     Vector3 accelRight = GetRight();
     accelRight.y = 0.0f;
     accelRight.Normalise();
-    float moveRate = 100.0f;
+    //float moveRate = 100.0f;
 //    if (g_controlBindings->CameraLeft())		m_vel += accelRight * g_advanceTime * moveRate;
 //	if (g_controlBindings->CameraRight())		m_vel -= accelRight * g_advanceTime * moveRate;
 //	if (g_controlBindings->CameraForwards())	m_vel += accelForward * g_advanceTime * moveRate * 2.0f;
@@ -1689,20 +1666,20 @@ void Camera::AdvanceEntityFollowMode()
 // *** Constructor
 Camera::Camera()
 :   m_fov(60.0f),
-    m_targetFov(60.0f),
-    m_height(50.0f),
+	m_height(50.0f),
     m_vel(0,0,0),
+    m_targetFov(60.0f),
+	m_trackingEntity(NULL),
+	m_distFromEntity(100.0f),
+    m_currentDistance(0.0f),
+	m_heightMultiplier(1.0f),
     m_mode(ModeDoNothing),
 	m_debugMode(DebugModeAuto),
-    m_objectId(),
 	m_framesInThisMode(0),
-	m_distFromEntity(100.0f),
+    m_objectId(),
 	m_anim(NULL),
     m_cameraShake(0.0f),
     m_entityTrack(false),
-	m_trackingEntity(NULL),
-    m_currentDistance(0.0f),
-	m_heightMultiplier(1.0f),
 	m_skipDirectionCalculation(false)
 {
 	m_cosFov = cos(m_fov / 180.0f * M_PI);
@@ -1957,7 +1934,7 @@ void Camera::AdvanceComponentMouseWheelHeight()
         {
             m_height = max( m_height, MIN_GROUND_CLEARANCE );
         }
-        else
+		else
         {
             if(landheight + MIN_GROUND_CLEARANCE > m_height)
             {
@@ -1969,7 +1946,7 @@ void Camera::AdvanceComponentMouseWheelHeight()
 
         g_app->m_helpSystem->PlayerDoneAction( HelpSystem::CameraHeight );
     }
-    else
+	else
     {
         m_height += delta * (m_height * 0.1f + 5.0f);
 		if (m_height < 0.0f)			m_height = 0.1f;

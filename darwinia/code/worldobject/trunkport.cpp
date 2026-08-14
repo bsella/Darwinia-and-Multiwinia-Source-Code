@@ -23,9 +23,9 @@
 TrunkPort::TrunkPort()
 :   Building(),
     m_targetLocationId(-1),
-    m_openTimer(0.0f),
+    m_heightMapSize(TRUNKPORT_HEIGHTMAP_MAXSIZE),
     m_heightMap(NULL),
-    m_heightMapSize(TRUNKPORT_HEIGHTMAP_MAXSIZE)
+    m_openTimer(0.0f)
 {
     m_type = TypeTrunkPort;
     SetShape( g_app->m_resource->GetShape( "trunkport.shp" ) );

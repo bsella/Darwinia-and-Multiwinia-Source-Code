@@ -27,7 +27,6 @@ public:
 	Vector2 operator * (float const b) const;		// Scale
 	Vector2 operator / (float const b) const;
 
-    void	operator = (Vector2 const &b);
     void	operator = (Vector3 const &b);
 	void	operator *= (float const b);
 	void	operator /= (float const b);

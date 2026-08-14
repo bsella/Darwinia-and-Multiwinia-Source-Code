@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/debug_utils.h"
 #include "lib/profiler.h"
 
@@ -15,14 +13,14 @@ SoundLibrary3d *g_soundLibrary3d = NULL;
 
 
 SoundLibrary3d::SoundLibrary3d()
-:   m_masterVolume(0),
-    m_hw3dDesired(false),
+:   m_numChannels(0),
+    m_sampleRate(-1),
+    m_masterVolume(0),
+    m_listenerPos(0,0,0),
     m_mainCallback(NULL),
-	m_musicCallback(NULL),
-	m_musicChannelId(-1),
-	m_listenerPos(0,0,0),
-	m_sampleRate(-1),
-    m_numChannels(0)
+    m_musicCallback(NULL),
+    m_musicChannelId(-1),
+    m_hw3dDesired(false)
 {
 #ifdef PROFILER_ENABLED
     m_profiler = new Profiler;

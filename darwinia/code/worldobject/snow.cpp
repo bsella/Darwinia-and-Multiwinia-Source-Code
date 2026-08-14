@@ -1,4 +1,3 @@
-#include "lib/universal_include.h"
 #include "lib/hi_res_time.h"
 #include "lib/3d_sprite.h"
 #include "lib/resource.h"
@@ -60,8 +59,6 @@ bool Snow::Advance()
     {
         return true;
     }
-
-    Vector3 oldPos = m_pos;
 
     m_pos += m_vel * SERVER_ADVANCE_PERIOD;
     m_pos += m_hover * SERVER_ADVANCE_PERIOD;

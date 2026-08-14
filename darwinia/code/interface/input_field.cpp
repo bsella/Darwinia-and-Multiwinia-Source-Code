@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -15,8 +13,6 @@
 #include "lib/input/keydefs.h" // Key code definitions (bit of a hack)
 
 #include "app.h"
-#include "globals.h"
-#include "main.h"
 
 #include "interface/input_field.h"
 
@@ -29,14 +25,14 @@
 
 InputField::InputField()
 :	m_type(TypeNowt),
-	m_string(NULL),
+	m_char(NULL),
 	m_int(NULL),
 	m_float(NULL),
-    m_char(NULL),
+	m_string(NULL),
 	m_inputBoxWidth(0),
-    m_callback(NULL),
 	m_lowBound(0.0f),
-	m_highBound(1e4)
+	m_highBound(1e4),
+    m_callback(NULL)
 {
 	m_buf[0] = '\0';
 }

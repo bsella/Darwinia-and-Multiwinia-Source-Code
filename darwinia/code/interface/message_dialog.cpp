@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <string.h>
+﻿#include <string.h>
 
 #include "lib/text_renderer.h"
 #include "lib/language_table.h"

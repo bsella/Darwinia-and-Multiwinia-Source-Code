@@ -37,7 +37,7 @@ public:
 	virtual ~EclButton ();
 
 	virtual void SetProperties   ( const char *_name, int _x, int _y, int _w, int _h,
-								   const char *_caption=NULL, const char *_tooltip=NULL );
+								   const char *_caption=nullptr, const char *_tooltip=nullptr );
 
 	virtual void SetCaption      ( const char *_caption );
 	virtual void SetTooltip      ( const char *_tooltip );

@@ -1,9 +1,9 @@
-#include "lib/universal_include.h"
 #include "lib/math_utils.h"
 #include "lib/vector3.h"
 
 #include "3d_sierpinski_gasket.h"
 
+#include <GL/gl.h>
 
 Sierpinski3D::Sierpinski3D(unsigned int _numPoints)
 :	m_numPoints(_numPoints)

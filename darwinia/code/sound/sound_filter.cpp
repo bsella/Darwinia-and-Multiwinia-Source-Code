@@ -1,9 +1,7 @@
-#include "lib/universal_include.h"
 #include "lib/debug_utils.h"
 #include "lib/math_utils.h"
 #include "lib/profiler.h"
 
-#include "sound/soundsystem.h"
 #include "sound/sound_filter.h"
 
 #include "app.h"
@@ -128,7 +126,7 @@ void DspBitCrusher::Process( signed short *_data, unsigned int _numSamples)
     float valueRange = powf(2, m_bitRate);
     float stepSize = 65536.0 / valueRange;
 
-    for( int i = 0; i < _numSamples; ++i )
+    for( unsigned int i = 0; i < _numSamples; ++i )
     {
         float sample = (float) _data[i];
         int numSteps = sample / stepSize;
@@ -147,8 +145,8 @@ void DspBitCrusher::Process( signed short *_data, unsigned int _numSamples)
 DspGargle::DspGargle(int _sampleRate)
 :	DspEffect(_sampleRate),
 	m_wetDryMix(50.0f),
-	m_phase(0.0f),
 	m_freq(20.0f),
+	m_phase(0.0f),
 	m_waveType(WaveTriangle)
 {
 }
@@ -161,7 +159,7 @@ void DspGargle::ProcessTriangle(signed short *_data, unsigned int _numSamples)
 	float wet = m_wetDryMix / 100.0f;
 	float dry = 1.0f - wet;
 
-	int i = 0;
+	unsigned int i = 0;
 	while (1)
 	{
 		while (m_phase < 1.0f)
@@ -192,7 +190,7 @@ void DspGargle::ProcessSquare(signed short *_data, unsigned int _numSamples)
 	// m_phase ranges from 0 to 2
 	float inc = (2.0f * m_freq) / (float)m_sampleRate;
 
-	int i = 0;
+	unsigned int i = 0;
 	while (1)
 	{
 		while (m_phase < 1.0f)
@@ -247,10 +245,10 @@ void DspGargle::SetParameters(float const *_params)
 
 DspEcho::DspEcho(int _sampleRate)
 :	DspEffect(_sampleRate),
-	m_currentBufferIndex(0),
 	m_wetDryMix(50.0f),
 	m_delay(200.0f),
-	m_attenuation(50.0f)
+	m_attenuation(50.0f),
+	m_currentBufferIndex(0)
 {
 	m_buffer = new float [_sampleRate * 3];
 
@@ -318,10 +316,10 @@ void DspEcho::Process(signed short *_data, unsigned int _numSamples)
 //
 //		m_currentBufferIndex = i % delaySize;
 //	}
-	int i = 0;
+	unsigned int i = 0;
 	while (i < _numSamples)
 	{
-		int numSamplesRemaining = _numSamples - i;
+		unsigned int numSamplesRemaining = _numSamples - i;
 		int finalIndex = delayInSamples - 1;
 		int numSamplesToTakeFromBufferThisIteration = finalIndex - m_currentBufferIndex + 1;
 		if (i + numSamplesToTakeFromBufferThisIteration > numSamplesRemaining)
@@ -356,8 +354,8 @@ void DspEcho::Process(signed short *_data, unsigned int _numSamples)
 
 DspReverb::DspReverb(int _sampleRate)
 :	DspEffect(_sampleRate),
-	m_wetDryMix(50.0f),
-	m_currentBufferIndex(0)
+	m_currentBufferIndex(0),
+	m_wetDryMix(50.0f)
 {
 	m_delays[0] = 0.0011f* _sampleRate;
 	m_delays[1] = 0.003f * _sampleRate;
@@ -384,18 +382,16 @@ DspReverb::~DspReverb()
 }
 
 
-void DspReverb::SetParameters(float const *_params)
+void DspReverb::SetParameters([[maybe_unused]] float const *_params)
 {
 }
 
 
 void DspReverb::Process(signed short *_data, unsigned int _numSamples)
 {
-	float wetProportion = m_wetDryMix * 0.01f;
-	float dryProportion = 1.0f - wetProportion;
-
-	int i, j, k=0, s;
-	int const delaySize = 3 * m_sampleRate;
+	unsigned int i, j, k=0;
+	int s;
+	unsigned int const delaySize = 3 * m_sampleRate;
 
 	while (k < _numSamples)
 	{

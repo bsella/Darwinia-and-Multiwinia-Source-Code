@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <string.h>
 #include <stdio.h>
 
@@ -134,7 +132,7 @@ void LevelFile::ParseMissionFile(char const *_filename)
 		{
 			ParsePrimaryObjectives(in);
 		}
-        else if (stricmp("RunningPrograms_StartDefinition", word) == 0)
+		else if (stricmp("RunningPrograms_StartDefinition", word) == 0)
         {
             ParseRunningPrograms(in);
         }
@@ -1498,7 +1496,7 @@ void LevelFile::GenerateInstantUnits()
 						entity->m_pos.z = exitPos.z;
 						entity->m_pos.y = g_app->m_location->m_landscape.m_heightMap->GetValue(entity->m_pos.x, entity->m_pos.z) + 0.1f;
 					}
-                    else
+					else
                     {
                         InstantUnit *unit = new InstantUnit();
                         unit->m_type = entity->m_type;
@@ -1648,8 +1646,6 @@ void LevelFile::WriteRunningPrograms(FileWriter *_out)
 {
     if( !g_app->m_editing )
     {
-        Team *team = g_app->m_location->GetMyTeam();
-
 	    _out->printf( "\nRunningPrograms_StartDefinition\n");
 	    //_out->printf( "\t# x      y       z      size\n");
 	    _out->printf( "\t# ==========================\n");

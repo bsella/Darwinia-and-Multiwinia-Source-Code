@@ -1,8 +1,5 @@
-﻿#include "lib/universal_include.h"
+﻿#include <string.h>
 
-#include <string.h>
-
-#include "lib/debug_utils.h"
 #include "lib/hi_res_time.h"
 #include "lib/input/input.h"
 #include "lib/targetcursor.h"
@@ -51,13 +48,13 @@ public:
 			LandscapeDef *def = &g_app->m_location->m_levelFile->m_landscape;
 			g_app->m_location->m_landscape.Init(def);
 		}
-        else if( stricmp(m_name, LANGUAGEPHRASE("editor_delete")) == 0 )
+		else if( stricmp(m_name, LANGUAGEPHRASE("editor_delete")) == 0 )
         {
             int tileId = ((LandscapeTileEditWindow *) m_parent)->m_tileId;
             g_app->m_location->m_landscape.DeleteTile( tileId );
             EclRemoveWindow( m_parent->m_name );
         }
-        else if( stricmp(m_name, LANGUAGEPHRASE("editor_clone")) == 0 )
+		else if( stricmp(m_name, LANGUAGEPHRASE("editor_clone")) == 0 )
         {
             Vector3 rayStart;
 	        Vector3 rayDir;
@@ -65,7 +62,6 @@ public:
             Vector3 _pos;
             g_app->m_location->m_landscape.RayHit( rayStart, rayDir, &_pos );
 
-            LandscapeDef *landscapeDef = &(g_app->m_location->m_levelFile->m_landscape);
     	    LandscapeTile *tile = new LandscapeTile();
     	    g_app->m_location->m_levelFile->m_landscape.m_tiles.PutDataAtEnd(tile);
             tile->m_size = m_def->m_size;
@@ -83,7 +79,7 @@ public:
             g_app->m_location->m_landscape.Init(def);
 
         }
-        else if( stricmp(m_name, LANGUAGEPHRASE("editor_guidegrid")) == 0 )
+		else if( stricmp(m_name, LANGUAGEPHRASE("editor_guidegrid")) == 0 )
         {
             int tileId = ((LandscapeTileEditWindow *) m_parent)->m_tileId;
             LandscapeGuideGridWindow *guide = new LandscapeGuideGridWindow(LANGUAGEPHRASE("editor_guidegrid"), tileId );
@@ -121,7 +117,6 @@ void LandscapeTileEditWindow::Create()
 
 	int height = 5;
 	int pitch = 17;
-	int buttonWidth = m_w - 50;
 
 	LandscapeTileButton *gen = new LandscapeTileButton(m_tileDef);
 	gen->SetShortProperties(LANGUAGEPHRASE("editor_generate"), 10, height += pitch, m_w - 20 );
@@ -242,7 +237,6 @@ public:
         Vector3 _pos;
         g_app->m_location->m_landscape.RayHit( rayStart, rayDir, &_pos );
 
-        LandscapeDef *landscapeDef = &(g_app->m_location->m_levelFile->m_landscape);
     	LandscapeTile *tile = new LandscapeTile();
     	g_app->m_location->m_levelFile->m_landscape.m_tiles.PutDataAtEnd(tile);
         tile->m_size = 384;
@@ -375,7 +369,6 @@ void LandscapeEditWindow::Create()
 
 	int height = 5;
 	int pitch = 17;
-	int buttonWidth = m_w - 20;
 
 	LandscapeTileButton *gen = new LandscapeTileButton(NULL);
 	gen->SetShortProperties(LANGUAGEPHRASE("editor_generate"), 10, height += pitch, m_w - 20);
@@ -447,7 +440,7 @@ public:
 class GuideGrid : public EclButton
 {
 public:
-    void RenderBorder( int realX, int realY, bool highlighted, bool clicked )
+    void RenderBorder( int realX, int realY, [[maybe_unused]] bool highlighted, [[maybe_unused]] bool clicked )
     {
         LandscapeGuideGridWindow *parent = (LandscapeGuideGridWindow *) m_parent;
         LandscapeTile *def = parent->m_tileDef;
@@ -467,7 +460,7 @@ public:
         }
     }
 
-    void RenderGrid( int realX, int realY, bool highlighted, bool clicked )
+    void RenderGrid( int realX, int realY, [[maybe_unused]] bool highlighted, [[maybe_unused]] bool clicked )
     {
         LandscapeGuideGridWindow *parent = (LandscapeGuideGridWindow *) m_parent;
         LandscapeTile *def = parent->m_tileDef;
@@ -493,7 +486,7 @@ public:
         }
     }
 
-    void RenderColours( int realX, int realY, bool highlighted, bool clicked )
+    void RenderColours( int realX, int realY, [[maybe_unused]] bool highlighted, [[maybe_unused]] bool clicked )
     {
         LandscapeGuideGridWindow *parent = (LandscapeGuideGridWindow *) m_parent;
         LandscapeTile *def = parent->m_tileDef;
@@ -521,7 +514,7 @@ public:
         }
     }
 
-    void RenderMouse( int realX, int realY, bool highlighted, bool clicked )
+    void RenderMouse( int realX, int realY, [[maybe_unused]] bool highlighted, [[maybe_unused]] bool clicked )
     {
         LandscapeGuideGridWindow *parent = (LandscapeGuideGridWindow *) m_parent;
         LandscapeTile *def = parent->m_tileDef;

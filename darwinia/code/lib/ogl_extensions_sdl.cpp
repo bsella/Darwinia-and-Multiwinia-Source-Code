@@ -61,8 +61,8 @@ int IsOGLExtensionSupported(const char *extension)
 			break;
 		terminator = where + strlen(extension);
 		if (where == start || *(where - 1) == ' ')
-		if (*terminator == ' ' || *terminator == '\0')
-			return 1;
+			if (*terminator == ' ' || *terminator == '\0')
+				return 1;
 		start = terminator;
 	}
 	return 0;

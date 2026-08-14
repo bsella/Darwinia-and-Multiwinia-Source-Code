@@ -367,7 +367,7 @@ const char *LangTable::LookupPhrase(char const *_key)
     }
 	else
     {
-		int offset = phrases->GetData( _key );
+		int offset = phrases->GetData( _key, 0 );
 		if ( offset >= 0 )
 			phrase = m_chunk.c_str() + offset;
 

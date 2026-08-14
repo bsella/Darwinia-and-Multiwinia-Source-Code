@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/resource.h"
+﻿#include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/math_utils.h"
 #include "lib/hi_res_time.h"

@@ -1,15 +1,10 @@
-﻿#include "lib/universal_include.h"
-#include "lib/vector3.h"
-#include "lib/debug_render.h"
+﻿#include "lib/vector3.h"
 #include "lib/window_manager.h"
 #include "lib/input/input.h"
 #include "lib/text_renderer.h"
 #include "lib/math_utils.h"
 #include "lib/hi_res_time.h"
-#include "lib/resource.h"
 #include "lib/language_table.h"
-
-#include "worldobject/darwinian.h"
 
 #include "loaders/soul_loader.h"
 

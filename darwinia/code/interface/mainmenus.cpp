@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/preferences.h"
+﻿#include "lib/preferences.h"
 #include "lib/text_renderer.h"
 #include "lib/window_manager.h"
 #include "lib/resource.h"
@@ -22,8 +21,6 @@
 #include "renderer.h"
 #include "global_world.h"
 #include "script.h"
-
-#include "lib/input/input.h"
 
 class WebsiteButton;
 
@@ -215,8 +212,8 @@ void MainMenuWindow::Render( bool _hasFocus )
 OptionsMenuWindow::OptionsMenuWindow()
 :   DarwiniaWindow( LANGUAGEPHRASE("dialog_options") )
 {
-    int screenW = g_app->m_renderer->ScreenW();
-    int screenH = g_app->m_renderer->ScreenH();
+    //int screenW = g_app->m_renderer->ScreenW();
+    //int screenH = g_app->m_renderer->ScreenH();
 
     SetMenuSize( 240, 230 );
 //    SetPosition( screenW/2.0f - m_w/2.0f,
@@ -630,7 +627,6 @@ AboutDarwiniaWindow::AboutDarwiniaWindow()
 
 void AboutDarwiniaWindow::Create()
 {
-    int y = GetClientRectY1();
 	int border = GetClientRectX1() + 10;
 	int buttonH = GetMenuSize(20);
 	int buttonW = m_w - border * 2;
@@ -654,9 +650,6 @@ void AboutDarwiniaWindow::Render( bool _hasFocus )
     glBlendFunc     ( GL_SRC_ALPHA, GL_ONE );
     glTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-
-    float texH = 1.0f;
-    float texW = texH * 512.0f / 64.0f;
 
     glColor4f( 0.3f, 1.0f, 0.3f, 1.0f );
     glBegin( GL_QUADS );
@@ -690,7 +683,6 @@ SkipPrologueWindow::SkipPrologueWindow()
 
 void SkipPrologueWindow::Create()
 {
-    int y = GetClientRectY1();
 	int border = GetClientRectX1() + 10;
 	int buttonH = GetMenuSize(20);
 	int buttonW = m_w / 2 - border * 2;
@@ -721,9 +713,6 @@ void SkipPrologueWindow::Render( bool _hasFocus )
     glBlendFunc     ( GL_SRC_ALPHA, GL_ONE );
     glTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-
-    float texH = 1.0f;
-    float texW = texH * 512.0f / 64.0f;
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     glBegin( GL_QUADS );
@@ -759,7 +748,6 @@ PlayPrologueWindow::PlayPrologueWindow()
 
 void PlayPrologueWindow::Create()
 {
-    int y = GetClientRectY1();
 	int border = GetClientRectX1() + 10;
 	int buttonH = GetMenuSize(20);
 	int buttonW = m_w / 2 - border * 2;
@@ -790,9 +778,6 @@ void PlayPrologueWindow::Render( bool _hasFocus )
     glBlendFunc     ( GL_SRC_ALPHA, GL_ONE );
     glTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameterf ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-
-    float texH = 1.0f;
-    float texW = texH * 512.0f / 64.0f;
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     glBegin( GL_QUADS );

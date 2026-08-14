@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/debug_utils.h"
+﻿#include "lib/debug_utils.h"
 #include "lib/vector3.h"
 #include "lib/text_renderer.h"
 #include "lib/math_utils.h"
@@ -492,7 +491,7 @@ void BuildingEditWindow::Create()
         CreateValueControl( LANGUAGEPHRASE("editor_shape"), InputField::TypeString, &node->m_shapeName, y+=buttonPitch, 0,0,0 );
         CreateValueControl( LANGUAGEPHRASE("editor_pointspersec"), InputField::TypeInt, &node->m_scoreValue, y+=buttonPitch, 1, 0, 1000 );
     }
-	else if( building->m_type == Building::TypeFenceSwitch )
+    else if( building->m_type == Building::TypeFenceSwitch )
 	{
 		FenceSwitch *fs = (FenceSwitch *)building;
 
@@ -568,8 +567,8 @@ void BuildingsCreateWindow::Create()
 {
 	DarwiniaWindow::Create();
 
-	int y = 25;
-	int ySpacing = 18;
+	//int y = 25;
+	//int ySpacing = 18;
 
     DropDownMenu *menu = new DropDownMenu(true);
     menu->SetShortProperties( LANGUAGEPHRASE("editor_buildingtype"), 10, 25, m_w - 20 );

@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/text_renderer.h"
+﻿#include "lib/text_renderer.h"
 
 #include "game_menu.h"
 
@@ -20,7 +18,7 @@ GameMenuButton::GameMenuButton(const char *_iconName)
     m_fontSize = 65.0f;
 }
 
-void GameMenuButton::Render( int realX, int realY, bool highlighted, bool clicked )
+void GameMenuButton::Render( int realX, int realY, bool highlighted, [[maybe_unused]] bool clicked )
 {
     //DarwiniaButton::Render( realX, realY, highlighted, clicked );
     if( !m_iconName ) return;
@@ -396,15 +394,14 @@ void GameMenuWindow::Render( bool _hasFocus )
     EclWindow::Render( _hasFocus );
 
     int w = g_app->m_renderer->ScreenW();
-    int h = g_app->m_renderer->ScreenH();
 
     glColor4f( 1.0f, 1.0f, 1.0f, 0.0f );
     g_gameFont.SetRenderOutline(true);
-    g_gameFont.DrawText2DCentre( w/2, 30, 80.0f, "DARWINIA" );
+    g_gameFont.DrawText2DCentre( float(w/2), 30, 80.0f, "DARWINIA" );
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     g_gameFont.SetRenderOutline(false);
-    g_gameFont.DrawText2DCentre( w/2, 30, 80.0f, "DARWINIA" );
+    g_gameFont.DrawText2DCentre( float(w/2), 30, 80.0f, "DARWINIA" );
 }
 
 

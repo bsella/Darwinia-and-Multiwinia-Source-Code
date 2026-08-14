@@ -104,14 +104,6 @@ Vector2 Vector2::operator / (float const b) const
 	return Vector2(x * multiplier, y * multiplier);
 }
 
-
-void Vector2::operator = (Vector2 const &b)
-{
-	x = b.x;
-	y = b.y;
-}
-
-
 // Assign from a Vector3 - throws away Y value of Vector3
 void Vector2::operator = (Vector3 const &b)
 {

@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/debug_utils.h"
+﻿#include "lib/debug_utils.h"
 #include "lib/file_writer.h"
 #include "lib/input/input.h"
 #include "lib/targetcursor.h"
@@ -9,7 +7,6 @@
 
 #include "app.h"
 #include "gesture_demo.h"
-#include "main.h"
 #include "renderer.h"
 
 

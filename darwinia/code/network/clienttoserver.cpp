@@ -4,14 +4,11 @@
 #include "net_mutex.h"
 #include "net_socket.h"
 #include "net_socket_listener.h"
-#include "net_thread.h"
 #include "net_udp_packet.h"
 
 #include "lib/hi_res_time.h"
 #include "lib/debug_utils.h"
 #include "lib/preferences.h"
-#include "lib/profiler.h"
-#include "lib/input/input.h"
 
 #include "app.h"
 #include "main.h"
@@ -21,7 +18,6 @@
 
 #include "worldobject/factory.h"
 #include "worldobject/radardish.h"
-#include "worldobject/engineer.h"
 #include "worldobject/laserfence.h"
 
 #include "network/server.h"
@@ -50,7 +46,7 @@ static NetCallBackRetType ListenCallback(NetUdpPacket *udpdata)
 }
 
 
-static NetCallBackRetType ListenThread(void *)
+[[maybe_unused]]static NetCallBackRetType ListenThread(void *)
 {
     g_app->m_clientToServer->m_receiveSocket = new NetSocketListener( 4001 );
 	NetRetCode retCode = g_app->m_clientToServer->m_receiveSocket->StartListening( reinterpret_cast<void*(*)(void*)>(ListenCallback) );
@@ -516,7 +512,7 @@ void ClientToServer::ProcessServerUpdates( ServerToClientLetter *letter )
                 {
                     DarwiniaDebugAssert( update->GetWorldPos() != g_zeroVector );
                     int unitId;
-                    Unit *unit = g_app->m_location->m_teams[ update->m_teamId ].NewUnit( update->m_entityType, update->m_numTroops, &unitId, update->GetWorldPos() );
+                    g_app->m_location->m_teams[ update->m_teamId ].NewUnit( update->m_entityType, update->m_numTroops, &unitId, update->GetWorldPos() );
                     g_app->m_location->SpawnEntities( update->GetWorldPos(), update->m_teamId, unitId, update->m_entityType, update->m_numTroops, g_zeroVector, update->m_numTroops*2 );
                 }
 				break;

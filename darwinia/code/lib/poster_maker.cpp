@@ -1,4 +1,3 @@
-#include "lib/universal_include.h"
 #include "lib/bitmap.h"
 #include "lib/debug_utils.h"
 #include "lib/poster_maker.h"
@@ -10,10 +9,10 @@
 #define COMPONENTS 3
 
 PosterMaker::PosterMaker(int _screenWidth, int _screenHeight)
-:	m_screenWidth(_screenWidth),
-	m_screenHeight(_screenHeight),
-	m_x(0),
-	m_y(0)
+:	m_x(0),
+	m_y(0),
+	m_screenWidth(_screenWidth),
+	m_screenHeight(_screenHeight)
 {
     int posterResolution = g_prefsManager->GetInt( "RenderPosterResolution", 1 );
 

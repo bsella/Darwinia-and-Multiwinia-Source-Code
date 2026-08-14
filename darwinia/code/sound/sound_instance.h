@@ -52,7 +52,6 @@ public:
     void    SetInvalid();
 
 	bool                    operator == (SoundInstanceId const &w) const;
-    SoundInstanceId const   &operator = (SoundInstanceId const &w);
 
     static  int GenerateUniqueId();
 };

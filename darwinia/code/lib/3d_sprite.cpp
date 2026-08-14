@@ -1,11 +1,10 @@
-#include "lib/universal_include.h"
-
 #include "lib/3d_sprite.h"
 
 #include "app.h"
 #include "camera.h"
 #include "renderer.h"
 
+#include <GL/gl.h>
 
 void Render3DSprite(Vector3 const &_pos, float _width, float _height, int _textureId)
 {

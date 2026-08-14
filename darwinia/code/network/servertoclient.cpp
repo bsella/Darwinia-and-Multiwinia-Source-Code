@@ -1,7 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-
-#include <string.h>
+﻿#include <string.h>
 
 #include "net_lib.h"
 #include "net_socket.h"

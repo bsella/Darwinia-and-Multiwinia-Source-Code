@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <math.h>
+﻿#include <math.h>
 
 #include "lib/math_utils.h"
 #include "lib/profiler.h"
@@ -188,7 +186,7 @@ Unit *Team::GetMyUnit()
 Entity *Team::RayHitEntity(Vector3 const &_rayStart, Vector3 const &_rayEnd)
 {
 	// Hit against Units
-	for (unsigned int i = 0; i < m_units.Size(); ++i)
+	for (int i = 0; i < m_units.Size(); ++i)
 	{
 		if (m_units.ValidIndex(i))
 		{
@@ -201,7 +199,7 @@ Entity *Team::RayHitEntity(Vector3 const &_rayStart, Vector3 const &_rayEnd)
 	}
 
 	// Hit against Others
-	for (unsigned int i = 0; i < m_others.Size(); ++i)
+	for (int i = 0; i < m_others.Size(); ++i)
 	{
 		if (m_others.ValidIndex(i))
 		{
@@ -242,11 +240,11 @@ Unit *Team::NewUnit(int _troopType, int _numEntities, int *_unitId, Vector3 cons
 	{
 		unit = new InsertionSquad( m_teamId, *_unitId, _numEntities, _pos );
 	}
-    else if(_troopType == Entity::TypeSpaceInvader)
+	else if(_troopType == Entity::TypeSpaceInvader)
     {
         unit = new AirstrikeUnit( m_teamId, *_unitId, _numEntities, _pos );
     }
-    else if(_troopType == Entity::TypeVirii)
+	else if(_troopType == Entity::TypeVirii)
     {
         unit = new ViriiUnit( m_teamId, *_unitId, _numEntities, _pos );
     }
@@ -269,7 +267,7 @@ Entity *Team::NewEntity(int _troopType, int _unitId, int *_index)
         *_index = m_others.PutData( entity );
         return entity;
     }
-    else
+	else
     {
         if( m_units.ValidIndex(_unitId) )
         {

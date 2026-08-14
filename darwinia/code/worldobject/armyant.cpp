@@ -22,8 +22,8 @@
 ArmyAnt::ArmyAnt()
 :   Entity(),
     m_orders(NoOrders),
-    m_spiritId(-1),
-    m_targetFound(false)
+    m_targetFound(false),
+    m_spiritId(-1)
 {
     m_type = TypeArmyAnt;
 

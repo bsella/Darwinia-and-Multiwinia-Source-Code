@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <stdarg.h>
+﻿#include <stdarg.h>
 
 #include "lib/debug_utils.h"
 #include "lib/hi_res_time.h"
@@ -82,10 +80,10 @@ Script::Script()
     m_waitForSpeech(false),
 	m_waitForCamera(false),
 	m_waitForFade(false),
+    m_waitForPlayerNotBusy(false),
     m_requestedLocationId(-1),
     m_waitForRocket(false),
-    m_permitEscape(false),
-    m_waitForPlayerNotBusy(false)
+    m_permitEscape(false)
 {
 }
 

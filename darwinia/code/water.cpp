@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#ifdef USE_DIRECT3D
+﻿#ifdef USE_DIRECT3D
 #include "lib/opengl_directx_internals.h"
 #include "lib/shader.h"
 #include "lib/texture.h"
@@ -42,16 +40,17 @@ LPDIRECT3DVERTEXDECLARATION9 s_vertexDecl = NULL;
 // ****************************************************************************
 
 Water::Water()
-:	m_waterDepths(NULL),
-	m_shoreNoise(NULL),
-	m_waterDepthMap(NULL),
-	m_waveTableX(NULL),
-	m_waveTableZ(NULL),
-	m_renderWaterEffect(0),
+:	
 #ifdef USE_DIRECT3D
 	m_vertexBuffer(NULL),
 #endif
-	m_colourTable(NULL)
+	m_waterDepths(NULL),
+	m_shoreNoise(NULL),
+	m_waterDepthMap(NULL),
+	m_colourTable(NULL),
+	m_waveTableX(NULL),
+	m_waveTableZ(NULL),
+	m_renderWaterEffect(0)
 {
     if( !g_app->m_editing )
     {
@@ -620,16 +619,12 @@ void Water::UpdateDynamicWater()
 	//
 	// Go through all the strips, updating vertex heights and poly colours
 
-	int totalNumVertices = 0;
-
 	for (int i = 0; i < m_strips.Size(); ++i)
 	{
 		WaterTriangleStrip *strip = m_strips[i];
 
 		float prevHeight1 = 0.0f;
 		float prevHeight2 = 0.0f;
-
-		totalNumVertices += strip->m_numVerts;
 
 		//
 		// Set through the triangle strip in pairs of vertices
@@ -852,7 +847,7 @@ void Water::Render()
 				RenderDynamicWater();
             END_PROFILE(g_app->m_profiler,  "Render Water" );
         }
-        else
+		else
         {
             START_PROFILE(g_app->m_profiler,  "Render Water" );
     		RenderFlatWater();

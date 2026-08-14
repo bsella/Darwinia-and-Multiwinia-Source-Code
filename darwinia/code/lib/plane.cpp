@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/plane.h"
 #include "lib/vector3.h"
 

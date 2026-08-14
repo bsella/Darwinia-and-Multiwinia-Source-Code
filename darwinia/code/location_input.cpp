@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <float.h>
+﻿#include <float.h>
 
 #include <eclipse.h>
 
@@ -133,11 +131,11 @@ void LocationInput::AdvanceNoSelection()
         !g_app->m_taskManagerInterface->m_visible )
     {
         WorldObjectId id;
-        bool objectFound = GetObjectUnderMouse( id, g_app->m_globalWorld->m_myTeamId );
+        GetObjectUnderMouse( id, g_app->m_globalWorld->m_myTeamId );
 
         if( id.IsValid() )
         {
-            if( id.GetUnitId() == UNIT_BUILDINGS )
+			if( id.GetUnitId() == UNIT_BUILDINGS )
             {
                 Task *currentTask = g_app->m_taskManager->GetCurrentTask();
 
@@ -274,7 +272,7 @@ void LocationInput::AdvanceTeamControl()
 		!taskStarted)
     {
         WorldObjectId id;
-        bool objectUnderMouse = GetObjectUnderMouse( id, g_app->m_globalWorld->m_myTeamId );
+        GetObjectUnderMouse( id, g_app->m_globalWorld->m_myTeamId );
         if( id.IsValid() && id.GetUnitId() != 255 && id.GetUnitId() != UNIT_BUILDINGS )
         {
             g_app->m_clientToServer->RequestSelectUnit( id.GetTeamId(), id.GetUnitId(), id.GetIndex(), -1 );
@@ -332,15 +330,15 @@ void LocationInput::AdvanceTeamControl()
 		    else
 		    {
 			    Building *building = g_app->m_location->GetBuilding(team->m_currentBuildingId);
-			    if (!building)
+				if (!building)
                 {
                     team->m_currentBuildingId = -1;
                 }
-                else if (building->m_type == Building::TypeRadarDish)
+				else if (building->m_type == Building::TypeRadarDish)
 			    {
 				    AdvanceRadarDishControl(building);
 			    }
-                else if( building->m_type == Building::TypeGunTurret)
+				else if( building->m_type == Building::TypeGunTurret)
                 {
 					if( g_app->m_taskManagerInterface->ControlEvent( TaskManagerInterface::TMTerminate ) )
                     {

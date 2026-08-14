@@ -1,7 +1,4 @@
-#include "lib/universal_include.h"
-
 #include "lib/debug_utils.h"
-#include "lib/hi_res_time.h"
 #include "lib/math_utils.h"
 #include "lib/profiler.h"
 
@@ -59,15 +56,15 @@ public:
 
 
 SoftwareChannel::SoftwareChannel()
-:	m_freq(1),
+:	m_containsSilence(true),
+	m_freq(1),
 	m_volume(0.0f),
-	m_oldVolLeft(0.0f),
-	m_oldVolRight(0.0f),
-	m_forceVolumeJump(true),
-	m_containsSilence(true),
 	m_minDist(0.1f),
 	m_pos(0,0,0),
-	m_3DMode(0)
+	m_3DMode(0),
+	m_oldVolLeft(0.0f),
+	m_oldVolRight(0.0f),
+	m_forceVolumeJump(true)
 {
 	// The 3 on the next line is there because we limit the frequency of a
 	// channel to 3 times that of the mix frequency
@@ -122,8 +119,8 @@ SoundLibrary3dSoftware::~SoundLibrary3dSoftware()
 }
 
 
-void SoundLibrary3dSoftware::Initialise(int _mixFreq, int _numChannels, bool _hw3d,
-										int _mainBufNumSamples, int _musicBufNumSamples )
+void SoundLibrary3dSoftware::Initialise(int _mixFreq, int _numChannels, [[maybe_unused]]bool _hw3d,
+										[[maybe_unused]]int _mainBufNumSamples, [[maybe_unused]]int _musicBufNumSamples )
 {
 	m_sampleRate = _mixFreq;
 	m_musicChannelId = _numChannels - 1;
@@ -150,8 +147,6 @@ void SoundLibrary3dSoftware::GetChannelData(float _duration)
 {
 	START_PROFILE(m_profiler, "GetChannelData");
 	{
-		int numActiveChannels = 0;
-
 		for (int i = 0; i < m_numChannels; ++i)
 		{
 			int silenceRemaining = -1;
@@ -188,11 +183,6 @@ void SoundLibrary3dSoftware::GetChannelData(float _duration)
 				{
 					m_channels[i].m_containsSilence = true;
 				}
-			}
-
-			if (!m_channels[i].m_containsSilence)
-			{
-				numActiveChannels++;
 			}
 		}
 	}
@@ -289,7 +279,7 @@ void SoundLibrary3dSoftware::MixDiffFreqFixedVol(signed short *_inBuf, unsigned 
 	float *right = m_right;
 	int nearestSample;
 
-	for (int j = 0; j < _numSamples; ++j)
+	for (unsigned int j = 0; j < _numSamples; ++j)
 	{
 		nearestSample = (int)(j * _relativeFreq); // Was using Round()
 		*left += (float)_inBuf[nearestSample] * _volLeft;
@@ -331,7 +321,7 @@ void SoundLibrary3dSoftware::MixDiffFreqRampVol(signed short *_inBuf, unsigned i
 	float *left = m_left;
 	float *right = m_right;
 	int nearestSample;
-	for (int j = 0; j < _numSamples; ++j)
+	for (unsigned int j = 0; j < _numSamples; ++j)
 	{
 		nearestSample = (int)(j * _relativeFreq);	// Was using Round()
 		*left += (float)_inBuf[nearestSample] * volLeft;
@@ -415,7 +405,7 @@ void SoundLibrary3dSoftware::Callback(StereoSample *_buf, unsigned int _numSampl
 	// Scan the left and right floating point versions of the output buffer to
 	// find the largest sample
 	float largest = 0.0f;
-	for (int i = 0; i < _numSamples; ++i)
+	for (unsigned int i = 0; i < _numSamples; ++i)
 	{
 		if (fabsf(m_left[i]) > largest)		largest = fabsf(m_left[i]);
 		if (fabsf(m_right[i]) > largest)	largest = fabsf(m_right[i]);
@@ -432,7 +422,7 @@ void SoundLibrary3dSoftware::Callback(StereoSample *_buf, unsigned int _numSampl
 	{
 		scale = 1.0f;
 	}
-	for (int i = 0; i < _numSamples; ++i)
+	for (unsigned int i = 0; i < _numSamples; ++i)
 	{
 		_buf[i].m_left = Round(m_left[i] * scale);
 		_buf[i].m_right = Round(m_right[i] * scale);
@@ -460,13 +450,13 @@ int SoundLibrary3dSoftware::GetCPUOverhead()
 }
 
 
-float SoundLibrary3dSoftware::GetChannelHealth(int _channel)
+float SoundLibrary3dSoftware::GetChannelHealth([[maybe_unused]] int _channel)
 {
 	return 1.0f;
 }
 
 
-int SoundLibrary3dSoftware::GetChannelBufSize(int _channel) const
+int SoundLibrary3dSoftware::GetChannelBufSize([[maybe_unused]]int _channel) const
 {
 	return 0;
 }
@@ -478,7 +468,7 @@ void SoundLibrary3dSoftware::SetChannel3DMode( int _channel, int _mode )
 }
 
 
-void SoundLibrary3dSoftware::SetChannelPosition( int _channel, Vector3 const &_pos, Vector3 const &_vel )
+void SoundLibrary3dSoftware::SetChannelPosition( int _channel, [[maybe_unused]]Vector3 const &_pos, [[maybe_unused]]Vector3 const &_vel )
 {
 	m_channels[_channel].m_pos = _pos;
 }
@@ -505,7 +495,7 @@ void SoundLibrary3dSoftware::SetChannelVolume( int _channel, float _volume )
 void SoundLibrary3dSoftware::SetListenerPosition( Vector3 const &_pos,
                                         Vector3 const &_front,
                                         Vector3 const &_up,
-                                        Vector3 const &_vel )
+                                        [[maybe_unused]] Vector3 const &_vel )
 {
 	m_listenerPos = _pos;
 	m_listenerFront = _front;
@@ -553,7 +543,7 @@ void SoundLibrary3dSoftware::EnableDspFX(int _channel, int _numFilters, int cons
 }
 
 
-void SoundLibrary3dSoftware::UpdateDspFX( int _channel, int _filterType, int _numParams, float const *_params )
+void SoundLibrary3dSoftware::UpdateDspFX( int _channel, int _filterType, [[maybe_unused]] int _numParams, float const *_params )
 {
 	SoftwareChannel *channel = &m_channels[_channel];
 

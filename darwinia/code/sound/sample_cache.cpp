@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/resource.h"
 #include "sound/sample_cache.h"
 #include "sound/sound_stream_decoder.h"

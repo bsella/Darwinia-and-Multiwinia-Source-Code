@@ -1,13 +1,10 @@
-﻿#include "lib/universal_include.h"
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <string.h>
 
 #include "lib/random.h"
 #include "lib/language_table.h"
 
 #include "interface/camera_mount_window.h"
-#include "interface/camera_anim_window.h"
 #include "interface/input_field.h"
 
 #include "app.h"

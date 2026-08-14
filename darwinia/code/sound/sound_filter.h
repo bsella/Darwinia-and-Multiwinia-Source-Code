@@ -138,7 +138,7 @@ protected:
 	unsigned int		m_bufferSize;	// In samples
 	int					m_currentBufferIndex;
 	float				m_wetDryMix;
-	int					m_delays[NUM_REVERB_DELAY_UNITS];
+	unsigned int		m_delays[NUM_REVERB_DELAY_UNITS];
 	float				m_decays[NUM_REVERB_DELAY_UNITS];
 
 public:

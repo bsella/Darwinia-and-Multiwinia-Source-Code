@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <math.h>
+﻿#include <math.h>
 
 #include "lib/math_utils.h"
 #include "lib/ogl_extensions.h"

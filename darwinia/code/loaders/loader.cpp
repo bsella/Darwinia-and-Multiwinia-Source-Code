@@ -1,12 +1,9 @@
-﻿#include "lib/universal_include.h"
-
-#include <time.h>
+﻿#include <time.h>
 
 #include "lib/debug_utils.h"
 #include "lib/input/input.h"
 #include "lib/window_manager.h"
 #include "lib/hi_res_time.h"
-#include "lib/preferences.h"
 
 #include "loaders/loader.h"
 #include "loaders/speccy_loader.h"

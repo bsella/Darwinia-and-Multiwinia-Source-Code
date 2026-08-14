@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/debug_render.h"
+﻿#include "lib/debug_render.h"
 #include "lib/file_writer.h"
 #include "lib/math_utils.h"
 #include "lib/resource.h"
@@ -30,17 +28,17 @@ Tree::Tree()
 :   Building(),
     m_branchDisplayListId(-1),
     m_leafDisplayListId(-1),
+    m_fireDamage(0.0f),
+    m_onFire(0.0f),
+    m_burnSoundPlaying(false),
     m_height(50.0f),
-    m_iterations(6),
     m_budsize(1.0f),
-    m_pushOut(1.0f),
     m_pushUp(1.0f),
+    m_pushOut(1.0f),
+    m_iterations(6),
     m_seed(0),
     m_leafColour(0xffffffff),
     m_branchColour(0xffffffff),
-    m_onFire(0.0f),
-    m_fireDamage(0.0f),
-    m_burnSoundPlaying(false),
 	m_leafDropRate(0)
 {
     m_type = TypeTree;
@@ -295,7 +293,7 @@ void Tree::Generate()
     DebugOut( "Tree generated in %dms\n", int(totalTime * 1000.0f) );
 }
 
-void Tree::Render( float _predictionTime )
+void Tree::Render( [[maybe_unused]] float _predictionTime )
 {
     //RenderHitCheck();
 }

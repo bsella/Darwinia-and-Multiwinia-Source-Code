@@ -1,16 +1,12 @@
-﻿#include "lib/universal_include.h"
-#include "lib/binary_stream_readers.h"
-#include "lib/debug_utils.h"
+﻿#include "lib/debug_utils.h"
 #include "lib/hi_res_time.h"
 #include "lib/profiler.h"
-#include "lib/resource.h"
 #include "lib/random.h"
 #include "lib/preferences.h"
 
 #include "sound/sample_cache.h"
 #include "sound/sound_instance.h"
 #include "sound/soundsystem.h"
-#include "sound/sound_stream_decoder.h"
 #include "sound/sound_library_3d.h"
 
 #include "app.h"
@@ -109,34 +105,25 @@ bool SoundInstanceId::operator == (SoundInstanceId const &w) const
              m_uniqueId == w.m_uniqueId );
 }
 
-
-SoundInstanceId const &SoundInstanceId::operator = (SoundInstanceId const &w)
-{
-    m_index = w.m_index;
-    m_uniqueId = w.m_uniqueId;
-    return *this;
-}
-
-
 // ============================================================================
 // class SoundInstance
 
 SoundInstance::SoundInstance()
 :   m_positionType(Type3DAttachedToObject),
     m_instanceType(Polyphonic),
-    m_channelIndex(-1),
     m_loopType(SinglePlay),
     m_sourceType(Sample),
-	m_cachedSampleHandle(NULL),
+    m_restartAttempts(0),
     m_minDistance(100.0f),
-    m_calculatedPriority(128.0f),
-    m_channelVolume(0.0f),
-    m_parent(NULL),
-    m_adsrTimer(0.0f),
     m_adsrState(StateAttack),
+    m_adsrTimer(0.0f),
+    m_channelVolume(0.0f),
 	m_loopDelayTimer(0.0f),
     m_restartOccured(true),
-    m_restartAttempts(0)
+    m_calculatedPriority(128.0f),
+    m_channelIndex(-1),
+	m_cachedSampleHandle(NULL),
+    m_parent(NULL)
 {
     SetSoundName( "[???]" );
 
@@ -627,7 +614,7 @@ bool SoundInstance::StartPlaying( int _channelIndex )
     UpdateParameter( m_freq );
     g_soundLibrary3d->SetChannelFrequency( m_channelIndex, m_cachedSampleHandle->m_cachedSample->m_freq * m_freq.GetOutput() );
 
-    bool done = UpdateChannelVolume();
+    UpdateChannelVolume();
 
     Update3DPosition();
     g_soundLibrary3d->SetChannelPosition( m_channelIndex, m_pos, m_vel );
@@ -696,8 +683,6 @@ bool SoundInstance::Advance()
 
 bool SoundInstance::Update3DPosition()
 {
-    bool updateRequired = false;
-
     //
     // Work out our new position
     // And determine if we need to be updated

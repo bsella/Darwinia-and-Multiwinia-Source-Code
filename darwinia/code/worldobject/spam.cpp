@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/text_renderer.h"
+﻿#include "lib/text_renderer.h"
 #include "lib/resource.h"
 #include "lib/math_utils.h"
 #include "lib/preferences.h"

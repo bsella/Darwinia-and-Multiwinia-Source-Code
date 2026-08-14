@@ -2,7 +2,6 @@
 #define _included_taskmanager_h
 
 #include "lib/llist.h"
-#include "worldobject/entity.h"
 #include "worldobject/worldobject.h"
 
 class Route;

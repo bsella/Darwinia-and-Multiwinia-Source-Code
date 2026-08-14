@@ -3,9 +3,9 @@
 
 template <class T>
 Array2D<T>::Array2D()
-:	m_numColumns(0),
-	m_numRows(0),
-	m_data(nullptr)
+:	m_data(nullptr),
+	m_numColumns(0),
+	m_numRows(0)
 {
 }
 

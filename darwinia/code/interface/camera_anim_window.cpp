@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <stdio.h>
 #include <string.h>
 
@@ -7,7 +5,6 @@
 #include "lib/language_table.h"
 
 #include "interface/camera_anim_window.h"
-#include "interface/camera_mount_window.h"
 #include "interface/drop_down_menu.h"
 #include "interface/input_field.h"
 
@@ -174,7 +171,7 @@ public:
 		parent->m_newNodeArmed = !parent->m_newNodeArmed;
 	}
 
-	void Render(int x, int y, bool _hasFocus, bool _clicked)
+	void Render(int x, int y, [[maybe_unused]] bool _hasFocus, [[maybe_unused]] bool _clicked)
 	{
 		CameraAnimSecondaryEditWindow *parent =
 			(CameraAnimSecondaryEditWindow *)m_parent;
@@ -243,7 +240,7 @@ public:
 class SelectMountButton : public DarwiniaButton
 {
 public:
-	void Render(int x, int y, bool _hasFocus, bool _clicked)
+	void Render(int x, int y, [[maybe_unused]] bool _hasFocus, [[maybe_unused]] bool _clicked)
 	{
 		DarwiniaButton::Render(x, y, false, false);
 	}

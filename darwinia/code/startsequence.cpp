@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/input/input.h"
+﻿#include "lib/input/input.h"
 #ifdef TARGET_MSVC
 #include "lib/input/win32_eventhandler.h"
 #endif

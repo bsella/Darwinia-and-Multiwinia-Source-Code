@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <math.h>
 #include <float.h>
 
@@ -22,12 +20,12 @@ ProfiledElement::ProfiledElement(char const *_name, ProfiledElement *_parent)
 	m_currentNumCalls(0),
 	m_lastTotalTime(0.0),
 	m_lastNumCalls(0),
-	m_longest(DBL_MIN),
-	m_shortest(DBL_MAX),
-	m_callStartTime(0.0),
 	m_historyTotalTime(0.0),
 	m_historyNumSeconds(0.0),
 	m_historyNumCalls(0),
+	m_shortest(DBL_MAX),
+	m_longest(DBL_MIN),
+	m_callStartTime(0.0),
 	m_parent(_parent),
 	m_isExpanded(false)
 {
@@ -81,7 +79,7 @@ void ProfiledElement::Advance()
 	m_historyNumSeconds += 1.0;
 	m_historyNumCalls += m_lastNumCalls;
 
-	for (int i = 0; i < m_children.Size(); ++i)
+	for (unsigned int i = 0; i < m_children.Size(); ++i)
 	{
 		if (m_children.ValidIndex(i))
 		{
@@ -124,7 +122,6 @@ double ProfiledElement::GetMaxChildTime()
 	while (i != -1)
 	{
 		float val = m_children[i]->m_historyTotalTime;
-		ProfiledElement *child = m_children[i];
 		if (val > rv)
 		{
 			rv = val;
@@ -153,9 +150,9 @@ static Uint32 s_profileThread;
 
 // *** Constructor
 Profiler::Profiler()
-:   m_doGlFinish(false),
+:	m_insideRenderSection(false),
 	m_currentElement(NULL),
-	m_insideRenderSection(false)
+	m_doGlFinish(false)
 {
 	m_rootElement = new ProfiledElement("Root", NULL);
 	m_rootElement->m_isExpanded = true;
@@ -208,8 +205,6 @@ void Profiler::ResetHistory()
 	m_rootElement->ResetHistory();
 }
 
-static bool s_expanded = false;
-
 // *** StartProfile
 void Profiler::StartProfile(char const *_name)
 {
@@ -241,7 +236,7 @@ void Profiler::StartProfile(char const *_name)
 
 
 // *** EndProfile
-void Profiler::EndProfile(char const *_name)
+void Profiler::EndProfile([[maybe_unused]]char const *_name)
 {
 	MAIN_THREAD_ONLY;
 

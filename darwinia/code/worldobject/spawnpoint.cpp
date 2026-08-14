@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/file_writer.h"
+﻿#include "lib/file_writer.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/debug_render.h"

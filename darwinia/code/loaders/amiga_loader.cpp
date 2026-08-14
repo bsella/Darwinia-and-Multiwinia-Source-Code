@@ -1,10 +1,8 @@
-﻿#include "lib/universal_include.h"
-#include "lib/hi_res_time.h"
+﻿#include "lib/hi_res_time.h"
 #include "lib/input/input.h"
 #include "lib/math_utils.h"
 #include "lib/resource.h"
 #include "lib/text_renderer.h"
-#include "lib/window_manager.h"
 #include "lib/language_table.h"
 
 #include "loaders/amiga_loader.h"
@@ -13,7 +11,6 @@
 
 #include "3d_sierpinski_gasket.h"
 #include "app.h"
-#include "renderer.h"
 
 
 class Star
@@ -139,7 +136,7 @@ void AmigaLoader::RenderScrollText(float _frameTime)
 }
 
 
-void AmigaLoader::RenderLogo(float _frameTime)
+void AmigaLoader::RenderLogo([[maybe_unused]] float _frameTime)
 {
 	Vector2 pos1, pos2, posOffset;
 

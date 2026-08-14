@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/text_renderer.h"
+﻿#include "lib/text_renderer.h"
 #include "lib/math_utils.h"
 #include "lib/input/input.h"
 #include "lib/targetcursor.h"
@@ -48,11 +47,11 @@
 
 TaskManagerInterfaceGestures::TaskManagerInterfaceGestures()
 :   m_screenId(ScreenTaskManager),
-    m_chatLogY(0.0f),
     m_screenX(0.0f),
     m_desiredScreenX(0.0f),
     m_screenW(800),
     m_screenH(600),
+    m_chatLogY(0.0f),
     m_currentScreenZone(-1),
     m_screenZoneTimer(0.0f)
 {
@@ -74,14 +73,14 @@ TaskManagerInterfaceGestures::TaskManagerInterfaceGestures()
         sprintf( iconFilename, "icons/icon_%s.bmp", GlobalResearch::GetTypeName(i) );
         if( g_app->m_resource->DoesTextureExist( iconFilename ) )
         {
-            unsigned int texId = g_app->m_resource->GetTexture( iconFilename, true, false );
+            g_app->m_resource->GetTexture( iconFilename, true, false );
         }
 
         char gestureFilename[256];
         sprintf( gestureFilename, "icons/gesture_%s.bmp", GlobalResearch::GetTypeName(i) );
         if( g_app->m_resource->DoesTextureExist( gestureFilename ) )
         {
-            unsigned int texId = g_app->m_resource->GetTexture( gestureFilename, true, false );
+            g_app->m_resource->GetTexture( gestureFilename, true, false );
         }
     }
 
@@ -274,7 +273,7 @@ void TaskManagerInterfaceGestures::Advance()
 
         g_app->m_helpSystem->PlayerDoneAction( HelpSystem::TaskBasics );
     }
-    else
+	else
 	{
 		// Alt key just released
         HideTaskManager();
@@ -994,7 +993,6 @@ void TaskManagerInterfaceGestures::RenderTargetAreas()
     if( task && task->m_type != GlobalResearch::TypeOfficer && task->m_state == Task::StateStarted )
     {
         LList<TaskTargetArea> *targetAreas = g_app->m_taskManager->GetTargetArea( task->m_id );
-        RGBAColour *colour = &g_app->m_location->GetMyTeam()->m_colour;
 
         for( int i = 0; i < targetAreas->Size(); ++i )
         {
@@ -1438,7 +1436,6 @@ void TaskManagerInterfaceGestures::RenderCompass( float _screenX, float _screenY
 
 	Vector3 toCam = g_app->m_camera->GetPos() - _worldPos;
 	float angle = toCam * g_app->m_camera->GetFront();
-	Vector3 rotationVector = toCam ^ g_app->m_camera->GetFront();
 
     Vector2 compassVector;
 
@@ -1989,7 +1986,7 @@ void TaskManagerInterfaceGestures::RenderResearch()
             char iconFilename[256];
             sprintf( iconFilename, "icons/icon_%s.bmp", GlobalResearch::GetTypeName(i) );
             unsigned int texId = g_app->m_resource->GetTexture( iconFilename );
-            if( texId != -1 )
+            if( texId != ~0u )
             {
                 glEnable        ( GL_TEXTURE_2D );
                 glBindTexture   ( GL_TEXTURE_2D, texId );
@@ -2137,7 +2134,7 @@ void TaskManagerInterfaceGestures::RenderResearch()
             {
                 sprintf( iconFilename, "icons/gesture_%s.bmp", GlobalResearch::GetTypeName(i) );
                 texId = g_app->m_resource->GetTexture( iconFilename );
-                if( texId != -1 )
+                if( texId != ~0u )
                 {
                     glEnable        ( GL_TEXTURE_2D );
                     glBindTexture   ( GL_TEXTURE_2D, texId );

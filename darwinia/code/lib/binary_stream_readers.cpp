@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #ifdef WIN32
 #include <io.h>
 #endif

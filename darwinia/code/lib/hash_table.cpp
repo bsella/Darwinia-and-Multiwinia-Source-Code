@@ -4,6 +4,7 @@
 #include "debug_utils.h"
 #include "hash_table.h"
 
+#include "lib/universal_include.h"
 
 //*****************************************************************************
 // Protected Functions

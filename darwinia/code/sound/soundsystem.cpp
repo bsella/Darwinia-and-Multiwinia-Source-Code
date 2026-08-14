@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/debug_utils.h"
+﻿#include "lib/debug_utils.h"
 #include "lib/filesys_utils.h"
 #include "lib/file_writer.h"
 #include "lib/math_utils.h"
@@ -8,17 +7,11 @@
 #include "lib/resource.h"
 #include "lib/string_utils.h"
 #include "lib/text_stream_readers.h"
-#include "lib/window_manager.h"
-#include "lib/language_table.h"
-
-#include "interface/save_on_quit_window.h"
 
 #include "sound/sample_cache.h"
 #include "sound/sound_library_2d_sdl.h"	// FIXME
 #include "sound/sound_library_3d.h"
 #include "sound/soundsystem.h"
-#include "sound/sound_stream_decoder.h"
-#include "sound/sound_library_3d_dsound.h"
 #include "sound/sound_library_3d_software.h"
 
 
@@ -238,14 +231,14 @@ SampleGroup::~SampleGroup()
 
 SoundSystem::SoundSystem()
 :   m_timeSync(0.0f),
-    m_channels(NULL),
-    m_eventProfiler(NULL),
-    m_mainProfiler(NULL),
-	m_quitWithoutSave(false),
     m_propagateBlueprints(false),
-    m_numChannels(0),
+    m_mainProfiler(NULL),
+    m_eventProfiler(NULL),
+	m_quitWithoutSave(false),
 	m_music(NULL),
-	m_requestedMusic(NULL)
+	m_requestedMusic(NULL),
+    m_channels(NULL),
+    m_numChannels(0)
 {
 #ifdef PROFILER_ENABLED
     m_eventProfiler = new Profiler();
@@ -307,7 +300,7 @@ void SoundSystem::RestartSoundLibrary()
 	int volume      = g_prefsManager->GetInt("SoundMasterVolume", 255);
     m_numChannels   = g_prefsManager->GetInt("SoundChannels", 32);
     int hw3d        = g_prefsManager->GetInt("SoundHW3D", 0);
-	const char *libName   = g_prefsManager->GetString("SoundLibrary", "dsound");
+	[[maybe_unused]]const char *libName   = g_prefsManager->GetString("SoundLibrary", "dsound");
 	int bufSize		= 20000;
 
 	g_soundLibrary2d = new SoundLibrary2dSDL;
@@ -365,7 +358,7 @@ bool SoundSystem::SoundLibraryMainCallback( unsigned int _channel, signed short 
 		//
         // Fill the space with sample data
 
-		int numSamplesWritten = instance->m_cachedSampleHandle->Read( _data, _numSamples );
+		unsigned int numSamplesWritten = instance->m_cachedSampleHandle->Read( _data, _numSamples );
 
         if( numSamplesWritten < _numSamples )
         {
@@ -778,7 +771,7 @@ void SoundSystem::ParseSoundEvent( TextReader *_in, SoundSourceBlueprint *_sourc
     seb->m_instance = new SoundInstance();
 	seb->m_instance->SetEventName(_entityName, seb->m_eventName);
 
-    int oldUserPriority;            // backwards compatability, no longer used
+    [[maybe_unused]]int oldUserPriority;            // backwards compatability, no longer used
 
     _in->ReadLine();
     char *fieldName = _in->GetNextToken();
@@ -1132,7 +1125,7 @@ void SoundSystem::TriggerOtherEvent( WorldObject *_other, const char *_eventName
                 DarwiniaDebugAssert( seb->m_instance );
                 SoundInstance *instance = new SoundInstance();
                 instance->Copy( seb->m_instance );
-                if( _type == musicType )
+				if( _type == musicType )
 				{
                     //if( m_music && stricmp( m_music->m_eventName+6, _eventName ) == 0 )
                     if( m_music && stricmp( m_music->m_soundName, seb->m_instance->m_soundName ) == 0 )
@@ -1899,7 +1892,6 @@ void SoundSystem::RuntimeVerify()
         SoundInstance *currentSound = GetSoundInstance( id1 );
         if( currentSound && !currentSound->m_cachedSampleHandle )
         {
-            int b = 10;
         }
     }
 }
@@ -1950,7 +1942,7 @@ void SoundSystem::LoadtimeVerify()
 		{
 			SoundEventBlueprint *seb = ssb->m_events[j];
 			SoundInstance *si = seb->m_instance;
-            if ( si->m_sourceType == SoundInstance::Sample )
+			if ( si->m_sourceType == SoundInstance::Sample )
 			{
 				char const *err = IsSoundSourceOK(si->m_soundName);
 				if(err != NULL )
@@ -1988,7 +1980,7 @@ void SoundSystem::LoadtimeVerify()
 		{
 			SoundEventBlueprint *seb = ssb->m_events[j];
 			SoundInstance *si = seb->m_instance;
-            if( si->m_sourceType == SoundInstance::Sample )
+			if( si->m_sourceType == SoundInstance::Sample )
 			{
 				char const *err = IsSoundSourceOK(si->m_soundName);
 				if(err != NULL)
@@ -2026,7 +2018,7 @@ void SoundSystem::LoadtimeVerify()
 		{
 			SoundEventBlueprint *seb = ssb->m_events[j];
 			SoundInstance *si = seb->m_instance;
-            if( si->m_sourceType == SoundInstance::Sample )
+			if( si->m_sourceType == SoundInstance::Sample )
 			{
 				char const *err = IsSoundSourceOK(si->m_soundName);
 				if(err != NULL)
@@ -2068,7 +2060,7 @@ static char const *g_soundSourceErrors[SoundSystem::SoundSourceNumErrors] =
 };
 
 
-char const *SoundSystem::IsSoundSourceOK(char const *_soundName)
+char const *SoundSystem::IsSoundSourceOK([[maybe_unused]]char const *_soundName)
 {
 #ifdef _DEBUG
 	if (strchr(_soundName, ' '))

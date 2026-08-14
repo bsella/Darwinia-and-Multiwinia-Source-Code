@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <float.h>
+﻿#include <float.h>
 #include <math.h>
 
 #include "lib/debug_utils.h"
@@ -62,8 +60,8 @@ void LandscapeTile::GuideGridSetPower(int _power)
     if( _power != m_guideGridPower )
     {
 		int resolution = (1 << _power) - 1;
-		[[maybe_unused]]int a = GetPowerOfTwo(resolution + 1);
-		[[maybe_unused]]int b = GetPowerOfTwo(resolution + 2);
+		int a = GetPowerOfTwo(resolution + 1);
+		int b = GetPowerOfTwo(resolution + 2);
 		DarwiniaDebugAssert(a != b);
 
         delete m_guideGrid;

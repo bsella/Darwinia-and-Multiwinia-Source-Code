@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/text_renderer.h"
+﻿#include "lib/text_renderer.h"
 #include "lib/math_utils.h"
 #include "lib/vector2.h"
 #include "lib/debug_utils.h"
@@ -146,7 +145,7 @@ WorldObjectId Task::Promote( WorldObjectId _id )
     // Spawn an Officer
 
     WorldObjectId spawnedId = g_app->m_location->SpawnEntities( entity->m_pos, teamId, -1, Entity::TypeOfficer, 1, entity->m_vel, 0 );
-    [[maybe_unused]] Officer *officer = (Officer *) g_app->m_location->GetEntity( spawnedId );
+    Officer *officer = (Officer *) g_app->m_location->GetEntity( spawnedId );
     DarwiniaDebugAssert( officer );
 
 
@@ -851,6 +850,7 @@ LList <TaskTargetArea> *TaskManager::GetTargetArea( int _id )
                 }
                 //break;                // DELIBERATE FALL THROUGH
             }
+            //fallthrough
 
             case GlobalResearch::TypeSquad:
                 for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )

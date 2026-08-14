@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/file_writer.h"
+﻿#include "lib/file_writer.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/hi_res_time.h"
@@ -31,16 +29,16 @@ Triffid::Triffid()
     m_launchPoint(NULL),
     m_stem(NULL),
     m_timerSync(0.0f),
+    m_damage(50.0f),
+    m_triggered(false),
+    m_triggerTimer(0.0f),
+    m_size(1.0f),
+    m_reloadTime(60.0f),
     m_pitch( 0.6f ),
     m_force( 250.0f ),
     m_variance( M_PI / 8.0f ),
-    m_reloadTime(60.0f),
-    m_size(1.0f),
-    m_damage(50.0f),
     m_useTrigger(0),
-    m_triggerRadius(100.0f),
-    m_triggered(false),
-    m_triggerTimer(0.0f)
+    m_triggerRadius(100.0f)
 {
     m_type = TypeTriffid;
 
@@ -110,7 +108,7 @@ Matrix34 Triffid::GetHead()
 
 
 bool Triffid::DoesRayHit(Vector3 const &_rayStart, Vector3 const &_rayDir,
-                         float _rayLen, Vector3 *_pos, Vector3 *_norm)
+                         float _rayLen, Vector3 *, Vector3 *)
 {
     Matrix34 mat = GetHead();
 
@@ -129,7 +127,6 @@ void Triffid::Render( float _predictionTime )
 
     Vector3 stemPos = m_stem->GetWorldMatrix(mat).pos;
     Vector3 midPoint = mat.pos + ( stemPos - mat.pos ).SetLength(10.0f);
-    Vector3 midPoint2 = midPoint - Vector3(0,20,0);
     glColor4f( 1.0f, 1.0f, 0.5f, 1.0f );
     glLineWidth( 2.0f );
     glDisable( GL_TEXTURE_2D );
@@ -176,7 +173,7 @@ void Triffid::Render( float _predictionTime )
 }
 
 
-void Triffid::RenderAlphas( float _predictionTime )
+void Triffid::RenderAlphas( [[maybe_unused]] float _predictionTime )
 {
     if( g_app->m_editing )
     {
@@ -524,8 +521,8 @@ void Triffid::ListSoundEvents( LList<const char *> *_list )
 TriffidEgg::TriffidEgg()
 :   Entity(),
     m_force(1.0f),
-    m_spawnType(Triffid::SpawnVirii),
-    m_size(1.0f)
+    m_size(1.0f),
+    m_spawnType(Triffid::SpawnVirii)
 {
     SetType( TypeTriffidEgg );
 
@@ -572,14 +569,14 @@ void TriffidEgg::Spawn()
             int size = 5 + syncrand() % 5;
             Team *team = &g_app->m_location->m_teams[ m_id.GetTeamId() ];
             int unitId;
-            Unit *unit = team->NewUnit( TypeCentipede, size, &unitId, m_pos );
+            team->NewUnit( TypeCentipede, size, &unitId, m_pos );
             g_app->m_location->SpawnEntities( m_pos, teamId, unitId, TypeCentipede, size, g_zeroVector, 0.0f, 200.0f );
             break;
         }
 
         case Triffid::SpawnSpider:
         {
-            WorldObjectId id = g_app->m_location->SpawnEntities( m_pos, teamId, -1, TypeSpider, 1, g_zeroVector, 0.0f, 150.0f );
+            g_app->m_location->SpawnEntities( m_pos, teamId, -1, TypeSpider, 1, g_zeroVector, 0.0f, 150.0f );
             break;
         }
 

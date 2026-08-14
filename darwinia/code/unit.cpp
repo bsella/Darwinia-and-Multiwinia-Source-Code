@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <math.h>
 
 #include "lib/debug_utils.h"
@@ -20,20 +18,20 @@
 #include "worldobject/lasertrooper.h"
 
 Unit::Unit(int troopType, int teamId, int unitId, int numEntities, Vector3 const &_pos)
-:   m_troopType(troopType),
+:   m_wayPoint(0,0,0),
+    m_routeId(-1),
+	m_routeWayPointId(-1),
     m_teamId(teamId),
     m_unitId(unitId),
-    m_radius(0.0f),
+    m_troopType(troopType),
     m_centrePos(_pos),
     m_vel(0,0,0),
+    m_radius(0.0f),
+    m_targetDir(1,0,0),
+    m_attackAccumulator(0.0f),
     m_accumulatedCentre(0,0,0),
     m_accumulatedRadiusSquared(0.0f),
-    m_numAccumulated(0),
-    m_wayPoint(0,0,0),
-	m_routeId(-1),
-	m_routeWayPointId(-1),
-    m_targetDir(1,0,0),
-    m_attackAccumulator(0.0f)
+    m_numAccumulated(0)
 {
     m_entities.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
     m_entities.SetStepSize( 100 );
@@ -152,7 +150,7 @@ void Unit::Render( float _predictionTime )
     glEnable        ( GL_CULL_FACE );
 }
 
-bool Unit::Advance( int _slice )
+bool Unit::Advance( [[maybe_unused]]int _slice )
 {
     //
     // Maintain our centre and radius values
@@ -450,7 +448,7 @@ void Unit::RecalculateOffsets()
         if( m_entities.ValidIndex(i) )
         {
             Entity *ent = m_entities[i];
-            if( !ent->m_dead )
+			if( !ent->m_dead )
             {
                 ent->m_formationIndex = offset;
                 ++offset;
@@ -469,7 +467,6 @@ void Unit::RecalculateOffsets()
             if (m_entities.ValidIndex(i))
             {
                 LaserTrooper *l = (LaserTrooper *) m_entities[i];
-                Vector3 pos = l->m_pos;
                 Vector3 targetPos = m_wayPoint;
                 targetPos += GetFormationOffset( FormationRectangle, l->m_id.GetIndex() );
                 targetPos = l->PushFromObstructions( targetPos );
@@ -517,7 +514,7 @@ void Unit::FollowRoute()
 
 Entity *Unit::RayHit(Vector3 const &_rayStart, Vector3 const &_rayDir)
 {
-	for (unsigned int i = 0; i < m_entities.Size(); ++i)
+	for (int i = 0; i < m_entities.Size(); ++i)
 	{
 		if (m_entities.ValidIndex(i))
 		{
@@ -531,7 +528,7 @@ Entity *Unit::RayHit(Vector3 const &_rayStart, Vector3 const &_rayDir)
 	return NULL;
 }
 
-void Unit::DirectControl( TeamControls const& _teamControls )
+void Unit::DirectControl( TeamControls const& )
 {
 }
 

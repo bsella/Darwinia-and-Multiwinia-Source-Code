@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#define JAL_DEBUG 0
+﻿#define JAL_DEBUG 0
 #if JAL_DEBUG
 	#include <iostream>
 	#include "lib/debug.h"

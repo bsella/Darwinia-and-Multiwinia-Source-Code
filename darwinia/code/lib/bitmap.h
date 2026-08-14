@@ -1,6 +1,7 @@
 #ifndef INCLUDED_BITMAP_H
 #define INCLUDED_BITMAP_H
 
+#include <cstdio>
 
 class RGBAColour;
 class jpeg_decoder;

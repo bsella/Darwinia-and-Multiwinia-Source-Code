@@ -6,6 +6,7 @@
 
 #define ARMYANT_SEARCHRANGE         10
 
+class ShapeMarker;
 
 class ArmyAnt : public Entity
 {

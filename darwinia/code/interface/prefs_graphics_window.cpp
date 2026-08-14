@@ -1,8 +1,6 @@
-#include "lib/universal_include.h"
 #include "lib/preferences.h"
 #include "lib/text_renderer.h"
 #include "lib/profiler.h"
-#include "lib/resource.h"
 #include "lib/language_table.h"
 
 #include "interface/prefs_graphics_window.h"

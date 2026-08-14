@@ -1,12 +1,9 @@
-﻿#include "lib/universal_include.h"
-
-#ifdef TARGET_MSVC
+﻿#ifdef TARGET_MSVC
 #include <MMSYSTEM.H>
 #endif
 
 #include "lib/debug_utils.h"
 #include "lib/preferences.h"
-#include "lib/system_info.h"
 
 #include "sound/sound_library_2d.h"
 
@@ -16,10 +13,7 @@ static HWAVEOUT	s_device;
 #endif
 SoundLibrary2d *g_soundLibrary2d = NULL;
 
-
-#include "app.h"
 #include "lib/hi_res_time.h"
-#include "sound/soundsystem.h"
 
 
 //*****************************************************************************
@@ -84,11 +78,11 @@ void CALLBACK WaveOutProc(HWAVEOUT _dev, UINT _msg, DWORD _userData, DWORD _para
 
 
 SoundLibrary2d::SoundLibrary2d()
-:	m_callback(NULL),
-	m_wavOutput(NULL),
+:	m_wavOutput(NULL),
 	m_numBuffers(10),
 	m_nextBuffer(0),
-	m_fillsRequested(0)
+	m_fillsRequested(0),
+	m_callback(NULL)
 {
 	DarwiniaReleaseAssert(!g_soundLibrary2d, "SoundLibrary2d already exists");
 

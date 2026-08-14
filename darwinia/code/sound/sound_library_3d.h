@@ -27,10 +27,10 @@ class Profiler;
 class SoundLibrary3d
 {
 protected:
-	int					m_numChannels;			// Total number of channels including the music channel
-	int					m_sampleRate;
-	int					m_masterVolume;
-	Vector3				m_listenerPos;			// Records the most recent value passed into SetListenerPos
+	int          m_numChannels;			// Total number of channels including the music channel
+	unsigned int m_sampleRate;
+	int          m_masterVolume;
+	Vector3      m_listenerPos;			// Records the most recent value passed into SetListenerPos
 
 	// This callback is called whenever SoundLibrary3d needs some more sound data for a certain channel.
 	// The return value is true if some audio was written, or false if silence was written

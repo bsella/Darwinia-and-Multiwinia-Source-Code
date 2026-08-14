@@ -1,9 +1,6 @@
-#include "lib/universal_include.h"
-
 #include <math.h>
 #include <memory.h>
 
-#include "lib/matrix33.h"
 #include "lib/matrix34.h"
 #include "lib/debug_utils.h"
 

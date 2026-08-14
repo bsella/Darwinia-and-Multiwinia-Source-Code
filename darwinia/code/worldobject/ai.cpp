@@ -1,4 +1,3 @@
-#include "lib/universal_include.h"
 #include "lib/debug_render.h"
 #include "lib/file_writer.h"
 #include "lib/math_utils.h"
@@ -77,7 +76,7 @@ void AI::Begin()
                 for( int n = 0; n < a->m_neighbours.Size(); ++n )
                 {
                     int cId = a->m_neighbours[n];
-                    [[maybe_unused]]AITarget *c = (AITarget *) g_app->m_location->GetBuilding(cId);
+                    AITarget *c = (AITarget *) g_app->m_location->GetBuilding(cId);
                     DarwiniaDebugAssert( c && c->m_type == Building::TypeAITarget );
                     float distanceAtoC = a->IsNearTo( cId );
 

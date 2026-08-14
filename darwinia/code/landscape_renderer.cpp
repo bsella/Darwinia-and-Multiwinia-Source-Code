@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <float.h>
 
 #include "lib/2d_surface_map.h"
@@ -130,12 +128,12 @@ void LandscapeRenderer::BuildNormArray()
 			m_verts[nextNormId++].m_norm = norm1;
 			m_verts[nextNormId++].m_norm = norm2;
 
-			[[maybe_unused]]int vertIndex = strip->m_firstVertIndex + j + 2;
+			int vertIndex = strip->m_firstVertIndex + j + 2;
 			DarwiniaDebugAssert(nextNormId - 2 == vertIndex);
 		}
 	}
 
-	[[maybe_unused]]int vertIndex = m_verts.NumUsed();
+	int vertIndex = m_verts.NumUsed();
 	DarwiniaDebugAssert(nextNormId == vertIndex);
 }
 

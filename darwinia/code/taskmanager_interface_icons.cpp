@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/text_renderer.h"
+﻿#include "lib/text_renderer.h"
 #include "lib/math_utils.h"
 #include "lib/input/input.h"
 #include "lib/targetcursor.h"
@@ -50,18 +49,18 @@
 
 TaskManagerInterfaceIcons::TaskManagerInterfaceIcons()
 :   m_screenId(ScreenTaskManager),
-    m_chatLogY(0.0f),
     m_screenY(0.0f),
     m_desiredScreenY(0.0f),
     m_screenW(800),
     m_screenH(600),
+    m_chatLogY(0.0f),
     m_currentScreenZone(-1),
-    m_screenZoneTimer(0.0f),
     m_currentMouseScreenZone(-1),
-    m_currentQuickUnit(-1),
-    m_quickUnitDirection(0),
 	m_currentScrollZone(1),
-    m_taskManagerDownTime(0.0)
+    m_screenZoneTimer(0.0f),
+    m_taskManagerDownTime(0.0),
+    m_currentQuickUnit(-1),
+    m_quickUnitDirection(0)
 {
 
     m_viewingDefaultObjective = false;
@@ -81,14 +80,14 @@ TaskManagerInterfaceIcons::TaskManagerInterfaceIcons()
         sprintf( iconFilename, "icons/icon_%s.bmp", GlobalResearch::GetTypeName(i) );
         if( g_app->m_resource->DoesTextureExist( iconFilename ) )
         {
-            unsigned int texId = g_app->m_resource->GetTexture( iconFilename, true, false );
+            g_app->m_resource->GetTexture( iconFilename, true, false );
         }
 
         char gestureFilename[256];
         sprintf( gestureFilename, "icons/gesture_%s.bmp", GlobalResearch::GetTypeName(i) );
         if( g_app->m_resource->DoesTextureExist( gestureFilename ) )
         {
-            unsigned int texId = g_app->m_resource->GetTexture( gestureFilename, true, false );
+            g_app->m_resource->GetTexture( gestureFilename, true, false );
         }
     }
 
@@ -215,7 +214,7 @@ void TaskManagerInterfaceIcons::Advance()
             m_taskManagerDownTime = GetHighResTime();
         }
     }
-	else if( m_visible && g_inputManager.controlEvent(ControlIconsTaskManagerHide) )
+    else if( m_visible && g_inputManager.controlEvent(ControlIconsTaskManagerHide) )
     {
         // Tab key pressed while visible
         // So remove the task manager
@@ -236,7 +235,7 @@ void TaskManagerInterfaceIcons::Advance()
         {
             CreateQuickUnitInterface();
         }
-		else
+        else
 		{
 			DestroyQuickUnitInterface();
 		}
@@ -494,7 +493,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
     //
     // Where is the mouse right now
 
-    bool found = false;
+    //bool found = false;
 
     if( m_visible )
     {
@@ -511,7 +510,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
                     m_screenZoneTimer = GetHighResTime();
                     g_app->m_soundSystem->TriggerOtherEvent( NULL, "MouseOverIcon", SoundSourceBlueprint::TypeInterface );
                 }
-                found = true;
+                //found = true;
             }
         }
 
@@ -675,7 +674,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
 						{
 							//m_currentScreenZone = i;
 						}
-                        found = true;
+                        //found = true;
                         highlightOnly = true;
                     }
                 }
@@ -1189,7 +1188,6 @@ void TaskManagerInterfaceIcons::RenderTargetAreas()
     if( task && task->m_type != GlobalResearch::TypeOfficer && task->m_state == Task::StateStarted )
     {
         LList<TaskTargetArea> *targetAreas = g_app->m_taskManager->GetTargetArea( task->m_id );
-        RGBAColour *colour = &g_app->m_location->GetMyTeam()->m_colour;
 
         for( int i = 0; i < targetAreas->Size(); ++i )
         {
@@ -1406,7 +1404,7 @@ void TaskManagerInterfaceIcons::RenderCreateTaskMenu()
         if( g_app->m_globalWorld->m_research->HasResearch(taskType) )
         {
             char tooltipId[128];
-            sprintf( tooltipId, "newcontrols_create_%s", GlobalResearch::GetTypeName(taskType), i+1 );
+            sprintf( tooltipId, "newcontrols_create_%s", GlobalResearch::GetTypeName(taskType));
 
             ScreenZone *zone = new ScreenZone( "NewTask", LANGUAGEPHRASE(tooltipId), x+5, y-h/3, w-10, h, taskType );
             zone->m_scrollZone = 1;
@@ -1455,7 +1453,7 @@ void TaskManagerInterfaceIcons::RenderCreateTaskMenu()
             char iconFilename[256];
             sprintf( iconFilename, "icons/icon_%s.bmp", GlobalResearch::GetTypeName(taskType) );
             unsigned int texId = g_app->m_resource->GetTexture( iconFilename );
-            if( texId != -1 )
+            if( texId != ~0u )
             {
                 glEnable        ( GL_TEXTURE_2D );
                 glBindTexture   ( GL_TEXTURE_2D, texId );
@@ -1550,7 +1548,6 @@ void TaskManagerInterfaceIcons::RenderRunningTasks()
     float iconGap = 10;
     float shadowOffset = 0;
     float shadowSize = iconSize + 10;
-    float totalWidth = (numSlots-1) * ( iconSize + iconGap );
 
     float iconAlpha = 0.9f;
 
@@ -1835,7 +1832,6 @@ void TaskManagerInterfaceIcons::RenderCompass( float _screenX, float _screenY, V
 
 	Vector3 toCam = g_app->m_camera->GetPos() - _worldPos;
 	float angle = toCam * g_app->m_camera->GetFront();
-	Vector3 rotationVector = toCam ^ g_app->m_camera->GetFront();
 
     Vector2 compassVector;
 
@@ -2426,7 +2422,7 @@ void TaskManagerInterfaceIcons::RenderResearch()
             char iconFilename[256];
             sprintf( iconFilename, "icons/icon_%s.bmp", GlobalResearch::GetTypeName(i) );
             unsigned int texId = g_app->m_resource->GetTexture( iconFilename );
-            if( texId != -1 )
+            if( texId != ~0u )
             {
                 glEnable        ( GL_TEXTURE_2D );
                 glBindTexture   ( GL_TEXTURE_2D, texId );
@@ -2745,7 +2741,6 @@ void TaskManagerInterfaceIcons::RenderQuickUnit()
     if( !m_quickUnitVisible ) return;
 
     float iconSize = 110;
-    float iconGap = 10;
     float iconX = (g_app->m_renderer->ScreenW() / 2.0f);
     float iconY = g_app->m_renderer->ScreenH() - iconSize;
     float iconAlpha = 0.9f;
@@ -2924,8 +2919,8 @@ QuickUnitButton::QuickUnitButton()
     m_size(0.0f),
     m_x(-1),
     m_y(-1),
-    m_movable(false),
-    m_alpha(0.9f)
+    m_alpha(0.9f),
+    m_movable(false)
 {
     float iconSize = 100.0f;
     float iconGap = 10.0f;
@@ -3022,9 +3017,6 @@ void QuickUnitButton::Render()
     //if( m_positionId == 0 || m_positionId == 4 ) return;
 
     float iconSize = 100.0f;
-    float iconGap = 10.0f;
-    float iconX = (g_app->m_renderer->ScreenW() / 2.0f);// - iconSize - iconGap;
-    float iconY = g_app->m_renderer->ScreenH() - iconSize - iconGap;
     float iconAlpha = m_alpha;
     float shadowOffset = 0;
     float shadowSize = iconSize + 10;

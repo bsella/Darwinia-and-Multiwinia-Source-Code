@@ -1,8 +1,6 @@
-﻿#include "lib/universal_include.h"
-#include "lib/preferences.h"
+﻿#include "lib/preferences.h"
 #include "lib/text_renderer.h"
 #include "lib/language_table.h"
-#include "lib/filesys_utils.h"
 #include "lib/resource.h"
 
 #include "interface/prefs_other_window.h"
@@ -13,7 +11,6 @@
 #include "location.h"
 #include "level_file.h"
 #include "water.h"
-#include "main.h"
 
 class ApplyOtherButton : public DarwiniaButton
 {

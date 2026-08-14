@@ -17,7 +17,7 @@ BTree<T>::BTree()
     ltree = NULL;
     rtree = NULL;
     id = NULL;
-    data = NULL;
+    data = {};
 }
 
 

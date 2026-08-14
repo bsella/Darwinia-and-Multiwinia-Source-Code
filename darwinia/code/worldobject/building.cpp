@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <math.h>
+﻿#include <math.h>
 
 #include "lib/debug_render.h"
 #include "lib/debug_utils.h"
@@ -74,12 +72,12 @@ ShapeMarker *Building::s_controlPadStatus = NULL;
 
 Building::Building()
 :   m_front(1,0,0),
-    m_radius(13.0f),
-	m_timeOfDeath(-1.0f),
-	m_shape(NULL),
+    m_timeOfDeath(-1.0f),
 	m_dynamic(false),
 	m_isGlobal(false),
-	m_destroyed(false)
+    m_radius(13.0f),
+	m_destroyed(false),
+	m_shape(NULL)
 {
     if( !s_controlPad )
     {
@@ -128,7 +126,7 @@ void Building::Initialise( Building *_template )
 }
 
 
-void Building::SetDetail( int _detail )
+void Building::SetDetail( int )
 {
     m_pos.y = g_app->m_location->m_landscape.m_heightMap->GetValue(m_pos.x, m_pos.z);
 
@@ -232,7 +230,7 @@ void Building::SetShapePorts( ShapeFragment *_fragment )
 }
 
 
-void Building::Reprogram( float _complete )
+void Building::Reprogram( [[maybe_unused]] float _complete )
 {
 }
 
@@ -292,7 +290,7 @@ bool Building::IsInView()
 }
 
 
-bool Building::PerformDepthSort( Vector3 &_centrePos )
+bool Building::PerformDepthSort( [[maybe_unused]] Vector3 &_centrePos )
 {
     return false;
 }
@@ -319,7 +317,7 @@ void Building::Render( float predictionTime )
 }
 
 
-void Building::RenderAlphas( float predictionTime )
+void Building::RenderAlphas( [[maybe_unused]] float predictionTime )
 {
     RenderLights();
     RenderPorts();
@@ -353,14 +351,14 @@ void Building::RenderLights()
                 Vector3 camR = g_app->m_camera->GetRight();
                 Vector3 camU = g_app->m_camera->GetUp();
 
-                if( m_id.GetTeamId() == 255 )
-	            {
-		            glColor3f( 0.5f, 0.5f, 0.5f );
-	            }
-	            else
-	            {
-		            glColor3ubv( g_app->m_location->m_teams[ m_id.GetTeamId() ].m_colour.GetData() );
-	            }
+				if( m_id.GetTeamId() == 255 )
+				{
+					glColor3f( 0.5f, 0.5f, 0.5f );
+				}
+				else
+				{
+					glColor3ubv( g_app->m_location->m_teams[ m_id.GetTeamId() ].m_colour.GetData() );
+				}
 
                 glEnable        ( GL_TEXTURE_2D );
                 glBindTexture   ( GL_TEXTURE_2D, g_app->m_resource->GetTexture( "textures/starburst.bmp" ) );
@@ -544,7 +542,7 @@ void Building::RenderLink()
 #endif
 }
 
-void Building::Damage( float _damage )
+void Building::Damage( [[maybe_unused]] float _damage )
 {
     g_app->m_soundSystem->TriggerBuildingEvent( this, "Damage" );
 }
@@ -573,7 +571,7 @@ void Building::Destroy( float _intensity )
 }
 
 bool Building::DoesRayHit(Vector3 const &_rayStart, Vector3 const &_rayDir,
-                          float _rayLen, Vector3 *_pos, Vector3 *norm )
+                          float _rayLen, [[maybe_unused]]Vector3 *_pos, [[maybe_unused]]Vector3 *norm )
 {
 	if (m_shape)
 	{
@@ -622,7 +620,7 @@ int Building::GetBuildingLink()
     return -1;
 }
 
-void Building::SetBuildingLink( int _buildingId )
+void Building::SetBuildingLink( [[maybe_unused]] int _buildingId )
 {
 }
 

@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/bitmap.h"
+﻿#include "lib/bitmap.h"
 #include "lib/targetcursor.h"
 #include "lib/math_utils.h"
 #include "lib/resource.h"
@@ -339,7 +338,7 @@ void GameCursor::Render()
         bool somethingSelected = GetSelectedObject( selectedId, selectedWorldPos );
         bool somethingHighlighted = GetHighlightedObject( highlightedId, highlightedWorldPos, highlightedRadius );
 
-        if( g_app->m_taskManagerInterface->m_visible )
+		if( g_app->m_taskManagerInterface->m_visible )
         {
             // Looking at the task manager
             if( somethingSelected && selectedId.GetUnitId() != UNIT_BUILDINGS )
@@ -361,7 +360,7 @@ void GameCursor::Render()
             }
 
         }
-        else if( task &&
+		else if( task &&
                 task->m_state == Task::StateStarted &&
                 task->m_type != GlobalResearch::TypeOfficer &&
                 !somethingHighlighted )
@@ -373,7 +372,7 @@ void GameCursor::Render()
             Vector3 landNormal = g_app->m_location->m_landscape.m_normalMap->GetValue(mousePos.x, mousePos.z);
             Vector3 front = (landNormal ^ g_upVector).Normalise();
             m_cursorPlacement->Render3D( mousePos, front, landNormal );
-            if( !validPlacement)
+			if( !validPlacement)
 				m_cursorDisabled->Render3D(mousePos, front, landNormal);
 			else
 				m_validPlacementOpportunity = true;
@@ -406,7 +405,7 @@ void GameCursor::Render()
             }
 		    cursorRendered = true;
 		}
-        else
+		else
         {
             if( somethingHighlighted &&
                 !(somethingSelected && highlightedId.GetUnitId() == UNIT_BUILDINGS) )
@@ -702,7 +701,6 @@ void GameCursor::RenderSelectionArrows( WorldObjectId _id, Vector3 const &_pos )
 
 	Vector3 toCam = g_app->m_camera->GetPos() - _pos;
 	float angle = toCam * g_app->m_camera->GetFront();
-	Vector3 rotationVector = toCam ^ g_app->m_camera->GetFront();
 
     if( angle <= 0.0f &&
         screenX >= 0 && screenX < screenW &&
@@ -955,11 +953,11 @@ void GameCursor::RenderWeaponMarker ( Vector3 _pos, Vector3 _front, Vector3 _up 
 // ****************************************************************************
 
 MouseCursor::MouseCursor( char const *_filename )
-:   m_hotspotX(0.0f),
-    m_hotspotY(0.0f),
-    m_size(20.0f),
-    m_animating(false),
-    m_shadowed(true)
+:	m_size(20.0f),
+	m_animating(false),
+	m_shadowed(true),
+	m_hotspotX(0.0f),
+	m_hotspotY(0.0f)
 {
     char fullFilename[512];
 	sprintf( fullFilename, "%s", _filename);

@@ -1,13 +1,10 @@
-﻿#include "lib/universal_include.h"
-
-#include <float.h>
+﻿#include <float.h>
 
 #include "lib/window_manager.h"
 #include "lib/input/input.h"
 #include "lib/targetcursor.h"
 #include "lib/math_utils.h"
 #include "lib/hi_res_time.h"
-#include "lib/resource.h"
 #include "lib/text_renderer.h"
 #include "lib/matrix33.h"
 #include "lib/language_table.h"
@@ -18,7 +15,6 @@
 #include "loaders/raytrace_loader.h"
 
 #include "app.h"
-#include "main.h"
 #include "renderer.h"
 
 #include "sound/soundsystem.h"
@@ -88,7 +84,7 @@ inline Vector3 CalculateReflectionVector( Vector3 const &_incomingDir, Vector3 c
 
 
 inline void CalculateSphereRefraction( Vector3 const &_incomingDir, Vector3 const &_hitPoint, Vector3 const &_hitNormal,
-                                       Vector3 const &_spherePos, float _sphereRadius,
+                                       [[maybe_unused]]Vector3 const &_spherePos, float _sphereRadius,
                                        Vector3 &_outgoingDir, Vector3 &_outgoingPoint )
 {
 #define REFRACTION_COEFFICIENT 1.4f
@@ -137,7 +133,7 @@ int RayTraceLoader::CastRay( int _x, int _y,
     RGBAColour colour;
     bool hitSomething = false;
     Vector3 spherePos;
-    float radius;
+    //float radius;
 
     for( int i = 0; i < m_numObjects; ++i )
 	{
@@ -153,7 +149,7 @@ int RayTraceLoader::CastRay( int _x, int _y,
                 intersectNormal = thisIntersectNormal;
                 colour = m_objects[i].m_colour;
                 spherePos = m_objects[i].m_pos;
-                radius = m_objects[i].m_radius;
+                //radius = m_objects[i].m_radius;
                 hitSomething = true;
             }
         }
@@ -599,7 +595,6 @@ void RayTraceLoader::CastAllRays()
     int maxScreenH = RAYTRACELOADER_MAXRES * 120;
     memset( m_buffer, 0, maxScreenW*maxScreenH*sizeof(RGBAColour) );
 
-	#pragma omp parallel for
     for( int x = 0; x < screenW; ++x )
     {
 		Vector3 horiz = leftMost + horizDif * (x / (float) screenW );
@@ -608,7 +603,7 @@ void RayTraceLoader::CastAllRays()
             Vector3 vert = upMost + vertDif * (y / (float) screenH );
             Vector3 clickRay = (horiz + vert).Normalise();
 
-            int numHits = CastRay( x, y, m_cameraPos, clickRay,
+            CastRay( x, y, m_cameraPos, clickRay,
                                    RAYTRACELOADER_RENDERDEPTH, m_brightness/m_pixelBlur );
         }
     }
@@ -659,8 +654,7 @@ void RayTraceLoader::Run()
     // Go into our render loop
 
 	float endOfSecond = GetHighResTime() + 1.0f;
-	int fps = 0;
-	int lastFps = 0;
+	//int lastFps = 0;
 	while( !g_inputManager.controlEvent( ControlSkipMessage ) )
     {
         if( g_app->m_requestQuit ) break;
@@ -673,12 +667,7 @@ void RayTraceLoader::Run()
 		if (m_time > endOfSecond)
 		{
 			endOfSecond += 1.0f;
-			lastFps = fps;
-			fps = 0;
-		}
-		else
-		{
-			++fps;
+			//lastFps = fps;
 		}
 
         CastAllRays();

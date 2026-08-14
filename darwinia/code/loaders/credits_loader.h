@@ -6,6 +6,8 @@
 #include "lib/vector2.h"
 #include "loaders/loader.h"
 
+#include <cstring>
+
 class CreditsItem;
 class CreditsDarwinian;
 

@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <float.h>
 
 #include "lib/math_utils.h"
@@ -59,8 +57,8 @@ Tripod::Tripod()
 	m_nextLegToMove(0),
 	m_speed(0.0f),
 	m_targetHoverHeight(27.0f),
-	m_bodyVel(0,0,0),
-	m_up(g_upVector)
+	m_up(g_upVector),
+	m_bodyVel(0,0,0)
 {
 	m_shape = g_app->m_resource->GetShape("tripod.shp");
 	m_modeStartTime = 0.0f;
@@ -157,12 +155,12 @@ void Tripod::DoFallForTwoLegs()
 	Vector3 footToFoot;
 	Vector3 pointBetweenFeet;
 	Vector3 pointUnderBody;
-	if (!m_legs[0]->m_foot.m_state == EntityFoot::OnGround)
+	if (m_legs[0]->m_foot.m_state != EntityFoot::OnGround)
 	{
 		footToFoot = (m_legs[1]->m_foot.m_pos - m_legs[2]->m_foot.m_pos);
 		RayRayDist(m_legs[1]->m_foot.m_pos, footToFoot, m_pos, g_upVector, &pointBetweenFeet, &pointUnderBody);
 	}
-	else if (!m_legs[1]->m_foot.m_state == EntityFoot::OnGround)
+	else if (m_legs[1]->m_foot.m_state != EntityFoot::OnGround)
 	{
 		footToFoot = (m_legs[2]->m_foot.m_pos - m_legs[0]->m_foot.m_pos);
 		RayRayDist(m_legs[0]->m_foot.m_pos, footToFoot, m_pos, g_upVector, &pointBetweenFeet, &pointUnderBody);
@@ -508,7 +506,7 @@ void Tripod::AdvancePostAttack()
 }
 
 
-bool Tripod::Advance(Unit *_unit)
+bool Tripod::Advance(Unit*)
 {
 	//
 	// Advance current mode

@@ -1,10 +1,8 @@
-﻿#include "lib/universal_include.h"
-#include "lib/math_utils.h"
+﻿#include "lib/math_utils.h"
 #include "lib/input/input.h"
 #include "lib/resource.h"
 #include "lib/hi_res_time.h"
 #include "lib/text_renderer.h"
-#include "lib/window_manager.h"
 #include "lib/language_table.h"
 
 #include "loaders/gameoflife_loader.h"
@@ -92,7 +90,6 @@ void GameOfLifeLoader::PropagateCells( float _start, float _end )
         for( int y = startY; y < endY; ++y )
         {
             int numNeighbours = 0;
-            int numDead = 0;
             for( int i = -1; i <= 1; ++i )
             {
                 for( int j = -1; j <= 1; ++j )
@@ -110,10 +107,6 @@ void GameOfLifeLoader::PropagateCells( float _start, float _end )
                         {
                             ++numNeighbours;
                             m_numFound++;
-                        }
-                        if( m_cells[cellY * m_numCellsX + cellX] == CellStateDead )
-                        {
-                            ++numDead;
                         }
                     }
                 }

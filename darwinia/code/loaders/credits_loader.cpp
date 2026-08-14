@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/input/input.h"
+﻿#include "lib/input/input.h"
 #include "lib/text_renderer.h"
 #include "lib/hi_res_time.h"
 #include "lib/resource.h"
@@ -12,8 +11,6 @@
 #include "renderer.h"
 
 #include "sound/soundsystem.h"
-#include "sound/sound_library_2d.h"
-
 
 
 CreditsLoader *g_creditsLoader = NULL;
@@ -128,7 +125,7 @@ void CreditsLoader::GenerateChars( float _x, float _y, float _size, const char *
 {
     float x = _x;
 
-    for( int i = 0; i < strlen(_string); ++i )
+    for( size_t i = 0; i < strlen(_string); ++i )
     {
         char thisChar = _string[i];
         if( thisChar != ' ' )
@@ -504,7 +501,7 @@ void CreditsLoader::Run()
     g_app->m_soundSystem->TriggerOtherEvent( NULL, "Credits", SoundSourceBlueprint::TypeMusic );
 
     m_sceneIndex = 0;
-    int screenH = SetupFor2D( 800 );
+    SetupFor2D( 800 );
 
     float time = GetHighResTime();
     float startTime = time;

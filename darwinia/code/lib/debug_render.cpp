@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <math.h>
 #include <stdarg.h>
 
@@ -13,6 +11,7 @@
 #include "debug_render.h"
 #include "renderer.h"
 
+#include <GL/glu.h>
 
 #ifdef DEBUG_RENDER_ENABLED
 

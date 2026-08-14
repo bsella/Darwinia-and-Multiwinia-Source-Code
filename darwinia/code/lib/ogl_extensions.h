@@ -4,6 +4,11 @@
 
 #include <stddef.h>
 
+#include <GL/gl.h>
+
+#ifndef TARGET_MSVC
+#define __stdcall 
+#endif
 
 // Extension 1: GL_ARB_multitexture
 #define GL_COMBINE_EXT                    0x8570

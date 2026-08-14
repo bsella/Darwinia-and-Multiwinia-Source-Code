@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/resource.h"
 #include "lib/shape.h"
 #include "lib/text_stream_readers.h"

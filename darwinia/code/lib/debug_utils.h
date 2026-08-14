@@ -2,25 +2,22 @@
 #define DEBUG_UTILS_H
 
 #include <stdio.h>
+#include <cassert>
 
 void DebugOut(const char *fmt, ...);
 
 
 void DarwiniaReleaseAssert(bool _condition, char const *_fmt, ...);
 
-#ifdef _DEBUG
-  #ifdef TARGET_MSVC
+#if defined (_DEBUG) && defined(TARGET_MSVC)
 	#define DarwiniaDebugAssert(x) \
 		if(!(x)) { \
 			/*GenerateBlackBox();*/ \
 			::ShowCursor(true); \
 			_ASSERT(x); \
 		}
-  #else
-    #define DarwiniaDebugAssert(x) { assert(x); }
-  #endif
 #else
-	#define DarwiniaDebugAssert(x)
+	#define DarwiniaDebugAssert(x) { assert(x); }
 #endif
 
 

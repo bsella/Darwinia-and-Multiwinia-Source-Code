@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/debug_render.h"
 #include "lib/file_writer.h"
 #include "lib/text_stream_readers.h"

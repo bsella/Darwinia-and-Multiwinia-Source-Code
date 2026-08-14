@@ -6,6 +6,8 @@
 #include "rgb_colour.h"
 #include "vector3.h"
 
+#include <GL/gl.h>
+
 void RenderSquare2d(float x, float y, float size, RGBAColour const &_col=RGBAColour(255,255,255));
 
 void RenderCube(Vector3 const &_centre, float _sizeX, float _sizeY, float _sizeZ, RGBAColour const &_col=RGBAColour(255,255,255));

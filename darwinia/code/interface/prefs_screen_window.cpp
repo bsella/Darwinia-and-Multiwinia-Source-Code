@@ -1,8 +1,6 @@
-﻿#include "lib/universal_include.h"
-//#include "lib/input.h"
+﻿//#include "lib/input.h"
 #include "lib/preferences.h"
 #include "lib/preference_names.h"
-#include "lib/resource.h"
 #include "lib/text_renderer.h"
 #include "lib/window_manager.h"
 #include "lib/language_table.h"
@@ -83,7 +81,7 @@ class FullscreenRequiredMenu : public DropDownMenu
     }
 };
 
-static void AdjustWindowPositions(int _newWidth, int _newHeight, int _oldWidth, int _oldHeight)
+[[maybe_unused]] static void AdjustWindowPositions(int _newWidth, int _newHeight, int _oldWidth, int _oldHeight)
 {
 	if (_newWidth != _oldWidth || _newHeight != _oldHeight) {
 		// Resolution has changed, adjust the window positions accordingly

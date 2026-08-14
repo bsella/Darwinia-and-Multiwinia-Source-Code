@@ -3,13 +3,9 @@
 // Part of the Eclipse interface library
 // By Christopher Delay
 
-//#include "lib/universal_include.h"
-
-
 #include <stdio.h>
 #include <string.h>
 
-#include "eclipse.h"
 #include "eclbutton.h"
 
 

@@ -4,6 +4,9 @@
 
 #include "loaders/loader.h"
 
+#include "lib/vector3.h"
+#include "lib/rgb_colour.h"
+
 #include "lib/llist.h"
 
 class SoulLoaderSpirit;

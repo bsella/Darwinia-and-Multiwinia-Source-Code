@@ -1,6 +1,4 @@
-﻿//#include "lib/universal_include.h"
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <string.h>
 
 #include "eclipse.h"
@@ -12,8 +10,8 @@ EclWindow::EclWindow( const char *_name )
     m_y(0),
     m_w(0),
     m_h(0),
-    m_dirty(false),
-    m_resizable(true)
+    m_resizable(true),
+    m_dirty(false)
 {    
     SetName (_name);
     SetTitle ( "New Window" );
@@ -179,7 +177,7 @@ void EclWindow::Keypress ( int keyCode, bool shift, bool ctrl, bool alt )
     }
 }
 
-void EclWindow::MouseEvent ( bool lmb, bool rmb, bool up, bool down )
+void EclWindow::MouseEvent ( [[maybe_unused]]bool lmb, [[maybe_unused]]bool rmb, [[maybe_unused]]bool up, [[maybe_unused]]bool down )
 {
 }
 

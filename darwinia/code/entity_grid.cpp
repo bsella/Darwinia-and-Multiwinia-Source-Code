@@ -1,4 +1,3 @@
-#include "lib/universal_include.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,9 +62,9 @@ public:
 
 // *** Constructor
 EntityGridCell::EntityGridCell()
-:	m_arraySize(INITIAL_OBJECT_ID_ARRAY_SIZE),
-	m_numSlotsFree(INITIAL_OBJECT_ID_ARRAY_SIZE),
-	m_firstFree(END_OF_LIST)
+:	m_numSlotsFree(INITIAL_OBJECT_ID_ARRAY_SIZE),
+	m_firstFree(END_OF_LIST),
+	m_arraySize(INITIAL_OBJECT_ID_ARRAY_SIZE)
 {
 	m_objectIds = NULL;
     m_usageLists = NULL;
@@ -182,7 +181,7 @@ bool EntityGridCell::RemoveObjectId(WorldObjectId _objectId)
 // ****************************************************************************
 
 
-void LogEntityGridError( WorldObjectId _id, Vector3 const &_pos, int _error )
+void LogEntityGridError([[maybe_unused]] WorldObjectId _id, [[maybe_unused]]Vector3 const &_pos, [[maybe_unused]]int _error )
 {
 #ifdef DEBUG_ENTITY_GRID
     for( int i = 0; i < s_entityGridErrors.Size(); ++i )
@@ -207,10 +206,10 @@ void LogEntityGridError( WorldObjectId _id, Vector3 const &_pos, int _error )
 
 // *** Constructor
 EntityGrid::EntityGrid(float _cellSizeX, float _cellSizeZ)
-:   m_cellSizeX(_cellSizeX),
-    m_cellSizeZ(_cellSizeZ),
-    m_neighbours(NULL),
-    m_maxNeighbours(0)
+:	m_neighbours(NULL),
+	m_maxNeighbours(0),
+	m_cellSizeX(_cellSizeX),
+    m_cellSizeZ(_cellSizeZ)
 {
     m_cellSizeXRecip = 1.0f / _cellSizeX;
     m_cellSizeZRecip = 1.0f / _cellSizeZ;
@@ -559,8 +558,6 @@ int EntityGrid::GetNumNeighbours(float _worldX, float _worldZ, float _range, boo
     upMostCell = max(0, upMostCell);
     downMostCell = min(m_numCellsZ - 1, downMostCell);
 
-    float rangeSqrd = _range * _range;
-
     int numFoundSoFar = 0;
 
     // For each cell
@@ -642,10 +639,6 @@ bool EntityGrid::AreNeighboursPresent(float _worldX, float _worldZ, float _range
     rightMostCell = min(m_numCellsX - 1, rightMostCell);
     upMostCell = max(0, upMostCell);
     downMostCell = min(m_numCellsZ - 1, downMostCell);
-
-    float rangeSqrd = _range * _range;
-
-    int numFoundSoFar = 0;
 
     // For each cell
     for (int x = leftMostCell; x <= rightMostCell; x++)

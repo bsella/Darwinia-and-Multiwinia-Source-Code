@@ -1,12 +1,8 @@
-﻿#include "lib/universal_include.h"
-#include "lib/hi_res_time.h"
+﻿#include "lib/hi_res_time.h"
 #include "lib/resource.h"
 #include "lib/window_manager.h"
 #include "lib/text_renderer.h"
 #include "lib/language_table.h"
-
-#include "sound/sound_library_2d.h"
-#include "sound/sound_library_3d.h"
 
 #include "app.h"
 #include "renderer.h"

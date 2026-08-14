@@ -1,4 +1,3 @@
-#include "lib/universal_include.h"
 #include "lib/profiler.h"
 #include "lib/text_renderer.h"
 

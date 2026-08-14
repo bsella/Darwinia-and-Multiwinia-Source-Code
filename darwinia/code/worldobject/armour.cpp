@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/resource.h"
+﻿#include "lib/resource.h"
 #include "lib/matrix34.h"
 #include "lib/shape.h"
 #include "lib/hi_res_time.h"
@@ -28,10 +27,10 @@
 Armour::Armour()
 :   Entity(),
     m_speed(0.0f),
-    m_state(StateIdle),
     m_numPassengers(0),
     m_previousUnloadTimer(0.0f),
-    m_newOrdersTimer(0.0f)
+    m_newOrdersTimer(0.0f),
+    m_state(StateIdle)
 {
     SetType( TypeArmour );
 
@@ -75,8 +74,6 @@ void Armour::Begin()
 
 void Armour::ChangeHealth( int _amount )
 {
-    bool dead = m_dead;
-
     if( _amount < 0 && _amount > -1000 ) _amount = -1;
 
     if( !m_dead )
@@ -202,7 +199,6 @@ void Armour::AdvanceToTargetPos()
     }
     else
     {
-        float heightAboveGround = m_pos.y - landHeight;
         m_vel.y -= 5.0f;
         m_pos.y += m_vel.y * SERVER_ADVANCE_PERIOD;
         m_pos.y = max( m_pos.y, landHeight );
@@ -267,7 +263,6 @@ bool Armour::Advance( Unit *_unit )
     int numSmoke = 1 + int( velocity / 20.0f );
     for( int i = 0; i < numSmoke; ++i )
     {
-        Vector3 right = m_up ^ m_front;
         Vector3 vel = m_front;
         vel.RotateAround( m_up * syncfrand(2.0f * M_PI) );
         vel.SetLength( syncfrand(5.0f) );

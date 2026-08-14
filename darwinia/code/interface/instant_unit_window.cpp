@@ -1,7 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <stdio.h>
-#include <string.h>
+﻿#include <stdio.h>
 
 #include "lib/debug_utils.h"
 #include "lib/language_table.h"
@@ -15,7 +12,6 @@
 #include "location.h"
 #include "location_editor.h"
 #include "renderer.h"
-#include "user_input.h"
 #include "team.h"
 
 #include "worldobject/entity.h"

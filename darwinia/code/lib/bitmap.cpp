@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/binary_stream_readers.h"
+﻿#include "lib/binary_stream_readers.h"
 #include "lib/bitmap.h"
 #include "lib/debug_utils.h"
 #include "lib/filesys_utils.h"
@@ -513,12 +511,13 @@ void BitmapRGBA::Initialise(char const *_filename)
 {
 	BinaryFileReader in(_filename);
 
+	char const *extension = GetExtensionPart(_filename);
 	DarwiniaDebugAssert(stricmp(extension, "bmp") == 0);
 	LoadBmp(&in);
 }
 
 
-void BitmapRGBA::Initialise(BinaryReader *_reader, char const *_type)
+void BitmapRGBA::Initialise(BinaryReader *_reader, [[maybe_unused]] char const *_type)
 {
 	DarwiniaDebugAssert(stricmp(_type, "bmp") == 0);
 	LoadBmp(_reader);

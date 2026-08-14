@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-
+﻿
 #include <stdio.h>
 #include <string.h>
 
@@ -8,9 +6,6 @@
 #include "lib/targetcursor.h"
 #include "lib/profiler.h"
 #include "lib/text_renderer.h"
-
-#include "network/server.h"
-#include "network/clienttoserver.h"
 
 #include "app.h"
 
@@ -191,7 +186,6 @@ void ProfileWindow::Render( bool hasFocus )
 	}
 
     ProfiledElement *root = g_app->m_profiler->m_rootElement;
-    int tableSize = root->m_children.Size();
 
     m_yPos = m_y + 42;
 

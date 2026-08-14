@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/resource.h"
+﻿#include "lib/resource.h"
 #include "lib/matrix34.h"
 #include "lib/shape.h"
 #include "lib/math_utils.h"
@@ -28,8 +27,8 @@ ShapeMarker *SoulDestroyer::s_tailMarker = NULL;
 
 SoulDestroyer::SoulDestroyer()
 :   Entity(),
-    m_panic(0.0f),
-    m_retargetTimer(0.0f)
+    m_retargetTimer(0.0f),
+    m_panic(0.0f)
 {
     m_type = TypeSoulDestroyer;
 

@@ -31,7 +31,7 @@ void EclShutdown ();
 // Window management
 
 
-void EclRegisterWindow          ( EclWindow *window, EclWindow *parent=NULL );
+void EclRegisterWindow          ( EclWindow *window, EclWindow *parent=nullptr );
 void EclRemoveWindow            ( const char *name );
 void EclRegisterPopup           ( EclWindow *window );
 void EclRemovePopup             ();

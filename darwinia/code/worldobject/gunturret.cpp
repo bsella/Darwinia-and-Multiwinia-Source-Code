@@ -26,14 +26,14 @@
 
 GunTurret::GunTurret()
 :   Building(),
-    m_retargetTimer(0.0f),
+    m_turret(NULL),
+    m_aiTargetCreated(false),
     m_fireTimer(0.0f),
     m_nextBarrel(0),
-    m_turret(NULL),
-    m_ownershipTimer(0.0f),
-    m_health(60.0f),
+    m_retargetTimer(0.0f),
     m_targetCreated(false),
-    m_aiTargetCreated(false)
+    m_health(60.0f),
+    m_ownershipTimer(0.0f)
 {
     SetShape( g_app->m_resource->GetShape( "battlecannonbase.shp" ) );
     m_type = TypeGunTurret;
@@ -282,7 +282,6 @@ bool GunTurret::Advance()
     // Look for a new target
 
     bool primaryFire = false;
-    bool secondaryFire = false;
 
     if( underPlayerControl )
     {
@@ -297,10 +296,10 @@ bool GunTurret::Advance()
 
 #ifdef JAMES_FIX
         primaryFire = g_controlBindings->ControlMouseEvent( ControlBindings::ControlUnitPrimaryFire, team->m_currentMouseStatus, team->m_mouseDeltas );
-        secondaryFire = g_controlBindings->ControlMouseEvent( ControlBindings::ControlUnitSecondaryFire, team->m_currentMouseStatus, team->m_mouseDeltas );
+        g_controlBindings->ControlMouseEvent( ControlBindings::ControlUnitSecondaryFire, team->m_currentMouseStatus, team->m_mouseDeltas );
 #endif // JAMES_FIX
 		primaryFire = g_inputManager.controlEvent( ControlUnitPrimaryFireTarget ) || g_inputManager.controlEvent( ControlUnitStartSecondaryFireDirected );
-		secondaryFire = g_inputManager.controlEvent( ControlUnitSecondaryFireTarget );
+		g_inputManager.controlEvent( ControlUnitSecondaryFireTarget );
     }
     else
     {
@@ -551,7 +550,7 @@ bool GunTurretTarget::Advance()
 }
 
 
-void GunTurretTarget::Render( float _time )
+void GunTurretTarget::Render( [[maybe_unused]]float _time )
 {
     //RenderSphere( m_pos, 10.0f );
 }

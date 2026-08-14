@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/math_utils.h"
 #include "lib/profiler.h"
 #include "lib/resource.h"

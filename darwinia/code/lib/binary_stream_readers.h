@@ -1,6 +1,7 @@
 #ifndef INCLUDED_BINARY_STREAM_READERS_H
 #define INCLUDED_BINARY_STREAM_READERS_H
 
+#include <cstdio>
 
 //*****************************************************************************
 // Class BinaryReader

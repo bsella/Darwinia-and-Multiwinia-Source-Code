@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <math.h>
+﻿#include <math.h>
 
 #include "lib/math_utils.h"
 #include "lib/resource.h"
@@ -36,8 +34,8 @@
 
 Engineer::Engineer()
 :   Entity(),
-    m_hoverHeight(15.0f),
     m_state(StateIdle),
+    m_hoverHeight(15.0f),
     m_retargetTimer(0.0f),
     m_spiritId(-1),
     m_positionId(-1),
@@ -641,7 +639,7 @@ bool Engineer::AdvanceToIncubator()
 
     if( !incubator )
     {
-        bool found = SearchForIncubator();
+        SearchForIncubator();
         incubator = (Incubator *) g_app->m_location->GetBuilding( m_buildingId );
         if( !incubator )
         {
@@ -966,8 +964,6 @@ bool Engineer::AdvanceOperatingBridge ()
     Building *building = g_app->m_location->GetBuilding( m_buildingId );
     if( building && building->m_type == Building::TypeBridge )
     {
-        Vector3 front;
-        Bridge *bridge = (Bridge *) building;
         // Nothing to do really
     }
     else

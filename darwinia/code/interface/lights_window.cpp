@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <stdio.h>
+﻿#include <stdio.h>
 
 #include "lib/language_table.h"
 
@@ -9,7 +7,6 @@
 
 #include "app.h"
 #include "location_editor.h"
-#include "level_file.h"
 #include "location.h"
 
 
@@ -108,7 +105,6 @@ void LightsEditWindow::Create()
 
 	int height = 5;
 	int pitch = 17;
-	int buttonWidth = m_w - 50;
 
     NewLightButton *newLight = new NewLightButton();
     newLight->SetShortProperties( LANGUAGEPHRASE("editor_newlight"), 10, height += pitch, m_w - 20 );

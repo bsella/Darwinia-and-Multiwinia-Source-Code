@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <float.h>
+﻿#include <float.h>
 
 #include "lib/debug_utils.h"
 #include "lib/language_table.h"
@@ -47,10 +45,10 @@
 // ****************************************************************************
 
 GlobalLocation::GlobalLocation()
-:   m_id(-1),
-    m_available(false),
-    m_numSpirits(0),
-    m_missionCompleted(false)
+:	m_id(-1),
+	m_available(false),
+	m_missionCompleted(false),
+	m_numSpirits(0)
 {
     strcpy( m_name, "none" );
     strcpy( m_mapFilename, "none" );
@@ -73,10 +71,10 @@ GlobalBuilding::GlobalBuilding()
 :   m_id(-1),
     m_teamId(-1),
     m_locationId(-1),
-    m_online(false),
     m_type(Building::TypeTrunkPort),
-    m_shape(NULL),
-    m_link(-1)
+    m_online(false),
+    m_link(-1),
+    m_shape(NULL)
 {
     m_shape = g_app->m_resource->GetShape( "trunkport.shp" );
 }
@@ -581,8 +579,6 @@ void GlobalResearch::EvaluateLevel( int _type )
 
     if( currentLevel < 4 )
     {
-        int newLevel = 0;
-
         int requiredProgress = RequiredProgress(currentLevel);
 
         if( m_researchProgress[_type] >= requiredProgress )
@@ -812,7 +808,7 @@ void ColourShapeFragment(ShapeFragment *_frag, RGBAColour const &_colour)
     }
     _frag->m_colours[0] = _colour;
 
-    for (int i = 0; i < _frag->m_numVertices; ++i)
+    for (unsigned int i = 0; i < _frag->m_numVertices; ++i)
     {
         VertexPosCol *vert = &_frag->m_vertices[i];
         vert->m_colId = 0;
@@ -1114,9 +1110,7 @@ void SphereWorld::RenderTrunkLinks()
             GlobalLocation *fromLoc = g_app->m_globalWorld->GetLocation( building->m_locationId );
             GlobalLocation *toLoc = g_app->m_globalWorld->GetLocation( building->m_link );
 
-            if( fromLoc && toLoc &&
-                (fromLoc->m_available && toLoc->m_available) ||
-                g_app->m_editing )
+            if( (fromLoc && toLoc && (fromLoc->m_available && toLoc->m_available)) || g_app->m_editing )
             {
                 Vector3 fromPos = g_app->m_globalWorld->GetLocationPosition(building->m_locationId);
                 Vector3 toPos = g_app->m_globalWorld->GetLocationPosition(building->m_link);
@@ -1355,12 +1349,12 @@ void SphereWorld::RenderIslands()
 
 
 GlobalWorld::GlobalWorld()
-:   m_nextBuildingId(0),
-    m_nextLocationId(0),
-	m_locationRequested(-1),
-    m_myTeamId(255),
-    m_editorMode(0),
-    m_editorSelectionId(-1)
+:	m_myTeamId(255),
+	m_editorMode(0),
+	m_editorSelectionId(-1),
+	m_nextLocationId(0),
+	m_nextBuildingId(0),
+	m_locationRequested(-1)
 {
     m_globalInternet = new GlobalInternet();
     m_sphereWorld = new SphereWorld();
@@ -1894,19 +1888,19 @@ void GlobalWorld::LoadGame( const char *_filename )
 		    {
                 ParseLocations( in );
 		    }
-            else if (stricmp("buildings_startdefinition", word) == 0)
+			else if (stricmp("buildings_startdefinition", word) == 0)
             {
                 ParseBuildings( in );
             }
-            else if (stricmp("events_startdefinition", word) == 0)
+			else if (stricmp("events_startdefinition", word) == 0)
             {
                 ParseEvents( in );
             }
-            else if (stricmp("research_startdefinition", word) == 0)
+			else if (stricmp("research_startdefinition", word) == 0)
             {
                 m_research->Read( in );
             }
-            else if (stricmp("tutorial_startdefinition", word) == 0)
+			else if (stricmp("tutorial_startdefinition", word) == 0)
             {
                 ParseTutorial( in );
             }
@@ -2020,7 +2014,7 @@ void GlobalWorld::SaveGame( const char *_filename )
 }
 
 
-void GlobalWorld::WriteTutorial(FileWriter *_out)
+void GlobalWorld::WriteTutorial([[maybe_unused]]FileWriter *_out)
 {
 #ifdef DEMO2
     int currentChapter = -1;
@@ -2048,7 +2042,6 @@ void GlobalWorld::ParseTutorial(TextReader *_in)
 			return;
 		}
 
-        char *temp = _in->GetNextToken();
         int chapter = atoi( _in->GetNextToken() );
 
         if( g_app->m_tutorial )

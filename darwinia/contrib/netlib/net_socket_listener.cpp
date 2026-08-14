@@ -1,9 +1,7 @@
 ﻿// See header file for module description
 
 #include "net_lib.h"
-#include "net_socket.h"
 #include "net_socket_listener.h"
-#include "net_thread.h"
 #include "net_udp_packet.h"
 
 #include <string.h>
@@ -37,7 +35,6 @@ NetRetCode NetSocketListener::StartListening(NetCallBack functionPointer)
 	}
 	
 	NetSocketHandle client = 0;
-	unsigned int addrlen = sizeof(clientaddr);
 	
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);

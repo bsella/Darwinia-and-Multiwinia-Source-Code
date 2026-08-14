@@ -1,11 +1,9 @@
-﻿#include "lib/universal_include.h"
-
-#include "net_lib.h"
+﻿#include "net_lib.h"
 
 #include "network/generic.h"
 
 
-void IpToString(struct in_addr in, char *newip)
+void IpToString([[maybe_unused]]struct in_addr in, [[maybe_unused]]char *newip)
 {
 #ifdef TARGET_MSVC
         sprintf ( newip, "%u.%u.%u.%u", in.S_un.S_un_b.s_b1,

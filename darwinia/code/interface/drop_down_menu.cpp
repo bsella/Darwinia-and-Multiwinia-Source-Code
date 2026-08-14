@@ -1,5 +1,4 @@
 #include "lib/universal_include.h"
-#include "lib/text_renderer.h"
 #include "lib/string_utils.h"
 
 #include <string.h>
@@ -9,6 +8,7 @@
 
 #include "interface/drop_down_menu.h"
 
+#include <GL/gl.h>
 
 // ****************************************************************************
 // Class DropDownOptionData
@@ -350,8 +350,7 @@ void DropDownMenuOption::Render( int realX, int realY, bool highlighted, bool cl
         EclButton *button = window->GetButton( m_parentMenuName );
         if( button )
         {
-            DropDownMenu *menu = (DropDownMenu *) button;
-			if( window->m_buttonOrder[window->m_currentButton] == this )
+            if( window->m_buttonOrder[window->m_currentButton] == this )
             {
                 BorderlessButton::Render( realX, realY, highlighted, true );
             }

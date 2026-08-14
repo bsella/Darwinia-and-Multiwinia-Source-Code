@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <math.h>
 #include <memory.h>
 
@@ -19,7 +17,7 @@ Matrix33::Matrix33()
 }
 
 
-Matrix33::Matrix33(int _ignored)
+Matrix33::Matrix33(int)
 {
 	SetToIdentity();
 }

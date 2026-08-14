@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <string>
+﻿#include <string>
 #include <memory>
 
 #include "lib/preferences.h"

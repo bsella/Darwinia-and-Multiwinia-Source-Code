@@ -1,10 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-
-#include <stdio.h>
-
-#include "lib/text_renderer.h"
-#include "lib/profiler.h"
+﻿#include "lib/text_renderer.h"
 
 #include "network/server.h"
 #include "network/clienttoserver.h"
@@ -14,6 +8,7 @@
 
 #include "interface/network_window.h"
 
+#include <GL/gl.h>
 
 NetworkWindow::NetworkWindow( const char *name )
 :   DarwiniaWindow( name )
