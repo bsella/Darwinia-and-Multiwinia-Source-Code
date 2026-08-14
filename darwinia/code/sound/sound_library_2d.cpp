@@ -55,8 +55,9 @@ SoundLib2dBuf::~SoundLib2dBuf()
 {
 #ifdef TARGET_MSVC
 	waveOutUnprepareHeader(s_device, &m_header, sizeof(WAVEHDR));
-	delete [] m_buffer;			m_buffer = NULL;
 #endif
+
+	delete [] m_buffer;
 }
 
 
@@ -123,9 +124,10 @@ SoundLibrary2d::SoundLibrary2d()
 
 SoundLibrary2d::~SoundLibrary2d()
 {
+	delete [] m_buffers;
+
 #ifdef TARGET_MSVC
 	waveOutReset(s_device);
-	delete [] m_buffers;		m_buffers = NULL;
 	waveOutClose(s_device);		s_device = NULL;
 #endif
 	g_soundLibrary2d = NULL;
