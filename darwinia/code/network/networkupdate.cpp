@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <string.h>
 
 #include "lib/debug_utils.h"
@@ -10,14 +8,14 @@
 
 NetworkUpdate::NetworkUpdate()
 :   m_type(Invalid),
-    m_lastSequenceId(-1),
-    m_radius(0.0f),
-    m_teamId(255),
-    m_entityType(Entity::TypeInvalid),
-    m_numTroops(0),
     m_unitId(0),
     m_buildingId(-1),
-    m_sync(0)
+    m_entityType(Entity::TypeInvalid),
+    m_numTroops(0),
+    m_teamId(255),
+    m_radius(0.0f),
+    m_sync(0),
+    m_lastSequenceId(-1)
 {
 }
 
@@ -104,6 +102,7 @@ int NetworkUpdate::ReadByteStream(char *_byteStream)
             GetWorldPos().z = READ_FLOAT(_byteStream);
             break;
 
+        case Pause: break;
         case Invalid:
             DarwiniaDebugAssert(false);
 
@@ -293,6 +292,7 @@ char *NetworkUpdate::GetByteStream(int *_linearSize)
             WRITE_FLOAT( byteStream, GetWorldPos().z );
             break;
 
+        case Pause: break;
         case Invalid:
             DarwiniaDebugAssert(false);
 

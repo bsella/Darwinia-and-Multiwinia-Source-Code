@@ -42,10 +42,10 @@ void GlobalInternetNode::AddLink(int _id)
 // ****************************************************************************
 
 GlobalInternet::GlobalInternet()
-:   m_links(0),
+:   m_nodes(NULL),
+    m_numNodes(0),
+    m_links(0),
 	m_numLinks(0),
-	m_nodes(NULL),
-	m_numNodes(0),
     m_nearestNodeToCentre(-1),
     m_nearestDistance(FLT_MAX)
 {
@@ -107,7 +107,7 @@ unsigned short GlobalInternet::GenerateInternet( Vector3 const &_pos, unsigned c
 
 void GlobalInternet::GenerateInternet()
 {
-    double timeStart = GetHighResTime();
+    [[maybe_unused]]double timeStart = GetHighResTime();
 
 	m_links = new GlobalInternetLink[GLOBALINTERNET_MAXLINKS];
 	m_nodes = new GlobalInternetNode[GLOBALINTERNET_MAXNODES];
@@ -115,7 +115,7 @@ void GlobalInternet::GenerateInternet()
     //Vector3 centre(200, 200, 200);
     //Vector3 centre(449,1787,-139);
     Vector3 centre(-797,1949,-1135);
-    unsigned short firstNode = GenerateInternet( centre, GLOBALINTERNET_ITERATIONS );
+    GenerateInternet( centre, GLOBALINTERNET_ITERATIONS );
 
     m_nodes[m_numNodes].m_pos.Zero();
     m_nodes[m_numNodes].m_size = 0.0f;

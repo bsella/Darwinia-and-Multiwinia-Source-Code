@@ -40,7 +40,7 @@ void CachedSample::Read(signed short *_data, unsigned int _startSample, unsigned
 {
 	if (m_soundStreamDecoder)
 	{
-		int highestSampleRequested = _startSample + _numSamples - 1;
+		unsigned int highestSampleRequested = _startSample + _numSamples - 1;
 		if (highestSampleRequested >= m_amountCached)
 		{
 			int amountToRead = highestSampleRequested - m_amountCached + 1;
@@ -81,7 +81,7 @@ CachedSampleHandle::~CachedSampleHandle()
 
 unsigned int CachedSampleHandle::Read(signed short *_data, unsigned int _numSamples)
 {
-	int samplesRemaining = m_cachedSample->m_numSamples - m_nextSampleIndex;
+	unsigned int samplesRemaining = m_cachedSample->m_numSamples - m_nextSampleIndex;
 	if (_numSamples > samplesRemaining)
 	{
 		_numSamples = samplesRemaining;
@@ -107,7 +107,7 @@ void CachedSampleHandle::Restart()
 
 CachedSampleManager::~CachedSampleManager()
 {
-	for (int i = 0; i < m_cache.Size(); ++i)
+	for (unsigned int i = 0; i < m_cache.Size(); ++i)
 	{
 		delete m_cache.GetData(i);
 	}
@@ -139,7 +139,7 @@ int CachedSampleManager::GetMemoryUsage()
 {
     int memoryUsage = 0;
 
-    for( int i = 0; i < m_cache.Size(); ++i )
+    for( unsigned int i = 0; i < m_cache.Size(); ++i )
     {
         if( m_cache.ValidIndex(i) )
         {

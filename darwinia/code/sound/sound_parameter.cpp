@@ -1,7 +1,5 @@
 ﻿#include "lib/universal_include.h"
 
-#include <string.h>
-
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
 #include "lib/math_utils.h"
@@ -18,10 +16,10 @@ SoundParameter::SoundParameter()
     m_outputLower(0.0f),
     m_inputUpper(0.0f),
     m_outputUpper(0.0f),
-    m_input(0.0f),
-    m_output(0.0f),
     m_desiredOutput(0.0f),
-    m_smooth(0.0f)
+    m_smooth(0.0f),
+    m_input(0.0f),
+    m_output(0.0f)
 {
 }
 
@@ -34,10 +32,10 @@ SoundParameter::SoundParameter( float _fixedValue )
     m_outputLower(0.0f),
     m_inputUpper(0.0f),
     m_outputUpper(0.0f),
-    m_input(0.0f),
-    m_output(0.0f),
     m_desiredOutput(0.0f),
-    m_smooth(0.0f)
+    m_smooth(0.0f),
+    m_input(0.0f),
+    m_output(0.0f)
 {
     m_outputLower = _fixedValue;
 }

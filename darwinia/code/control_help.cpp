@@ -199,7 +199,7 @@ void HelpIcon::Render( const Vector2 &_setPosition, float _alpha )
 	// Render the associated text
 
 	if (enabled) {
-		for (auto i = 0; i < m_texts.size(); i++) {
+		for (size_t i = 0; i < m_texts.size(); i++) {
 			const char *text = m_texts[i].m_text;
 			const Vector2 &pos = m_texts[i].m_pos;
 

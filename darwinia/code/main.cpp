@@ -474,7 +474,7 @@ void LocationGameLoop()
 			{
 				if (WindowsOnScreen())
 					RemoveAllWindows();
-                else if( g_app->m_taskManagerInterface->m_visible )
+				else if( g_app->m_taskManagerInterface->m_visible )
                 {
                     g_app->m_taskManagerInterface->m_visible = false;
                 }

@@ -62,7 +62,7 @@ ClientToServer::ClientToServer()
     m_inboxMutex = new NetMutex();
     m_outboxMutex = new NetMutex();
 
-    if( !g_app->m_bypassNetworking )
+	if( !g_app->m_bypassNetworking )
     {
         m_netLib = new NetLib();
         m_netLib->Initialise();
@@ -264,7 +264,7 @@ void ClientToServer::ReceiveLetter( ServerToClientLetter *letter )
     // Work out our start time
 
     double newStartTime = GetHighResTime() - (float) letter->GetSequenceId() * SERVER_ADVANCE_PERIOD;
-    if( newStartTime < g_startTime )
+	if( newStartTime < g_startTime )
     {
       g_startTime = newStartTime;
 #ifdef _DEBUG

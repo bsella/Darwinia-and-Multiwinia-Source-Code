@@ -1,4 +1,3 @@
-#include "lib/universal_include.h"
 #include <float.h>
 
 #include "lib/math_utils.h"
