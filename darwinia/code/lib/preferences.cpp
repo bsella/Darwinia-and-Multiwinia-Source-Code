@@ -261,7 +261,7 @@ void PrefsManager::CreateDefaultValues()
 	sprintf( line, "SoundLibrary = %s", GetDefaultSoundLibrary() );
 	AddLine( line );
 
-    AddLine( "SoundMixFreq = 22050" );
+    AddLine( "SoundMixFreq = 44100" );
     AddLine( "SoundMasterVolume = 255" );
 	sprintf( line, "SoundChannels = %d", GetDefaultSoundChannels() );
 	AddLine( line );

@@ -132,7 +132,7 @@ PrefsSoundWindow::PrefsSoundWindow()
     SetPosition( g_app->m_renderer->ScreenW()/2 - m_w/2,
                  g_app->m_renderer->ScreenH()/2 - m_h/2 );
 
-    m_mixFreq       = g_prefsManager->GetInt( SOUND_MIXFREQ, 22050 );
+    m_mixFreq       = g_prefsManager->GetInt( SOUND_MIXFREQ, 44100 );
     m_numChannels   = g_prefsManager->GetInt( SOUND_CHANNELS, 16 );
     m_useHardware3D = g_prefsManager->GetInt( SOUND_HW3D, 0 );
     m_swapStereo    = g_prefsManager->GetInt( SOUND_SWAPSTEREO, 0 );

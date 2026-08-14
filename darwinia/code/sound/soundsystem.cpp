@@ -296,7 +296,7 @@ void SoundSystem::RestartSoundLibrary()
     //
     // Start up a new sound library
 
-	int mixrate     = g_prefsManager->GetInt("SoundMixFreq", 22050);
+	int mixrate     = g_prefsManager->GetInt("SoundMixFreq", 44100);
 	int volume      = g_prefsManager->GetInt("SoundMasterVolume", 255);
     m_numChannels   = g_prefsManager->GetInt("SoundChannels", 32);
     int hw3d        = g_prefsManager->GetInt("SoundHW3D", 0);
