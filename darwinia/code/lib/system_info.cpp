@@ -1,11 +1,16 @@
-﻿#include "lib/universal_include.h"
+﻿#include <string>
+#if defined(TARGET_MSVC)
+#include <mmsystem.h>
+#include <dxdiag.h>
+#endif
 
-//#include <mmsystem.h>
-//#include <dxdiag.h>
+#if defined(TARGET_OS_LINUX)
+#include <alsa/asoundlib.h>
+#endif
+
 #include <stdio.h>
 #include <locale>
 
-#include "lib/debug_utils.h"
 #include "lib/system_info.h"
 
 
@@ -28,8 +33,8 @@ void SystemInfo::GetLocaleDetails()
 	if( !languageSuccess )
 	{
 		size = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, NULL, 0);
-		m_localeInfo.m_language = new char[size + 1];
-		DarwiniaReleaseAssert(GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, m_localeInfo.m_language, size),
+		m_localeInfo.m_language.resize(size + 1);
+		DarwiniaReleaseAssert(GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, m_localeInfo.m_language.data(), size),
 					  "Couldn't get locale details");
 	}
 #else
@@ -40,11 +45,11 @@ void SystemInfo::GetLocaleDetails()
 
 void SystemInfo::GetAudioDetails()
 {
+	int bestScore = -1000;
 #if defined(TARGET_MSVC)
 	unsigned int numDevs = waveOutGetNumDevs();
 	m_audioInfo.m_numDevices = numDevs;
 	m_audioInfo.m_preferredDevice = -1;
-	int bestScore = -1000;
 
 	m_audioInfo.m_deviceNames = new char *[numDevs];
 	for (unsigned int i = 0; i < numDevs; ++i)
@@ -76,10 +81,79 @@ void SystemInfo::GetAudioDetails()
 		if (score > bestScore)
 		{
 			m_audioInfo.m_preferredDevice = i;
+			bestScore = score;
 		}
 	}
 
 	DarwiniaReleaseAssert(m_audioInfo.m_preferredDevice != -1, "No suitable audio hardware found");
+#endif
+
+#if defined(TARGET_OS_LINUX)
+
+	int card_index = -1;
+
+	while(snd_card_next(&card_index), card_index != -1)
+	{
+		char* device_name;
+		snd_card_get_name(card_index, &device_name);
+
+		m_audioInfo.m_deviceNames.emplace_back(device_name);
+
+		{
+			int score = 0;
+
+			{
+				snd_ctl_t *ctl;
+				
+				{
+					std::string ctl_name;
+					ctl_name += "hw:" + std::to_string(card_index);
+					
+					snd_ctl_open(&ctl, ctl_name.c_str(), 0);
+				}
+
+				int device_index = -1;
+
+				while(snd_ctl_pcm_next_device(ctl, &device_index), device_index != -1)
+				{
+					snd_pcm_t *pcm;
+
+					{
+						std::string device_string;
+						device_string += "hw:" + std::to_string(card_index) + "," + std::to_string(device_index);
+
+						if(snd_pcm_open(&pcm, device_string.c_str(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK) != 0)
+						{
+							continue;
+						}
+					}
+
+					{
+						snd_pcm_hw_params_t* hw_params;
+						snd_pcm_hw_params_malloc(&hw_params);
+						snd_pcm_hw_params_any(pcm, hw_params);
+
+						if(snd_pcm_hw_params_test_rate(pcm, hw_params, 11025, 0) == 0) score++;
+						if(snd_pcm_hw_params_test_rate(pcm, hw_params, 22050, 0) == 0) score++;
+						if(snd_pcm_hw_params_test_rate(pcm, hw_params, 44100, 0) == 0) score++;
+
+						snd_pcm_hw_params_free(hw_params);
+					}
+
+					snd_pcm_close(pcm);
+				}
+
+				snd_ctl_close(ctl);
+			}
+
+			if (score > bestScore)
+			{
+				m_audioInfo.m_preferredDevice = device_name;
+				bestScore = score;
+			}
+		}
+	}
+
 #endif
 }
 

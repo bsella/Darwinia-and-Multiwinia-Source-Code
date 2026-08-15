@@ -265,10 +265,13 @@ void PrefsSoundWindow::Render( bool _hasFocus )
 {
     DarwiniaWindow::Render( _hasFocus );
 
-	unsigned int deviceId = g_systemInfo->m_audioInfo.m_preferredDevice;
-    char const *hwDescription = g_systemInfo->m_audioInfo.m_deviceNames[deviceId];
-    float fontSize = 1.2f * m_w / strlen(hwDescription);
-    g_editorFont.DrawText2DCentre( m_x + m_w/2, m_y + GetMenuSize(30), fontSize, hwDescription );
+	if (g_systemInfo->m_audioInfo.m_preferredDevice.empty())
+        return;
+
+    auto prefered_device = g_systemInfo->m_audioInfo.m_preferredDevice;
+
+    float fontSize = 1.2f * m_w / prefered_device.length();
+    g_editorFont.DrawText2DCentre( m_x + m_w/2, m_y + GetMenuSize(30), fontSize, prefered_device.data() );
 
 	int border = GetClientRectX1() + 10;
     int x = m_x + 20;
