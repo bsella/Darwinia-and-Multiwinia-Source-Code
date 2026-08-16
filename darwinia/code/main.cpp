@@ -1,4 +1,5 @@
-﻿#include <stdio.h>
+﻿#include <memory>
+#include <stdio.h>
 #include <math.h>
 #ifdef _OPENMP
 #include <omp.h>
@@ -954,21 +955,21 @@ void SetPreferenceOverrides()
 
 void InitialiseInputManager()
 {
-	g_inputManager.addDriver( new SDLKeyboardInputDriver() );
-	g_inputManager.addDriver( g_sdlMouseDriver = new SDLMouseInputDriver() );
-	g_inputManager.addDriver( new ConjoinInputDriver() );
-	g_inputManager.addDriver( new ChordInputDriver() );
-	g_inputManager.addDriver( new InvertInputDriver() );
-	g_inputManager.addDriver( new IdleInputDriver() );
+	g_inputManager.addDriver( std::make_unique<SDLKeyboardInputDriver>() );
+	g_inputManager.addDriver( std::unique_ptr<SDLMouseInputDriver>(g_sdlMouseDriver = new SDLMouseInputDriver()) );
+	g_inputManager.addDriver( std::make_unique<ConjoinInputDriver>() );
+	g_inputManager.addDriver( std::make_unique<ChordInputDriver>() );
+	g_inputManager.addDriver( std::make_unique<InvertInputDriver>() );
+	g_inputManager.addDriver( std::make_unique<IdleInputDriver>() );
 #ifdef TARGET_MSVC
 	g_inputManager.addDriver( new W32InputDriver() );
 
 	if (LoadLibrary("XINPUT1_3"))
 		g_inputManager.addDriver( new XInputDriver() );
 #endif
-	g_inputManager.addDriver( new PrefsInputDriver() );
-	g_inputManager.addDriver( new ValueInputDriver() );
-	g_inputManager.addDriver( new AliasInputDriver() );
+	g_inputManager.addDriver( std::make_unique<PrefsInputDriver>() );
+	g_inputManager.addDriver( std::make_unique<ValueInputDriver>() );
+	g_inputManager.addDriver( std::make_unique<AliasInputDriver>() );
 	{
 		// Read Darwinia default input preferences file
 		TextReader *inputPrefsReader = g_app->m_resource->GetTextReader( InputPrefs::GetSystemPrefsPath() );

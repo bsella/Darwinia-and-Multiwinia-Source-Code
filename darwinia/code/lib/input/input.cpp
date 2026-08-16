@@ -17,14 +17,6 @@ InputManager::InputManager()
   m_inputMode( INPUT_MODE_KEYBOARD )
 {}
 
-
-InputManager::~InputManager()
-{
-	for ( unsigned i = 0; i < drivers.size(); ++i )
-		if ( drivers[ i ] ) delete drivers[ i ];
-}
-
-
 void InputManager::parseInputPrefs( TextReader &reader, bool replace )
 {
 #ifdef TARGET_DEBUG
@@ -149,8 +141,7 @@ void InputManager::Advance()
 	bool idleNext = true;
 	InputMode nextInputMode = INPUT_MODE_NONE;
 
-	for ( unsigned i = 0; i < drivers.size(); ++i ) {
-		InputDriver *driver = drivers[ i ];
+	for ( const auto& driver : drivers ){
 		driver->Advance();
 		bool driverIdle = driver->isIdle();
 		idleNext = idleNext && driverIdle;
@@ -176,17 +167,14 @@ void InputManager::Advance()
 
 void InputManager::PollForEvents()
 {
-	for ( unsigned i = 0; i < drivers.size(); ++i ) {
-		InputDriver *driver = drivers[ i ];
+	for ( const auto& driver : drivers )
 		driver->PollForEvents();
-	}
 }
 
 
 bool InputManager::checkInput( InputSpec const &spec, InputDetails &details )
 {
-	InputDriver *driver = drivers[ spec.driver ];
-	bool ans = driver->getInput( spec, details );
+	bool ans = drivers[ spec.driver ]->getInput( spec, details );
 	if ( !ans )
 		details.type = INPUT_TYPE_FAIL;
 	return ans;
@@ -196,7 +184,7 @@ bool InputManager::checkInput( InputSpec const &spec, InputDetails &details )
 bool InputManager::getFirstActiveInput( InputSpec &spec, bool instant )
 {
 	for ( unsigned i = 0; i < drivers.size(); ++i ) {
-		InputDriver *driver = drivers[ i ];
+		const auto& driver = drivers[ i ];
 		if ( driver->getFirstActiveInput( spec, instant ) ) {
 			spec.driver = i;
 			return true;
@@ -206,10 +194,9 @@ bool InputManager::getFirstActiveInput( InputSpec &spec, bool instant )
 }
 
 
-void InputManager::addDriver( InputDriver *driver )
+void InputManager::addDriver( std::unique_ptr<InputDriver>&& driver )
 {
-	if ( driver )
-		drivers.push_back( driver );
+	drivers.emplace_back( std::move(driver) );
 }
 
 
@@ -234,8 +221,7 @@ bool InputManager::getBoundInputDescription( ControlType type, InputDescription 
 
 bool InputManager::getInputDescription( InputSpec const &spec, InputDescription &desc )
 {
-	InputDriver *driver = drivers[ spec.driver ];
-	return driver->getInputDescription( spec, desc );
+	return drivers[ spec.driver ]->getInputDescription( spec, desc );
 }
 
 

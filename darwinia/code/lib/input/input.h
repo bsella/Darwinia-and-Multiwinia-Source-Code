@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "lib/text_stream_readers.h"
 #include "lib/input/input_types.h"
@@ -12,7 +13,7 @@
 #include "lib/input/control_bindings.h"
 
 class InputManager {
-	std::vector<InputDriver *> drivers;
+	std::vector<std::unique_ptr<InputDriver>> drivers;
 
 	ControlBindings bindings;
 
@@ -25,8 +26,6 @@ class InputManager {
 
 public:
 	InputManager();
-
-	~InputManager();
 
 	// Parse an input prefs file
 	void parseInputPrefs( TextReader &reader, bool replace = false );
@@ -51,7 +50,7 @@ public:
 	// Add a new driver to the drivers collection. The driver will be deleted
 	// at the end of the life of this InputManager, so must have been created
 	// with "new". Never do this twice for the same driver.
-	void addDriver( InputDriver *driver );
+	void addDriver( std::unique_ptr<InputDriver>&& driver );
 
 	// Returns a description of the first bound input of a control event
 	bool getBoundInputDescription( ControlType type, InputDescription &desc );
