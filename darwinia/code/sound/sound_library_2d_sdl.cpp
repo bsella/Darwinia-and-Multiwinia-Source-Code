@@ -85,8 +85,8 @@ void SoundLibrary2dSDL::TopupBuffer()
 }
 
 SoundLibrary2dSDL::SoundLibrary2dSDL()
-:	m_callback(NULL),
-	m_wavOutput(NULL)
+:	m_callback(nullptr),
+	m_wavOutput(nullptr)
 {
 	DarwiniaReleaseAssert(!g_soundLibrary2d, "SoundLibrary2dSDL already exists");
 
@@ -158,12 +158,12 @@ void SoundLibrary2dSDL::SetCallback(void (*_callback)(StereoSample *, unsigned i
 void SoundLibrary2dSDL::StartRecordToFile(char const *_filename)
 {
 	m_wavOutput = fopen(_filename, "wb");
-	DarwiniaReleaseAssert(m_wavOutput != NULL, "Couldn't create wave outout file %s", _filename);
+	DarwiniaReleaseAssert(m_wavOutput != nullptr, "Couldn't create wave outout file %s", _filename);
 }
 
 
 void SoundLibrary2dSDL::EndRecordToFile()
 {
 	fclose(m_wavOutput);
-	m_wavOutput = NULL;
+	m_wavOutput = nullptr;
 }

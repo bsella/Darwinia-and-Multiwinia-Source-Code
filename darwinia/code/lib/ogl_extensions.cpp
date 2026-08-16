@@ -5,22 +5,22 @@
 #include "lib/ogl_extensions.h"
 
 
-MultiTexCoord2fARB gglMultiTexCoord2fARB = NULL;
-ActiveTextureARB gglActiveTextureARB = NULL;
+MultiTexCoord2fARB gglMultiTexCoord2fARB = nullptr;
+ActiveTextureARB gglActiveTextureARB = nullptr;
 
-glBindBufferARB				gglBindBufferARB = NULL;
-glDeleteBuffersARB			gglDeleteBuffersARB = NULL;
-glGenBuffersARB				gglGenBuffersARB = NULL;
-glIsBufferARB				gglIsBufferARB = NULL;
-glBufferDataARB				gglBufferDataARB = NULL;
-glBufferSubDataARB			gglBufferSubDataARB = NULL;
-glGetBufferSubDataARB		gglGetBufferSubDataARB = NULL;
-glMapBufferARB				gglMapBufferARB = NULL;
-glUnmapBufferARB			gglUnmapBufferARB = NULL;
-glGetBufferParameterivARB	gglGetBufferParameterivARB = NULL;
-glGetBufferPointervARB		gglGetBufferPointervARB = NULL;
+glBindBufferARB				gglBindBufferARB = nullptr;
+glDeleteBuffersARB			gglDeleteBuffersARB = nullptr;
+glGenBuffersARB				gglGenBuffersARB = nullptr;
+glIsBufferARB				gglIsBufferARB = nullptr;
+glBufferDataARB				gglBufferDataARB = nullptr;
+glBufferSubDataARB			gglBufferSubDataARB = nullptr;
+glGetBufferSubDataARB		gglGetBufferSubDataARB = nullptr;
+glMapBufferARB				gglMapBufferARB = nullptr;
+glUnmapBufferARB			gglUnmapBufferARB = nullptr;
+glGetBufferParameterivARB	gglGetBufferParameterivARB = nullptr;
+glGetBufferPointervARB		gglGetBufferPointervARB = nullptr;
 
-ChoosePixelFormatARB gglChoosePixelFormatARB = NULL;
+ChoosePixelFormatARB gglChoosePixelFormatARB = nullptr;
 
 void InitialiseOGLExtensions()
 {
@@ -65,7 +65,7 @@ void InitialiseOGLExtensions()
 int IsOGLExtensionSupported(const char *extension)
 {
 	// From http://www.opengl.org/resources/features/OGLextensions/
-	const GLubyte *extensions = NULL;
+	const GLubyte *extensions = nullptr;
 	const GLubyte *start;
 	GLubyte *where, *terminator;
 

@@ -207,7 +207,7 @@ void LandscapeFlattenAreaEditWindow::Create()
 	int pitch = 17;
 	int buttonWidth = m_w - 20;
 
-	LandscapeTileButton *gen = new LandscapeTileButton(NULL);
+	LandscapeTileButton *gen = new LandscapeTileButton(nullptr);
 	gen->SetShortProperties(LANGUAGEPHRASE("editor_generate"), 10, height += pitch, m_w - 20);
 	RegisterButton(gen);
 
@@ -370,7 +370,7 @@ void LandscapeEditWindow::Create()
 	int height = 5;
 	int pitch = 17;
 
-	LandscapeTileButton *gen = new LandscapeTileButton(NULL);
+	LandscapeTileButton *gen = new LandscapeTileButton(nullptr);
 	gen->SetShortProperties(LANGUAGEPHRASE("editor_generate"), 10, height += pitch, m_w - 20);
 	RegisterButton(gen);
 
@@ -743,7 +743,7 @@ void LandscapeGuideGridWindow::Create()
     RegisterButton( generate );
 
     CreateValueControl( LANGUAGEPHRASE("editor_resolution"), InputField::TypeInt, &m_guideGridPower,	25, 1, 0, 5, generate, 100, 150  );
-    CreateValueControl( LANGUAGEPHRASE("editor_toolsize"), InputField::TypeFloat, &m_toolSize,			45, 1, 1.0f, 40.0f, NULL, 100, 150 );
+    CreateValueControl( LANGUAGEPHRASE("editor_toolsize"), InputField::TypeFloat, &m_toolSize,			45, 1, 1.0f, 40.0f, nullptr, 100, 150 );
 
 
     //

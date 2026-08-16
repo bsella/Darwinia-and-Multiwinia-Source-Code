@@ -344,8 +344,8 @@ void BitmapRGBA::SavePng(char const *_filename, bool)
 void BitmapRGBA::WritePng(FILE *_out, bool _saveAlpha)
 {
 	png_structp png_ptr = png_create_write_struct
-       (PNG_LIBPNG_VER_STRING, (png_voidp) NULL /*user_error_ptr*/,
-        NULL /*user_error_fn*/, NULL /*user_warning_fn*/);
+       (PNG_LIBPNG_VER_STRING, (png_voidp) nullptr /*user_error_ptr*/,
+        nullptr /*user_error_fn*/, nullptr /*user_warning_fn*/);
 
 	if( !png_ptr )
        return; // failed
@@ -353,7 +353,7 @@ void BitmapRGBA::WritePng(FILE *_out, bool _saveAlpha)
 	png_infop info_ptr = png_create_info_struct( png_ptr );
 	if( !info_ptr )
 	{
-		png_destroy_write_struct( &png_ptr, (png_infopp) NULL );
+		png_destroy_write_struct( &png_ptr, (png_infopp) nullptr );
 		return; // failed
 	}
 
@@ -377,7 +377,7 @@ void BitmapRGBA::WritePng(FILE *_out, bool _saveAlpha)
 		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
 	png_bytepp rows = new png_bytep[m_height];
-	png_bytep chunk = NULL;
+	png_bytep chunk = nullptr;
 	if (!_saveAlpha) {
 		// Strip out the alpha component
 		chunk = new png_byte[m_width * m_height * 3];
@@ -399,7 +399,7 @@ void BitmapRGBA::WritePng(FILE *_out, bool _saveAlpha)
 			rows[y] = (png_bytep) m_lines[m_height - y - 1];
 	}
 	png_set_rows( png_ptr, info_ptr, rows );
-	png_write_png( png_ptr, info_ptr, 0 /* transforms */, NULL );
+	png_write_png( png_ptr, info_ptr, 0 /* transforms */, nullptr );
 	png_write_end( png_ptr, info_ptr );
 	png_destroy_write_struct( &png_ptr, &info_ptr );
 	delete [] rows;
@@ -433,8 +433,8 @@ void BitmapRGBA::WriteBmp(FILE *_out)
 BitmapRGBA::BitmapRGBA()
 :	m_width(-1),
 	m_height(-1),
-	m_pixels(NULL),
-	m_lines(NULL)
+	m_pixels(nullptr),
+	m_lines(nullptr)
 {
 }
 
@@ -449,8 +449,8 @@ BitmapRGBA::BitmapRGBA(BitmapRGBA const &_other)
 BitmapRGBA::BitmapRGBA(int width, int height)
 :	m_width(-1),
 	m_height(-1),
-	m_pixels(NULL),
-	m_lines(NULL)
+	m_pixels(nullptr),
+	m_lines(nullptr)
 {
 	Initialise(width, height);
 }
@@ -460,8 +460,8 @@ BitmapRGBA::BitmapRGBA(int width, int height)
 BitmapRGBA::BitmapRGBA(char const *_filename)
 :	m_width(-1),
 	m_height(-1),
-	m_pixels(NULL),
-	m_lines(NULL)
+	m_pixels(nullptr),
+	m_lines(nullptr)
 {
 	Initialise(_filename);
 }
@@ -471,8 +471,8 @@ BitmapRGBA::BitmapRGBA(char const *_filename)
 BitmapRGBA::BitmapRGBA(BinaryReader *_reader, char const *_type)
 :	m_width(-1),
 	m_height(-1),
-	m_pixels(NULL),
-	m_lines(NULL)
+	m_pixels(nullptr),
+	m_lines(nullptr)
 {
 	Initialise(_reader, _type);
 }
@@ -485,8 +485,8 @@ BitmapRGBA::~BitmapRGBA()
 	m_height = -1;
 	delete [] m_pixels;
 	delete [] m_lines;
-	m_pixels = NULL;
-	m_lines = NULL;
+	m_pixels = nullptr;
+	m_lines = nullptr;
 }
 
 

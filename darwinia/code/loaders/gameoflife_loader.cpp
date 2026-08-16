@@ -304,7 +304,7 @@ void GameOfLifeLoader::Run()
 #endif // USE_DIRECT3D
 	FlipBuffers();
 
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "LoaderGameOfLife", SoundSourceBlueprint::TypeMusic );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "LoaderGameOfLife", SoundSourceBlueprint::TypeMusic );
 
     float startTime = GetHighResTime();
     float lastFrameTime = GetHighResTime();

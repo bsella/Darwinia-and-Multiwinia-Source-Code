@@ -65,7 +65,7 @@ GameCursor::GameCursor()
     m_cursorSelection = new MouseCursor( "icons/mouse_selection.bmp" );
     m_cursorSelection->SetHotspot( 0.5f, 0.5f );
 
-	m_cursorMissile = NULL;
+	m_cursorMissile = nullptr;
 
     //
     // Load selection arrow graphic

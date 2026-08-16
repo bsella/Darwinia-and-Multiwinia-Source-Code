@@ -11,8 +11,8 @@ DArray<T>::DArray()
 {
     m_stepSize = 1;
     m_arraySize = 0;
-    array = NULL;
-    shadow = NULL;
+    array = nullptr;
+    shadow = nullptr;
 }
 
 
@@ -21,8 +21,8 @@ DArray<T>::DArray( int newstepsize )
 {
     m_stepSize = newstepsize;
     m_arraySize = 0;
-    array = NULL;
-    shadow = NULL;
+    array = nullptr;
+    shadow = nullptr;
 }
 
 
@@ -168,8 +168,8 @@ void DArray<T>::Empty()
     delete [] array;
     delete [] shadow;
 
-    array = NULL;
-    shadow = NULL;
+    array = nullptr;
+    shadow = nullptr;
 
     m_arraySize = 0;
 }

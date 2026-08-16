@@ -3,7 +3,7 @@
 
 
 #include "vector3.h"
-#include "stdlib.h"	// For "NULL"
+#include "stdlib.h"	// For "nullptr"
 
 class Matrix33
 {
@@ -45,7 +45,7 @@ public:
 	Vector3			InverseMultiplyVector(Vector3 const &) const;
 
 	void OutputToDebugStream();
-	float *ConvertToOpenGLFormat(Vector3 const *_pos = NULL);
+	float *ConvertToOpenGLFormat(Vector3 const *_pos = nullptr);
 
 	// Operators
 	Matrix33 const &operator =  ( Matrix33 const &_o );

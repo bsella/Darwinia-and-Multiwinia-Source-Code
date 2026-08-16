@@ -94,7 +94,7 @@ public:
     DArray  <DspParameterBlueprint *> m_params;
 
 public:
-    char *GetParameter   ( int _param, float *_min=NULL, float *_max=NULL, float *_default=NULL, int *_dataType=NULL );
+    char *GetParameter   ( int _param, float *_min=nullptr, float *_max=nullptr, float *_default=nullptr, int *_dataType=nullptr );
 };
 
 
@@ -203,7 +203,7 @@ public:
 	void TriggerBuildingEvent   ( Building *_building,  const char *_eventName );
 	void TriggerOtherEvent      ( WorldObject *_other,  const char *_eventName, int _type );
 
-	void StopAllSounds          ( WorldObjectId _id, const char *_eventName=NULL );        // Pass in NULL to stop every event.
+	void StopAllSounds          ( WorldObjectId _id, const char *_eventName=nullptr );        // Pass in nullptr to stop every event.
                                                                                      // Full event name required, eg "Darwinian SeenThreat"
 
     void StopAllDSPEffects      ();
@@ -217,7 +217,7 @@ public:
 	bool IsSampleUsed           (char const *_soundName);                       // Looks to see if that sound name is used in any blueprints
 
 	SampleGroup *GetSampleGroup     ( const char *_name );
-	SampleGroup *NewSampleGroup     ( const char *_name=NULL );
+	SampleGroup *NewSampleGroup     ( const char *_name=nullptr );
 	bool        RenameSampleGroup   ( const char *_oldName, const char *_newName );
 
     SoundInstance *GetSoundInstance( SoundInstanceId id );

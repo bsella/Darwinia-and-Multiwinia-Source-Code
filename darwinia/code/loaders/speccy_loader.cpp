@@ -342,7 +342,7 @@ SpeccyLoader::~SpeccyLoader()
 
 void SpeccyLoader::Run()
 {
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "LoaderSpeccy", SoundSourceBlueprint::TypeMusic );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "LoaderSpeccy", SoundSourceBlueprint::TypeMusic );
 
 	Silence(GetHighResTime() + 1.5f,	false);
 

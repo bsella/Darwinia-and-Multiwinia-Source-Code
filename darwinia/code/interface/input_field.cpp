@@ -25,14 +25,14 @@
 
 InputField::InputField()
 :	m_type(TypeNowt),
-	m_char(NULL),
-	m_int(NULL),
-	m_float(NULL),
-	m_string(NULL),
+	m_char(nullptr),
+	m_int(nullptr),
+	m_float(nullptr),
+	m_string(nullptr),
 	m_inputBoxWidth(0),
 	m_lowBound(0.0f),
 	m_highBound(1e4),
-    m_callback(NULL)
+    m_callback(nullptr)
 {
 	m_buf[0] = '\0';
 }
@@ -294,7 +294,7 @@ void InputField::Refresh()
 
 InputScroller::InputScroller()
 :   DarwiniaButton(),
-    m_inputField(NULL),
+    m_inputField(nullptr),
     m_change(0.0f),
     m_mouseDownStartTime(-1.0f)
 {
@@ -369,8 +369,8 @@ void InputScroller::MouseUp()
 
 ColourWidget::ColourWidget()
 :   DarwiniaButton(),
-    m_callback(NULL),
-    m_value(NULL)
+    m_callback(nullptr),
+    m_value(nullptr)
 {
 }
 
@@ -418,8 +418,8 @@ void ColourWidget::SetCallback(DarwiniaButton *button)
 
 ColourWindow::ColourWindow( const char *_name )
 :   DarwiniaWindow( _name ),
-    m_callback(NULL),
-    m_value(NULL)
+    m_callback(nullptr),
+    m_value(nullptr)
 {
 }
 

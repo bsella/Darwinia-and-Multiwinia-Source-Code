@@ -28,7 +28,7 @@ Teleport::Teleport()
 :   Building(),
     m_timeSync(0.0f),
     m_sendPeriod(1.0f),
-    m_entrance(NULL)
+    m_entrance(nullptr)
 {
 }
 
@@ -220,7 +220,7 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
 
                 DarwiniaDebugAssert( oldUnit );
 
-                Unit *newUnit = NULL;
+                Unit *newUnit = nullptr;
 
                 if( newUnitId != -1 )
                 {

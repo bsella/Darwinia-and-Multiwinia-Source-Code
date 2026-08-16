@@ -9,26 +9,26 @@
 using namespace OpenGLD3D;
 
 DisplayList::DisplayList( std::vector<Command *> const &_commands, std::vector<CustomVertex> const &_vertices )
-:	m_pVertexBuffer(NULL)
+:	m_pVertexBuffer(nullptr)
 {
 	m_commands = new Command *[_commands.size() + 1];
 	for (int i = 0; i < _commands.size(); i++)
 		m_commands[i] = _commands[i];
-	m_commands[_commands.size()] = NULL;
+	m_commands[_commands.size()] = nullptr;
 
 	if (_vertices.size() > 0) {
 		// Set up the vertex buffer
 		unsigned vbSize = _vertices.size() * sizeof(CustomVertex);
 
 		HRESULT hr = g_pd3dDeviceActual->CreateVertexBuffer(
-			vbSize, D3DUSAGE_WRITEONLY|(g_supportsHwVertexProcessing?0:D3DUSAGE_SOFTWAREPROCESSING), 0, D3DPOOL_MANAGED, &m_pVertexBuffer, NULL );
+			vbSize, D3DUSAGE_WRITEONLY|(g_supportsHwVertexProcessing?0:D3DUSAGE_SOFTWAREPROCESSING), 0, D3DPOOL_MANAGED, &m_pVertexBuffer, nullptr );
 
 		DarwiniaDebugAssert( hr != D3DERR_INVALIDCALL );
 		DarwiniaDebugAssert( hr != D3DERR_OUTOFVIDEOMEMORY );
 		DarwiniaDebugAssert( hr != E_OUTOFMEMORY );
 		DarwiniaDebugAssert( hr == D3D_OK );
 
-		void *vbData = NULL;
+		void *vbData = nullptr;
 
 		hr = m_pVertexBuffer->Lock(0, 0, &vbData, 0/*D3DLOCK_DISCARD*/ );
 		DarwiniaDebugAssert( hr == D3D_OK );

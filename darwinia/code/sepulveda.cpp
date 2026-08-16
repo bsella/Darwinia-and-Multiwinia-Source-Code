@@ -35,8 +35,8 @@ Sepulveda::Sepulveda()
     m_previousNumChars(0),
     m_cutsceneMode(false),
     m_scrollbarOffset(0),
-	m_gestureDemo(NULL),
-	m_mouseCursor(NULL)
+	m_gestureDemo(nullptr),
+	m_mouseCursor(nullptr)
 {
 	m_mouseCursor = new MouseCursor("icons/mouse_main.bmp");
 
@@ -146,7 +146,7 @@ void Sepulveda::Advance()
 			g_inputManager.controlEvent( ControlSkipMessage ) )
         {
             m_caption[0] = '\0';
-		    m_gestureDemo = NULL;
+		    m_gestureDemo = nullptr;
             m_timeSync = GetHighResTime();
             captionGone = true;
         }
@@ -177,7 +177,7 @@ void Sepulveda::Advance()
 
 	        if( !captionGone ) {
             // Sepulveda just started talking
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "Appear", SoundSourceBlueprint::TypeSepulveda );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "Appear", SoundSourceBlueprint::TypeSepulveda );
         }
     }
     }
@@ -185,7 +185,7 @@ void Sepulveda::Advance()
     if( captionGone && m_caption[0] == '\0' )
     {
         // Sepulveda just finished talking
-        g_app->m_soundSystem->TriggerOtherEvent( NULL, "Disappear", SoundSourceBlueprint::TypeSepulveda );
+        g_app->m_soundSystem->TriggerOtherEvent( nullptr, "Disappear", SoundSourceBlueprint::TypeSepulveda );
     }
 
 
@@ -239,7 +239,7 @@ bool Sepulveda::PlayerSkipsMessage()
     if( m_caption[0] != '\0' )
     {
         m_caption[0] = '\0';
-		m_gestureDemo = NULL;	// No need to delete the gesture demo because it is owned by the resource system
+		m_gestureDemo = nullptr;	// No need to delete the gesture demo because it is owned by the resource system
         return true;
     }
 
@@ -253,7 +253,7 @@ void Sepulveda::Say( const char *_stringId )
     // If we are using a 1 button mouse, look out for an alternative stringID
     // Same if we are using the icon based control mechanism
 
-    char *actualStringId = NULL;
+    char *actualStringId = nullptr;
 
     int numMouseButtons = g_prefsManager->GetInt( "ControlMouseButtons" );
     if( numMouseButtons == 1 )
@@ -392,8 +392,8 @@ void Sepulveda::ShutUp()
         m_caption[0] = '\0';
     }
 
-    ClearHighlights( NULL );
-    m_gestureDemo = NULL;
+    ClearHighlights( nullptr );
+    m_gestureDemo = nullptr;
 
     m_msgQueue.EmptyAndDelete();
 }
@@ -661,7 +661,7 @@ void Sepulveda::RenderTextBoxCutsceneMode()
 
         if( finishingChar != m_previousNumChars )
         {
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "TextAppear", SoundSourceBlueprint::TypeSepulveda );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "TextAppear", SoundSourceBlueprint::TypeSepulveda );
             m_previousNumChars = finishingChar;
         }
 
@@ -825,7 +825,7 @@ void Sepulveda::RenderTextBoxTaskManagerMode()
 
         if( finishingChar != m_previousNumChars )
         {
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "TextAppear", SoundSourceBlueprint::TypeSepulveda );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "TextAppear", SoundSourceBlueprint::TypeSepulveda );
             m_previousNumChars = finishingChar;
         }
 
@@ -1086,7 +1086,7 @@ void Sepulveda::RenderTextBox()
 
         if( finishingChar != m_previousNumChars )
         {
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "TextAppear", SoundSourceBlueprint::TypeSepulveda );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "TextAppear", SoundSourceBlueprint::TypeSepulveda );
             m_previousNumChars = finishingChar;
         }
 
@@ -1371,7 +1371,7 @@ SepulvedaHighlight::SepulvedaHighlight( const char *_name )
 :   m_radius(0.0f),
     m_alpha(0.0f),
     m_ended(false),
-    m_name(NULL)
+    m_name(nullptr)
 {
     m_name = NewStr( _name );
 }

@@ -1669,7 +1669,7 @@ Camera::Camera()
 	m_height(50.0f),
     m_vel(0,0,0),
     m_targetFov(60.0f),
-	m_trackingEntity(NULL),
+	m_trackingEntity(nullptr),
 	m_distFromEntity(100.0f),
     m_currentDistance(0.0f),
 	m_heightMultiplier(1.0f),
@@ -1677,7 +1677,7 @@ Camera::Camera()
 	m_debugMode(DebugModeAuto),
 	m_framesInThisMode(0),
     m_objectId(),
-	m_anim(NULL),
+	m_anim(nullptr),
     m_cameraShake(0.0f),
     m_entityTrack(false),
 	m_skipDirectionCalculation(false)
@@ -1992,7 +1992,7 @@ void Camera::AdvanceAnim()
 		else
 		{
 			RequestMode(m_modeBeforeAnim);
-			m_anim = NULL;
+			m_anim = nullptr;
 		}
 	}
 }
@@ -2056,7 +2056,7 @@ void Camera::Advance()
 	//
 	// Pick an advancer
 
-	if( m_anim == NULL &&
+	if( m_anim == nullptr &&
 		   (m_debugMode == DebugModeAlways ||
 		   (m_debugMode == DebugModeAuto && EclGetWindows()->Size() > 0) ||
 		   m_framesInThisMode < 2 ) )
@@ -2404,7 +2404,7 @@ void Camera::StopAnimation()
 	if (m_anim)
 	{
 		RequestMode(m_modeBeforeAnim);
-		m_anim = NULL;
+		m_anim = nullptr;
 	}
 }
 

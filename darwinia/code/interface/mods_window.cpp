@@ -168,7 +168,7 @@ class NewModButton : public DarwiniaButton
         if( g_app->m_globalWorld )
         {
             delete g_app->m_globalWorld;
-            g_app->m_globalWorld = NULL;
+            g_app->m_globalWorld = nullptr;
         }
 
         g_app->m_globalWorld = new GlobalWorld();
@@ -208,7 +208,7 @@ void NewModWindow::Create()
     box->SetShortProperties( "box", 10, GetMenuSize(30), m_w-20, GetMenuSize(40) );
     RegisterButton( box );
 
-    CreateValueControl( LANGUAGEPHRASE("dialog_name"), InputField::TypeString, s_modName, GetMenuSize(40), 0, 0, 0, NULL, 20, m_w-40 );
+    CreateValueControl( LANGUAGEPHRASE("dialog_name"), InputField::TypeString, s_modName, GetMenuSize(40), 0, 0, 0, nullptr, 20, m_w-40 );
 
 	int y = m_h - 30;
 

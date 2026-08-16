@@ -9,7 +9,7 @@
 // Class SoundLibrary3d
 //*****************************************************************************
 
-SoundLibrary3d *g_soundLibrary3d = NULL;
+SoundLibrary3d *g_soundLibrary3d = nullptr;
 
 
 SoundLibrary3d::SoundLibrary3d()
@@ -17,8 +17,8 @@ SoundLibrary3d::SoundLibrary3d()
     m_sampleRate(-1),
     m_masterVolume(0),
     m_listenerPos(0,0,0),
-    m_mainCallback(NULL),
-    m_musicCallback(NULL),
+    m_mainCallback(nullptr),
+    m_musicCallback(nullptr),
     m_musicChannelId(-1),
     m_hw3dDesired(false)
 {

@@ -7,7 +7,7 @@
 
 
 AviPlayer::AviPlayer()
-:   m_currentFrame(NULL),
+:   m_currentFrame(nullptr),
     m_nextAudioSample(0),
     m_previousFrameIndex(-1)
 {
@@ -37,7 +37,7 @@ int AviPlayer::OpenAvi( char *_filename )
 	int result = AVIFileOpen(&m_aviFile,
 					         _filename,
 					         OF_READ,
-					         NULL);
+					         nullptr);
 
     HandleAviError(result);
 
@@ -89,7 +89,7 @@ int AviPlayer::OpenAvi( char *_filename )
     HandleAviError(result);
 
 
-    m_streamVideoFrame = AVIStreamGetFrameOpen( m_streamVideo, NULL );
+    m_streamVideoFrame = AVIStreamGetFrameOpen( m_streamVideo, nullptr );
 
     if( !m_streamVideoFrame ) return -1;
 
@@ -144,7 +144,7 @@ int AviPlayer::CloseAvi()
     if( m_currentFrame )
     {
         delete m_currentFrame;
-        m_currentFrame = NULL;
+        m_currentFrame = nullptr;
     }
 
 

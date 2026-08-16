@@ -31,12 +31,12 @@
 #include "sound/soundsystem.h"
 
 
-Shape *FuelBuilding::s_fuelPipe = NULL;
+Shape *FuelBuilding::s_fuelPipe = nullptr;
 
 
 FuelBuilding::FuelBuilding()
 :   Building(),
-    m_fuelMarker(NULL),
+    m_fuelMarker(nullptr),
     m_fuelLink(-1),
     m_currentLevel(0.0f)
 {
@@ -97,7 +97,7 @@ FuelBuilding *FuelBuilding::GetLinkedBuilding()
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -272,8 +272,8 @@ void FuelBuilding::Destroy( float _intensity )
 
 FuelGenerator::FuelGenerator()
 :   FuelBuilding(),
-    m_pump(NULL),
-    m_pumpTip(NULL),
+    m_pump(nullptr),
+    m_pumpTip(nullptr),
     m_pumpMovement(0.0f),
     m_previousPumpPos(0.0f),
     m_surges(0.0f)
@@ -459,7 +459,7 @@ void FuelPipe::ListSoundEvents( LList<const char *> *_list )
 
 FuelStation::FuelStation()
 :   FuelBuilding(),
-    m_entrance(NULL)
+    m_entrance(nullptr)
 {
     m_type = TypeFuelStation;
 
@@ -735,7 +735,7 @@ bool FuelStation::PerformDepthSort( Vector3 &_centrePos )
 
 EscapeRocket::EscapeRocket()
 :   FuelBuilding(),
-    m_booster(NULL),
+    m_booster(nullptr),
     m_shadowTimer(0.0f),
     m_cameraShake(0.0f),
     m_state(StateRefueling),
@@ -780,7 +780,7 @@ void EscapeRocket::ListSoundEvents( LList<const char *> *_list )
 
 void EscapeRocket::SetupSounds()
 {
-	const char *requiredSoundName = NULL;
+	const char *requiredSoundName = nullptr;
 
     //
     // What ambience should be playing?

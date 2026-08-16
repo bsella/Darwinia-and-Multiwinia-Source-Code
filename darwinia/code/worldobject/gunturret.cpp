@@ -26,7 +26,7 @@
 
 GunTurret::GunTurret()
 :   Building(),
-    m_turret(NULL),
+    m_turret(nullptr),
     m_aiTargetCreated(false),
     m_fireTimer(0.0f),
     m_nextBarrel(0),

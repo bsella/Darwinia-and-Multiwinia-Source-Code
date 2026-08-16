@@ -222,9 +222,9 @@
 #endif // USE_DIRECTX
 #endif // !TARGET_OS_MACOSX
 
-#define SAFE_FREE(x) {free(x);x=NULL;}
-#define SAFE_DELETE(x) {delete x;x=NULL;}
-#define SAFE_DELETE_ARRAY(x) {delete[] x;x=NULL;}
-#define SAFE_RELEASE(x) {if(x){(x)->Release();x=NULL;}}
+#define SAFE_FREE(x) {free(x);x=nullptr;}
+#define SAFE_DELETE(x) {delete x;x=nullptr;}
+#define SAFE_DELETE_ARRAY(x) {delete[] x;x=nullptr;}
+#define SAFE_RELEASE(x) {if(x){(x)->Release();x=nullptr;}}
 
 #endif

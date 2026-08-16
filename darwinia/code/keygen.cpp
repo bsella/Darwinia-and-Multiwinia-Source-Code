@@ -8,7 +8,7 @@
 static char *ReadFileToBuf(char const *_filename, int *_len)
 {
 	FILE *in = fopen(_filename, "r");
-	if (!in) return NULL;
+	if (!in) return nullptr;
 
 	char temp[64];
 	int fileLen = 0;
@@ -40,7 +40,7 @@ static int GetNextNewline(char const *_text, int i, int len)
 }
 
 
-// Returns NULL if the specified data is valid system info.
+// Returns nullptr if the specified data is valid system info.
 // Otherwise, returns a string containing a description of the error
 static char const *ValidateSysInfo(char const *_sysInfoData, int _sysInfoLen)
 {
@@ -83,7 +83,7 @@ static char const *ValidateSysInfo(char const *_sysInfoData, int _sysInfoLen)
 	i = GetNextNewline(c, i, _sysInfoLen);
 	if (i == -1 || strncmp(&c[i], "Computer Name:", 14) != 0)		return "computer name missing";
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -99,7 +99,7 @@ static char const *ValidateUserInfo(char const *_userInfoData, int _userInfoLen)
 	i = GetNextNewline(c, i, _userInfoLen);
 	if (i == -1 || strncmp(&c[i], "Email:", 6) != 0)		return "Email missing";
 
-	return NULL;
+	return nullptr;
 }
 
 

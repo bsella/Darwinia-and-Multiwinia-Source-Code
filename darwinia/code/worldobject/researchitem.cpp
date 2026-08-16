@@ -25,8 +25,8 @@
 ResearchItem::ResearchItem()
 :   Building(),
     m_reprogrammed(100.0f),
-    m_end1(NULL),
-    m_end2(NULL),
+    m_end1(nullptr),
+    m_end2(nullptr),
     m_researchType(-1),
     m_level(1),
     m_inLibrary(false)

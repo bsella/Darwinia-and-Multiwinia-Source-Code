@@ -279,7 +279,7 @@ LandscapeRenderer::LandscapeRenderer(SurfaceMap2D <float> *_heightMap)
 	}
 
 	BinaryReader *reader = g_app->m_resource->GetBinaryReader(fullFilname);
-	DarwiniaReleaseAssert(reader != NULL, "Failed to get resource %s", fullFilname);
+	DarwiniaReleaseAssert(reader != nullptr, "Failed to get resource %s", fullFilname);
 	m_landscapeColour = new BitmapRGBA(reader, "bmp");
 	delete reader;
 
@@ -305,7 +305,7 @@ LandscapeRenderer::~LandscapeRenderer()
 #ifdef USE_DIRECT3D
 #include "lib/opengl_directx_internals.h"
 
-static LPDIRECT3DVERTEXDECLARATION9 s_vertexDecl = NULL;
+static LPDIRECT3DVERTEXDECLARATION9 s_vertexDecl = nullptr;
 
 void LandscapeRenderer::ReleaseD3DPoolDefaultResources()
 {

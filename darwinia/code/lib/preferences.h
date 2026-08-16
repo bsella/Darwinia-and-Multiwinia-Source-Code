@@ -62,12 +62,12 @@ public:
 	PrefsManager(std::string const &_filename);
 	~PrefsManager();
 
-	void Load		(char const *_filename=NULL); // If filename is NULL, then m_filename is used
+	void Load		(char const *_filename=nullptr); // If filename is nullptr, then m_filename is used
 	void Save		();
 
 	void Clear		();
 
-	const char *GetString (char const *_key, const char *_default=NULL) const;
+	const char *GetString (char const *_key, const char *_default=nullptr) const;
 	float GetFloat  (char const *_key, float _default=-1.0f) const;
 	int	  GetInt    (char const *_key, int _default=-1) const;
 

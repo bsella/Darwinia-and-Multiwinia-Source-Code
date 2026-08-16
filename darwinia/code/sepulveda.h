@@ -71,8 +71,8 @@ public:
     bool IsInCutsceneMode   ();
 	void HighlightBuilding  ( int _buildingId, const char *_highlightName );
 	void HighlightPosition  ( Vector3 const &_pos, float _radius, const char *_highlightName );
-	bool IsHighlighted      ( Vector3 const &_pos, float _radius, const char *_highlightName=NULL );
-	void ClearHighlights    ( const char *_highlightName=NULL );
+	bool IsHighlighted      ( Vector3 const &_pos, float _radius, const char *_highlightName=nullptr );
+	void ClearHighlights    ( const char *_highlightName=nullptr );
 
     bool PlayerSkipsMessage();      // Returns true if a message was skipped
 

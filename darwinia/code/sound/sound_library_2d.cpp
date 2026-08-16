@@ -11,7 +11,7 @@
 #ifdef TARGET_MSVC
 static HWAVEOUT	s_device;
 #endif
-SoundLibrary2d *g_soundLibrary2d = NULL;
+SoundLibrary2d *g_soundLibrary2d = nullptr;
 
 #include "lib/hi_res_time.h"
 
@@ -79,11 +79,11 @@ void CALLBACK WaveOutProc(HWAVEOUT _dev, UINT _msg, DWORD _userData, DWORD _para
 
 
 SoundLibrary2d::SoundLibrary2d()
-:	m_wavOutput(NULL),
+:	m_wavOutput(nullptr),
 	m_numBuffers(10),
 	m_nextBuffer(0),
 	m_fillsRequested(0),
-	m_callback(NULL)
+	m_callback(nullptr)
 {
 	DarwiniaReleaseAssert(!g_soundLibrary2d, "SoundLibrary2d already exists");
 
@@ -103,7 +103,7 @@ SoundLibrary2d::SoundLibrary2d()
 	format.nBlockAlign = 4;		// 2 channels * 2 bytes per sample
 	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
 	int result = waveOutOpen(&s_device, WAVE_MAPPER, &format, (DWORD)&WaveOutProc, 0, CALLBACK_FUNCTION);
-	char const *errString = NULL;
+	char const *errString = nullptr;
 	switch (result)
 	{
 		case MMSYSERR_ALLOCATED:	errString = "Specified resource is already allocated";	break;
@@ -128,9 +128,9 @@ SoundLibrary2d::~SoundLibrary2d()
 
 #ifdef TARGET_MSVC
 	waveOutReset(s_device);
-	waveOutClose(s_device);		s_device = NULL;
+	waveOutClose(s_device);		s_device = nullptr;
 #endif
-	g_soundLibrary2d = NULL;
+	g_soundLibrary2d = nullptr;
 }
 
 
@@ -194,12 +194,12 @@ void SoundLibrary2d::Stop()
 void SoundLibrary2d::StartRecordToFile(char const *_filename)
 {
 	m_wavOutput = fopen(_filename, "wb");
-	DarwiniaReleaseAssert(m_wavOutput != NULL, "Couldn't create wave outout file %s", _filename);
+	DarwiniaReleaseAssert(m_wavOutput != nullptr, "Couldn't create wave outout file %s", _filename);
 }
 
 
 void SoundLibrary2d::EndRecordToFile()
 {
 	fclose(m_wavOutput);
-	m_wavOutput = NULL;
+	m_wavOutput = nullptr;
 }

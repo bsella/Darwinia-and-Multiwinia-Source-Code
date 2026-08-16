@@ -36,7 +36,7 @@ CMiniVersion::CMiniVersion(LPCTSTR lpszPath)
 	{
 	}
 
-	m_pData = NULL;
+	m_pData = nullptr;
 	m_dwHandle = 0;
 
 	for (int i = 0; i < 4; i++)
@@ -118,7 +118,7 @@ void CMiniVersion::Release()
 	// a dtor within an exception handler
 	if (m_pData)
 		delete [] m_pData;
-	m_pData = NULL;
+	m_pData = nullptr;
 }
 
 
@@ -222,7 +222,7 @@ BOOL CMiniVersion::GetFixedInfo(VS_FIXEDFILEINFO& rFixedInfo)
 {
 	BOOL rc;
 	UINT nLength;
-	VS_FIXEDFILEINFO *pFixedInfo = NULL;
+	VS_FIXEDFILEINFO *pFixedInfo = nullptr;
 
 	if (!m_pData)
 		return FALSE;
@@ -247,7 +247,7 @@ BOOL CMiniVersion::GetStringInfo(LPCSTR lpszKey, LPTSTR lpszReturnValue)
 	UINT nLength;
 	LPTSTR lpszValue;
 
-	if (m_pData == NULL)
+	if (m_pData == nullptr)
 		return FALSE;
 
 	if (!lpszReturnValue)

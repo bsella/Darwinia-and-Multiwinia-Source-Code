@@ -18,22 +18,22 @@
 #endif
 
 
-PrefsManager *g_prefsManager = NULL;
+PrefsManager *g_prefsManager = nullptr;
 
 // ***************
 // Class PrefsItem
 // ***************
 
 PrefsItem::PrefsItem()
-:   m_key(NULL),
-    m_str(NULL),
+:   m_key(nullptr),
+    m_str(nullptr),
     m_int(0)
 {
 }
 
 
 PrefsItem::PrefsItem(char *_line)
-:	m_str(NULL)
+:	m_str(nullptr)
 {
 	// Get key
 	char *key = _line;
@@ -118,9 +118,9 @@ PrefsItem::PrefsItem(char const *_key, int _int)
 PrefsItem::~PrefsItem()
 {
 	free(m_key);
-	m_key = NULL;
+	m_key = nullptr;
 	free(m_str);
-	m_str = NULL;
+	m_str = nullptr;
 }
 
 
@@ -360,7 +360,7 @@ void PrefsManager::Load(char const *_filename)
     else
     {
 	    char line[256];
-	    while (fgets(line, 256, in) != NULL)
+	    while (fgets(line, 256, in) != nullptr)
 	    {
             AddLine( line );
         }
@@ -428,7 +428,7 @@ void PrefsManager::Save()
 		else
 		{
 			char const *c = line;
-			char const *keyStart = NULL;
+			char const *keyStart = nullptr;
 			char const *keyEnd;
 			while (*c != '=')
 			{

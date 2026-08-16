@@ -23,7 +23,7 @@
 
 SpawnBuilding::SpawnBuilding()
 :   Building(),
-    m_spiritLink(NULL),
+    m_spiritLink(nullptr),
     m_visibilityRadius(0.0f)
 {
 }
@@ -383,7 +383,7 @@ MasterSpawnPoint *MasterSpawnPoint::GetMasterSpawnPoint()
         return (MasterSpawnPoint *) building;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 

@@ -453,7 +453,7 @@ bool Darwinian::AdvanceCombat()
 
     WorldObject *threat = g_app->m_location->GetWorldObject( m_threatId );
     bool isEntity = threat && threat->m_id.GetUnitId() != UNIT_EFFECTS;
-    Entity *entity = ( isEntity ? (Entity *)threat : NULL );
+    Entity *entity = ( isEntity ? (Entity *)threat : nullptr );
 
     if( !threat || ( entity && entity->m_dead) )
     {
@@ -788,7 +788,7 @@ bool Darwinian::AdvanceUnderControl()
     // Try to lookup our controller
 
     Task *task = g_app->m_taskManager->GetTask( m_controllerId );
-    Unit *controller = NULL;
+    Unit *controller = nullptr;
     if( task ) controller = g_app->m_location->GetUnit( task->m_objId );
 
     if( !task || !controller )
@@ -1422,7 +1422,7 @@ bool Darwinian::SearchForSpirits()
 
     START_PROFILE( g_app->m_profiler, "SearchSpirits" );
 
-    Spirit *found = NULL;
+    Spirit *found = nullptr;
     int spiritId = -1;
     float closest = DARWINIAN_SEARCHRANGE_SPIRITS;
 

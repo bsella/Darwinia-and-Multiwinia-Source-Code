@@ -158,7 +158,7 @@ void TaskManagerInterfaceGestures::AdvanceGestures()
 		 g_inputManager.controlEvent( ControlGestureActive ) )
     {
         g_app->m_gesture->BeginGesture();
-        g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
+        g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureBegin", SoundSourceBlueprint::TypeGesture );
     }
 
 
@@ -182,7 +182,7 @@ void TaskManagerInterfaceGestures::AdvanceGestures()
 		 !g_inputManager.controlEvent( ControlGestureActive ) )
     {
         g_app->m_gesture->EndGesture();
-        g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureEnd", SoundSourceBlueprint::TypeGesture );
+        g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureEnd", SoundSourceBlueprint::TypeGesture );
 
         if( g_app->m_gesture->GestureSuccess() )
         {
@@ -192,7 +192,7 @@ void TaskManagerInterfaceGestures::AdvanceGestures()
             if( g_app->m_globalWorld->m_research->HasResearch( taskType ) )
             {
                 g_app->m_clientToServer->RequestRunProgram( g_app->m_globalWorld->m_myTeamId, taskType );
-                g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
+                g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
             }
             else
             {
@@ -203,7 +203,7 @@ void TaskManagerInterfaceGestures::AdvanceGestures()
         else
         {
             SetCurrentMessage( MessageFailure, -1, 2.5f );
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureFail", SoundSourceBlueprint::TypeGesture );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureFail", SoundSourceBlueprint::TypeGesture );
         }
     }
 
@@ -649,7 +649,7 @@ void TaskManagerInterfaceGestures::RunScreenZone( const char *_name, int _data )
         if( g_app->m_globalWorld->m_research->HasResearch( _data ) )
         {
             g_app->m_clientToServer->RequestRunProgram( g_app->m_globalWorld->m_myTeamId, _data );
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureBegin", SoundSourceBlueprint::TypeGesture );
         }
         else
         {
@@ -681,8 +681,8 @@ void TaskManagerInterfaceGestures::RunScreenZone( const char *_name, int _data )
         if( g_app->m_globalWorld->m_research->HasResearch( _data ) )
         {
             g_app->m_clientToServer->RequestRunProgram( g_app->m_globalWorld->m_myTeamId, _data );
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureBegin", SoundSourceBlueprint::TypeGesture );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
         }
         else
         {
@@ -728,7 +728,7 @@ void TaskManagerInterfaceGestures::RunScreenZone( const char *_name, int _data )
         if( !primary ) objectiveId *= -1;
         objectiveId -= 10;
 
-        GlobalEventCondition *gec = NULL;
+        GlobalEventCondition *gec = nullptr;
         if( primary ) gec = g_app->m_location->m_levelFile->m_primaryObjectives[objectiveId];
         else          gec = g_app->m_location->m_levelFile->m_secondaryObjectives[objectiveId];
         DarwiniaDebugAssert( gec );
@@ -862,7 +862,7 @@ void TaskManagerInterfaceGestures::RenderTooltip()
         //
         // Render keyboard shortcut
 
-        KeyboardShortcut *keyPress = NULL;
+        KeyboardShortcut *keyPress = nullptr;
         for( int i = 0; i < m_keyboardShortcuts.Size(); ++i )
         {
             KeyboardShortcut *shortcut = m_keyboardShortcuts[i];
@@ -874,7 +874,7 @@ void TaskManagerInterfaceGestures::RenderTooltip()
             }
         }
 
-        if( keyPress != NULL )
+        if( keyPress != nullptr )
         {
             char caption[256];
             sprintf( caption, "Keyboard shortcut : %s",
@@ -921,7 +921,7 @@ void TaskManagerInterfaceGestures::RenderMessages()
         //
         // Lookup task name
 
-		const char *taskName = NULL;
+		const char *taskName = nullptr;
 
         if( m_currentTaskType == 999 )
         {
@@ -1025,9 +1025,9 @@ void TaskManagerInterfaceGestures::RenderTargetAreas()
 }
 
 
-static BitmapRGBA *s_alphaMask = NULL;
+static BitmapRGBA *s_alphaMask = nullptr;
 static unsigned int s_alphaMaskId = -1;
-static BitmapRGBA *s_gestures=NULL;
+static BitmapRGBA *s_gestures=nullptr;
 static unsigned int s_textureId=-1;
 
 #ifdef USE_DIRECT3D
@@ -1728,7 +1728,7 @@ void TaskManagerInterfaceGestures::RenderObjectives()
 
     for( int o = 0; o < 2; ++o )
     {
-        LList<GlobalEventCondition *> *objectives = NULL;
+        LList<GlobalEventCondition *> *objectives = nullptr;
         if( o == 0 ) objectives = &g_app->m_location->m_levelFile->m_primaryObjectives;
         else         objectives = &g_app->m_location->m_levelFile->m_secondaryObjectives;
 

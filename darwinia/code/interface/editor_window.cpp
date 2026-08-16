@@ -95,7 +95,7 @@ public:
 
 MainEditWindow::MainEditWindow(const char *name)
 :	DarwiniaWindow(name),
-	m_currentEditWindow(NULL)
+	m_currentEditWindow(nullptr)
 {
 }
 

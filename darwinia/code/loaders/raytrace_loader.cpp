@@ -648,7 +648,7 @@ void RayTraceLoader::RenderRays()
 
 void RayTraceLoader::Run()
 {
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "LoaderRaytrace", SoundSourceBlueprint::TypeMusic );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "LoaderRaytrace", SoundSourceBlueprint::TypeMusic );
 
     //
     // Go into our render loop

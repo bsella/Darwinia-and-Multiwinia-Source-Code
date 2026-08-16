@@ -39,14 +39,14 @@ static void fatalSignal(int signum, struct __siginfo *siginfo, void *arg)
 
 static const char *getCrashLogFilename()
 {
-	static char *crashLogFilename = NULL;
+	static char *crashLogFilename = nullptr;
 
 	if (crashLogFilename)
 		return crashLogFilename;
 
  	char *home = getenv("HOME");
-	if (home == NULL)
-		return NULL;
+	if (home == nullptr)
+		return nullptr;
 
 	crashLogFilename = new char[strlen(home) + 256];
 	sprintf(crashLogFilename, "%s/Library/Logs/CrashReporter/Darwinia.crash.log", home);
@@ -134,7 +134,7 @@ void DarwiniaReleaseAssert(bool _condition, char const *_fmt, ...)
 		SDL_Quit();
 #endif
 
-		StandardAlert(kAlertStopAlert, title, description, NULL, &buttonHit);
+		StandardAlert(kAlertStopAlert, title, description, nullptr, &buttonHit);
 
 		exit(-1);
 	}
@@ -194,7 +194,7 @@ void GenerateBlackBox(char *_msg)
 	char filename[512];
 	char *home = getenv("HOME");
 
-	if (home == NULL) {
+	if (home == nullptr) {
 		strcpy(filename, "/tmp/blackbox.txt");
 	}
 	else {

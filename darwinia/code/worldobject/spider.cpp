@@ -66,7 +66,7 @@
 
 Spider::Spider()
 :	m_state(StateIdle),
-	m_eggLay(NULL),
+	m_eggLay(nullptr),
 	m_nextLegMoveTime(-1.0f),
 	m_speed(0.0f),
 	m_targetHoverHeight(HOVER_HEIGHT),
@@ -588,7 +588,7 @@ bool Spider::SearchForEnemies()
 bool Spider::SearchForSpirits()
 {
 	START_PROFILE(g_app->m_profiler, "SearchSpirits");
-    Spirit *found = NULL;
+    Spirit *found = nullptr;
     int foundIndex = -1;
     float nearest = 9999.9f;
 

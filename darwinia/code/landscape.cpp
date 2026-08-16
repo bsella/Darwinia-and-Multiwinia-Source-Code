@@ -34,8 +34,8 @@ LandscapeTile::LandscapeTile()
 	m_outsideHeight(0.0f),
 	m_guideGridPower(0),
 	m_size(256),
-	m_guideGrid(NULL),
-	m_heightMap(NULL)
+	m_guideGrid(nullptr),
+	m_heightMap(nullptr)
 {
 }
 
@@ -65,7 +65,7 @@ void LandscapeTile::GuideGridSetPower(int _power)
 		DarwiniaDebugAssert(a != b);
 
         delete m_guideGrid;
-		m_guideGrid = NULL;
+		m_guideGrid = nullptr;
         m_guideGridPower = _power;
 
 		if (resolution != 0)
@@ -87,11 +87,11 @@ int LandscapeTile::GuideGridGetPower()
 // *** GuideGridToString
 char *LandscapeTile::GuideGridToString()
 {
-    static char *result = NULL;
+    static char *result = nullptr;
     if( result )
     {
         delete result;
-        result = NULL;
+        result = nullptr;
     }
 
 	int res = m_guideGrid->GetNumColumns();
@@ -510,10 +510,10 @@ void Landscape::RenderHitNormals() const
 // *** Constructor
 // This one creates a
 Landscape::Landscape()
-:	m_heightMap(NULL),
-	m_normalMap(NULL),
+:	m_heightMap(nullptr),
+	m_normalMap(nullptr),
     m_outsideHeight(-20),
-	m_renderer(NULL)
+	m_renderer(nullptr)
 {
 }
 
@@ -587,9 +587,9 @@ void Landscape::Init(LandscapeDef *_def, bool _justMakeTheHeightMap)
 // *** Empty
 void Landscape::Empty()
 {
-	delete m_renderer;			m_renderer = NULL;
-	delete m_heightMap;			m_heightMap = NULL;
-	delete m_normalMap;			m_normalMap = NULL;
+	delete m_renderer;			m_renderer = nullptr;
+	delete m_heightMap;			m_heightMap = nullptr;
+	delete m_normalMap;			m_normalMap = nullptr;
 }
 
 

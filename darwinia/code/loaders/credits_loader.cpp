@@ -13,7 +13,7 @@
 #include "sound/soundsystem.h"
 
 
-CreditsLoader *g_creditsLoader = NULL;
+CreditsLoader *g_creditsLoader = nullptr;
 
 
 CreditsLoader::CreditsLoader()
@@ -36,7 +36,7 @@ int CreditsLoader::AddString( float _x, float _y, float _size, const char *_stri
     //
     // Look for existing item
 
-    CreditsItem *item = NULL;
+    CreditsItem *item = nullptr;
 
     int itemId = -1;
     for( int j = 0; j < m_items.Size(); ++j )
@@ -498,7 +498,7 @@ void CreditsLoader::FlipBuffers( float _alpha )
 
 void CreditsLoader::Run()
 {
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "Credits", SoundSourceBlueprint::TypeMusic );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "Credits", SoundSourceBlueprint::TypeMusic );
 
     m_sceneIndex = 0;
     SetupFor2D( 800 );

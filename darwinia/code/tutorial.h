@@ -13,7 +13,7 @@ protected:
     char    *m_repeatMessage;
     char    *m_repeatGesture;
 
-	void RepeatMessage( const char *_stringId, float _repeatPeriod=20.0f, char *_gestureDemo=NULL );
+	void RepeatMessage( const char *_stringId, float _repeatPeriod=20.0f, char *_gestureDemo=nullptr );
 
     virtual void TriggerChapter( int _chapter );
     virtual bool AdvanceCurrentChapter();

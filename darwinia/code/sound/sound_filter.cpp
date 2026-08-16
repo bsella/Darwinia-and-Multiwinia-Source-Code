@@ -260,7 +260,7 @@ DspEcho::DspEcho(int _sampleRate)
 DspEcho::~DspEcho()
 {
 	delete m_buffer;
-	m_buffer = NULL;
+	m_buffer = nullptr;
 }
 
 
@@ -378,7 +378,7 @@ DspReverb::DspReverb(int _sampleRate)
 
 DspReverb::~DspReverb()
 {
-	delete m_buffer; m_buffer = NULL;
+	delete m_buffer; m_buffer = nullptr;
 }
 
 

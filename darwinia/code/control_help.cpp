@@ -68,7 +68,7 @@ void HelpIcon::AddTextPosition( int _relx, int _rely )
 
 	t.m_pos.x = _relx;
 	t.m_pos.y = _rely;
-	t.m_text = NULL;
+	t.m_text = nullptr;
 	t.m_alpha = 1.0f;
 
 	m_texts.push_back( t );
@@ -110,12 +110,12 @@ void HelpIcon::Clear()
 	m_lastTexts = m_texts;
 
 	for (auto& text : m_texts)
-		text.m_text = NULL;
+		text.m_text = nullptr;
 }
 
 void HelpIcon::Set( int _index, const char *_helpText, float _alpha )
 {
-	DarwiniaDebugAssert( _helpText != NULL );
+	DarwiniaDebugAssert( _helpText != nullptr );
 
 	m_texts[_index].m_text = _helpText;
 	m_texts[_index].m_alpha = _alpha;
@@ -203,7 +203,7 @@ void HelpIcon::Render( const Vector2 &_setPosition, float _alpha )
 			const char *text = m_texts[i].m_text;
 			const Vector2 &pos = m_texts[i].m_pos;
 
-			if (text == NULL)
+			if (text == nullptr)
 				continue;
 
 			float fontSize = 12.0f;
@@ -453,19 +453,19 @@ static bool PlacingOfficerProgram()
 
 static Unit *GetSelectedUnit()
 {
-	Team *team = NULL;
+	Team *team = nullptr;
 
 	if (g_app->m_location &&
 	    (team = g_app->m_location->GetMyTeam()))
 		return team->GetMyUnit();
 	else
-		return NULL;
+		return nullptr;
 }
 
 static bool SquaddieSelected()
 {
-	Unit *unit = NULL;
-	Task *currentTask = NULL;
+	Unit *unit = nullptr;
+	Task *currentTask = nullptr;
 
 	return
 		g_app->m_camera->IsInMode( Camera::ModeEntityTrack ) &&
@@ -478,7 +478,7 @@ static bool SquaddieSelected()
 
 static bool WeaponSelected( int _type )
 {
-    InsertionSquad *squad = NULL;
+    InsertionSquad *squad = nullptr;
 
 	return
 		(squad = (InsertionSquad *) GetSelectedUnit()) &&
@@ -489,8 +489,8 @@ static bool WeaponSelected( int _type )
 
 static bool OfficerOrArmourSelected()
 {
-	Team *team = NULL;
-	Entity *entity = NULL;
+	Team *team = nullptr;
+	Entity *entity = nullptr;
 
 	return
 		g_app->m_location &&
@@ -502,8 +502,8 @@ static bool OfficerOrArmourSelected()
 
 static bool OfficerSelected()
 {
-	Team *team = NULL;
-	Entity *entity = NULL;
+	Team *team = nullptr;
+	Entity *entity = nullptr;
 
 	return
 		g_app->m_location &&
@@ -514,8 +514,8 @@ static bool OfficerSelected()
 
 static bool ArmourSelected()
 {
-	Team *team = NULL;
-	Entity *entity = NULL;
+	Team *team = nullptr;
+	Entity *entity = nullptr;
 
 	return
 		g_app->m_location &&
@@ -555,7 +555,7 @@ static bool UnitSelected()
 	if( !currentTask ) return false;
 
 	Unit *unit = team->GetMyUnit();
-	return unit != NULL;
+	return unit != nullptr;
 }
 
 static bool CanSwitchUnit()

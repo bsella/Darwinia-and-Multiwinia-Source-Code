@@ -33,7 +33,7 @@
 PowerBuilding::PowerBuilding()
 :   Building(),
     m_powerLink(-1),
-    m_powerLocation(NULL)
+    m_powerLocation(nullptr)
 {
 }
 

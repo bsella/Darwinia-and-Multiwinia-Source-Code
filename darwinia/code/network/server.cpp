@@ -56,10 +56,10 @@ static NetCallBackRetType ListenCallback(NetUdpPacket *udpdata)
 
 
 Server::Server()
-:   m_netLib(NULL),
+:   m_netLib(nullptr),
     m_sequenceId(0),
-    m_inboxMutex(NULL),
-    m_outboxMutex(NULL)
+    m_inboxMutex(nullptr),
+    m_outboxMutex(nullptr)
 {
     m_sync.SetSize( 0 );
 }
@@ -273,7 +273,7 @@ void Server::RegisterNewTeam ( const char *_ip, int _teamType, int _desiredTeamI
 NetworkUpdate *Server::GetNextLetter()
 {
     m_inboxMutex->Lock();
-    NetworkUpdate *letter = NULL;
+    NetworkUpdate *letter = nullptr;
 
     if( m_inbox.Size() > 0 )
     {

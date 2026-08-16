@@ -5,7 +5,7 @@
 #include "lib/input/input.h"
 
 
-InputFilterManager *g_inputFilterManager = NULL;
+InputFilterManager *g_inputFilterManager = nullptr;
 
 
 InputFilterManager::InputFilterManager()

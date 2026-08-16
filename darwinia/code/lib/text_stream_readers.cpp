@@ -143,7 +143,7 @@ bool TextReader::TokenAvailable()
 
 	while (m_line[i] != '\0')
 	{
-		if (strchr(m_seperatorChars, m_line[i]) == NULL)
+		if (strchr(m_seperatorChars, m_line[i]) == nullptr)
 		{
 			return true;
 		}
@@ -172,13 +172,13 @@ char *TextReader::GetNextToken()
 	// Make sure there is more input on the line
 	if (m_line[m_tokenIndex] == '\0')
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// Skip over initial separator characters
 	int m_tokenStart = m_tokenIndex;
 	while(m_line[m_tokenStart] != '\0' &&
-		  strchr(m_seperatorChars, m_line[m_tokenStart]) != NULL)
+		  strchr(m_seperatorChars, m_line[m_tokenStart]) != nullptr)
 	{
 		m_tokenStart++;
 	}
@@ -186,14 +186,14 @@ char *TextReader::GetNextToken()
 	// Make sure that we haven't found an empty token
 	if (m_line[m_tokenStart] == '\0')
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// Find the end of the token
 	m_tokenIndex = m_tokenStart;
 	while(m_line[m_tokenStart] != '\0')
 	{
-		if (strchr(m_seperatorChars, m_line[m_tokenIndex]) != NULL)
+		if (strchr(m_seperatorChars, m_line[m_tokenIndex]) != nullptr)
 		{
 			m_line[m_tokenIndex] = '\0';
 			m_tokenIndex++;
@@ -211,13 +211,13 @@ char *TextReader::GetRestOfLine()
 	// Make sure there is more input on the line
 	if (m_line[m_tokenIndex] == '\0')
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// Skip over initial separator characters
 	int m_tokenStart = m_tokenIndex;
 	while(m_line[m_tokenStart] != '\0' &&
-		  strchr(m_seperatorChars, m_line[m_tokenStart]) != NULL)
+		  strchr(m_seperatorChars, m_line[m_tokenStart]) != nullptr)
 	{
 		m_tokenStart++;
 	}
@@ -270,8 +270,8 @@ bool TextFileReader::ReadLine()
 	//
 	// Read some data from the file
 
-	// If fgets returns NULL that means we've found the EOF
-	if (fgets(m_line, m_maxLineLen + 1, m_file) == NULL)
+	// If fgets returns nullptr that means we've found the EOF
+	if (fgets(m_line, m_maxLineLen + 1, m_file) == nullptr)
 	{
 		eof = true;
 	}
@@ -292,7 +292,7 @@ bool TextFileReader::ReadLine()
 		{
 			unsigned int oldLineLen = m_maxLineLen;
 			DoubleMaxLineLen();
-			if (fgets(&m_line[oldLineLen], oldLineLen + 1, m_file) == NULL)
+			if (fgets(&m_line[oldLineLen], oldLineLen + 1, m_file) == nullptr)
 			{
 				eof = true;
 			}

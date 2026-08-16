@@ -35,8 +35,8 @@
 //*****************************************************************************
 
 SoundEventBlueprint::SoundEventBlueprint()
-:   m_eventName(NULL),
-    m_instance(NULL)
+:   m_eventName(nullptr),
+    m_instance(nullptr)
 {
 }
 
@@ -46,7 +46,7 @@ void SoundEventBlueprint::SetEventName( char *_name )
     if( m_eventName )
     {
         delete [] m_eventName;
-        m_eventName = NULL;
+        m_eventName = nullptr;
     }
 
     if( _name ) m_eventName = NewStr( _name );
@@ -200,7 +200,7 @@ char *DspBlueprint::GetParameter( int _param, float *_min, float *_max, float *_
         return sb->m_name;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -232,12 +232,12 @@ SampleGroup::~SampleGroup()
 SoundSystem::SoundSystem()
 :   m_timeSync(0.0f),
     m_propagateBlueprints(false),
-    m_mainProfiler(NULL),
-    m_eventProfiler(NULL),
+    m_mainProfiler(nullptr),
+    m_eventProfiler(nullptr),
 	m_quitWithoutSave(false),
-	m_music(NULL),
-	m_requestedMusic(NULL),
-    m_channels(NULL),
+	m_music(nullptr),
+	m_requestedMusic(nullptr),
+    m_channels(nullptr),
     m_numChannels(0)
 {
 #ifdef PROFILER_ENABLED
@@ -264,8 +264,8 @@ SoundSystem::~SoundSystem()
 
     delete g_soundLibrary3d;
     delete g_soundLibrary2d;
-    g_soundLibrary3d = NULL;
-    g_soundLibrary2d = NULL;
+    g_soundLibrary3d = nullptr;
+    g_soundLibrary2d = nullptr;
 }
 
 
@@ -288,8 +288,8 @@ void SoundSystem::RestartSoundLibrary()
         delete [] m_channels;
         delete g_soundLibrary3d;
         delete g_soundLibrary2d;
-        g_soundLibrary2d = NULL;
-        g_soundLibrary3d = NULL;
+        g_soundLibrary2d = nullptr;
+        g_soundLibrary3d = nullptr;
     }
 
 
@@ -304,7 +304,7 @@ void SoundSystem::RestartSoundLibrary()
 	int bufSize		= 20000;
 
 	g_soundLibrary2d = new SoundLibrary2dSDL;
-	g_soundLibrary3d = NULL;
+	g_soundLibrary3d = nullptr;
 
 #ifdef HAVE_DSOUND
 	if (stricmp(libName, "dsound") == 0)    g_soundLibrary3d = new SoundLibrary3dDirectSound();
@@ -572,7 +572,7 @@ void SoundSystem::LoadBlueprints()
         char *group = in->GetNextToken();
         char *type = in->GetNextToken();
         bool event = false;
-        SoundSourceBlueprint *ssb = NULL;
+        SoundSourceBlueprint *ssb = nullptr;
 
         if( stricmp( group, "ENTITY" ) == 0 )
         {
@@ -1029,7 +1029,7 @@ SoundInstance *SoundSystem::GetSoundInstance( SoundInstanceId id )
 {
     if( !m_sounds.ValidIndex(id.m_index) )
     {
-        return NULL;
+        return nullptr;
     }
 
     SoundInstance *found = m_sounds[id.m_index];
@@ -1038,7 +1038,7 @@ SoundInstance *SoundSystem::GetSoundInstance( SoundInstanceId id )
         return found;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -1293,7 +1293,7 @@ int SoundSystem::NumChannelsUsed()
     for( int i = 0; i < m_numChannels; ++i )
     {
         SoundInstanceId id = m_channels[i];
-        if( GetSoundInstance( id ) != NULL )
+        if( GetSoundInstance( id ) != nullptr )
         {
             numUsed++;
         }
@@ -1365,15 +1365,15 @@ void SoundSystem::Advance()
             {
 			    START_PROFILE(g_app->m_profiler, "Shutdown Music" );
                 ShutdownSound( m_music );
-				m_music = NULL;
+				m_music = nullptr;
 			    END_PROFILE(g_app->m_profiler, "Shutdown Music" );
             }
 		}
 
-		if (m_music == NULL && m_requestedMusic != NULL)
+		if (m_music == nullptr && m_requestedMusic != nullptr)
 		{
 			m_music = m_requestedMusic;
-			m_requestedMusic = NULL;
+			m_requestedMusic = nullptr;
 			m_music->OpenStream(false);
 			m_music->m_channelIndex = g_soundLibrary3d->m_musicChannelId;
 			g_soundLibrary3d->ResetChannel(m_music->m_channelIndex);
@@ -1399,11 +1399,11 @@ void SoundSystem::Advance()
 
         START_PROFILE(g_app->m_profiler, "Allocate Sorted Array" );
         static int sortedArraySize = 128;
-        static SoundInstanceId *sortedIds = NULL;
+        static SoundInstanceId *sortedIds = nullptr;
         if( m_sounds.NumUsed() > sortedArraySize )
         {
             delete [] sortedIds;
-            sortedIds = NULL;
+            sortedIds = nullptr;
             while( sortedArraySize < m_sounds.NumUsed() )
                 sortedArraySize *= 2;
         }
@@ -1464,7 +1464,7 @@ void SoundSystem::Advance()
 
         START_PROFILE(g_app->m_profiler, "Recalculate Priorities" );
 
-        SoundInstance *newInstance = NULL;
+        SoundInstance *newInstance = nullptr;
         float highestInstancePriority = 0.0f;
 
         for( int i = 0; i < numSortedIds; ++i )
@@ -1917,7 +1917,7 @@ void SoundSystem::LoadtimeVerify()
 		{
 			char *soundName = sg->m_samples[j];
 			char const *err = IsSoundSourceOK(soundName);
-			if(err != NULL )
+			if(err != nullptr )
             {
                 fprintf( soundErrors, "%s: %s In sound group %s\n",
 							            err, soundName, sg->m_name);
@@ -1945,7 +1945,7 @@ void SoundSystem::LoadtimeVerify()
 			if ( si->m_sourceType == SoundInstance::Sample )
 			{
 				char const *err = IsSoundSourceOK(si->m_soundName);
-				if(err != NULL )
+				if(err != nullptr )
                 {
                     fprintf( soundErrors, "%s: %s In entity %s, event %s\n",
 					        err, si->m_soundName, Entity::GetTypeName(i), seb->m_eventName);
@@ -1983,7 +1983,7 @@ void SoundSystem::LoadtimeVerify()
 			if( si->m_sourceType == SoundInstance::Sample )
 			{
 				char const *err = IsSoundSourceOK(si->m_soundName);
-				if(err != NULL)
+				if(err != nullptr)
                 {
                     fprintf( soundErrors, "%s: %s In building %s, event %s\n",
 					            err, si->m_soundName, Building::GetTypeName(i), seb->m_eventName);
@@ -2021,7 +2021,7 @@ void SoundSystem::LoadtimeVerify()
 			if( si->m_sourceType == SoundInstance::Sample )
 			{
 				char const *err = IsSoundSourceOK(si->m_soundName);
-				if(err != NULL)
+				if(err != nullptr)
                 {
                     fprintf( soundErrors, "%s: %s In Others %s, event %s\n",
 					        err, si->m_soundName, ssb->GetSoundSourceName(i), seb->m_eventName);
@@ -2053,7 +2053,7 @@ void SoundSystem::LoadtimeVerify()
 
 static char const *g_soundSourceErrors[SoundSystem::SoundSourceNumErrors] =
 {
-	NULL,
+	nullptr,
 	"Sound sample not mono",
 	"Sound sample does not exist",
 	"Sound sample name contains spaces"
@@ -2244,7 +2244,7 @@ SampleGroup *SoundSystem::GetSampleGroup ( const char *_name )
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 

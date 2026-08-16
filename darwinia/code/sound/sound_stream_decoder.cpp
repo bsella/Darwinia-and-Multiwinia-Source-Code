@@ -14,7 +14,7 @@
 
 SoundStreamDecoder::SoundStreamDecoder(BinaryReader *_in)
 :	m_in(_in),
-	m_vorbisFile(NULL),
+	m_vorbisFile(nullptr),
 	m_bits(0),
 	m_fileType(TypeUnknown),
 	m_numChannels(0),
@@ -165,7 +165,7 @@ void SoundStreamDecoder::ReadOggHeader()
 	callbacks.tell_func = TellFunc;
 
 	m_vorbisFile = new OggVorbis_File;
-	int result = ov_open_callbacks(m_in, m_vorbisFile, NULL, 0, callbacks);
+	int result = ov_open_callbacks(m_in, m_vorbisFile, nullptr, 0, callbacks);
 	DarwiniaReleaseAssert(result == 0, "Ogg file corrupt %s (result = %d)", m_in->m_filename, result);
 
 	vorbis_info *vi = ov_info(m_vorbisFile, -1);

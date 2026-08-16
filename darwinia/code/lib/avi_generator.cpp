@@ -15,11 +15,11 @@
 
 AVIGenerator::AVIGenerator()
 :	m_frameRate(60),
-	m_AVIFile(NULL),
-	m_stream(NULL),
-	m_streamCompressed(NULL),
-	m_pixels(NULL),
-	m_accumBuffer(NULL)
+	m_AVIFile(nullptr),
+	m_stream(nullptr),
+	m_streamCompressed(nullptr),
+	m_pixels(nullptr),
+	m_accumBuffer(nullptr)
 {
 	m_motionBlurFactor = g_prefsManager->GetInt("AVIMotionBlurFactor", 1);
 
@@ -49,11 +49,11 @@ AVIGenerator::~AVIGenerator()
     }
 
 	// Just checking that all allocated resources have been released
-	DarwiniaDebugAssert(m_stream==NULL);
-	DarwiniaDebugAssert(m_streamCompressed==NULL);
-	DarwiniaDebugAssert(m_AVIFile==NULL);
-    DarwiniaDebugAssert(m_pixels==NULL);
-    DarwiniaDebugAssert(m_accumBuffer==NULL);
+	DarwiniaDebugAssert(m_stream==nullptr);
+	DarwiniaDebugAssert(m_streamCompressed==nullptr);
+	DarwiniaDebugAssert(m_AVIFile==nullptr);
+    DarwiniaDebugAssert(m_pixels==nullptr);
+    DarwiniaDebugAssert(m_accumBuffer==nullptr);
 }
 
 
@@ -63,7 +63,7 @@ void AVIGenerator::Setup()
 
 	memset(&m_opts, 0, sizeof(m_opts));
 
-    if (!AVISaveOptions(NULL, 0, 1, &m_stream, (LPAVICOMPRESSOPTIONS FAR *) &aopts))
+    if (!AVISaveOptions(nullptr, 0, 1, &m_stream, (LPAVICOMPRESSOPTIONS FAR *) &aopts))
 	{
 		AVISaveOptionsFree(1,(LPAVICOMPRESSOPTIONS FAR *) &aopts);
 	}
@@ -96,7 +96,7 @@ int AVIGenerator::InitEngine()
 	hr = AVIFileOpen(&m_AVIFile,			// Address to contain the new file interface pointer
 					 m_outputFilename,		// Name your file .avi -> very important
 					 OF_WRITE | OF_CREATE,	// Access mode to use when opening the file.
-					 NULL);					// use handler determined from file extension.
+					 nullptr);					// use handler determined from file extension.
 
 	if (hr != AVIERR_OK)
 	{
@@ -159,7 +159,7 @@ int AVIGenerator::InitEngine()
 
 
 	// Step 5:  Create a compressed stream using codec options.
-	hr = AVIMakeCompressedStream(&m_streamCompressed, m_stream, &m_opts, NULL);
+	hr = AVIMakeCompressedStream(&m_streamCompressed, m_stream, &m_opts, nullptr);
 
 	if (hr != AVIERR_OK)
 	{
@@ -219,26 +219,26 @@ void AVIGenerator::ReleaseEngine()
 	if (m_stream)
 	{
 		AVIStreamRelease(m_stream);
-		m_stream=NULL;
+		m_stream=nullptr;
 	}
 
 	if (m_streamCompressed)
 	{
 		AVIStreamRelease(m_streamCompressed);
-		m_streamCompressed=NULL;
+		m_streamCompressed=nullptr;
 	}
 
 	if (m_AVIFile)
 	{
 		AVIFileRelease(m_AVIFile);
-		m_AVIFile=NULL;
+		m_AVIFile=nullptr;
 	}
 
     delete m_pixels;
-    m_pixels = NULL;
+    m_pixels = nullptr;
 
 	delete m_accumBuffer;
-	m_accumBuffer = NULL;
+	m_accumBuffer = nullptr;
 
 	// Close engine
 	AVIFileExit();
@@ -307,8 +307,8 @@ int AVIGenerator::AddFrame(unsigned char *bmBits)
 		bmBits,								// image buffer
 		m_bih.biSizeImage,					// size of this frame
 		AVIIF_KEYFRAME,						// flags....
-		NULL,
-		NULL);
+		nullptr,
+		nullptr);
 
 	// updating frame counter
 	m_outFrameCount++;

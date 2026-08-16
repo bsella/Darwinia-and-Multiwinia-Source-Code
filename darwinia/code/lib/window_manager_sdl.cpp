@@ -23,7 +23,7 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
-SDLMouseInputDriver *g_sdlMouseDriver = NULL;
+SDLMouseInputDriver *g_sdlMouseDriver = nullptr;
 
 // Uncomment if you want lots of output in debug mode.
 //#define VERBOSE_DEBUG
@@ -54,7 +54,7 @@ WindowManagerSDL::~WindowManagerSDL()
 
 void WindowManagerSDL::ListAllDisplayModes()
 {
-	SDL_Rect **validModes = SDL_ListModes(NULL, SDL_OPENGL|SDL_FULLSCREEN);
+	SDL_Rect **validModes = SDL_ListModes(nullptr, SDL_OPENGL|SDL_FULLSCREEN);
 
 	for (; *validModes; validModes++) {
 		SDL_Rect *mode = *validModes;
@@ -132,10 +132,10 @@ bool WindowManagerSDL::CreateWin(int _width, int _height, bool _windowed, int _c
 		if (_colourDepth != -1)
 			vfmt.BitsPerPixel = _colourDepth;	
 		SDL_Rect **validModes = SDL_ListModes(&vfmt, flags);
-		SDL_Rect *bestMode = NULL;
+		SDL_Rect *bestMode = nullptr;
 		unsigned bestDiagonalDifference = (unsigned) -1;
 			
-		if (validModes == NULL)
+		if (validModes == nullptr)
 			return false;
 
 		for (; *validModes; validModes++) {
@@ -143,12 +143,12 @@ bool WindowManagerSDL::CreateWin(int _width, int _height, bool _windowed, int _c
 			unsigned diagonalDifference = (_width - mode->w) * (_width - mode->w) + 
 										  (_height - mode->h) * (_height - mode->h);
 			
-			if (bestMode == NULL || diagonalDifference < bestDiagonalDifference) {
+			if (bestMode == nullptr || diagonalDifference < bestDiagonalDifference) {
 				bestMode = mode;
 				bestDiagonalDifference = diagonalDifference;
 			}
 		}
-		DarwiniaReleaseAssert(bestMode != NULL, "Failed to find any valid video modes");
+		DarwiniaReleaseAssert(bestMode != nullptr, "Failed to find any valid video modes");
 	
 		m_screenW = bestMode->w;
 		m_screenH = bestMode->h;		
@@ -169,7 +169,7 @@ bool WindowManagerSDL::CreateWin(int _width, int _height, bool _windowed, int _c
 		m_screenH = _height;
 		
 		// Add it to the list of screen resolutions if need be
-		Resolution *found = NULL;
+		Resolution *found = nullptr;
 		for (int i = 0; i < m_resolutions.Size(); i++) {
 			Resolution *res = m_resolutions.GetData(i);
 			if (res->m_width == _width && res->m_height == _height) {
@@ -373,16 +373,16 @@ void WindowManagerSDL::SetMousePos(int x, int y)
 void WindowManagerSDL::OpenWebsite( const char *_url )
 {	
 #ifdef TARGET_OS_MACOSX 
-	CFURLRef url = CFURLCreateWithBytes(NULL, (const UInt8 *)_url, strlen(_url),
-										kCFStringEncodingASCII, NULL);
+	CFURLRef url = CFURLCreateWithBytes(nullptr, (const UInt8 *)_url, strlen(_url),
+										kCFStringEncodingASCII, nullptr);
 	if (url)
 	{
-		LSOpenCFURLRef(url, NULL);
+		LSOpenCFURLRef(url, nullptr);
 		CFRelease(url);
 	}
 #elif defined TARGET_OS_LINUX
 	/* Child */
-	//char * const args[4] = { "/bin/sh", "open-www.sh", (char *)_url,  NULL };
+	//char * const args[4] = { "/bin/sh", "open-www.sh", (char *)_url,  nullptr };
 	//spawn("/bin/sh", args);
 #endif
 }
@@ -404,7 +404,7 @@ void SetupPathToProgram(const char *program);
 #include <string>
 #include <unistd.h>
 
-char *g_origWorkingDir = NULL;
+char *g_origWorkingDir = nullptr;
 
 void ChangeToProgramDir(const char *program)
 {
@@ -439,6 +439,6 @@ PlatformWindow *WindowManagerSDL::Window()
 	else
 	{
 		free(info);
-		return NULL;
+		return nullptr;
 	}
 }

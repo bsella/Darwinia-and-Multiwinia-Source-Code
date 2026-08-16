@@ -65,8 +65,8 @@
 
 
 
-Shape *Building::s_controlPad = NULL;
-ShapeMarker *Building::s_controlPadStatus = NULL;
+Shape *Building::s_controlPad = nullptr;
+ShapeMarker *Building::s_controlPadStatus = nullptr;
 
 
 
@@ -77,7 +77,7 @@ Building::Building()
 	m_isGlobal(false),
     m_radius(13.0f),
 	m_destroyed(false),
-	m_shape(NULL)
+	m_shape(nullptr)
 {
     if( !s_controlPad )
     {
@@ -741,12 +741,12 @@ Building *Building::CreateBuilding( char *_name )
     }
 
     //DarwiniaDebugAssert(false);
-	return NULL;
+	return nullptr;
 }
 
 Building *Building::CreateBuilding( int _type )
 {
-    Building *building = NULL;
+    Building *building = nullptr;
 
     switch( _type )
     {
@@ -904,7 +904,7 @@ const char *Building::GetTypeName( int _type )
     else
     {
         DarwiniaDebugAssert(false);
-        return NULL;
+        return nullptr;
     }
 }
 

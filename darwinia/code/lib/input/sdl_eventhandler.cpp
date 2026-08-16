@@ -33,7 +33,7 @@ void SDLEventHandler::AddEventProcessor( SDLEventProcessor *_driver )
 	if ( _driver )
 		eventProcessors.push_back( _driver );
 	else
-		std::cerr << "AddEventProcessor: _driver is NULL\n" << std::endl;
+		std::cerr << "AddEventProcessor: _driver is nullptr\n" << std::endl;
 }
 
 void SDLEventHandler::RemoveEventProcessor( SDLEventProcessor *_driver )

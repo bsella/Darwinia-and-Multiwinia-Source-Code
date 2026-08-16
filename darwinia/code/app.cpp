@@ -47,7 +47,7 @@
 
 void SetPreferenceOverrides(); // See main.cpp
 
-App *g_app = NULL;
+App *g_app = nullptr;
 
 
 #ifdef DEMO2
@@ -62,35 +62,35 @@ App *g_app = NULL;
 
 App::App()
 :
-	m_userInput(NULL),
-	m_resource(NULL),
-	m_soundSystem(NULL),
-	m_particleSystem(NULL),
-	m_langTable(NULL),
-	m_aviGenerator(NULL),
-	m_profiler(NULL),
-	m_globalWorld(NULL),
-	m_location(NULL),
+	m_userInput(nullptr),
+	m_resource(nullptr),
+	m_soundSystem(nullptr),
+	m_particleSystem(nullptr),
+	m_langTable(nullptr),
+	m_aviGenerator(nullptr),
+	m_profiler(nullptr),
+	m_globalWorld(nullptr),
+	m_location(nullptr),
 	m_locationId(-1),
-	m_camera(NULL),
-    m_server(NULL),
-    m_clientToServer(NULL),
-    m_renderer(NULL),
-	m_locationInput(NULL),
-	m_locationEditor(NULL),
-	m_helpSystem(NULL),
-	m_tutorial(NULL),
-	m_effectProcessor(NULL),
-    m_taskManager(NULL),
-    m_gesture(NULL),
-    m_script(NULL),
-    m_sepulveda(NULL),
-    m_testHarness(NULL),
-	m_startSequence(NULL),
-	m_demoEndSequence(NULL),
-	m_attractMode(NULL),
-	m_controlHelpSystem(NULL),
-	m_gameMenu(NULL),
+	m_camera(nullptr),
+    m_server(nullptr),
+    m_clientToServer(nullptr),
+    m_renderer(nullptr),
+	m_locationInput(nullptr),
+	m_locationEditor(nullptr),
+	m_helpSystem(nullptr),
+	m_tutorial(nullptr),
+	m_effectProcessor(nullptr),
+    m_taskManager(nullptr),
+    m_gesture(nullptr),
+    m_script(nullptr),
+    m_sepulveda(nullptr),
+    m_testHarness(nullptr),
+	m_startSequence(nullptr),
+	m_demoEndSequence(nullptr),
+	m_attractMode(nullptr),
+	m_controlHelpSystem(nullptr),
+	m_gameMenu(nullptr),
 	m_negativeRenderer(false),
 	m_difficultyLevel(0),
 	m_largeMenus(false),
@@ -103,7 +103,7 @@ App::App()
     m_atMainMenu(false),
     m_gameMode(GameModeNone)
 #ifdef TARGET_OS_VISTA
-	,m_thumbnailScreenshot(NULL),
+	,m_thumbnailScreenshot(nullptr),
 	m_saveThumbnail(false)
 #endif
 {
@@ -112,10 +112,10 @@ App::App()
 	// Load resources
 
     m_resource = new Resource();
-    m_resource->ParseArchive( "main.dat", NULL );
-    m_resource->ParseArchive( "sounds.dat", NULL );
-	m_resource->ParseArchive( "patch.dat", NULL );
-    m_resource->ParseArchive( "language.dat", NULL );
+    m_resource->ParseArchive( "main.dat", nullptr );
+    m_resource->ParseArchive( "sounds.dat", nullptr );
+	m_resource->ParseArchive( "patch.dat", nullptr );
+    m_resource->ParseArchive( "language.dat", nullptr );
 
 	g_prefsManager = new PrefsManager(App::GetPreferencesPath());
 	SetPreferenceOverrides();
@@ -316,7 +316,7 @@ void App::SetLanguage( const char *_language, bool _test )
     if( m_langTable )
     {
         delete m_langTable;
-        m_langTable = NULL;
+        m_langTable = nullptr;
     }
 
 
@@ -401,7 +401,7 @@ const char *App::GetProfileDirectory()
 
 	static char userdir[256];
 	const char *home = getenv("HOME");
-	if (home != NULL) {
+	if (home != nullptr) {
 		sprintf(userdir, "%s/.darwinia", home);
 		mkdir(userdir, 0777);
 
@@ -416,7 +416,7 @@ const char *App::GetProfileDirectory()
 
 	static char userdir[256];
 	const char *home = getenv("HOME");
-	if (home != NULL) {
+	if (home != nullptr) {
 		sprintf(userdir, "%s/Library", home);
 		mkdir(userdir, 0777);
 
@@ -442,7 +442,7 @@ const char *App::GetProfileDirectory()
         static char userdir[256];
 
 		PWSTR path;
-		SHGetKnownFolderPath( FOLDERID_SavedGames, 0, NULL, &path );
+		SHGetKnownFolderPath( FOLDERID_SavedGames, 0, nullptr, &path );
 		wcstombs( userdir, path, sizeof(userdir) );
 		CoTaskMemFree( path );
 
@@ -467,9 +467,9 @@ const char *App::GetProfileDirectory()
 const char *App::GetPreferencesPath()
 {
 	// good leak #1
-	static char *path = NULL;
+	static char *path = nullptr;
 
-	if (path == NULL) {
+	if (path == nullptr) {
 		const char *profileDir = GetProfileDirectory();
 		path = new char[strlen(profileDir) + 32];
 		sprintf( path, "%spreferences.txt", profileDir );
@@ -482,7 +482,7 @@ const char *App::GetScreenshotDirectory()
 {
 #ifdef TARGET_OS_VISTA
     static char dir[MAX_PATH];
-    SHGetFolderPath( NULL, CSIDL_DESKTOP, NULL, SHGFP_TYPE_CURRENT, dir );
+    SHGetFolderPath( nullptr, CSIDL_DESKTOP, nullptr, SHGFP_TYPE_CURRENT, dir );
     sprintf( dir, "%s\\", dir );
     return dir;
 #else
@@ -504,7 +504,7 @@ bool App::LoadProfile()
         if( m_globalWorld )
         {
             delete m_globalWorld;
-            m_globalWorld = NULL;
+            m_globalWorld = nullptr;
         }
 
         m_globalWorld = new GlobalWorld();
@@ -528,7 +528,7 @@ bool App::LoadProfile()
         if( m_globalWorld )
         {
             delete m_globalWorld;
-            m_globalWorld = NULL;
+            m_globalWorld = nullptr;
         }
 
         m_globalWorld = new GlobalWorld();
@@ -629,7 +629,7 @@ void App::ResetLevel( bool _global )
             if( m_globalWorld )
             {
                 delete m_globalWorld;
-                m_globalWorld = NULL;
+                m_globalWorld = nullptr;
             }
 
             m_globalWorld = new GlobalWorld();
@@ -675,7 +675,7 @@ void App::LoadCampaign()
     if( m_tutorial )
     {
         delete m_tutorial;
-        m_tutorial = NULL;
+        m_tutorial = nullptr;
     }
 
     m_soundSystem->StopAllSounds(WorldObjectId(), "Music");
@@ -749,7 +749,7 @@ void App::SaveRichHeader()
 	m_thumbnailScreenshot->WritePng( file );
 	// m_thumbnailScreenshot->SavePng( "ss.bmp" );
 	delete m_thumbnailScreenshot;
-	m_thumbnailScreenshot = NULL;
+	m_thumbnailScreenshot = nullptr;
 
 	fclose(file);
 

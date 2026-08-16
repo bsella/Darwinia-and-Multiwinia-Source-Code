@@ -68,7 +68,7 @@ void SetupPathToProgram(const char *program)
 
 static void gdbStackTrace(FILE *_output)
 {
-	if (s_pathToProgram == NULL) {
+	if (s_pathToProgram == nullptr) {
 		fprintf(stderr, "Could not invoke gdb stack trace because path to executable not set\n");
 		return;
 	}
@@ -80,7 +80,7 @@ static void gdbStackTrace(FILE *_output)
 
 	FILE *scriptfp;
 
-	if ((scriptfp = fopen(commandfile, "w")) == NULL) {
+	if ((scriptfp = fopen(commandfile, "w")) == nullptr) {
 		fprintf(stderr, "Couldn't write to %s: %s", commandfile, strerror(errno));
 		fprintf(_output, "\n\nCouldn't write to %s: %s\n\n", commandfile, strerror(errno));
 		return;
@@ -221,7 +221,7 @@ static void GenerateBlackBox(char *_msg, unsigned *_framePtr)
         fprintf( _file, "=========================\n\n" );
 
         char line[256];
-	    while (fgets(line, 256, prefsFile) != NULL)
+	    while (fgets(line, 256, prefsFile) != nullptr)
 	    {
 		    if (line[0] != '#' && line[0] != '\n' )				// Skip comment lines
 		    {

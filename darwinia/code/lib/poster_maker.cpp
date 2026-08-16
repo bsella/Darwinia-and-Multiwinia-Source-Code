@@ -26,8 +26,8 @@ PosterMaker::PosterMaker(int _screenWidth, int _screenHeight)
 
 PosterMaker::~PosterMaker()
 {
-	delete m_bitmap;		m_bitmap = NULL;
-	delete m_screenPixels;	m_screenPixels = NULL;
+	delete m_bitmap;		m_bitmap = nullptr;
+	delete m_screenPixels;	m_screenPixels = nullptr;
 }
 
 

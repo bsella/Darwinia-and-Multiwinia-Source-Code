@@ -75,7 +75,7 @@ void Script::ReportError(LevelFile const *_levelFile, char *_fmt, ...)
 //*****************************************************************************
 
 Script::Script()
-:   m_in(NULL),
+:   m_in(nullptr),
     m_waitUntil(-1.0f),
     m_waitForSpeech(false),
 	m_waitForCamera(false),
@@ -92,7 +92,7 @@ bool Script::IsRunningScript()
 {
 	if (g_app->m_testHarness) return false;
 
-    return ( m_in != NULL );
+    return ( m_in != nullptr );
 }
 
 
@@ -336,7 +336,7 @@ void Script::RunCommand_TriggerSound( char const *_event )
 
     if( g_app->m_soundSystem->NumInstancesPlaying( WorldObjectId(), eventName ) == 0 )
     {
-        g_app->m_soundSystem->TriggerOtherEvent( NULL, (char *) _event, SoundSourceBlueprint::TypeMusic );
+        g_app->m_soundSystem->TriggerOtherEvent( nullptr, (char *) _event, SoundSourceBlueprint::TypeMusic );
     }
 }
 
@@ -449,7 +449,7 @@ GodDish *GetGodDish()
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -519,7 +519,7 @@ void Script::RunCommand_PurityControl()
 void Script::RunCommand_ShowDarwinLogo()
 {
     g_app->m_renderer->m_renderDarwinLogo = GetHighResTime();
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "ShowLogo", SoundSourceBlueprint::TypeInterface );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "ShowLogo", SoundSourceBlueprint::TypeInterface );
 }
 
 
@@ -608,7 +608,7 @@ bool Script::Skip()
     {
         // Quick exit the entire cutscene
         delete m_in;
-        m_in = NULL;
+        m_in = nullptr;
         g_app->m_sepulveda->ShutUp();
         g_app->m_soundSystem->StopAllSounds( WorldObjectId(), "Music" );
         m_permitEscape = false;
@@ -691,7 +691,7 @@ void Script::Advance()
         else
         {
             delete m_in;
-            m_in = NULL;
+            m_in = nullptr;
             m_permitEscape = false;
         }
     }
@@ -703,7 +703,7 @@ void Script::AdvanceScript()
 	if (!m_in->TokenAvailable()) return;
 
 	int opCode = GetOpCode(m_in->GetNextToken());
-	char *nextWord = NULL;
+	char *nextWord = nullptr;
 	float nextFloat = 0.0f;
 	if (m_in->TokenAvailable())
 	{
@@ -850,10 +850,10 @@ void Script::TestScript(const char *_filename)
     m_in = g_app->m_resource->GetTextReader(fullFilename);
     if (!m_in)
 	{
-		ReportError(NULL, "Script file not found");
+		ReportError(nullptr, "Script file not found");
 	}
 
-	LevelFile *levelFile = NULL;
+	LevelFile *levelFile = nullptr;
 
 	while (m_in->ReadLine())
 	{
@@ -861,7 +861,7 @@ void Script::TestScript(const char *_filename)
 
 		char *firstWord = m_in->GetNextToken();
 		int opCode = GetOpCode(firstWord);
-		char *nextWord = NULL;
+		char *nextWord = nullptr;
 		float nextFloat = 0.0f;
 		if (m_in->TokenAvailable())
 		{
@@ -949,7 +949,7 @@ void Script::TestScript(const char *_filename)
 			}
 			case OpExitLocation:
 				delete levelFile;
-				levelFile = NULL;
+				levelFile = nullptr;
 				break;
 			case OpWaitSay:
 			case OpWaitCam:
@@ -991,7 +991,7 @@ void Script::TestScript(const char *_filename)
 	}
 
 	delete m_in;
-	m_in = NULL;
+	m_in = nullptr;
 }
 #endif // SCRIPT_TEST_ENABLED
 

@@ -24,7 +24,7 @@ template <class T>
 Array2D<T>::~Array2D()
 {
 	delete [] m_data;
-	m_data = NULL;
+	m_data = nullptr;
 }
 
 

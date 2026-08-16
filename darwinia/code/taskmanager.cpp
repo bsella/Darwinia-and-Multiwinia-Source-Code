@@ -35,7 +35,7 @@ Task::Task()
 :   m_id(-1),
     m_type(GlobalResearch::TypeSquad),
     m_state(StateIdle),
-    m_route(NULL)
+    m_route(nullptr)
 {
 }
 
@@ -87,7 +87,7 @@ void Task::TargetSquad( Vector3 const &_pos )
     g_app->m_helpSystem->PlayerDoneAction( HelpSystem::SquadSummon );
     m_state = StateRunning;
 
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
 
     int trackEntity = g_prefsManager->GetInt( OTHER_AUTOMATICCAM, 0 );
     if( trackEntity == 0 )
@@ -114,7 +114,7 @@ void Task::TargetEngineer( Vector3 const &_pos )
     g_app->m_location->m_teams[teamId].SelectUnit( -1, m_objId.GetIndex(), -1 );
 
     m_state = StateRunning;
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
 }
 
 
@@ -128,7 +128,7 @@ void Task::TargetArmour( Vector3 const &_pos )
 
     m_state = StateRunning;
 
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
 #endif
 }
 
@@ -258,7 +258,7 @@ void Task::TargetOfficer( Vector3 const &_pos )
         g_app->m_location->m_teams[ id.GetTeamId() ].SelectUnit( id.GetUnitId(), id.GetIndex(), -1 );
         g_app->m_taskManagerInterface->SetCurrentMessage( TaskManagerInterface::MessageSuccess, GlobalResearch::TypeOfficer, 2.5f );
 
-        g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
+        g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
     }
 }
 
@@ -713,7 +713,7 @@ Task *TaskManager::GetTask( int _id )
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -728,7 +728,7 @@ Task *TaskManager::GetTask( WorldObjectId _id )
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 

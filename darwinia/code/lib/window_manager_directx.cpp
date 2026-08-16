@@ -22,7 +22,7 @@ static HINSTANCE g_hInstance;
 #define LLKHF_ALTDOWN 0x20
 
 
-WindowManager *g_windowManager = NULL;
+WindowManager *g_windowManager = nullptr;
 
 bool Direct3DInit(HWND _hWnd, bool _windowed, int _width, int _height, int _colourDepth, int _zDepth, bool _waitVRT);
 void Direct3DShutdown();
@@ -46,7 +46,7 @@ WindowManager::WindowManager()
 	m_mouseOffsetX(INT_MAX),
 	m_mouseCaptured(false)
 {
-	DarwiniaDebugAssert(g_windowManager == NULL);
+	DarwiniaDebugAssert(g_windowManager == nullptr);
 	m_win32Specific = new WindowManagerWin32;
 
 	ListAllDisplayModes();
@@ -68,7 +68,7 @@ void WindowManager::SaveDesktop()
     DEVMODE mode;
     ZeroMemory(&mode, sizeof(mode));
     mode.dmSize = sizeof(mode);
-    bool success = EnumDisplaySettings ( NULL, ENUM_CURRENT_SETTINGS, &mode );
+    bool success = EnumDisplaySettings ( nullptr, ENUM_CURRENT_SETTINGS, &mode );
 
     m_desktopScreenW = mode.dmPelsWidth;
     m_desktopScreenH = mode.dmPelsHeight;
@@ -86,7 +86,7 @@ void WindowManager::RestoreDesktop()
     DEVMODE mode;
     ZeroMemory(&mode, sizeof(mode));
     mode.dmSize = sizeof(mode);
-    bool success = EnumDisplaySettings ( NULL, ENUM_CURRENT_SETTINGS, &mode );
+    bool success = EnumDisplaySettings ( nullptr, ENUM_CURRENT_SETTINGS, &mode );
 
     //
     // has anything changed?
@@ -125,7 +125,7 @@ bool WindowManager::EnableOpenGL(int _colourDepth, int _zDepth)
 void WindowManager::DisableOpenGL()
 {
 	Direct3DShutdown();
-//	wglMakeCurrent( NULL, NULL );
+//	wglMakeCurrent( nullptr, nullptr );
 //	wglDeleteContext( m_win32Specific->m_hRC );
 //	ReleaseDC( m_win32Specific->m_hWnd, m_win32Specific->m_hDC );
 }
@@ -151,7 +151,7 @@ void WindowManager::ListAllDisplayModes()
 {
 	int i = 0;
 	DEVMODE devMode;
-	while (EnumDisplaySettings(NULL, i, &devMode) != 0)
+	while (EnumDisplaySettings(nullptr, i, &devMode) != 0)
 	{
 		if (devMode.dmBitsPerPel >= 15 &&
 			devMode.dmPelsWidth >= 640 &&
@@ -186,7 +186,7 @@ Resolution *WindowManager::GetResolution( int _id )
         return m_resolutions[_id];
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -211,10 +211,10 @@ bool WindowManager::CreateWin(int _width, int _height, bool _windowed,
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = g_hInstance;
-	wc.hIcon = LoadIcon( GetModuleHandle(NULL), MAKEINTRESOURCE(101) );
-	wc.hCursor = NULL;
+	wc.hIcon = LoadIcon( GetModuleHandle(nullptr), MAKEINTRESOURCE(101) );
+	wc.hCursor = nullptr;
 	wc.hbrBackground = (HBRUSH)GetStockObject( BLACK_BRUSH );
-	wc.lpszMenuName = NULL;
+	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = "Darwinia";
 	RegisterClass( &wc );
 
@@ -280,7 +280,7 @@ bool WindowManager::CreateWin(int _width, int _height, bool _windowed,
 		wc.lpszClassName, wc.lpszClassName,
 		windowStyle,
 		posX, posY, _width, _height,
-		NULL, NULL, g_hInstance, NULL );
+		nullptr, nullptr, g_hInstance, nullptr );
 
     if( !m_win32Specific->m_hWnd ) return false;
 
@@ -290,7 +290,7 @@ bool WindowManager::CreateWin(int _width, int _height, bool _windowed,
 	if(!EnableOpenGL(_colourDepth, _zDepth))
 	{
 		DestroyWindow(m_win32Specific->m_hWnd);
-		m_win32Specific->m_hWnd = NULL;
+		m_win32Specific->m_hWnd = nullptr;
 		return false;
 	}
 
@@ -302,7 +302,7 @@ void WindowManager::DestroyWin()
 {
 	DisableOpenGL();
 	DestroyWindow(m_win32Specific->m_hWnd);
-	m_win32Specific->m_hWnd = NULL;
+	m_win32Specific->m_hWnd = nullptr;
 }
 
 
@@ -315,7 +315,7 @@ void WindowManager::Flip()
 void WindowManager::NastyPollForMessages()
 {
 	MSG msg;
-	while ( PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) )
+	while ( PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) )
 	{
 		// handle or dispatch messages
 		TranslateMessage( &msg );
@@ -439,7 +439,7 @@ void WindowManager::UnhideMousePointer()
 
 void WindowManager::OpenWebsite( char *_url )
 {
-    ShellExecute(NULL, "open", _url, NULL, NULL, SW_SHOWNORMAL);
+    ShellExecute(nullptr, "open", _url, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 
@@ -483,7 +483,7 @@ int WINAPI WinMain(HINSTANCE _hInstance, HINSTANCE _hPrevInstance,
 				strcpy( g_saveFile, fileName );
 			}
 			char appPath[_MAX_PATH];
-			if( GetModuleFileName(NULL, appPath, _MAX_PATH ) > 0 )
+			if( GetModuleFileName(nullptr, appPath, _MAX_PATH ) > 0 )
 			{
 				char *path = strrchr( appPath, '\\' );
 				appPath[strlen(appPath)-strlen(path)] = '\0';

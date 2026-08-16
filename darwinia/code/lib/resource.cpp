@@ -26,7 +26,7 @@
 
 Resource::Resource()
 :	m_nameSeed(1),
-    m_modName(NULL)
+    m_modName(nullptr)
 {
 }
 
@@ -45,7 +45,7 @@ void Resource::ParseArchive( char const *_dataFile, char const *_password )
 	if (!DoesFileExist( _dataFile))
 		return;
 
-	UncompressedArchive	*mainData = NULL;
+	UncompressedArchive	*mainData = nullptr;
 
 	try
 	{
@@ -121,7 +121,7 @@ TextReader *Resource::GetTextReader(std::string const &_filename)
 
 TextReader *Resource::GetTextReader(char const *_filename)
 {
-	TextReader *reader = NULL;
+	TextReader *reader = nullptr;
     char fullFilename[256];
 
     if( m_modName )
@@ -162,7 +162,7 @@ TextReader *Resource::GetTextReader(char const *_filename)
 
 BinaryReader *Resource::GetBinaryReader(char const *_filename)
 {
-	BinaryReader *reader = NULL;
+	BinaryReader *reader = nullptr;
     char fullFilename[256];
 
     if( m_modName )
@@ -302,7 +302,7 @@ Shape *Resource::GetShape( char const *_name )
 Shape *Resource::GetShapeCopy( char const *_name, bool _animating )
 {
 	char fullPath[512];
-	Shape *theShape = NULL;
+	Shape *theShape = nullptr;
 
     if( m_modName )
     {
@@ -347,7 +347,7 @@ GestureDemo *Resource::GetGestureDemo(char const *_name)
 {
 	GestureDemo *demo = m_gestureDemos.GetData(_name);
 
-	if (demo == NULL)
+	if (demo == nullptr)
 	{
 	    char fullPath[512];
         sprintf( fullPath, "gesture_demos/%s", _name );
@@ -372,13 +372,13 @@ SoundStreamDecoder *Resource::GetSoundStreamDecoder(char const *_filename)
 
 	if(!binReader || !binReader->IsOpen() )
     {
-        return NULL;
+        return nullptr;
     }
 
 	SoundStreamDecoder *ssd = new SoundStreamDecoder(binReader);
 	if(!ssd)
     {
-        return NULL;
+        return nullptr;
     }
 
 	return ssd;
@@ -433,7 +433,7 @@ int Resource::WildCmp(char const *wild, char const *string)
 
 int Resource::CreateDisplayList(char const *_name)
 {
-	// Make sure name isn't NULL and isn't too long
+	// Make sure name isn't nullptr and isn't too long
 	DarwiniaDebugAssert(_name && strlen(_name) < 20);
 
 	unsigned int id = glGenLists(1);
@@ -445,7 +445,7 @@ int Resource::CreateDisplayList(char const *_name)
 
 int Resource::GetDisplayList(char const *_name)
 {
-	// Make sure name isn't NULL and isn't too long
+	// Make sure name isn't nullptr and isn't too long
 	DarwiniaDebugAssert(_name && strlen(_name) < 20);
 
 	return m_displayLists.GetData(_name, -1);
@@ -557,7 +557,7 @@ void Resource::LoadMod( char const *_modName )
         if( m_modName )
         {
             delete m_modName;
-            m_modName = NULL;
+            m_modName = nullptr;
         }
 
         if( stricmp( _modName, "none" ) != 0 )
@@ -609,7 +609,7 @@ const char *Resource::GetModName()
 
 bool Resource::IsModLoaded()
 {
-    return( m_modName != NULL );
+    return( m_modName != nullptr );
 }
 
 
@@ -671,12 +671,12 @@ void OrderedInsert( LList<char *> *_llist, char *_newString )
 
 // Finds all the filenames in the specified directory that match the specified
 // filter. Directory should be like "textures" or "textures/".
-// Filter can be NULL or "" or "*.bmp" or "map_*" or "map_*.txt"
+// Filter can be nullptr or "" or "*.bmp" or "map_*" or "map_*.txt"
 // Set _longResults to true if you want results like "textures/blah.bmp"
 // or false for "blah.bmp"
 LList <char *> *Resource::ListResources(char const *_dir, char const *_filter, bool _longResults /* = true */)
 {
-    LList<char *> *results = NULL;
+    LList<char *> *results = nullptr;
 
     //
     // List the base data directory
@@ -720,7 +720,7 @@ LList <char *> *Resource::ListResources(char const *_dir, char const *_filter, b
 
 	if (m_resourceFiles.Size() > 0)
 	{
-		if(_filter == NULL || _filter[0] == '\0')
+		if(_filter == nullptr || _filter[0] == '\0')
 		{
 			_filter = "*";
 		}

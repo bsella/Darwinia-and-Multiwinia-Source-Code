@@ -20,7 +20,7 @@ namespace OpenGLD3D {
 
 WaterReflectionEffect* WaterReflectionEffect::Create()
 {
-	if(!OpenGLD3D::g_supportsHwVertexProcessing) return NULL;
+	if(!OpenGLD3D::g_supportsHwVertexProcessing) return nullptr;
 	WaterReflectionEffect* w = new WaterReflectionEffect();
 	if(!w->m_waterReflectionTexture || !w->m_waterMeshWavesShader)
 		SAFE_DELETE(w);
@@ -32,7 +32,7 @@ WaterReflectionEffect::WaterReflectionEffect()
 	m_waterReflectionTexture = Texture::Create(TextureParams(g_app->m_renderer->ScreenW()/2,g_app->m_renderer->ScreenH()/2,OpenGLD3D::g_d3dpp.BackBufferFormat,TF_RENDERTARGET));
 	LPCSTR prof = D3DXGetPixelShaderProfile(OpenGLD3D::g_pd3dDevice);
 	bool hasPs3 = prof && prof[0]=='p' && prof[1]=='s' && prof[2]=='_' && prof[3]>'2';
-	m_waterMeshWavesShader = hasPs3 ? Shader::Create("shaders/water-meshwaves.vs","shaders/water-meshwaves.ps3") : NULL;
+	m_waterMeshWavesShader = hasPs3 ? Shader::Create("shaders/water-meshwaves.vs","shaders/water-meshwaves.ps3") : nullptr;
 	if(!m_waterMeshWavesShader)
 	{
 		m_waterMeshWavesShader = Shader::Create("shaders/water-meshwaves.vs","shaders/water-meshwaves.ps");
@@ -133,7 +133,7 @@ void WaterReflectionEffect::Start()
 
 void WaterReflectionEffect::Stop()
 {
-	m_waterMeshWavesShader->SetSampler("water",NULL);
+	m_waterMeshWavesShader->SetSampler("water",nullptr);
 	m_waterMeshWavesShader->Unbind();
 }
 
@@ -143,6 +143,6 @@ WaterReflectionEffect::~WaterReflectionEffect()
 	SAFE_DELETE(m_waterMeshWavesShader);
 }
 
-WaterReflectionEffect* g_waterReflectionEffect = NULL;
+WaterReflectionEffect* g_waterReflectionEffect = nullptr;
 
 #endif

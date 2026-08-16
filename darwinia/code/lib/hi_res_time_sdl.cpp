@@ -20,7 +20,7 @@ inline double GetLowLevelTime()
 	static bool gotFirst = false;
 
 	struct timeval t;
-	gettimeofday(&t, NULL);
+	gettimeofday(&t, nullptr);
 
 	if (!gotFirst) {
 		gotFirst = true;

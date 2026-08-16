@@ -411,7 +411,7 @@ public:
         {
             case SoundInstance::Sample:
             {
-                SoundSelector *selector = new SoundSelector( "SoundName", m_parent->m_name, "sounds/", NULL );
+                SoundSelector *selector = new SoundSelector( "SoundName", m_parent->m_name, "sounds/", nullptr );
                 selector->SetSize( 400, 300 );
                 EclRegisterWindow( selector, m_parent );
                 break;
@@ -939,14 +939,14 @@ void SoundEditorWindow::CreateInstanceEditor()
     //
     // Static parameters
 
-    CreateValueControl          ( "MinDistance",  InputField::TypeFloat, &seb->m_instance->m_minDistance, yPos += yDif, 0.5f, 1.0f, 10000.0f, NULL, xPos, w );
+    CreateValueControl          ( "MinDistance",  InputField::TypeFloat, &seb->m_instance->m_minDistance, yPos += yDif, 0.5f, 1.0f, 10000.0f, nullptr, xPos, w );
 
-    CreateSoundParameterButton  ( this, "Volume",       &seb->m_instance->m_volume, yPos += yDif, 0.0f, 10.0f, NULL, xPos, w );
-    CreateSoundParameterButton  ( this, "Frequency",    &seb->m_instance->m_freq, yPos += yDif, 0.0f, 3.0f, NULL, xPos, w );
-    CreateSoundParameterButton  ( this, "Attack",       &seb->m_instance->m_attack, yPos += yDif, 0.0f, 60.0f, NULL, xPos, w );
-    CreateSoundParameterButton  ( this, "Sustain",      &seb->m_instance->m_sustain, yPos += yDif, 0.0f, 300.0f, NULL, xPos, w );
-    CreateSoundParameterButton  ( this, "Release",      &seb->m_instance->m_release, yPos += yDif, 0.0f, 60.0f, NULL, xPos, w );
-    CreateSoundParameterButton  ( this, "LoopDelay",    &seb->m_instance->m_loopDelay, yPos += yDif, 0.0f, 60.0f, NULL, xPos, w );
+    CreateSoundParameterButton  ( this, "Volume",       &seb->m_instance->m_volume, yPos += yDif, 0.0f, 10.0f, nullptr, xPos, w );
+    CreateSoundParameterButton  ( this, "Frequency",    &seb->m_instance->m_freq, yPos += yDif, 0.0f, 3.0f, nullptr, xPos, w );
+    CreateSoundParameterButton  ( this, "Attack",       &seb->m_instance->m_attack, yPos += yDif, 0.0f, 60.0f, nullptr, xPos, w );
+    CreateSoundParameterButton  ( this, "Sustain",      &seb->m_instance->m_sustain, yPos += yDif, 0.0f, 300.0f, nullptr, xPos, w );
+    CreateSoundParameterButton  ( this, "Release",      &seb->m_instance->m_release, yPos += yDif, 0.0f, 60.0f, nullptr, xPos, w );
+    CreateSoundParameterButton  ( this, "LoopDelay",    &seb->m_instance->m_loopDelay, yPos += yDif, 0.0f, 60.0f, nullptr, xPos, w );
 
     //
     // Effects
@@ -1128,7 +1128,7 @@ SoundSourceBlueprint *SoundEditorWindow::GetSoundSourceBlueprint()
 			int i = Entity::GetTypeId(objType);
 			if (i == -1)
 			{
-				return NULL;
+				return nullptr;
 			}
 			return g_app->m_soundSystem->m_entityBlueprints[i];
 		}
@@ -1137,7 +1137,7 @@ SoundSourceBlueprint *SoundEditorWindow::GetSoundSourceBlueprint()
 			int i = Building::GetTypeId(objType);
 			if (i == -1)
 			{
-				return NULL;
+				return nullptr;
 			}
 			return g_app->m_soundSystem->m_buildingBlueprints[i];
 		}
@@ -1146,13 +1146,13 @@ SoundSourceBlueprint *SoundEditorWindow::GetSoundSourceBlueprint()
 			int i = SoundSourceBlueprint::GetSoundSoundType(objType);
 			if (i == -1)
 			{
-				return NULL;
+				return nullptr;
 			}
 			return g_app->m_soundSystem->m_otherBlueprints[i];
 		}
 	}
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -1164,7 +1164,7 @@ SoundEventBlueprint *SoundEditorWindow::GetSoundEventBlueprint()
         return ssb->m_events[m_eventIndex];
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -1281,7 +1281,7 @@ class DspEffectTypeMenu : public DropDownMenu
 
 DspEffectEditor::DspEffectEditor( char *_name )
 :   DarwiniaWindow(_name),
-    m_effect(NULL)
+    m_effect(nullptr)
 {
 }
 
@@ -1422,7 +1422,7 @@ class SampleGroupAddSample : public DarwiniaButton
 
         if( group )
         {
-            SampleGroupFileDialog *file = new SampleGroupFileDialog("SampleGroupSelectFile", m_parent->m_name, "sounds/", NULL );
+            SampleGroupFileDialog *file = new SampleGroupFileDialog("SampleGroupSelectFile", m_parent->m_name, "sounds/", nullptr );
             file->SetSize( 400, 300 );
             file->m_group = group;
             file->m_index = -1;
@@ -1519,8 +1519,8 @@ class RenameSampleGroupButton : public DarwiniaButton
 
 SampleGroupEditor::SampleGroupEditor( char *_name )
 :   DarwiniaWindow( _name ),
-    m_seb(NULL),
-    m_scrollbar(NULL)
+    m_seb(nullptr),
+    m_scrollbar(nullptr)
 {
     m_scrollbar = new ScrollBar(this);
 }
@@ -1741,7 +1741,7 @@ class DeleteAllButton : public DarwiniaButton
 
 PurgeSoundsWindow::PurgeSoundsWindow( char *_name )
 :   DarwiniaWindow( _name ),
-    m_scrollBar(NULL)
+    m_scrollBar(nullptr)
 {
     m_scrollBar = new ScrollBar( this );
 }

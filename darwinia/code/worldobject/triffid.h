@@ -56,7 +56,7 @@ public:
 	void ListSoundEvents( LList<const char *> *_list );
 
     bool DoesRayHit     (Vector3 const &_rayStart, Vector3 const &_rayDir,
-                         float _rayLen=1e10, Vector3 *_pos=NULL, Vector3 *_norm=NULL);
+                         float _rayLen=1e10, Vector3 *_pos=nullptr, Vector3 *_norm=nullptr);
 
 	static const char *GetSpawnName( int _spawnType );
 	static const char *GetSpawnNameTranslated( int _spawnType );

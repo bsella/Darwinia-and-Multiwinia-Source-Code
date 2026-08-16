@@ -26,7 +26,7 @@ TestHarness::TestHarness()
 	m_indent = &m_indent[255];
 
 	m_out = fopen("test_log.txt", "w");
-	setvbuf(m_out, NULL, _IONBF, 0 );
+	setvbuf(m_out, nullptr, _IONBF, 0 );
 }
 
 

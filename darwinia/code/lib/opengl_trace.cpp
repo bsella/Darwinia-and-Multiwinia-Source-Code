@@ -20,7 +20,7 @@ void glTraceEnable( bool _enable)
 
 void glTrace(const char *_fmt, ...)
 {
-	static FILE *output = NULL;
+	static FILE *output = nullptr;
 	static unsigned line_number = 0;
 	const unsigned MAX_LINES = 50000;
 
@@ -30,7 +30,7 @@ void glTrace(const char *_fmt, ...)
 	if (g_tracingOpenGL && line_number > MAX_LINES && output) {
 		fprintf(output, "Log closed after %d lines\n", MAX_LINES);
 		fclose(output);
-		output = NULL;
+		output = nullptr;
 		g_tracingOpenGL = false;
 	}
 

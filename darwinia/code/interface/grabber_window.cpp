@@ -41,7 +41,7 @@ class StopRecordButton : public DarwiniaButton
 
             g_app->m_aviGenerator->ReleaseEngine();
             delete g_app->m_aviGenerator;
-            g_app->m_aviGenerator = NULL;
+            g_app->m_aviGenerator = nullptr;
         }
     }
 };

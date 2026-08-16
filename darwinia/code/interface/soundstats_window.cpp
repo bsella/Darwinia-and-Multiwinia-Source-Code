@@ -25,7 +25,7 @@
 
 SoundStatsWindow::SoundStatsWindow( char *_name )
 :   DarwiniaWindow( _name ),
-    m_scrollBar(NULL)
+    m_scrollBar(nullptr)
 {
     m_scrollBar = new ScrollBar(this);
     m_w = 400;

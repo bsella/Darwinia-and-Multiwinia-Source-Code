@@ -20,7 +20,7 @@ class CMiniVersion
 {
 // constructors
 public:
-	CMiniVersion(LPCTSTR lpszPath = NULL);
+	CMiniVersion(LPCTSTR lpszPath = nullptr);
 	BOOL Init();
 	void Release();
 

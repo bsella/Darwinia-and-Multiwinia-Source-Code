@@ -70,12 +70,12 @@ static bool FilterMatch( const char *_filename, const char *_filter )
 
 // Finds all the filenames in the specified directory that match the specified
 // filter. Directory should be like "data/textures" or "data/textures/".
-// Filter can be NULL or "" or "*.bmp" or "map_*" or "map_*.txt"
+// Filter can be nullptr or "" or "*.bmp" or "map_*" or "map_*.txt"
 // Set FullFilename to true if you want results like "data/textures/blah.bmp"
 // or false for "blah.bmp"
 LList <char *> *ListDirectory( char const *_dir, char const *_filter, bool _fullFilename )
 {
-	if(_filter == NULL || _filter[0] == '\0')
+	if(_filter == nullptr || _filter[0] == '\0')
 	{
 		_filter = "*";
 	}
@@ -100,7 +100,7 @@ LList <char *> *ListDirectory( char const *_dir, char const *_filter, bool _full
             strcmp( thisfile.name, ".." ) != 0 &&
             !(thisfile.attrib & _A_SUBDIR) )
         {
-		    char *newname = NULL;
+		    char *newname = nullptr;
 		    if( _fullFilename )
 			{
 				int len = strlen(_dir) + strlen(thisfile.name);
@@ -121,9 +121,9 @@ LList <char *> *ListDirectory( char const *_dir, char const *_filter, bool _full
 	}
 #else
 	DIR *dir = opendir(_dir);
-	if (dir == NULL)
+	if (dir == nullptr)
 		return result;
-	for (struct dirent *entry; (entry = readdir(dir)) != NULL; ) {
+	for (struct dirent *entry; (entry = readdir(dir)) != nullptr; ) {
 		if (FilterMatch(entry->d_name, _filter)) {
 			std::string fullname;
 			fullname.resize(strlen(_dir) + strlen(entry->d_name) + 2);
@@ -169,9 +169,9 @@ LList <char *> *ListSubDirectoryNames(char const *_dir)
 #else
 
 	DIR *dir = opendir(_dir);
-	if (dir == NULL)
+	if (dir == nullptr)
 		return result;
-	for (struct dirent *entry; (entry = readdir(dir)) != NULL; ) {
+	for (struct dirent *entry; (entry = readdir(dir)) != nullptr; ) {
 		if (entry->d_name[0] == '.')
 			continue;
 
@@ -219,7 +219,7 @@ char const *GetDirectoryPart(char const *_fullFilePath)
 	    return s_filePathBuffer;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -231,7 +231,7 @@ char const *GetFilenamePart(char const *_fullFilePath)
 	    strncpy(s_filePathBuffer, filePart, FILE_PATH_BUFFER_SIZE);
         return s_filePathBuffer;
     }
-	return NULL;
+	return nullptr;
 }
 
 

@@ -66,11 +66,11 @@ using namespace OpenGLD3D;
 
 namespace OpenGLD3D {
 
-	LPDIRECT3D9             g_pD3D       = NULL; // Used to create the D3DDevice
+	LPDIRECT3D9             g_pD3D       = nullptr; // Used to create the D3DDevice
     D3DPRESENT_PARAMETERS	g_d3dpp;			 // The device parameters
 
-	LPDIRECT3DDEVICE9       g_pd3dDevice = NULL;
-	LPDIRECT3DDEVICE9		g_pd3dDeviceActual = NULL; // The device corresponding to the
+	LPDIRECT3DDEVICE9       g_pd3dDevice = nullptr;
+	LPDIRECT3DDEVICE9		g_pd3dDeviceActual = nullptr; // The device corresponding to the
 	bool                    g_supportsHwVertexProcessing = true;
 	bool					g_supportsAutoMipmapping = true;
 
@@ -107,13 +107,13 @@ static GLenum s_polygonSmoothHint = GL_DONT_CARE;
 // Matrix and Projection
 static GLenum s_matrixMode = GL_MODELVIEW;
 static D3DTRANSFORMSTATETYPE s_targetMatrixTransformType = D3DTS_WORLD;
-static MatrixStack *s_pTargetMatrixStack = NULL;
+static MatrixStack *s_pTargetMatrixStack = nullptr;
 
-static MatrixStack *s_pModelViewMatrixStack = NULL;
-static MatrixStack *s_pProjectionMatrixStack = NULL;
+static MatrixStack *s_pModelViewMatrixStack = nullptr;
+static MatrixStack *s_pProjectionMatrixStack = nullptr;
 
-static MatrixStack *s_pModelViewMatrixStackActual = NULL;
-static MatrixStack *s_pProjectionMatrixStackActual = NULL;
+static MatrixStack *s_pModelViewMatrixStackActual = nullptr;
+static MatrixStack *s_pProjectionMatrixStackActual = nullptr;
 
 // Colours
 static D3DCOLOR s_clearColor;
@@ -134,8 +134,8 @@ static D3DVERTEXELEMENT9 s_customVertexDesc[] = {
 
 LPDIRECT3DVERTEXDECLARATION9 s_pCustomVertexDecl;
 
-static CustomVertex *s_vertices = NULL;
-static CustomVertex *s_currentVertex = NULL;
+static CustomVertex *s_vertices = nullptr;
+static CustomVertex *s_currentVertex = nullptr;
 static unsigned s_allocatedVertices = 0;
 static unsigned s_currentVertexNumber = 0;
 
@@ -151,7 +151,7 @@ static TextureState *s_activeTextureState = &s_textureStates[0];
 // Display lists
 static std::map<unsigned, DisplayList *> s_displayLists;
 static unsigned s_lastDisplayId = 0;
-static DisplayListDevice *s_pDisplayListDevice = NULL;
+static DisplayListDevice *s_pDisplayListDevice = nullptr;
 
 // Saved Attributes
 class CurrentAttributes : public CustomVertex {
@@ -214,7 +214,7 @@ static void InitialiseData()
 
 	// Matrix Data
 
-	if (s_pModelViewMatrixStackActual != NULL) {
+	if (s_pModelViewMatrixStackActual != nullptr) {
 		delete s_pModelViewMatrixStackActual;
 		delete s_pProjectionMatrixStackActual;
 	}
@@ -235,7 +235,7 @@ static void InitialiseData()
 
 	g_pd3dDevice->CreateVertexDeclaration( s_customVertexDesc, &s_pCustomVertexDecl );
 
-	if (s_vertices == NULL) {
+	if (s_vertices == nullptr) {
 		s_allocatedVertices = 1024;
 		s_vertices = new CustomVertex[s_allocatedVertices];
 	}
@@ -324,7 +324,7 @@ bool Direct3DInit(HWND _hWnd, bool _windowed, int _width, int _height, int _colo
     // Create the D3D object.
 	if (!g_pD3D)
 	{
-		if( NULL == ( g_pD3D = Direct3DCreate9( D3D_SDK_VERSION ) ) )
+		if( nullptr == ( g_pD3D = Direct3DCreate9( D3D_SDK_VERSION ) ) )
 		{
 			// fatal end, no res change can help
 			DarwiniaReleaseAssert(0,"Direct3D 9 not available.");
@@ -513,7 +513,7 @@ void WaitAndResetDevice()
 void Direct3DSwapBuffers()
 {
 	g_pd3dDevice->EndScene();
-	if (g_pd3dDevice->Present(NULL, NULL, NULL, NULL) == D3DERR_DEVICELOST)
+	if (g_pd3dDevice->Present(nullptr, nullptr, nullptr, nullptr) == D3DERR_DEVICELOST)
 	{
 		WaitAndResetDevice();
 	}
@@ -557,7 +557,7 @@ void glClear (GLbitfield mask)
 	// (Front or Back buffers, left or right stereoscopic)
 	// by means of glDrawBuffers
 
-	g_pd3dDevice->Clear( 0, NULL, flags, s_clearColor, 1.0f, 0 );
+	g_pd3dDevice->Clear( 0, nullptr, flags, s_clearColor, 1.0f, 0 );
 
 	// Ensure that mask does not include any flags that we may not
 	// have handled.
@@ -1096,7 +1096,7 @@ void glGenTextures (GLsizei n, GLuint *textures)
 {
 	GL_TRACE_IMP(" glGenTextures(%d, (float *)%p)", n, textures)
 
-	// We start off with a NULL pointer for the texture
+	// We start off with a nullptr pointer for the texture
 	// This will be replaced with an actual pointer
 	// by a call to glTexImage2D (or gluBuild2DMipmaps)
 
@@ -1129,25 +1129,25 @@ void glCopyTexImage2D (GLenum target, GLint level, GLenum internalFormat, GLint 
 
 	LPDIRECT3DTEXTURE9 &pTexture = s_textureIds[s_activeTextureState->target];
 
-	if (pTexture == NULL) {
-		HRESULT hr = g_pd3dDeviceActual->CreateTexture( width, height, 1, D3DUSAGE_RENDERTARGET, g_d3dpp.BackBufferFormat, D3DPOOL_DEFAULT, &pTexture, NULL );
+	if (pTexture == nullptr) {
+		HRESULT hr = g_pd3dDeviceActual->CreateTexture( width, height, 1, D3DUSAGE_RENDERTARGET, g_d3dpp.BackBufferFormat, D3DPOOL_DEFAULT, &pTexture, nullptr );
 		DarwiniaDebugAssert( hr != D3DERR_INVALIDCALL );
 		DarwiniaDebugAssert( hr != D3DXERR_INVALIDDATA );
 	}
 
 	// Get the backbuffer surface
-	IDirect3DSurface9 *backbuffer = NULL;
+	IDirect3DSurface9 *backbuffer = nullptr;
 	RECT backbufferRect = { x, y, x + width, y + height };
 	HRESULT hr = g_pd3dDeviceActual->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &backbuffer );
 	DarwiniaDebugAssert( hr == D3D_OK );
 
 	// Get the texture surface
-	IDirect3DSurface9 *textureSurface = NULL;
+	IDirect3DSurface9 *textureSurface = nullptr;
 	hr = pTexture->GetSurfaceLevel(0,&textureSurface);
 	DarwiniaDebugAssert( hr == D3D_OK );
 
 	// Assume that the texture is the correct size.
-	hr = g_pd3dDeviceActual->StretchRect(backbuffer, &backbufferRect, textureSurface, NULL, D3DTEXF_NONE); // No Filtering
+	hr = g_pd3dDeviceActual->StretchRect(backbuffer, &backbufferRect, textureSurface, nullptr, D3DTEXF_NONE); // No Filtering
 
 	// Reference count maintenance
 	textureSurface->Release();
@@ -1170,12 +1170,12 @@ void glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum forma
 			{
 				// from video to system memory
 				IDirect3DSurface9* memsurface;
-				if(SUCCEEDED(g_pd3dDevice->CreateOffscreenPlainSurface(width,height,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&memsurface,NULL)))
+				if(SUCCEEDED(g_pd3dDevice->CreateOffscreenPlainSurface(width,height,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&memsurface,nullptr)))
 				{
 					if(SUCCEEDED(g_pd3dDevice->GetRenderTargetData(screenTexture->GetRenderTarget(), memsurface)))
 					{
 						D3DLOCKED_RECT lrect;
-						if(SUCCEEDED(memsurface->LockRect(&lrect,NULL,D3DLOCK_READONLY)))
+						if(SUCCEEDED(memsurface->LockRect(&lrect,nullptr,D3DLOCK_READONLY)))
 						{
 							// from BGRA to RGB up-down inverted
 							char* dst = (char*)pixels;
@@ -1214,9 +1214,9 @@ int gluBuild2DMipmaps (GLenum target, GLint components, GLint width, GLint heigh
 	LPDIRECT3DTEXTURE9 &pTexture = s_textureIds[s_activeTextureState->target];
 
 	// Free the previous texture if necessary
-	if (pTexture != NULL) {
+	if (pTexture != nullptr) {
 		pTexture->Release();
-		pTexture = NULL;
+		pTexture = nullptr;
 	}
 
 	// We enforce that the width and height are powers of 2.
@@ -1229,7 +1229,7 @@ int gluBuild2DMipmaps (GLenum target, GLint components, GLint width, GLint heigh
 	DarwiniaDebugAssert( format == GL_RGBA );
 	DarwiniaDebugAssert( type == GL_UNSIGNED_BYTE );
 
-	HRESULT rc = g_pd3dDevice->CreateTexture(width, height, 0, D3DUSAGE_AUTOGENMIPMAP, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, NULL);
+	HRESULT rc = g_pd3dDevice->CreateTexture(width, height, 0, D3DUSAGE_AUTOGENMIPMAP, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr);
 	DarwiniaDebugAssert( rc != D3DERR_INVALIDCALL );
 	DarwiniaDebugAssert( rc != D3DXERR_INVALIDDATA );
 
@@ -1241,7 +1241,7 @@ int gluBuild2DMipmaps (GLenum target, GLint components, GLint width, GLint heigh
 	// Triangle filtering is the default, but it is also the slowest filter
 	// Box filtering ought to work ok for us.
 	rc = D3DXLoadSurfaceFromMemory(
-		pSurface, NULL, NULL, data, D3DFMT_A8B8G8R8, width * 4, NULL, &rect, D3DX_FILTER_NONE /* D3DX_FILTER_BOX */, 0);
+		pSurface, nullptr, nullptr, data, D3DFMT_A8B8G8R8, width * 4, nullptr, &rect, D3DX_FILTER_NONE /* D3DX_FILTER_BOX */, 0);
 
 	DarwiniaDebugAssert( rc != D3DERR_INVALIDCALL );
 	DarwiniaDebugAssert( rc != D3DXERR_INVALIDDATA );
@@ -1842,7 +1842,7 @@ int gluUnProject (GLdouble winx, GLdouble winy, GLdouble winz, const GLdouble mo
 	D3DXMATRIX modelProj = model * proj;
 
 	D3DXMATRIX inv;
-	if (D3DXMatrixInverse( &inv, NULL, &modelProj ) == NULL)
+	if (D3DXMatrixInverse( &inv, nullptr, &modelProj ) == nullptr)
 		return false;
 
 	D3DXVECTOR4 win(
@@ -2217,7 +2217,7 @@ GLuint glGenLists (GLsizei range)
 
 	int result = s_lastDisplayId;
 	for (unsigned i = 0; i < range; i++)
-		s_displayLists[s_lastDisplayId++] = NULL;
+		s_displayLists[s_lastDisplayId++] = nullptr;
 
 	return result;
 }
@@ -2250,7 +2250,7 @@ void glEndList ()
 {
 	GL_TRACE_IMP(" glEndList()")
 
-	DarwiniaDebugAssert( s_pDisplayListDevice != NULL );
+	DarwiniaDebugAssert( s_pDisplayListDevice != nullptr );
 	if (!s_pDisplayListDevice)
 		return;
 
@@ -2262,7 +2262,7 @@ void glEndList ()
 	delete s_pModelViewMatrixStack;
 	delete s_pProjectionMatrixStack;
 
-	s_pDisplayListDevice = NULL;
+	s_pDisplayListDevice = nullptr;
 	s_pModelViewMatrixStack = s_pModelViewMatrixStackActual;
 	s_pProjectionMatrixStack = s_pProjectionMatrixStackActual;
 	s_pTargetMatrixStack =
@@ -2640,12 +2640,12 @@ void glFinish ()
 
     // Lock the back buffer to force Direct3D to flush all pending graphics operations
 
-    IDirect3DSurface9 *backbuffer = NULL;
+    IDirect3DSurface9 *backbuffer = nullptr;
     HRESULT hr = g_pd3dDeviceActual->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &backbuffer );
     DarwiniaDebugAssert( hr == D3D_OK );
 
     D3DLOCKED_RECT lockedRect;
-    hr = backbuffer->LockRect(&lockedRect, NULL, 0);
+    hr = backbuffer->LockRect(&lockedRect, nullptr, 0);
     DarwiniaDebugAssert( hr != D3DERR_INVALIDCALL );
     DarwiniaDebugAssert( hr != D3DERR_WASSTILLDRAWING );
     DarwiniaDebugAssert( hr == D3D_OK );

@@ -19,7 +19,7 @@ struct MemFile
 {
 	MemFile(const char* filename)
 	{
-		m_data = NULL;
+		m_data = nullptr;
 		m_size = 0;
 		BinaryReader* reader = g_app->m_resource->GetBinaryReader(filename);
 		if(!reader)
@@ -46,7 +46,7 @@ class MyD3DXInclude : public ID3DXInclude
 public:
 	MyD3DXInclude()
 	{
-		mf = NULL;
+		mf = nullptr;
 	}
 	~MyD3DXInclude()
 	{
@@ -67,7 +67,7 @@ public:
 	STDMETHOD(Close)(LPCVOID pData)
 	{
 		delete mf;
-		mf = NULL;
+		mf = nullptr;
 		return S_OK;
 	}
 protected:
@@ -83,10 +83,10 @@ Shader* Shader::Create(const char* vertexFileName, const char* pixelFileName)
 
 Shader::Shader(const char* vertexFileName, const char* pixelFileName)
 {
-	m_constantTable[0] = NULL;
-	m_constantTable[1] = NULL;
-	m_vertexShader = NULL;
-	m_pixelShader = NULL;
+	m_constantTable[0] = nullptr;
+	m_constantTable[1] = nullptr;
+	m_vertexShader = nullptr;
+	m_pixelShader = nullptr;
 	m_Ok = false;
 	if(vertexFileName)
 	{
@@ -94,7 +94,7 @@ Shader::Shader(const char* vertexFileName, const char* pixelFileName)
 		HRESULT hr;
 		MemFile mf(vertexFileName);
 		MyD3DXInclude incl;
-		hr = D3DXCompileShader((LPCSTR)mf.m_data,mf.m_size,NULL,&incl,"vs_main",D3DXGetVertexShaderProfile(OpenGLD3D::g_pd3dDevice),0,&m_shaderFunc[0],&error,&m_constantTable[0]);
+		hr = D3DXCompileShader((LPCSTR)mf.m_data,mf.m_size,nullptr,&incl,"vs_main",D3DXGetVertexShaderProfile(OpenGLD3D::g_pd3dDevice),0,&m_shaderFunc[0],&error,&m_constantTable[0]);
 		//CHECK_HR(hr);
 		if(FAILED(hr)) return;
 		hr = OpenGLD3D::g_pd3dDevice->CreateVertexShader((DWORD*)m_shaderFunc[0]->GetBufferPointer(),&m_vertexShader);
@@ -106,7 +106,7 @@ Shader::Shader(const char* vertexFileName, const char* pixelFileName)
 		HRESULT hr;
 		MemFile mf(pixelFileName);
 		MyD3DXInclude incl;
-		hr = D3DXCompileShader((LPCSTR)mf.m_data,mf.m_size,NULL,&incl,"ps_main",D3DXGetPixelShaderProfile(OpenGLD3D::g_pd3dDevice),0,&m_shaderFunc[1],&error,&m_constantTable[1]);
+		hr = D3DXCompileShader((LPCSTR)mf.m_data,mf.m_size,nullptr,&incl,"ps_main",D3DXGetPixelShaderProfile(OpenGLD3D::g_pd3dDevice),0,&m_shaderFunc[1],&error,&m_constantTable[1]);
 		//CHECK_HR(hr);
 		if(FAILED(hr)) return;
 		hr = OpenGLD3D::g_pd3dDevice->CreatePixelShader((DWORD*)m_shaderFunc[1]->GetBufferPointer(),&m_pixelShader);
@@ -138,13 +138,13 @@ void Shader::Unbind()
 	if(m_pixelShader)
 	{
 		HRESULT hr;
-		hr = OpenGLD3D::g_pd3dDevice->SetPixelShader(NULL);
+		hr = OpenGLD3D::g_pd3dDevice->SetPixelShader(nullptr);
 		CHECK_HR(hr);
 	}
 	if(m_vertexShader)
 	{
 		HRESULT hr;
-		hr = OpenGLD3D::g_pd3dDevice->SetVertexShader(NULL);
+		hr = OpenGLD3D::g_pd3dDevice->SetVertexShader(nullptr);
 		CHECK_HR(hr);
 		hr = OpenGLD3D::g_pd3dDevice->SetFVF(m_fvf);
 		CHECK_HR(hr);
@@ -157,7 +157,7 @@ void Shader::SetFloatArray(char* name, float* arr, unsigned numFloats)
 	{
 		if(m_constantTable[i])
 		{
-			D3DXHANDLE handle = m_constantTable[i]->GetConstantByName(NULL,name);
+			D3DXHANDLE handle = m_constantTable[i]->GetConstantByName(nullptr,name);
 			if(handle)
 			{
 				HRESULT hr = m_constantTable[i]->SetFloatArray(OpenGLD3D::g_pd3dDevice,handle,arr,numFloats);
@@ -208,7 +208,7 @@ void Shader::SetMatrix(char* name, const double* v)
 	{
 		if(m_constantTable[i])
 		{
-			D3DXHANDLE handle = m_constantTable[i]->GetConstantByName(NULL,name);
+			D3DXHANDLE handle = m_constantTable[i]->GetConstantByName(nullptr,name);
 			if(handle)
 			{
 				HRESULT hr = m_constantTable[i]->SetMatrix(OpenGLD3D::g_pd3dDevice,handle,&mat);
@@ -224,7 +224,7 @@ int Shader::SetSampler(char* name, IDirect3DBaseTexture9* tex)
 	{
 		if(m_constantTable[i])
 		{
-			D3DXHANDLE handle = m_constantTable[i]->GetConstantByName(NULL,name);
+			D3DXHANDLE handle = m_constantTable[i]->GetConstantByName(nullptr,name);
 			if(handle)
 			{
 				index = m_constantTable[i]->GetSamplerIndex(handle);
@@ -237,7 +237,7 @@ int Shader::SetSampler(char* name, IDirect3DBaseTexture9* tex)
 
 int Shader::SetSampler(char* name, Texture* tex)
 {
-	return SetSampler(name,tex?tex->GetTexture():NULL);
+	return SetSampler(name,tex?tex->GetTexture():nullptr);
 }
 
 Shader::~Shader()

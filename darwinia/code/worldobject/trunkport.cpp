@@ -24,7 +24,7 @@ TrunkPort::TrunkPort()
 :   Building(),
     m_targetLocationId(-1),
     m_heightMapSize(TRUNKPORT_HEIGHTMAP_MAXSIZE),
-    m_heightMap(NULL),
+    m_heightMap(nullptr),
     m_openTimer(0.0f)
 {
     m_type = TypeTrunkPort;

@@ -102,15 +102,15 @@ Loader *Loader::CreateLoader( int _type )
 #endif
 
     // Shut the compiler up
-    return NULL;
+    return nullptr;
 }
 
 
 
 const char *Loader::GetLoaderName( int _index )
 {
-    if( _index < 0 ) return NULL;
-    if( _index >= NumLoaders ) return NULL;
+    if( _index < 0 ) return nullptr;
+    if( _index >= NumLoaders ) return nullptr;
 
     // TODO : These strings should be encrypted
 
@@ -132,7 +132,7 @@ const char *Loader::GetLoaderName( int _index )
 
 int Loader::GetRandomLoaderIndex()
 {
-    darwiniaSeedRandom( (unsigned int) time(NULL) );
+    darwiniaSeedRandom( (unsigned int) time(nullptr) );
     int loaderChance[NumLoaders];
     memset( loaderChance, 0, NumLoaders*sizeof(int) );
 

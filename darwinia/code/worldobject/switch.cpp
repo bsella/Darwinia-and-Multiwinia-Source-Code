@@ -32,7 +32,7 @@ FenceSwitch::FenceSwitch()
     m_linkedBuildingId2(-1),
     m_switchable(false),
     m_timer(20.0f),
-    m_connectionLocation(NULL),
+    m_connectionLocation(nullptr),
 	m_locked(false),
 	m_lockable(0),
     m_switchValue(-1)

@@ -17,8 +17,8 @@ Tutorial::Tutorial()
 :   m_chapter(0),
     m_nextChapterTimer(-1.0f),
     m_repeatMessageTimer(-1.0f),
-    m_repeatMessage(NULL),
-    m_repeatGesture(NULL)
+    m_repeatMessage(nullptr),
+    m_repeatGesture(nullptr)
 {
 }
 
@@ -55,13 +55,13 @@ void Tutorial::RepeatMessage( const char *_stringId, float _repeatPeriod, char *
     if( m_repeatMessage )
     {
         delete m_repeatMessage;
-        m_repeatMessage = NULL;
+        m_repeatMessage = nullptr;
     }
 
     if( m_repeatGesture )
     {
         delete m_repeatGesture;
-        m_repeatGesture = NULL;
+        m_repeatGesture = nullptr;
     }
 
     if( _stringId )
@@ -95,13 +95,13 @@ void Tutorial::Restart()
     if( m_repeatMessage )
     {
         delete m_repeatMessage;
-        m_repeatMessage = NULL;
+        m_repeatMessage = nullptr;
     }
 
     if( m_repeatGesture )
     {
         delete m_repeatGesture;
-        m_repeatGesture = NULL;
+        m_repeatGesture = nullptr;
     }
 }
 
@@ -125,7 +125,7 @@ void Tutorial::Advance()
         g_app->m_sepulveda->ShutUp();
         g_app->m_sepulveda->Say( "tutorial_skipped" );
         delete g_app->m_tutorial;
-        g_app->m_tutorial = NULL;
+        g_app->m_tutorial = nullptr;
         g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
         return;
     }
@@ -158,7 +158,7 @@ void Tutorial::Advance()
     if( amIDone )
     {
         delete g_app->m_tutorial;
-        g_app->m_tutorial = NULL;
+        g_app->m_tutorial = nullptr;
         return;
     }
 }
@@ -189,7 +189,7 @@ void Tutorial::TriggerChapter( int _chapter )
     m_chapter = _chapter;
     m_nextChapterTimer = -1.0f;
 
-    RepeatMessage(NULL,0.0f);
+    RepeatMessage(nullptr,0.0f);
 
     g_app->m_sepulveda->ShutUp();
 }

@@ -25,7 +25,7 @@
 //*****************************************************************************
 
 SoundParameterButton::SoundParameterButton()
-:   m_parameter(NULL),
+:   m_parameter(nullptr),
     m_minOutput(0.0f),
     m_maxOutput(1.0f)
 {
@@ -374,7 +374,7 @@ void SoundParameterGraph::RenderValues( int realX, int realY )
             float x1, x2, y1, y2;
             GetPosition( m_parameter->m_outputLower, m_minInput, &x1, &y1 );
             GetPosition( m_parameter->m_outputLower, m_maxInput, &x1, &y2 );
-            GetPosition( m_parameter->m_outputUpper, m_minInput, &x2, NULL );
+            GetPosition( m_parameter->m_outputUpper, m_minInput, &x2, nullptr );
 
             glColor4f( 0.5f, 0.5f, 1.0f, 0.3f );
             glBegin( GL_QUADS );
@@ -584,7 +584,7 @@ class UpdateTypeMenu : public DropDownMenu
 
 SoundParameterEditor::SoundParameterEditor( char *_name )
 :   DarwiniaWindow( _name ),
-    m_parameter(NULL),
+    m_parameter(nullptr),
     m_minOutput(0.0f),
     m_maxOutput(1.0f)
 {
@@ -624,7 +624,7 @@ void SoundParameterEditor::Create()
     //
     // Smoothing factor
 
-    CreateValueControl( "SmoothFactor", InputField::TypeFloat, &m_parameter->m_smooth, 30, 0.05f, 0.0f, 0.99f, NULL, 170, m_w - 180 );
+    CreateValueControl( "SmoothFactor", InputField::TypeFloat, &m_parameter->m_smooth, 30, 0.05f, 0.0f, 0.99f, nullptr, 170, m_w - 180 );
 
 
     //

@@ -17,10 +17,10 @@ static int s_nextBuffer;
 
 double tim;
 
-SoundLibrary2d *g_soundLibrary2d = NULL;
+SoundLibrary2d *g_soundLibrary2d = nullptr;
 
 
-//FILE *out = NULL;
+//FILE *out = nullptr;
 #include "app.h"
 #include "sound/soundsystem.h"
 #include "lib/hi_res_time.h"
@@ -73,7 +73,7 @@ void SoundLibrary2d::TopupBuffer()
 
 
 SoundLibrary2d::SoundLibrary2d()
-:	m_callback(NULL),
+:	m_callback(nullptr),
 	m_bufferIsThirsty(0)
 {
 	DarwiniaReleaseAssert(!g_soundLibrary2d, "SoundLibrary2d already exists");
@@ -100,7 +100,7 @@ SoundLibrary2d::SoundLibrary2d()
 	format.nBlockAlign = 4;		// 2 channels * 2 bytes per sample
 	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
 	int result = waveOutOpen(&s_device, WAVE_MAPPER, &format, (DWORD)&WaveOutProc, 0, CALLBACK_FUNCTION);
-	char const *errString = NULL;
+	char const *errString = nullptr;
 	switch (result)
 	{
 		case MMSYSERR_ALLOCATED:	errString = "Specified resource is already allocated";	break;
@@ -153,10 +153,10 @@ SoundLibrary2d::SoundLibrary2d()
 
 SoundLibrary2d::~SoundLibrary2d()
 {
-	/* waveOutClose(s_device);		s_device = NULL; */
-	delete m_buffer1;			m_buffer1 = NULL;
-	delete m_buffer2;			m_buffer2 = NULL;
-	g_soundLibrary2d = NULL;
+	/* waveOutClose(s_device);		s_device = nullptr; */
+	delete m_buffer1;			m_buffer1 = nullptr;
+	delete m_buffer2;			m_buffer2 = nullptr;
+	g_soundLibrary2d = nullptr;
 }
 
 

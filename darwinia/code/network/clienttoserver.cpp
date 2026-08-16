@@ -75,10 +75,10 @@ ClientToServer::ClientToServer()
     }
 	else
 	{
-		m_netLib = NULL;
-		m_sendSocket = NULL;
+		m_netLib = nullptr;
+		m_sendSocket = nullptr;
 	}
-	m_receiveSocket = NULL;
+	m_receiveSocket = nullptr;
 }
 
 
@@ -187,7 +187,7 @@ int ClientToServer::GetOurIP_Int()
 
 char *ClientToServer::GetOurIP_String()
 {
-    static char *result = NULL;
+    static char *result = nullptr;
 
     if( !result )
     {
@@ -217,7 +217,7 @@ int ClientToServer::GetNextLetterSeqID()
 ServerToClientLetter *ClientToServer::GetNextLetter()
 {
     m_inboxMutex->Lock();
-    ServerToClientLetter *letter = NULL;
+    ServerToClientLetter *letter = nullptr;
 
     if( m_inbox.Size() > 0 )
     {
@@ -228,7 +228,7 @@ ServerToClientLetter *ClientToServer::GetNextLetter()
         }
         else
         {
-            letter = NULL;
+            letter = nullptr;
         }
     }
 

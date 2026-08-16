@@ -157,7 +157,7 @@ public:
         /*if( g_app->m_multiwinia )
         {
             delete g_app->m_multiwinia;
-            g_app->m_multiwinia = NULL;
+            g_app->m_multiwinia = nullptr;
         }*/
     }
 };
@@ -285,19 +285,19 @@ void GameMenu::CreateMenu()
         // its possible that the player has loaded the prologue, then returned to the main menu
         // if so, delete the tutorial
         delete g_app->m_tutorial;
-        g_app->m_tutorial = NULL;
+        g_app->m_tutorial = nullptr;
     }
 
     if( g_app->m_demoEndSequence )
     {
         delete g_app->m_demoEndSequence;
-        g_app->m_demoEndSequence = NULL;
+        g_app->m_demoEndSequence = nullptr;
     }
 
     /*if( g_app->m_multiwinia )
     {
         delete g_app->m_multiwinia;
-        g_app->m_multiwinia = NULL;
+        g_app->m_multiwinia = nullptr;
     }*/
 
     g_app->m_gameMode = App::GameModeNone;

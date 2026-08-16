@@ -30,8 +30,8 @@ LaserFence::LaserFence()
     m_nextLaserFenceId(-1),
     m_sparkTimer(0.0f),
     m_radiusSet(false),
-    m_marker1(NULL),
-    m_marker2(NULL),
+    m_marker1(nullptr),
+    m_marker2(nullptr),
 	m_nextToggled(false),
     m_mode(ModeDisabled),
     m_scale(1.0f)

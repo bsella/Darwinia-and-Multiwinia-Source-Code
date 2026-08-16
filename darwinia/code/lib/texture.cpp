@@ -18,9 +18,9 @@ Texture* Texture::Create(const TextureParams& tp)
 Texture::Texture(const TextureParams& tp) : m_textureParams(tp)
 {
 	// init all attributes to deterministic values
-	m_D3DTexture2D = NULL;
-	m_D3DTextureCube = NULL;
-	for(unsigned i=0;i<6;i++) m_D3DRenderTarget[i] = NULL;
+	m_D3DTexture2D = nullptr;
+	m_D3DTextureCube = nullptr;
+	for(unsigned i=0;i<6;i++) m_D3DRenderTarget[i] = nullptr;
 
 	// size must be positive
 	DarwiniaDebugAssert(tp.m_w && tp.m_h);
@@ -50,12 +50,12 @@ Texture::Texture(const TextureParams& tp) : m_textureParams(tp)
 	if(tp.m_flags&TF_CUBE)
 	{
 		DarwiniaDebugAssert(tp.m_w==tp.m_h);
-		HRESULT hr = OpenGLD3D::g_pd3dDevice->CreateCubeTexture(tp.m_w,1,flags,tp.m_format,pool,&m_D3DTextureCube,NULL);
+		HRESULT hr = OpenGLD3D::g_pd3dDevice->CreateCubeTexture(tp.m_w,1,flags,tp.m_format,pool,&m_D3DTextureCube,nullptr);
 		CHECK_HR(hr);
 	}
 	else
 	{
-		HRESULT hr = OpenGLD3D::g_pd3dDevice->CreateTexture(tp.m_w,tp.m_h,1,flags,tp.m_format,pool,&m_D3DTexture2D,NULL);
+		HRESULT hr = OpenGLD3D::g_pd3dDevice->CreateTexture(tp.m_w,tp.m_h,1,flags,tp.m_format,pool,&m_D3DTexture2D,nullptr);
 		CHECK_HR(hr);
 	}
 
@@ -96,13 +96,13 @@ IDirect3DBaseTexture9* Texture::GetTexture()
 IDirect3DCubeTexture9* Texture::GetTextureCube()
 {
 	if(m_textureParams.m_flags&TF_CUBE) return m_D3DTextureCube;
-	return NULL;
+	return nullptr;
 }
 
 IDirect3DTexture9* Texture::GetTexture2D()
 {
 	if(!(m_textureParams.m_flags&TF_CUBE)) return m_D3DTexture2D;
-	return NULL;
+	return nullptr;
 }
 
 IDirect3DSurface9* Texture::GetRenderTarget(unsigned index)

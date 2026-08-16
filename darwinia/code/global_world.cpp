@@ -74,7 +74,7 @@ GlobalBuilding::GlobalBuilding()
     m_type(Building::TypeTrunkPort),
     m_online(false),
     m_link(-1),
-    m_shape(NULL)
+    m_shape(nullptr)
 {
     m_shape = g_app->m_resource->GetShape( "trunkport.shp" );
 }
@@ -88,8 +88,8 @@ GlobalEventCondition::GlobalEventCondition()
 :   m_type(-1),
     m_id(-1),
     m_locationId(-1),
-    m_stringId(NULL),
-    m_cutScene(NULL)
+    m_stringId(nullptr),
+    m_cutScene(nullptr)
 {
 }
 
@@ -179,7 +179,7 @@ bool GlobalEventCondition::Evaluate()
             return( g_app->m_globalWorld->m_research->HasResearch( m_id ) );
 
         case NotInLocation:
-            return( g_app->m_location == NULL );
+            return( g_app->m_location == nullptr );
 
 #ifdef JAMES_FIX
 		case DebugKey:
@@ -821,11 +821,11 @@ void ColourShapeFragment(ShapeFragment *_frag, RGBAColour const &_colour)
 }
 
 SphereWorld::SphereWorld()
-:   m_shapeOuter(NULL),
-    m_shapeMiddle(NULL),
-    m_shapeInner(NULL),
+:   m_shapeOuter(nullptr),
+    m_shapeMiddle(nullptr),
+    m_shapeInner(nullptr),
     m_numLocations(0),
-    m_spirits(NULL)
+    m_spirits(nullptr)
 {
 //#ifndef DEMOBUILD
     m_shapeOuter  = g_app->m_resource->GetShape( "globalworld_outer.shp" );
@@ -1363,8 +1363,8 @@ GlobalWorld::GlobalWorld()
 
 
 GlobalWorld::GlobalWorld(GlobalWorld &_other)
-:	m_globalInternet(NULL),
-    m_sphereWorld(NULL),
+:	m_globalInternet(nullptr),
+    m_sphereWorld(nullptr),
 	m_myTeamId(_other.m_myTeamId),
 	m_nextLocationId(0),
 	m_nextBuildingId(0),
@@ -1568,7 +1568,7 @@ GlobalLocation *GlobalWorld::GetLocation( int _id )
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -1586,7 +1586,7 @@ GlobalLocation *GlobalWorld::GetHighlightedLocation()
     if( loc && loc->m_available ) return loc;
     if( loc && g_app->m_editing ) return loc;
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -1597,7 +1597,7 @@ GlobalLocation *GlobalWorld::GetLocation( char const *_name )
     {
         return GetLocation( locationId );
     }
-    return NULL;
+    return nullptr;
 }
 
 
@@ -1632,14 +1632,14 @@ const char *GlobalWorld::GetLocationName( int _id )
 {
     GlobalLocation *loc = GetLocation( _id );
     if( loc ) return loc->m_name;
-    return NULL;
+    return nullptr;
 }
 
 
 const char *GlobalWorld::GetLocationNameTranslated( int _id )
 {
     GlobalLocation *loc = GetLocation( _id );
-    if( !loc ) return NULL;
+    if( !loc ) return nullptr;
 
 	char stringId[256];
     sprintf( stringId, "location_%s", loc->m_name );
@@ -1665,7 +1665,7 @@ Vector3 GlobalWorld::GetLocationPosition(int _id)
 
 GlobalBuilding *GlobalWorld::GetBuilding( int _id, int _locationId )
 {
-    if( _id == -1 || _locationId == -1 ) return NULL;
+    if( _id == -1 || _locationId == -1 ) return nullptr;
 
     for( int i = 0; i < m_buildings.Size(); ++i )
     {
@@ -1676,7 +1676,7 @@ GlobalBuilding *GlobalWorld::GetBuilding( int _id, int _locationId )
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -1863,7 +1863,7 @@ void GlobalWorld::AddLevelBuildingToGlobalBuildings(Building *_building, int _lo
 
 void GlobalWorld::LoadGame( const char *_filename )
 {
-    TextReader *in = NULL;
+    TextReader *in = nullptr;
     char fullFilename[256];
 
     if( !g_app->m_editing )
@@ -1908,7 +1908,7 @@ void GlobalWorld::LoadGame( const char *_filename )
     }
 
 	delete in;
-	in = NULL;
+	in = nullptr;
 
     //
     // Load locations
@@ -1986,7 +1986,7 @@ void GlobalWorld::LoadGame( const char *_filename )
 
 void GlobalWorld::SaveGame( const char *_filename )
 {
-    FileWriter *out = NULL;
+    FileWriter *out = nullptr;
     char fullFilename[256];
 
     if( !g_app->m_editing && stricmp( g_app->m_userProfileName, "none" ) != 0 )
@@ -2049,7 +2049,7 @@ void GlobalWorld::ParseTutorial(TextReader *_in)
             if( chapter == -1 )
             {
                 delete g_app->m_tutorial;
-                g_app->m_tutorial = NULL;
+                g_app->m_tutorial = nullptr;
             }
             else
             {

@@ -19,7 +19,7 @@
 #include "lib/string_utils.h"
 #include "lib/system_info.h"
 
-SystemInfo *g_systemInfo = NULL;
+SystemInfo *g_systemInfo = nullptr;
 
 SystemInfo::SystemInfo()
 {

@@ -184,8 +184,8 @@ void DeformEffect::RenderSprite(Shader* shader, Vector3 posWorld, float width, f
 
 void DeformEffect::RenderSpritesEnd(Shader* shader)
 {
-	shader->SetSampler("deformSampler",NULL);
-	shader->SetSampler("screenSampler",NULL);
+	shader->SetSampler("deformSampler",nullptr);
+	shader->SetSampler("screenSampler",nullptr);
 	shader->Unbind();
 	glDisable(GL_TEXTURE_2D);
 }
@@ -257,7 +257,7 @@ void DeformEffect::Stop()
 	}
 	qsort(sorted,numSouls,sizeof(SoulDistance),CompareSoulDistance);
 	//   render them sorted
-	RenderSpritesBegin(m_deformDiamondShader,g_app->m_resource->GetTexture("textures/deform1c.bmp", false, false),NULL);
+	RenderSpritesBegin(m_deformDiamondShader,g_app->m_resource->GetTexture("textures/deform1c.bmp", false, false),nullptr);
 	m_deformDiamondShader->SetUniform("time",(GetTickCount()%10000)/1000.0f);
 	for(unsigned i=0;i<numSouls;i++)
 	{
@@ -270,7 +270,7 @@ void DeformEffect::Stop()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE,GL_ONE);
 	//char buf[100];sprintf(buf,"textures/deform%d.bmp",punchtest);
-	RenderSpritesBegin(m_deformSphereShader,g_app->m_resource->GetTexture(punchParams.punchTable, false, false),NULL);
+	RenderSpritesBegin(m_deformSphereShader,g_app->m_resource->GetTexture(punchParams.punchTable, false, false),nullptr);
 	DWORD now = GetTickCount();
 	for(unsigned i=m_punchList.Size();i--;)
 	{
@@ -338,6 +338,6 @@ DeformEffect::~DeformEffect()
 	delete m_screenTexture;
 }
 
-DeformEffect* g_deformEffect = NULL;
+DeformEffect* g_deformEffect = nullptr;
 
 #endif

@@ -10,7 +10,7 @@
 
 
 ServerToClient::ServerToClient( const char *_ip )
-:   m_socket(NULL)
+:   m_socket(nullptr)
 {
     strcpy ( m_ip, _ip );
 

@@ -316,7 +316,7 @@ bool HandleCommonConditions()
 			g_app->SaveProfile( true, true );
 		}
 
-		//g_app->SaveProfile( true, g_app->m_location != NULL );
+		//g_app->SaveProfile( true, g_app->m_location != nullptr );
 		PrintMemoryLeaks();
 		Finalise();
 		exit(0);
@@ -437,7 +437,7 @@ void LocationGameLoop()
     g_sliceNum = -1;
 
 	g_app->m_renderer->StartFadeIn(0.6f);
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "EnterLocation", SoundSourceBlueprint::TypeAmbience );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "EnterLocation", SoundSourceBlueprint::TypeAmbience );
 
 
     //
@@ -695,7 +695,7 @@ void LocationGameLoop()
     g_app->SaveProfile( false, true );
 
     g_app->m_soundSystem->StopAllSounds( WorldObjectId(), "Ambience EnterLocation" );
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "ExitLocation", SoundSourceBlueprint::TypeAmbience );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "ExitLocation", SoundSourceBlueprint::TypeAmbience );
 
     if( g_prefsManager->GetInt( "RecordDemo" ) == 1 )
     {
@@ -718,14 +718,14 @@ void LocationGameLoop()
 //	g_app->m_requestedLocationId = false;
 
 	delete g_app->m_location;
-	g_app->m_location = NULL;
+	g_app->m_location = nullptr;
 	g_app->m_locationId = -1;
 
 	delete g_app->m_locationInput;
-	g_app->m_locationInput = NULL;
+	g_app->m_locationInput = nullptr;
 
     delete g_app->m_server;
-    g_app->m_server = NULL;
+    g_app->m_server = nullptr;
 
     g_app->m_taskManager->StopAllTasks();
 
@@ -792,16 +792,16 @@ void LocationEditorLoop()
     }
 
 	delete g_app->m_locationEditor;
-	g_app->m_locationEditor = NULL;
+	g_app->m_locationEditor = nullptr;
 
 	g_app->m_location->Empty();
 	delete g_app->m_location;
-	g_app->m_location = NULL;
+	g_app->m_location = nullptr;
 	g_app->m_locationId = -1;
 	g_app->m_requestedLocationId = -1;
 
 	delete g_app->m_locationInput;
-	g_app->m_locationInput = NULL;
+	g_app->m_locationInput = nullptr;
 
     if( g_prefsManager->GetInt( "RecordDemo" ) == 1 )
     {
@@ -817,7 +817,7 @@ void GlobalWorldGameLoop()
 {
 	g_app->m_renderer->StartFadeIn(0.25f);
 
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "EnterGlobalWorld", SoundSourceBlueprint::TypeAmbience );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "EnterGlobalWorld", SoundSourceBlueprint::TypeAmbience );
 
 	while(g_app->m_requestedLocationId == -1 && !g_app->m_requestToggleEditing)
     {
@@ -1010,9 +1010,9 @@ void DoVistaChecks()
 
 	// Check Parental Controls to make sure current user is allowed to run Darwinia
 
-	HRESULT hr = CoInitialize(NULL);
+	HRESULT hr = CoInitialize(nullptr);
 
-	IWindowsParentalControls* wpc = NULL;
+	IWindowsParentalControls* wpc = nullptr;
 	hr = CoCreateInstance(__uuidof(WindowsParentalControls), 0, CLSCTX_INPROC_SERVER,
                     __uuidof(IWindowsParentalControls), (LPVOID *)&wpc);
 
@@ -1023,8 +1023,8 @@ void DoVistaChecks()
 	}
 	else
 	{
-		IWPCGamesSettings *wpcGamesSettings = NULL;
-		hr = wpc->GetGamesSettings( NULL, &wpcGamesSettings );
+		IWPCGamesSettings *wpcGamesSettings = nullptr;
+		hr = wpc->GetGamesSettings( nullptr, &wpcGamesSettings );
 		if( FAILED(hr) )
 		{
 			wprintf(L"Warning:  Unable to obtain the Parental Controls user\n");
@@ -1053,7 +1053,7 @@ void DoVistaChecks()
 			if( FAILED(hr) ||
                 reasons != WPCFLAG_ISBLOCKED_NOTBLOCKED )
 			{
-                MessageBox(NULL, LANGUAGEPHRASE("error_parental"), LANGUAGEPHRASE("darwinia_vistaedition"), MB_OK|MB_ICONERROR );
+                MessageBox(nullptr, LANGUAGEPHRASE("error_parental"), LANGUAGEPHRASE("darwinia_vistaedition"), MB_OK|MB_ICONERROR );
 				exit(0);
 			}
 			wpcGamesSettings->Release();
@@ -1114,8 +1114,8 @@ void Initialise()
 void Finalise()
 {
     g_soundLibrary2d->Stop();
-	delete g_soundLibrary3d; g_soundLibrary3d = NULL;
-	delete g_soundLibrary2d; g_soundLibrary2d = NULL;
+	delete g_soundLibrary3d; g_soundLibrary3d = nullptr;
+	delete g_soundLibrary2d; g_soundLibrary2d = nullptr;
 
     delete g_app->m_resource;
 
@@ -1131,7 +1131,7 @@ void Finalise()
 			if( GetFileAttributesW( szExpandedPath ) != 0xFFFFFFFF )
 			{
 				// Launch ehshell.exe
-				INT_PTR result = (INT_PTR)ShellExecuteW( NULL, L"open", szExpandedPath, NULL, NULL, SW_SHOWNORMAL);
+				INT_PTR result = (INT_PTR)ShellExecuteW( nullptr, L"open", szExpandedPath, nullptr, nullptr, SW_SHOWNORMAL);
 			}
 		}
 	}
@@ -1156,7 +1156,7 @@ void RunBootLoaders()
 			}
 
 			delete g_app->m_startSequence;
-			g_app->m_startSequence = NULL;
+			g_app->m_startSequence = nullptr;
 
 			g_app->m_camera->SetTarget(Vector3(1000,500,1000), Vector3(0,-0.5f,-1));
 			g_app->m_camera->CutToTarget();
@@ -1343,7 +1343,7 @@ void RunTheGame()
         if( g_app->m_demoEndSequence )
         {
             delete g_app->m_demoEndSequence;
-            g_app->m_demoEndSequence = NULL;
+            g_app->m_demoEndSequence = nullptr;
         }
 
         if (g_app->m_requestedLocationId != -1)

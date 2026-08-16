@@ -20,9 +20,9 @@
 
 #include "worldobject/souldestroyer.h"
 
-Shape *SoulDestroyer::s_shapeHead = NULL;
-Shape *SoulDestroyer::s_shapeTail = NULL;
-ShapeMarker *SoulDestroyer::s_tailMarker = NULL;
+Shape *SoulDestroyer::s_shapeHead = nullptr;
+Shape *SoulDestroyer::s_shapeTail = nullptr;
+ShapeMarker *SoulDestroyer::s_tailMarker = nullptr;
 
 
 SoulDestroyer::SoulDestroyer()

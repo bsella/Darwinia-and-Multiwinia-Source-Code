@@ -8,22 +8,22 @@
 
 #include <map>
 
-MultiTexCoord2fARB gglMultiTexCoord2fARB = NULL;
-ActiveTextureARB gglActiveTextureARB = NULL;
+MultiTexCoord2fARB gglMultiTexCoord2fARB = nullptr;
+ActiveTextureARB gglActiveTextureARB = nullptr;
 
-glBindBufferARB				gglBindBufferARB = NULL;
-glDeleteBuffersARB			gglDeleteBuffersARB = NULL;
-glGenBuffersARB				gglGenBuffersARB = NULL;
-glIsBufferARB				gglIsBufferARB = NULL;
-glBufferDataARB				gglBufferDataARB = NULL;
-glBufferSubDataARB			gglBufferSubDataARB = NULL;
-glGetBufferSubDataARB		gglGetBufferSubDataARB = NULL;
-glMapBufferARB				gglMapBufferARB = NULL;
-glUnmapBufferARB			gglUnmapBufferARB = NULL;
-glGetBufferParameterivARB	gglGetBufferParameterivARB = NULL;
-glGetBufferPointervARB		gglGetBufferPointervARB = NULL;
+glBindBufferARB				gglBindBufferARB = nullptr;
+glDeleteBuffersARB			gglDeleteBuffersARB = nullptr;
+glGenBuffersARB				gglGenBuffersARB = nullptr;
+glIsBufferARB				gglIsBufferARB = nullptr;
+glBufferDataARB				gglBufferDataARB = nullptr;
+glBufferSubDataARB			gglBufferSubDataARB = nullptr;
+glGetBufferSubDataARB		gglGetBufferSubDataARB = nullptr;
+glMapBufferARB				gglMapBufferARB = nullptr;
+glUnmapBufferARB			gglUnmapBufferARB = nullptr;
+glGetBufferParameterivARB	gglGetBufferParameterivARB = nullptr;
+glGetBufferPointervARB		gglGetBufferPointervARB = nullptr;
 
-ChoosePixelFormatARB gglChoosePixelFormatARB = NULL;
+ChoosePixelFormatARB gglChoosePixelFormatARB = nullptr;
 
 namespace OpenGLD3D {
 	IDirect3DVertexBuffer9 **g_currentVertexBuffer;
@@ -61,7 +61,7 @@ void __stdcall glBindBufferD3D (GLenum _target, GLuint _bufferId)
 	if (_bufferId > 0)
 		g_currentVertexBuffer = &s_vertexBuffers[_bufferId];
 	else
-		g_currentVertexBuffer = NULL;
+		g_currentVertexBuffer = nullptr;
 }
 
 void __stdcall glBufferDataD3D (GLenum _target, GLsizeiptrARB _size, const GLvoid *_data, GLenum _usage)
@@ -70,7 +70,7 @@ void __stdcall glBufferDataD3D (GLenum _target, GLsizeiptrARB _size, const GLvoi
 	DarwiniaDebugAssert( _target == GL_ARRAY_BUFFER_ARB );
 
 	// Ensure that glBindBufferD3D has been called already
-	DarwiniaDebugAssert( g_currentVertexBuffer != NULL );
+	DarwiniaDebugAssert( g_currentVertexBuffer != nullptr );
 
 	IDirect3DVertexBuffer9	*& buffer = *g_currentVertexBuffer;
 
@@ -80,7 +80,7 @@ void __stdcall glBufferDataD3D (GLenum _target, GLsizeiptrARB _size, const GLvoi
 
 	// Create a buffer
 	HRESULT hr = g_pd3dDeviceActual->CreateVertexBuffer(
-		_size, D3DUSAGE_WRITEONLY|(g_supportsHwVertexProcessing?0:D3DUSAGE_SOFTWAREPROCESSING), 0, D3DPOOL_MANAGED, &buffer, NULL );
+		_size, D3DUSAGE_WRITEONLY|(g_supportsHwVertexProcessing?0:D3DUSAGE_SOFTWAREPROCESSING), 0, D3DPOOL_MANAGED, &buffer, nullptr );
 
 	DarwiniaDebugAssert( hr != D3DERR_INVALIDCALL );
 	DarwiniaDebugAssert( hr != D3DERR_OUTOFVIDEOMEMORY );
@@ -88,7 +88,7 @@ void __stdcall glBufferDataD3D (GLenum _target, GLsizeiptrARB _size, const GLvoi
 	DarwiniaDebugAssert( hr == D3D_OK );
 
 	// Copy the data in
-	void *vbData = NULL;
+	void *vbData = nullptr;
 	hr = buffer->Lock(0, 0, &vbData, 0/*D3DLOCK_DISCARD*/ );
 	DarwiniaDebugAssert( hr == D3D_OK );
 

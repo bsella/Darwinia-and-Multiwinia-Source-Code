@@ -42,7 +42,7 @@ void GlobalInternetNode::AddLink(int _id)
 // ****************************************************************************
 
 GlobalInternet::GlobalInternet()
-:   m_nodes(NULL),
+:   m_nodes(nullptr),
     m_numNodes(0),
     m_links(0),
 	m_numLinks(0),

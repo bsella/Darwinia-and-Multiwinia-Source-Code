@@ -69,7 +69,7 @@ void MatrixLoader::StartFrame()
 
 void MatrixLoader::Run()
 {
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "LoaderMatrix", SoundSourceBlueprint::TypeMusic );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "LoaderMatrix", SoundSourceBlueprint::TypeMusic );
 
     float startTime = GetHighResTime();
     float timer = GetHighResTime();

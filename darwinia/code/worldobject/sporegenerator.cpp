@@ -113,7 +113,7 @@ bool SporeGenerator::SearchForRandomPos()
 
 bool SporeGenerator::SearchForSpirits()
 {
-    Spirit *found = NULL;
+    Spirit *found = nullptr;
     int foundIndex = -1;
     float nearest = 9999.9f;
 

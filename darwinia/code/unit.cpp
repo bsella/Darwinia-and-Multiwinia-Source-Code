@@ -251,7 +251,7 @@ void Unit::Attack( Vector3 pos, bool _withGrenade )
 	if (_withGrenade)
 	{
         float nearest = 9999.9f;
-        Entity *nearestEnt = NULL;
+        Entity *nearestEnt = nullptr;
 
         //
         // Find the entity nearest to the target that has a grenade
@@ -356,7 +356,7 @@ void Unit::SetWayPoint(Vector3 const &_pos)
 
 Vector3 Unit::GetFormationOffset(int _formation, int _index)
 {
-    static float *s_offsets = NULL;
+    static float *s_offsets = nullptr;
     int const numOffsets = 100;
     float const spacedOut = 4.0f;
 
@@ -525,7 +525,7 @@ Entity *Unit::RayHit(Vector3 const &_rayStart, Vector3 const &_rayDir)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void Unit::DirectControl( TeamControls const& )

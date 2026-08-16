@@ -7,7 +7,7 @@ DarwiniaLogBuffer::DarwiniaLogBuffer(int _size)
 	: m_size(_size), m_head(0), m_used(0), m_msgs(new DarwiniaLogMsg *[_size])
 {
 	for (int i = 0; i < m_size; i++)
-		m_msgs[i] = NULL;
+		m_msgs[i] = nullptr;
 }
 
 void DarwiniaLogBuffer::Display()

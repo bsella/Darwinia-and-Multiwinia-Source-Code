@@ -32,10 +32,10 @@ double g_keyDownTime[KEY_MAX];
 
 // *** Constructor
 InputManager::InputManager()
-:   m_cameraLog(NULL),
+:   m_cameraLog(nullptr),
 	m_numCameraItems(0),
 	m_maxCameraItems(0),
-	m_inputLog(NULL),
+	m_inputLog(nullptr),
 	m_numEvents(0),
 	m_maxNumEvents(0),
 	m_eventNumber(0),
@@ -445,7 +445,7 @@ void InputManager::Advance()
 			StopReplay();
 			g_app->m_aviGenerator->ReleaseEngine();
 			delete g_app->m_aviGenerator;
-			g_app->m_aviGenerator = NULL;
+			g_app->m_aviGenerator = nullptr;
 		}
 	}
 
@@ -619,7 +619,7 @@ void InputManager::StopLogging(char const *_filename)
 	m_frameNumber = 0;
 
 	delete [] m_inputLog;
-	m_inputLog = NULL;
+	m_inputLog = nullptr;
 	m_numEvents = 0;
 	m_maxNumEvents = 0;
 
@@ -688,17 +688,17 @@ void InputManager::StartReplay(char const *_filename)
 
 			// Read message ID
 			c = in.GetNextToken();
-			m_inputLog[m_numEvents].m_messageId = strtoul(c, NULL, 16);
+			m_inputLog[m_numEvents].m_messageId = strtoul(c, nullptr, 16);
 
 			// Read lParam
 			c = in.GetNextToken();
-			m_inputLog[m_numEvents].m_lParam = strtoul(c, NULL, 16);
+			m_inputLog[m_numEvents].m_lParam = strtoul(c, nullptr, 16);
 
 			// Read wParam
 			if (in.TokenAvailable())
 			{
 				c = in.GetNextToken();
-				m_inputLog[m_numEvents].m_wParam = strtoul(c, NULL, 16);
+				m_inputLog[m_numEvents].m_wParam = strtoul(c, nullptr, 16);
 			}
 			else
 			{
@@ -735,7 +735,7 @@ void InputManager::StartReplay(char const *_filename)
 	g_app->m_camera->RequestMode(Camera::ModeReplay);
 	g_app->m_camera->SetDebugMode(Camera::DebugModeNever);
 
-    m_replayStartTime = time(NULL);
+    m_replayStartTime = time(nullptr);
 }
 
 void InputManager::StopReplay()
@@ -743,7 +743,7 @@ void InputManager::StopReplay()
 	DarwiniaDebugAssert(!m_logging && m_replaying);
 
 	delete [] m_inputLog;
-	m_inputLog = NULL;
+	m_inputLog = nullptr;
 	m_maxNumEvents = 0;
 
 	m_replaying = false;
@@ -761,14 +761,14 @@ float InputManager::ReplayPercentDone()
 
 float InputManager::ReplayElapsedTime()
 {
-    int timeSoFar = time(NULL) - m_replayStartTime;
+    int timeSoFar = time(nullptr) - m_replayStartTime;
     return (float) timeSoFar;
 }
 
 float InputManager::ReplayTimeRemaining ()
 {
     float percentDone = ReplayPercentDone();
-    int timeSoFar = time(NULL) - m_replayStartTime;
+    int timeSoFar = time(nullptr) - m_replayStartTime;
 
     float timeForOnePercent = (float) timeSoFar/percentDone;
     float percentRemaining = 100.0f - percentDone;

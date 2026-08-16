@@ -196,7 +196,7 @@ void SoulLoader::RenderMessage( float _time )
 
 void SoulLoader::Run()
 {
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "LoaderSoul", SoundSourceBlueprint::TypeMusic );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "LoaderSoul", SoundSourceBlueprint::TypeMusic );
 
 	while( !g_inputManager.controlEvent( ControlSkipMessage ) )
     {

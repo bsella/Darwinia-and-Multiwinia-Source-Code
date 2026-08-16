@@ -46,7 +46,7 @@ AmigaLoader::AmigaLoader()
 
 AmigaLoader::~AmigaLoader()
 {
-	delete m_sierpinski; m_sierpinski = NULL;
+	delete m_sierpinski; m_sierpinski = nullptr;
 }
 
 
@@ -211,7 +211,7 @@ void AmigaLoader::RenderFracTri(float _frameTime)
 
 void AmigaLoader::Run()
 {
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "LoaderAmiga", SoundSourceBlueprint::TypeMusic );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "LoaderAmiga", SoundSourceBlueprint::TypeMusic );
 
 	float fadeStartTime = GetHighResTime() + 72.0f;
 	float endTime = GetHighResTime() + 89.0f;

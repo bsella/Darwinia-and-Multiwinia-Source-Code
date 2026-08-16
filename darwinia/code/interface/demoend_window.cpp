@@ -18,8 +18,8 @@ class BuyOnlineButton : public DarwiniaButton
         if( window->m_saveGame ) g_app->SaveProfile( true, true );
 
      //   g_soundLibrary2d->Stop();
-	    //delete g_soundLibrary3d; g_soundLibrary3d = NULL;
-	    //delete g_soundLibrary2d; g_soundLibrary2d = NULL;
+	    //delete g_soundLibrary3d; g_soundLibrary3d = nullptr;
+	    //delete g_soundLibrary2d; g_soundLibrary2d = nullptr;
 
      //   delete g_app->m_resource;
      //   delete g_windowManager;
@@ -99,8 +99,8 @@ class ExitDemoButton : public DarwiniaButton
             g_app->m_requestQuit = true;
 
          //   g_soundLibrary2d->Stop();
-	        //delete g_soundLibrary3d; g_soundLibrary3d = NULL;
-	        //delete g_soundLibrary2d; g_soundLibrary2d = NULL;
+	        //delete g_soundLibrary3d; g_soundLibrary3d = nullptr;
+	        //delete g_soundLibrary2d; g_soundLibrary2d = nullptr;
 
          //   delete g_app->m_resource;
          //   delete g_windowManager;

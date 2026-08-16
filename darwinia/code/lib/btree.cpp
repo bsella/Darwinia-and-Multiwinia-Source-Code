@@ -14,9 +14,9 @@
 template <class T>
 BTree<T>::BTree()
 {
-    ltree = NULL;
-    rtree = NULL;
-    id = NULL;
+    ltree = nullptr;
+    rtree = nullptr;
+    id = nullptr;
     data = {};
 }
 
@@ -24,8 +24,8 @@ BTree<T>::BTree()
 template <class T>
 BTree<T>::BTree( const char *newid, const T &newdata )
 {
-    ltree = NULL;
-    rtree = NULL;
+    ltree = nullptr;
+    rtree = nullptr;
     id = new char[ strlen(newid) + 1 ];
     strcpy( id, newid );
     data = newdata;
@@ -43,17 +43,17 @@ template <class T>
 void BTree<T>::Copy( const BTree<T> &copy )
 {
     if(copy.ltree)	ltree = new BTree( *copy.ltree );
-    else ltree = NULL;
+    else ltree = nullptr;
 
     if(copy.rtree)	rtree = new BTree( *copy.rtree );
-    else rtree = NULL;
+    else rtree = nullptr;
 
     if(copy.id) {
 		id = new char[ strlen(copy.id) + 1 ];
 		strcpy( id, copy.id );
     }
     else
-		id = NULL;
+		id = nullptr;
 
     data = copy.data;
 }
@@ -73,8 +73,8 @@ void BTree<T>::Empty()
     delete rtree;
     delete[] id;
 
-    ltree = rtree = NULL;
-    id = NULL;
+    ltree = rtree = nullptr;
+    id = nullptr;
 }
 
 
@@ -148,7 +148,7 @@ void BTree<T>::RemoveData( const char *newid )
 			}
 			else
 			{
-				id = NULL;                              // Hopefully this is the root node
+				id = nullptr;                              // Hopefully this is the root node
 			}
 		}
     }                                                   //elsif Name < data->name then
@@ -157,7 +157,7 @@ void BTree<T>::RemoveData( const char *newid )
         if( Left() )
         {
             if( stricmp( Left()->id, newid ) == 0 && !Left()->Left() && !Left()->Right() )
-                ltree = NULL;
+                ltree = nullptr;
             else
 		        Left()->RemoveData( newid );
         }
@@ -167,7 +167,7 @@ void BTree<T>::RemoveData( const char *newid )
 	    if( Right() )
         {
             if( stricmp( Right()->id, newid ) == 0 && !Right()->Left() && !Right()->Right() )
-                rtree = NULL;
+                rtree = nullptr;
             else
 		        Right()->RemoveData( newid );
         }
@@ -201,7 +201,7 @@ template <class T>
 BTree<T> *BTree<T>::LookupTree( const char *searchid )
 {
     if(!id)
-		return NULL;
+		return nullptr;
 
     if( stricmp( searchid, id ) == 0 )
         return this;
@@ -212,7 +212,7 @@ BTree<T> *BTree<T>::LookupTree( const char *searchid )
     else if( rtree && stricmp( searchid, id ) > 0 )
         return rtree->LookupTree( searchid );
 
-    else return NULL;
+    else return nullptr;
 }
 
 

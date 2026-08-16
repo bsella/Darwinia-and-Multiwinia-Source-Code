@@ -158,7 +158,7 @@ void TaskManagerInterfaceIcons::HideTaskManager()
     m_screenId = ScreenTaskManager;
     SetVisible( false );
 
-    g_app->m_soundSystem->TriggerOtherEvent( NULL, "Hide", SoundSourceBlueprint::TypeInterface );
+    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "Hide", SoundSourceBlueprint::TypeInterface );
 }
 
 
@@ -206,7 +206,7 @@ void TaskManagerInterfaceIcons::Advance()
 
         SetVisible();
 
-        g_app->m_soundSystem->TriggerOtherEvent( NULL, "Show", SoundSourceBlueprint::TypeInterface );
+        g_app->m_soundSystem->TriggerOtherEvent( nullptr, "Show", SoundSourceBlueprint::TypeInterface );
         g_app->m_helpSystem->PlayerDoneAction( HelpSystem::TaskBasics );
 
 		if (g_inputManager.controlEvent(ControlIconsTaskManagerDisplayDown)) {
@@ -315,7 +315,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenEdges()
 
     if( scrollRequested )
     {
-        g_app->m_soundSystem->TriggerOtherEvent( NULL, "Slide", SoundSourceBlueprint::TypeInterface );
+        g_app->m_soundSystem->TriggerOtherEvent( nullptr, "Slide", SoundSourceBlueprint::TypeInterface );
     }
 }
 
@@ -508,7 +508,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
                     m_currentMouseScreenZone = i;
                     m_currentScreenZone = i;
                     m_screenZoneTimer = GetHighResTime();
-                    g_app->m_soundSystem->TriggerOtherEvent( NULL, "MouseOverIcon", SoundSourceBlueprint::TypeInterface );
+                    g_app->m_soundSystem->TriggerOtherEvent( nullptr, "MouseOverIcon", SoundSourceBlueprint::TypeInterface );
                 }
                 //found = true;
             }
@@ -519,7 +519,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
         {
 			int numZones = m_screenZones.Size();
 			int zonesRemaining = numZones;
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "MouseOverIcon", SoundSourceBlueprint::TypeInterface );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "MouseOverIcon", SoundSourceBlueprint::TypeInterface );
             while( zonesRemaining )
             {
                 m_currentScreenZone = (m_currentScreenZone + 1) % numZones;
@@ -536,7 +536,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
         {
 			int numZones = m_screenZones.Size();
 			int zonesRemaining = numZones;
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "MouseOverIcon", SoundSourceBlueprint::TypeInterface );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "MouseOverIcon", SoundSourceBlueprint::TypeInterface );
             while( zonesRemaining )
             {
                 m_currentScreenZone = (m_currentScreenZone + numZones - 1) % numZones;
@@ -627,7 +627,7 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
 					m_currentMouseScreenZone = i;
 					m_currentScreenZone = i;
 					m_screenZoneTimer = GetHighResTime();
-					g_app->m_soundSystem->TriggerOtherEvent( NULL, "MouseOverIcon", SoundSourceBlueprint::TypeInterface );
+					g_app->m_soundSystem->TriggerOtherEvent( nullptr, "MouseOverIcon", SoundSourceBlueprint::TypeInterface );
 					break;
 				}
 			}
@@ -765,7 +765,7 @@ void TaskManagerInterfaceIcons::RunScreenZone( const char *_name, int _data )
         if( g_app->m_globalWorld->m_research->HasResearch( _data ) )
         {
             g_app->m_clientToServer->RequestRunProgram( g_app->m_globalWorld->m_myTeamId, _data );
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureBegin", SoundSourceBlueprint::TypeGesture );
 			if( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD )
 			{
 				HideTaskManager();
@@ -789,7 +789,7 @@ void TaskManagerInterfaceIcons::RunScreenZone( const char *_name, int _data )
             Task *nextTask = g_app->m_taskManager->m_tasks[_data];
             g_app->m_taskManager->m_currentTaskId = nextTask->m_id;
             g_app->m_taskManager->SelectTask( g_app->m_taskManager->m_currentTaskId );
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "SelectTask", SoundSourceBlueprint::TypeInterface );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "SelectTask", SoundSourceBlueprint::TypeInterface );
 			if( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD )
 			{
 				HideTaskManager();
@@ -811,7 +811,7 @@ void TaskManagerInterfaceIcons::RunScreenZone( const char *_name, int _data )
         {
             g_app->m_taskManager->TerminateTask( _data );
         }
-        g_app->m_soundSystem->TriggerOtherEvent( NULL, "DeleteTask", SoundSourceBlueprint::TypeInterface );
+        g_app->m_soundSystem->TriggerOtherEvent( nullptr, "DeleteTask", SoundSourceBlueprint::TypeInterface );
     }
 
 
@@ -823,8 +823,8 @@ void TaskManagerInterfaceIcons::RunScreenZone( const char *_name, int _data )
         if( g_app->m_globalWorld->m_research->HasResearch( _data ) )
         {
             g_app->m_clientToServer->RequestRunProgram( g_app->m_globalWorld->m_myTeamId, _data );
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureBegin", SoundSourceBlueprint::TypeGesture );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
 			if( g_inputManager.getInputMode() == INPUT_MODE_GAMEPAD )
 			{
 				HideTaskManager();
@@ -855,7 +855,7 @@ void TaskManagerInterfaceIcons::RunScreenZone( const char *_name, int _data )
                 case ScreenResearch:        m_desiredScreenY = -1.0f;           break;
             };
 
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "Slide", SoundSourceBlueprint::TypeInterface );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "Slide", SoundSourceBlueprint::TypeInterface );
         }
 
         if( stricmp( _name, "ScreenUp" ) == 0 )
@@ -899,7 +899,7 @@ void TaskManagerInterfaceIcons::RunScreenZone( const char *_name, int _data )
         if( !primary ) objectiveId *= -1;
         objectiveId -= 10;
 
-        GlobalEventCondition *gec = NULL;
+        GlobalEventCondition *gec = nullptr;
         if( primary ) gec = g_app->m_location->m_levelFile->m_primaryObjectives[objectiveId];
         else          gec = g_app->m_location->m_levelFile->m_secondaryObjectives[objectiveId];
         DarwiniaDebugAssert( gec );
@@ -1036,7 +1036,7 @@ void TaskManagerInterfaceIcons::RenderTooltip()
 			//
 			// Render keyboard shortcut
 
-			KeyboardShortcut *selectedShortcut = NULL;
+			KeyboardShortcut *selectedShortcut = nullptr;
 
 			for( int i = 0; i < m_keyboardShortcuts.Size(); ++i )
 			{
@@ -1116,7 +1116,7 @@ void TaskManagerInterfaceIcons::RenderMessages()
         //
         // Lookup task name
 
-		const char *taskName = NULL;
+		const char *taskName = nullptr;
 
         if( m_currentTaskType == 999 )
         {
@@ -1947,7 +1947,7 @@ void TaskManagerInterfaceIcons::RenderGestures()
 {
 	START_PROFILE(g_app->m_profiler, "Render Gestures");
 
-    static BitmapRGBA *gestures=NULL;
+    static BitmapRGBA *gestures=nullptr;
     static unsigned int textureId=-1;
 
 #define BITMAPW 64
@@ -2111,7 +2111,7 @@ void TaskManagerInterfaceIcons::RenderObjectives()
 
     for( int o = 0; o < 2; ++o )
     {
-        LList<GlobalEventCondition *> *objectives = NULL;
+        LList<GlobalEventCondition *> *objectives = nullptr;
         if( o == 0 ) objectives = &g_app->m_location->m_levelFile->m_primaryObjectives;
         else         objectives = &g_app->m_location->m_levelFile->m_secondaryObjectives;
 
@@ -2671,7 +2671,7 @@ void TaskManagerInterfaceIcons::AdvanceQuickUnit()
             }
             m_quickUnitDirection = -1;
             showUnitName = true;
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "Slide", SoundSourceBlueprint::TypeInterface );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "Slide", SoundSourceBlueprint::TypeInterface );
         }
 
         if( right )
@@ -2695,7 +2695,7 @@ void TaskManagerInterfaceIcons::AdvanceQuickUnit()
             }
             m_quickUnitDirection = 1;
             showUnitName = true;
-            g_app->m_soundSystem->TriggerOtherEvent( NULL, "Slide", SoundSourceBlueprint::TypeInterface );
+            g_app->m_soundSystem->TriggerOtherEvent( nullptr, "Slide", SoundSourceBlueprint::TypeInterface );
         }
 
         if( showUnitName )
@@ -2713,7 +2713,7 @@ void TaskManagerInterfaceIcons::AdvanceQuickUnit()
             if( taskId != -1 )
             {
                 g_app->m_clientToServer->RequestRunProgram( g_app->m_location->GetMyTeam()->m_teamId, taskId );
-                g_app->m_soundSystem->TriggerOtherEvent( NULL, "GestureBegin", SoundSourceBlueprint::TypeGesture );
+                g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureBegin", SoundSourceBlueprint::TypeGesture );
 				DestroyQuickUnitInterface();
             }
         }
@@ -2814,7 +2814,7 @@ bool TaskManagerInterfaceIcons::AdviseCreateControlHelpBlue()
 
 bool TaskManagerInterfaceIcons::AdviseCreateControlHelpGreen()
 {
-	ScreenZone *screenZone = NULL;
+	ScreenZone *screenZone = nullptr;
 
 	return
 		m_currentScreenZone != -1 &&
@@ -2825,7 +2825,7 @@ bool TaskManagerInterfaceIcons::AdviseCreateControlHelpGreen()
 
 bool TaskManagerInterfaceIcons::AdviseOverSelectableZone()
 {
-	ScreenZone *screenZone = NULL;
+	ScreenZone *screenZone = nullptr;
 
 	return
 		m_currentScreenZone != -1 &&

@@ -151,10 +151,10 @@ static Uint32 s_profileThread;
 // *** Constructor
 Profiler::Profiler()
 :	m_insideRenderSection(false),
-	m_currentElement(NULL),
+	m_currentElement(nullptr),
 	m_doGlFinish(false)
 {
-	m_rootElement = new ProfiledElement("Root", NULL);
+	m_rootElement = new ProfiledElement("Root", nullptr);
 	m_rootElement->m_isExpanded = true;
 	m_currentElement = m_rootElement;
 	m_endOfSecond = GetHighResTime() + 1.0f;

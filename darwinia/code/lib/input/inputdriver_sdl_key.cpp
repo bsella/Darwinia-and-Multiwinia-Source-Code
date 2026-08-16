@@ -119,7 +119,7 @@ bool SDLKeyboardInputDriver::getFirstActiveInput( InputSpec &spec, bool instant 
 	// Check for pressed keys
 	for ( unsigned i = 0; i <= KEY_META; ++i ) {
 		if ( 1 == m_keyDeltas[ i ] && // key was pressed
-		     strstr( getKeyNames()[ i ], " " ) == NULL ) { // Key is bindable
+		     strstr( getKeyNames()[ i ], " " ) == nullptr ) { // Key is bindable
 			spec.control_id = i;
 			if ( instant )
 				spec.condition = COND_DOWN;

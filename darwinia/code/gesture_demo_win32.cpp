@@ -22,10 +22,10 @@ void RecordGestureDemo()
 	unsigned long threadId;
 
     threadHandle = CreateThread(
-        NULL,                        // default security attributes
+        nullptr,                        // default security attributes
         0,                           // use default stack size
         Win32RecordingThread,        // thread function
-        NULL,		                 // argument to thread function
+        nullptr,		                 // argument to thread function
         0,                           // use default creation flags
         &threadId);                  // returns the thread identifier
 

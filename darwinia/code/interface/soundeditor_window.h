@@ -42,7 +42,7 @@ public:
     static void CreateSoundParameterButton( DarwiniaWindow *_window,
                                              char *name, SoundParameter *parameter, int y,
 							                 float _minOutput, float _maxOutput,
-                                             DarwiniaButton *callback=NULL, int x=-1, int w=-1 );
+                                             DarwiniaButton *callback=nullptr, int x=-1, int w=-1 );
     static void RemoveSoundParameterButton( DarwiniaWindow *_window, char *name );
 
     SoundSourceBlueprint *GetSoundSourceBlueprint();

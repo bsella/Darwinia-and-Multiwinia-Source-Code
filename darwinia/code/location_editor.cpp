@@ -67,7 +67,7 @@ LocationEditor::~LocationEditor()
 	if (mainWin->m_currentEditWindow)
 	{
 		EclRemoveWindow(mainWin->m_currentEditWindow->m_name);
-		mainWin->m_currentEditWindow = NULL;
+		mainWin->m_currentEditWindow = nullptr;
 	}
 
 	// Remove main edit window
@@ -199,10 +199,10 @@ void LocationEditor::CreateEditWindowForMode(int _mode)
 	if (mainWin->m_currentEditWindow)
 	{
 		EclRemoveWindow(mainWin->m_currentEditWindow->m_name);
-		mainWin->m_currentEditWindow = NULL;
+		mainWin->m_currentEditWindow = nullptr;
 	}
 
-	DarwiniaWindow *window = NULL;
+	DarwiniaWindow *window = nullptr;
 	switch(_mode)
 	{
 		case LocationEditor::ModeLandTile:

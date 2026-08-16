@@ -14,7 +14,7 @@ public:
     }
 };
 
-static char *buf = NULL;
+static char *buf = nullptr;
 
 UpdateAvailableWindow::UpdateAvailableWindow( const char *newVersion, const char *changeLog )
 	: MessageDialog("New version available",

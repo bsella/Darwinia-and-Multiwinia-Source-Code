@@ -44,16 +44,16 @@ void DarwiniaReleaseAssert(bool _condition, char const *_fmt, ...)
 //			FormatMessage(
 //				FORMAT_MESSAGE_ALLOCATE_BUFFER |
 //				FORMAT_MESSAGE_FROM_SYSTEM,
-//				NULL,
+//				nullptr,
 //				rc,
 //				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 //				(LPTSTR) &lpMsgBuf,
-//				0, NULL );
+//				0, nullptr );
 //
 //			sprintf( buf + strlen(buf), "\nLast error: %s (%d)", lpMsgBuf, rc );
 //		}
 //		ShowCursor(true);
-//		MessageBox(NULL, buf, "Fatal Error", MB_OK);
+//		MessageBox(nullptr, buf, "Fatal Error", MB_OK);
 //        GenerateBlackBox( buf );
 //#ifndef _DEBUG
 //		exit(-1);
@@ -182,7 +182,7 @@ void GenerateBlackBox( char *_msg )
         fprintf( _file, "=========================\n\n" );
 
         char line[256];
-	    while (fgets(line, 256, prefsFile) != NULL)
+	    while (fgets(line, 256, prefsFile) != nullptr)
 	    {
 		    if (line[0] != '#' && line[0] != '\n' )				// Skip comment lines
 		    {
@@ -202,7 +202,7 @@ void GenerateBlackBox( char *_msg )
     fprintf( _file, "=========================\n\n" );
 
 	unsigned *framePtr;
-    unsigned *previousFramePtr = NULL;
+    unsigned *previousFramePtr = nullptr;
 
 
 #ifdef WIN32

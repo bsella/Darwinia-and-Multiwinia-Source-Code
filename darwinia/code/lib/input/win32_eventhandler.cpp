@@ -18,7 +18,7 @@ typedef ProcList::iterator ProcIt;
 
 bool g_windowHasFocus = true;
 bool g_altTabBound = false;
-HWND g_hwnd = NULL;
+HWND g_hwnd = nullptr;
 
 
 W32EventHandler::W32EventHandler() : w32eventprocs() {}
@@ -62,7 +62,7 @@ LRESULT CALLBACK W32EventHandler::WndProc( HWND hWnd, UINT message,
 				GetCursorPos(&pt);
 				LPARAM lparam = (unsigned long) (pt.x & 0xFFFF) | (unsigned long) ((pt.y & 0xFFFF) << 16);
 				if (DefWindowProc(hWnd, WM_NCHITTEST, 0, lparam) == HTCLIENT)
-					SetCursor(NULL);
+					SetCursor(nullptr);
 				else
 					return -1;
 			}
@@ -98,7 +98,7 @@ void W32EventHandler::AddEventProcessor( W32EventProcessor *_driver )
 	if ( _driver )
 		w32eventprocs.push_back( _driver );
 	else
-		cerr << "AddEventProcessor: _driver is NULL\n";
+		cerr << "AddEventProcessor: _driver is nullptr\n";
 	g_hwnd = g_windowManager->m_win32Specific->m_hWnd;
 }
 

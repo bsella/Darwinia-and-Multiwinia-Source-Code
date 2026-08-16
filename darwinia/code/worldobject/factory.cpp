@@ -51,7 +51,7 @@ void Factory::Initialise(Building *_template)
 void Factory::Render( float predictionTime )
 {
 //    Shape *oldShape = m_shape;
-//    m_shape = NULL;
+//    m_shape = nullptr;
     Building::Render( predictionTime );
 //    m_shape = oldShape;
 

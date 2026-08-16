@@ -31,7 +31,7 @@ float const waveBrightnessScale = 4.0f;
 float const shoreBrighteningFactor = 250.0f;
 float const shoreNoiseFactor = 0.25f;
 #ifdef USE_DIRECT3D
-LPDIRECT3DVERTEXDECLARATION9 s_vertexDecl = NULL;
+LPDIRECT3DVERTEXDECLARATION9 s_vertexDecl = nullptr;
 #endif
 
 
@@ -42,14 +42,14 @@ LPDIRECT3DVERTEXDECLARATION9 s_vertexDecl = NULL;
 Water::Water()
 :	
 #ifdef USE_DIRECT3D
-	m_vertexBuffer(NULL),
+	m_vertexBuffer(nullptr),
 #endif
-	m_waterDepths(NULL),
-	m_shoreNoise(NULL),
-	m_waterDepthMap(NULL),
-	m_colourTable(NULL),
-	m_waveTableX(NULL),
-	m_waveTableZ(NULL),
+	m_waterDepths(nullptr),
+	m_shoreNoise(nullptr),
+	m_waterDepthMap(nullptr),
+	m_colourTable(nullptr),
+	m_waveTableX(nullptr),
+	m_waveTableZ(nullptr),
 	m_renderWaterEffect(0)
 {
     if( !g_app->m_editing )
@@ -118,11 +118,11 @@ Water::~Water()
 {
 
 	m_renderVerts.Empty();
-	delete [] m_waterDepths;	m_waterDepths = NULL;
-	delete [] m_shoreNoise;		m_shoreNoise = NULL;
-	delete [] m_colourTable;	m_colourTable = NULL;
-	delete [] m_waveTableX;		m_waveTableX = NULL;
-	delete [] m_waveTableZ;		m_waveTableZ = NULL;
+	delete [] m_waterDepths;	m_waterDepths = nullptr;
+	delete [] m_shoreNoise;		m_shoreNoise = nullptr;
+	delete [] m_colourTable;	m_colourTable = nullptr;
+	delete [] m_waveTableX;		m_waveTableX = nullptr;
+	delete [] m_waveTableZ;		m_waveTableZ = nullptr;
 #ifdef USE_DIRECT3D
 	ReleaseD3DResources();
 #endif
@@ -228,7 +228,7 @@ void Water::GenerateLightMap()
         }
     }
 
-    if( g_app->m_resource->GetBitmap(LIGHTMAP_TEXTURE_NAME) != NULL )
+    if( g_app->m_resource->GetBitmap(LIGHTMAP_TEXTURE_NAME) != nullptr )
     {
         g_app->m_resource->DeleteBitmap(LIGHTMAP_TEXTURE_NAME);
 	}
@@ -416,7 +416,7 @@ void Water::BuildTriangleStrips()
 		m_shoreNoise[i] = whiteness;
 	}
 
-	delete m_waterDepthMap; m_waterDepthMap = NULL;
+	delete m_waterDepthMap; m_waterDepthMap = nullptr;
 }
 
 
@@ -703,20 +703,20 @@ void Water::UpdateDynamicWater()
 
 		unsigned bufferSize = m_renderVerts.Size() * sizeof(WaterVertex);
 
-		if (m_vertexBuffer == NULL) {
+		if (m_vertexBuffer == nullptr) {
 			HRESULT hr = OpenGLD3D::g_pd3dDevice->CreateVertexBuffer(
 				bufferSize,
 				D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY|(OpenGLD3D::g_supportsHwVertexProcessing?0:D3DUSAGE_SOFTWAREPROCESSING),
 				0,
 				D3DPOOL_DEFAULT,
 				&m_vertexBuffer,
-				NULL);
+				nullptr);
 
 			DarwiniaDebugAssert( hr != D3DERR_INVALIDCALL );
 			DarwiniaDebugAssert( hr != D3DERR_OUTOFVIDEOMEMORY );
 			DarwiniaDebugAssert( hr != E_OUTOFMEMORY );
 			DarwiniaDebugAssert( hr == D3D_OK );
-			DarwiniaDebugAssert( m_vertexBuffer != NULL );
+			DarwiniaDebugAssert( m_vertexBuffer != nullptr );
 		}
 
 		void *data;
@@ -734,7 +734,7 @@ void Water::UpdateDynamicWater()
 void Water::RenderDynamicWater()
 {
 #ifdef USE_DIRECT3D
-	if (m_vertexBuffer == NULL)
+	if (m_vertexBuffer == nullptr)
 		return;
 #endif
 

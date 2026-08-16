@@ -123,8 +123,8 @@ public:
     // Low level access
 
     int  GetNumMouseSamples  ();
-    void GetMouseSample      ( int i, int *x, int *y, int *t=NULL );
-    void GetMouseSample      ( int i, float *x, float *y, float *t=NULL );
+    void GetMouseSample      ( int i, int *x, int *y, int *t=nullptr );
+    void GetMouseSample      ( int i, float *x, float *y, float *t=nullptr );
 
     double GetCalculatedResult       ( int symbolID );
     double GetCalculatedConfidence   ( int symbolID );

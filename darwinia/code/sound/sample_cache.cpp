@@ -31,8 +31,8 @@ CachedSample::CachedSample(char const *_sampleName)
 
 CachedSample::~CachedSample()
 {
-	delete m_soundStreamDecoder; m_soundStreamDecoder = NULL;
-	delete [] m_rawSampleData; m_rawSampleData = NULL;
+	delete m_soundStreamDecoder; m_soundStreamDecoder = nullptr;
+	delete [] m_rawSampleData; m_rawSampleData = nullptr;
 }
 
 
@@ -51,7 +51,7 @@ void CachedSample::Read(signed short *_data, unsigned int _startSample, unsigned
 			DarwiniaDebugAssert(m_amountCached <= m_numSamples);
 			if (m_amountCached == m_numSamples)
 			{
-				delete m_soundStreamDecoder; m_soundStreamDecoder = NULL;
+				delete m_soundStreamDecoder; m_soundStreamDecoder = nullptr;
 			}
 		}
 	}
@@ -74,7 +74,7 @@ CachedSampleHandle::CachedSampleHandle(CachedSample *_sample)
 
 CachedSampleHandle::~CachedSampleHandle()
 {
-	m_cachedSample = NULL;
+	m_cachedSample = nullptr;
 	m_nextSampleIndex = 0xffffffff;
 }
 

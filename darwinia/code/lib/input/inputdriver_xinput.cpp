@@ -89,7 +89,7 @@ static ControlAction s_controls[] = {
 	"rightthumbstickup",     INPUT_TYPE_BOOL,
 	"rightthumbstickdown",   INPUT_TYPE_BOOL,
 
-	NULL,                    NULL
+	nullptr,                    nullptr
 };
 
 enum Direction {
