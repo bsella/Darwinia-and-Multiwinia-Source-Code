@@ -28,9 +28,9 @@ SDLMouseInputDriver::SDLMouseInputDriver()
 	memset(m_mbOld, 0, sizeof(m_mbOld));
 	memset(m_mbDeltas, 0, sizeof(m_mbDeltas));
 	
-	//memset(m_mousePos, 0, sizeof(m_mousePos));
-	//memset(m_mousePosOld, 0, sizeof(m_mousePosOld));
-	//memset(m_mouseVel, 0, sizeof(m_mouseVel));
+	memset(m_mousePos, 0, sizeof(m_mousePos));
+	memset(m_mousePosOld, 0, sizeof(m_mousePosOld));
+	memset(m_mouseVel, 0, sizeof(m_mouseVel));
 }
 
 int SDLMouseInputDriver::HandleSDLEvent(const SDL_Event & event)
