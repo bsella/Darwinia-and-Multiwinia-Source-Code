@@ -854,7 +854,7 @@ bool UnprocessedSpirit::Advance()
             if( heightAboveGround > 15.0f )
             {
                 float fractionAboveGround = heightAboveGround / 100.0f;
-                fractionAboveGround = min( fractionAboveGround, 1.0f );
+                fractionAboveGround = std::min( fractionAboveGround, 1.0f );
                 m_hover.y = (-10.0f - syncfrand(10.0f)) * fractionAboveGround;
             }
             else
@@ -901,7 +901,7 @@ float UnprocessedSpirit::GetLife()
         {
             float timePassed = GetHighResTime() - m_timeSync;
             float life = timePassed / 10.0f;
-            life = min( life, 1.0f );
+            life = std::min( life, 1.0f );
             return life;
         }
 
@@ -912,8 +912,8 @@ float UnprocessedSpirit::GetLife()
         {
             float timeLeft = m_timeSync;
             float life = timeLeft / 10.0f;
-            life = min( life, 1.0f );
-            life = max( life, 0.0f );
+            life = std::min( life, 1.0f );
+            life = std::max( life, 0.0f );
             return life;
         }
     }

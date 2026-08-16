@@ -442,8 +442,8 @@ bool SoundInstance::UpdateChannelVolume()
     }
 
     m_channelVolume = volume;
-    m_channelVolume  = max( m_channelVolume , 0.0f );
-    m_channelVolume  = min( m_channelVolume , 10.0f );
+    m_channelVolume  = std::max( m_channelVolume , 0.0f );
+    m_channelVolume  = std::min( m_channelVolume , 10.0f );
 
     g_soundLibrary3d->SetChannelVolume( m_channelIndex, m_channelVolume );
 
@@ -506,7 +506,7 @@ void SoundInstance::OpenStream( bool _keepCurrentStream )
         int memoryUsage = g_prefsManager->GetInt( "SoundMemoryUsage", 1 );
         if( memoryUsage == 2 ) numSamples *= 0.5f;
         if( memoryUsage == 3 ) numSamples *= 0.25f;
-        numSamples = max( numSamples, 1 );
+        numSamples = std::max( numSamples, 1 );
 
         int sampleIndex = darwiniaRandom() % numSamples;
 		sampleName = group->m_samples[ sampleIndex ];

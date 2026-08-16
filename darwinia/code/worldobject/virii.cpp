@@ -874,7 +874,7 @@ void Virii::Render( float predictionTime, [[maybe_unused]] int teamId, int _deta
     if( _detail > 1 )
     {
         int amountToChop = _detail-1;
-        amountToChop = min( amountToChop, 2 );
+        amountToChop = std::min( amountToChop, 2 );
         lastIndex *= ( 1.0f - 0.25f * amountToChop );
     }
 

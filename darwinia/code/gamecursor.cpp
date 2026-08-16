@@ -246,7 +246,7 @@ void GameCursor::CreateMarker( Vector3 const &_pos )
 
 void GameCursor::BoostSelectionArrows( float _seconds )
 {
-	m_selectionArrowBoost = max( m_selectionArrowBoost, _seconds );
+	m_selectionArrowBoost = std::max( m_selectionArrowBoost, _seconds );
 }
 
 
@@ -283,7 +283,7 @@ void GameCursor::Render()
 	int screenX = g_target->X();
 	int screenY = g_target->Y();
     Vector3 mousePos = g_app->m_userInput->GetMousePos3d();
-    mousePos.y = max( 1.0f, mousePos.y );
+    mousePos.y = std::max( 1.0f, mousePos.y );
 
     bool cursorRendered = false;
 	bool chatLog = g_app->m_sepulveda->ChatLogVisible();
@@ -711,11 +711,11 @@ void GameCursor::RenderSelectionArrows( WorldObjectId _id, Vector3 const &_pos )
 	    m_selectionArrowBoost -= g_advanceTime * 0.4f;
 
         float distanceOut = 1000 / sqrtf( camDist );
-        float alpha = min( m_selectionArrowBoost, 0.9f );
+        float alpha = std::min( m_selectionArrowBoost, 0.9f );
 
         if( camDist > 200.0f )
         {
-            alpha = max( min( ( camDist - 200.0f ) / 200.0f, 0.9f ), alpha );
+            alpha = std::max( std::min( ( camDist - 200.0f ) / 200.0f, 0.9f ), alpha );
         }
         g_app->m_renderer->SetupMatricesFor2D();
         RenderSelectionArrow( screenX, screenY - distanceOut, 0, -1, triSize, alpha );
@@ -786,12 +786,12 @@ void GameCursor::RenderSelectionArrows( WorldObjectId _id, Vector3 const &_pos )
 	{
 		distance -= 350.0f;
 		alpha = distance / 300.0f;
-		alpha = min(alpha, SELECTION_ARROWS_MAX_ALPHA);
+		alpha = std::min(alpha, SELECTION_ARROWS_MAX_ALPHA);
 	}
 
 	if (m_selectionArrowBoost > alpha)
 	{
-		alpha = min(m_selectionArrowBoost, SELECTION_ARROWS_MAX_ALPHA);
+		alpha = std::min(m_selectionArrowBoost, SELECTION_ARROWS_MAX_ALPHA);
 	}
 	static double lastTime = g_gameTime;
 	double deltaTime = g_gameTime - lastTime;
@@ -834,8 +834,8 @@ void GameCursor::RenderSelectionArrows( WorldObjectId _id, Vector3 const &_pos )
 			alpha = SELECTION_ARROWS_MAX_ALPHA;
 			screenX = screenW + xOut - triSize / 3.0f;
 			screenY = screenH / 2.0f;
-            //screenY = min( screenY, screenH );
-            //screenY = max( screenY, 0 );
+            //screenY = std::min( screenY, screenH );
+            //screenY = std::max( screenY, 0 );
             onScreen = false;
             triSize *= 1.5f;
 		}
@@ -844,8 +844,8 @@ void GameCursor::RenderSelectionArrows( WorldObjectId _id, Vector3 const &_pos )
 			alpha = SELECTION_ARROWS_MAX_ALPHA;
 			screenX = -xOut + triSize / 3.0f;
 			screenY = screenH / 2.0f;
-            //screenY = min( screenY, screenH );
-            //screenY = max( screenY, 0 );
+            //screenY = std::min( screenY, screenH );
+            //screenY = std::max( screenY, 0 );
             triSize *= 1.5f;
             onScreen = false;
 		}

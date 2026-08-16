@@ -585,13 +585,13 @@ void DarwiniaWindow::Update()
 		{
 			m_buttonChangedThisUpdate = true;
 			m_currentButton++;
-			m_currentButton = min( m_currentButton, m_buttonOrder.Size()-1 );
+			m_currentButton = std::min( m_currentButton, m_buttonOrder.Size()-1 );
 		}
 		if( g_inputManager.controlEvent(ControlMenuUp) )
 		{
 			m_buttonChangedThisUpdate = true;
 			m_currentButton--;
-			m_currentButton = max(0, m_currentButton);
+			m_currentButton = std::max(0, m_currentButton);
 		}
 
 		if( g_inputManager.controlEvent(ControlMenuActivate) )

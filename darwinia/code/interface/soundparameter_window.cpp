@@ -206,17 +206,17 @@ void SoundParameterGraph::RescaleAxis()
             break;
     }
 
-    m_parameter->m_inputLower  = max( m_parameter->m_inputLower, m_minInput );
-    m_parameter->m_inputLower  = min( m_parameter->m_inputLower, m_maxInput );
+    m_parameter->m_inputLower  = std::max( m_parameter->m_inputLower, m_minInput );
+    m_parameter->m_inputLower  = std::min( m_parameter->m_inputLower, m_maxInput );
 
-    m_parameter->m_inputUpper  = max( m_parameter->m_inputUpper, m_minInput );
-    m_parameter->m_inputUpper  = min( m_parameter->m_inputUpper, m_maxInput );
+    m_parameter->m_inputUpper  = std::max( m_parameter->m_inputUpper, m_minInput );
+    m_parameter->m_inputUpper  = std::min( m_parameter->m_inputUpper, m_maxInput );
 
-    m_parameter->m_outputLower = max( m_parameter->m_outputLower, m_minOutput );
-    m_parameter->m_outputLower = min( m_parameter->m_outputLower, m_maxOutput );
+    m_parameter->m_outputLower = std::max( m_parameter->m_outputLower, m_minOutput );
+    m_parameter->m_outputLower = std::min( m_parameter->m_outputLower, m_maxOutput );
 
-    m_parameter->m_outputUpper = max( m_parameter->m_outputUpper, m_minOutput );
-    m_parameter->m_outputUpper = min( m_parameter->m_outputUpper, m_maxOutput );
+    m_parameter->m_outputUpper = std::max( m_parameter->m_outputUpper, m_minOutput );
+    m_parameter->m_outputUpper = std::min( m_parameter->m_outputUpper, m_maxOutput );
 }
 
 
@@ -263,14 +263,14 @@ void SoundParameterGraph::HandleMouseEvents()
                     if( lmb )
                     {
                         m_parameter->m_outputLower = output;
-                        m_parameter->m_outputUpper = max( m_parameter->m_outputUpper,
+                        m_parameter->m_outputUpper = std::max( m_parameter->m_outputUpper,
                                                           m_parameter->m_outputLower );
                         m_parameter->Recalculate();
                     }
                     if( rmb )
                     {
                         m_parameter->m_outputUpper = output;
-                        m_parameter->m_outputLower = min( m_parameter->m_outputLower,
+                        m_parameter->m_outputLower = std::min( m_parameter->m_outputLower,
                                                           m_parameter->m_outputUpper );
                         m_parameter->Recalculate();
                     }
@@ -281,14 +281,14 @@ void SoundParameterGraph::HandleMouseEvents()
                     {
                         m_parameter->m_inputLower = input;
                         m_parameter->m_outputLower = output;
-                        m_parameter->m_outputUpper = max( m_parameter->m_outputUpper,
+                        m_parameter->m_outputUpper = std::max( m_parameter->m_outputUpper,
                                                           m_parameter->m_outputLower );
                     }
                     if( rmb )
                     {
                         m_parameter->m_inputUpper = input;
                         m_parameter->m_outputUpper = output;
-                        m_parameter->m_outputLower = min( m_parameter->m_outputLower,
+                        m_parameter->m_outputLower = std::min( m_parameter->m_outputLower,
                                                           m_parameter->m_outputUpper );
                     }
                     break;

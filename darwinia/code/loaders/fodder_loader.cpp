@@ -36,8 +36,8 @@ void FodderLoader::Run()
         int screenH = SetupFor2D( 800 );
 
         float alpha = (GetHighResTime() - startTime) / 5.0f;
-        alpha = max( 0.0f, alpha );
-        alpha = min( 1.0f, alpha );
+        alpha = std::max( 0.0f, alpha );
+        alpha = std::min( 1.0f, alpha );
 
         glColor4f( 1.0f, 1.0f, 1.0f, alpha );
 

@@ -480,5 +480,5 @@ void GameMenuWindow::GetDefaultPositions(int *_x, int *_y, int *_gap)
         case PageResearch:      *_y = float((h / 864.0f ) * 70.0f); *_gap = (h / 864 ) * 60; break;
     }
 
-    //*_x = min( *_x, 200 );
+    //*_x = std::min( *_x, 200 );
 }

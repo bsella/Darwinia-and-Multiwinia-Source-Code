@@ -200,7 +200,7 @@ bool AI::Advance( Unit * )
 
     Team *team = &g_app->m_location->m_teams[m_id.GetTeamId()];
     int numRemaining = team->m_others.Size() * 0.02f;
-    numRemaining = max( numRemaining, 1 );
+    numRemaining = std::max( numRemaining, 1 );
 
     while( numRemaining > 0 )
     {
@@ -289,8 +289,8 @@ bool AI::Advance( Unit * )
             AITarget *targetBuilding = (AITarget *) g_app->m_location->GetBuilding( targetBuildingId );
             int enemyCount = targetBuilding->m_enemyCount[ m_id.GetTeamId() ];
             float sendChance = 1.5f * (float) enemyCount / (float) numIdle;
-            sendChance = max( sendChance, 0.6f );
-            sendChance = min( sendChance, 1.0f );
+            sendChance = std::max( sendChance, 0.6f );
+            sendChance = std::min( sendChance, 1.0f );
 
             Vector3 targetPos = targetBuilding->m_pos;
             float positionError = 20.0f;
@@ -535,7 +535,7 @@ void AITarget::RecalculatePriority()
         }
 
         m_priority[t] += (float) m_neighbours.Size() * 0.01f;
-        m_priority[t] = min( m_priority[t], 1.0f );
+        m_priority[t] = std::min( m_priority[t], 1.0f );
     }
 }
 

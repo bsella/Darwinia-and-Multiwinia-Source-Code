@@ -1,6 +1,6 @@
-﻿#include "lib/universal_include.h"
+﻿#include "rgb_colour.h"
 
-#include "rgb_colour.h"
+#include <algorithm>
 
 RGBAColour g_colourBlack(0,0,0);
 RGBAColour g_colourWhite(255,255,255);
@@ -166,13 +166,13 @@ void RGBAColour::AddWithClamp( RGBAColour const &_b)
     int newG = (int)g + int( _b.g * alpha );
     int newB = (int)b + int( _b.b * alpha );
 
-    newR = max(newR, 0);
-    newG = max(newG, 0);
-    newB = max(newB, 0);
+    newR = std::max(newR, 0);
+    newG = std::max(newG, 0);
+    newB = std::max(newB, 0);
 
-    newR = min(newR, 255);
-    newG = min(newG, 255);
-    newB = min(newB, 255);
+    newR = std::min(newR, 255);
+    newG = std::min(newG, 255);
+    newB = std::min(newB, 255);
 
     r = newR;
     g = newG;

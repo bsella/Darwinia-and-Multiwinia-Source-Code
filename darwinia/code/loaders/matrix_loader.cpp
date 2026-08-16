@@ -96,7 +96,7 @@ void MatrixLoader::Run()
                         if( m_positions[i][j] == 1.0f && s_highlights[j*40+i] != 0 )
                         {
                             s_highlights[j*40+i] *= 2;
-                            s_highlights[j*40+i] = min( 100, s_highlights[j*40+i] );
+                            s_highlights[j*40+i] = std::min( 100, s_highlights[j*40+i] );
                         }
                     }
                     m_positions[i][0] = m_positions[i][1] - 0.05f;
@@ -156,11 +156,11 @@ void MatrixLoader::Run()
                 float alpha = m_positions[i][j];
                 if( s_highlights[j*40+i] > 0 )
                 {
-                    alpha = max(s_highlights[j*40+i]/100.0f, alpha);
+                    alpha = std::max(s_highlights[j*40+i]/100.0f, alpha);
                     alpha *= (0.2f + fabs( sinf( GetHighResTime() + j * i ) ) * 0.8f );
                 }
-                alpha = min( alpha, 1.0f );
-                alpha = max( alpha, 0.0f );
+                alpha = std::min( alpha, 1.0f );
+                alpha = std::max( alpha, 0.0f );
 
                 glColor4f( 0.4f, 1.0f, 0.4f, alpha );
 

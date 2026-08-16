@@ -521,7 +521,7 @@ void CreditsLoader::Run()
         Render();
 
         float alpha = (time - startTime) / 7.0f;
-        alpha = min( alpha, 1.0f );
+        alpha = std::min( alpha, 1.0f );
         FlipBuffers( alpha );
         AdvanceSound();
     }

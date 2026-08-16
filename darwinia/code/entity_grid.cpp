@@ -316,10 +316,10 @@ void EntityGrid::AddObject (WorldObjectId _objectID, float _worldX, float _world
         int upMostCell      = GetGridIndexZ(_worldZ - _radius/2);
         int downMostCell    = GetGridIndexZ(_worldZ + _radius/2);
 
-        leftMostCell    = max(0, leftMostCell);
-        rightMostCell   = min(m_numCellsX - 1, rightMostCell);
-        upMostCell      = max(0, upMostCell);
-        downMostCell    = min(m_numCellsZ - 1, downMostCell);
+        leftMostCell    = std::max(0, leftMostCell);
+        rightMostCell   = std::min(m_numCellsX - 1, rightMostCell);
+        upMostCell      = std::max(0, upMostCell);
+        downMostCell    = std::min(m_numCellsZ - 1, downMostCell);
 
         for( int x = leftMostCell; x <= rightMostCell; ++x )
         {
@@ -354,10 +354,10 @@ void EntityGrid::RemoveObject (WorldObjectId _objectID, float _worldX, float _wo
         int upMostCell      = GetGridIndexZ(_worldZ - _radius/2);
         int downMostCell    = GetGridIndexZ(_worldZ + _radius/2);
 
-        leftMostCell    = max(0, leftMostCell);
-        rightMostCell   = min(m_numCellsX - 1, rightMostCell);
-        upMostCell      = max(0, upMostCell);
-        downMostCell    = min(m_numCellsZ - 1, downMostCell);
+        leftMostCell    = std::max(0, leftMostCell);
+        rightMostCell   = std::min(m_numCellsX - 1, rightMostCell);
+        upMostCell      = std::max(0, upMostCell);
+        downMostCell    = std::min(m_numCellsZ - 1, downMostCell);
 
         for( int x = leftMostCell; x <= rightMostCell; ++x )
         {
@@ -479,10 +479,10 @@ WorldObjectId *EntityGrid::GetNeighbours(float _worldX, float _worldZ, float _ra
     int upMostCell = GetGridIndexZ(_worldZ - _range);
     int downMostCell = GetGridIndexZ(_worldZ + _range);
 
-    leftMostCell = max(0, leftMostCell);
-    rightMostCell = min(m_numCellsX - 1, rightMostCell);
-    upMostCell = max(0, upMostCell);
-    downMostCell = min(m_numCellsZ - 1, downMostCell);
+    leftMostCell = std::max(0, leftMostCell);
+    rightMostCell = std::min(m_numCellsX - 1, rightMostCell);
+    upMostCell = std::max(0, upMostCell);
+    downMostCell = std::min(m_numCellsZ - 1, downMostCell);
 
     float rangeSqrd = _range * _range;
 
@@ -553,10 +553,10 @@ int EntityGrid::GetNumNeighbours(float _worldX, float _worldZ, float _range, boo
     int upMostCell = GetGridIndexZ(_worldZ - _range);
     int downMostCell = GetGridIndexZ(_worldZ + _range);
 
-    leftMostCell = max(0, leftMostCell);
-    rightMostCell = min(m_numCellsX - 1, rightMostCell);
-    upMostCell = max(0, upMostCell);
-    downMostCell = min(m_numCellsZ - 1, downMostCell);
+    leftMostCell = std::max(0, leftMostCell);
+    rightMostCell = std::min(m_numCellsX - 1, rightMostCell);
+    upMostCell = std::max(0, upMostCell);
+    downMostCell = std::min(m_numCellsZ - 1, downMostCell);
 
     int numFoundSoFar = 0;
 
@@ -635,10 +635,10 @@ bool EntityGrid::AreNeighboursPresent(float _worldX, float _worldZ, float _range
     int upMostCell = GetGridIndexZ(_worldZ - _range);
     int downMostCell = GetGridIndexZ(_worldZ + _range);
 
-    leftMostCell = max(0, leftMostCell);
-    rightMostCell = min(m_numCellsX - 1, rightMostCell);
-    upMostCell = max(0, upMostCell);
-    downMostCell = min(m_numCellsZ - 1, downMostCell);
+    leftMostCell = std::max(0, leftMostCell);
+    rightMostCell = std::min(m_numCellsX - 1, rightMostCell);
+    upMostCell = std::max(0, upMostCell);
+    downMostCell = std::min(m_numCellsZ - 1, downMostCell);
 
     // For each cell
     for (int x = leftMostCell; x <= rightMostCell; x++)

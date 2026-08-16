@@ -48,8 +48,8 @@ int SDLMouseInputDriver::HandleSDLEvent(const SDL_Event & event)
 			// been captured. So we must clip the mouse coords to the screen ourselves.
 			if (!wm->m_mouseCaptured)
 			{
-				m_mousePos[X] = max(0, min(wm->m_screenW, m_mousePos[X]));
-				m_mousePos[Y] = max(0, min(wm->m_screenH, m_mousePos[Y]));
+				m_mousePos[X] = std::max(0, std::min(wm->m_screenW, m_mousePos[X]));
+				m_mousePos[Y] = std::max(0, std::min(wm->m_screenH, m_mousePos[Y]));
 			}
 			
 			return 0;

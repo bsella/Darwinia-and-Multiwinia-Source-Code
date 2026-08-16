@@ -63,7 +63,7 @@ void DemoEndSequence::Render()
 
     float timeSinceStart = GetHighResTime() - m_timer;
     float alpha = timeSinceStart * 0.2f;
-    alpha = min( alpha, 1.0f );
+    alpha = std::min( alpha, 1.0f );
 
     glColor4f( 1.0f, 1.0f, 1.0f, alpha );
 

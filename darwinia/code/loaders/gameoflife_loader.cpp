@@ -150,7 +150,7 @@ void GameOfLifeLoader::CommitCells()
 void GameOfLifeLoader::RenderDarwinian( int _cellX, int _cellY, int _age )
 {
     float alpha = 1.0f - ( _age / MAXAGE );
-    alpha = max( alpha, 0.0f );
+    alpha = std::max( alpha, 0.0f );
 
     glColor4f( 0.4f, 1.0f, 0.4f, alpha );
 
@@ -173,7 +173,7 @@ void GameOfLifeLoader::RenderDarwinian( int _cellX, int _cellY, int _age )
     {
         glBindTexture( GL_TEXTURE_2D, g_app->m_resource->GetTexture( "textures/glow.bmp" ) );
         alpha *= m_zoom;
-        alpha = min( alpha, 1.0f );
+        alpha = std::min( alpha, 1.0f );
         glColor4f( 0.4f, 1.0f, 0.4f, alpha*m_zoom );
         glBegin( GL_QUADS );
             glTexCoord2i(0,1);      glVertex2f( screenX-CELLSIZE*2, screenY-CELLSIZE*2 );
@@ -191,7 +191,7 @@ void GameOfLifeLoader::RenderSpirit( int _cellX, int _cellY, int _age )
 {
     float alpha = 1.0f - ( _age / MAXSPIRITAGE );
     if( m_glow ) alpha /= m_zoom*10.0f;
-    alpha = max( alpha, 0.0f );
+    alpha = std::max( alpha, 0.0f );
 
     glColor4f( 0.4f, 1.0f, 0.4f, alpha * 0.1f );
 
@@ -222,7 +222,7 @@ void GameOfLifeLoader::RenderSpirit( int _cellX, int _cellY, int _age )
         glBindTexture( GL_TEXTURE_2D, g_app->m_resource->GetTexture( "textures/glow.bmp" ) );
         alpha = 1.0f - ( _age / MAXSPIRITAGE );
         alpha *= m_zoom * 0.03f;
-        alpha = min( alpha, 1.0f );
+        alpha = std::min( alpha, 1.0f );
         glColor4f( 0.4f, 1.0f, 0.4f, alpha );
         glBegin( GL_QUADS );
             glTexCoord2i(0,1);      glVertex2f( screenX-CELLSIZE*1, screenY-CELLSIZE*1 );
@@ -318,8 +318,8 @@ void GameOfLifeLoader::Run()
 
         float timeSinceLastFrame = GetHighResTime() - lastFrameTime;
         float newPropagation = timeSinceLastFrame / m_speed;
-        newPropagation = min( newPropagation, 1.0f );
-        newPropagation = max( newPropagation, 0.0f );
+        newPropagation = std::min( newPropagation, 1.0f );
+        newPropagation = std::max( newPropagation, 0.0f );
         PropagateCells( lastPropagation, newPropagation );
         lastPropagation = newPropagation;
 
@@ -352,7 +352,7 @@ void GameOfLifeLoader::Run()
 
         m_zoom = 0.08f + powf( GetHighResTime() - startTime, 2.0f ) / 500;
         m_speed = 0.1f / (m_zoom * 5.0f);
-        m_speed = max( m_speed, 0.1f );
+        m_speed = std::max( m_speed, 0.1f );
 
         float screenW = g_app->m_renderer->ScreenW() * m_zoom;
         float screenH = g_app->m_renderer->ScreenH() * m_zoom;
@@ -386,7 +386,7 @@ void GameOfLifeLoader::Run()
         if( m_allDead > 0.0f )
         {
             float alpha = (GetHighResTime() - m_allDead) * 0.2f;
-            alpha = min( alpha, 1.0f );
+            alpha = std::min( alpha, 1.0f );
             glColor4f( 1.0f, 1.0f, 1.0f, alpha );
 
             g_gameFont.DrawText2DCentre( 0.0f, screenH/3+screenW/100.0f, screenW/100.0f, "%s %d", LANGUAGEPHRASE("bootloader_life_17"), m_totalAge );

@@ -526,7 +526,7 @@ void Camera::AdvanceSphereWorldFocusMode()
     // then eventually reach full speed
     float timeSinceBegin = GetHighResTime() - m_trackTimer;
     float moveFactor = timeSinceBegin * 0.2f;
-    moveFactor = min( moveFactor, 1.0f );
+    moveFactor = std::min( moveFactor, 1.0f );
 
     float factor1 = moveFactor * 0.5f * g_advanceTime;
     float factor2 = 1.0f - factor1;
@@ -802,14 +802,14 @@ void Camera::AdvanceBuildingFocusMode()
     // then eventually reach full speed
     float timeSinceBegin = GetHighResTime() - m_trackTimer;
     float moveFactor = timeSinceBegin * 1.0f;
-    moveFactor = min( moveFactor, 1.0f );
+    moveFactor = std::min( moveFactor, 1.0f );
 
     if( timeSinceBegin < 2.0f )
     {
         // Make the camera lift up when first moving towards a building
         float distance = ( m_pos - realTargetPos ).Mag();
         realTargetPos.y += distance * 0.75f * ( 2.0f - timeSinceBegin );
-        realTargetPos.y = min( realTargetPos.y, 1000.0f );
+        realTargetPos.y = std::min( realTargetPos.y, 1000.0f );
     }
 
     float factor1 = moveFactor * 0.5f * g_advanceTime;
@@ -1032,8 +1032,8 @@ bool Camera::AdvanceManualCameraHeight( Vector3 &cameraTarget )
 		    g_app->m_controlHelpSystem->RecordCondUsed(ControlHelpSystem::CondCameraDown);
 	    }
 
-	    m_heightMultiplier = min( 2.0f, m_heightMultiplier );
-	    m_heightMultiplier = max( m_heightMultiplier, 0.25f );
+	    m_heightMultiplier = std::min( 2.0f, m_heightMultiplier );
+	    m_heightMultiplier = std::max( m_heightMultiplier, 0.25f );
 
 	    if( camDown )
 	    {
@@ -1401,7 +1401,7 @@ void Camera::AdvanceTurretAimMode()
     //float minY = g_app->m_location->m_landscape.m_heightMap->GetValue(groundPos.x, groundPos.z);
 
     groundPos -= m_front * m_height;
-    //groundPos.y = max( groundPos.y, minY );
+    //groundPos.y = std::max( groundPos.y, minY );
 
 	//groundPos.y = ;
     //groundPos.y -= 10.0f;
@@ -1710,7 +1710,7 @@ Camera::Camera()
 
 void Camera::CreateCameraShake(float _intensity)
 {
-    m_cameraShake = max( m_cameraShake, _intensity );
+    m_cameraShake = std::max( m_cameraShake, _intensity );
 }
 
 
@@ -1933,7 +1933,7 @@ void Camera::AdvanceComponentMouseWheelHeight()
 
 		if (m_mode == ModeTurretAim)
         {
-            m_height = max( m_height, MIN_GROUND_CLEARANCE );
+            m_height = std::max( m_height, MIN_GROUND_CLEARANCE );
         }
 		else
         {

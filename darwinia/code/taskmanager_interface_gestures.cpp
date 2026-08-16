@@ -964,8 +964,8 @@ void TaskManagerInterfaceGestures::RenderMessages()
 
         float timeRemaining = m_messageTimer - GetHighResTime();
         float alpha = timeRemaining * 0.5f;
-        alpha = min( alpha, 1.0f );
-        alpha = max( alpha, 0.0f );
+        alpha = std::min( alpha, 1.0f );
+        alpha = std::max( alpha, 0.0f );
         float size = 40.0f;
         if( timeRemaining < 2.0f )
         {
@@ -1919,7 +1919,7 @@ void TaskManagerInterfaceGestures::RenderResearch()
 
     float iconY = 120;
     float totalSize = (m_screenH - 116 - 30) / (float) numItemsResearched;
-    totalSize = min( totalSize, 50.0f );
+    totalSize = std::min( totalSize, 50.0f );
 
     for( int i = 0; i < GlobalResearch::NumResearchItems; ++i )
     {

@@ -1931,7 +1931,7 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
         float fraction = (_range*2.0f - distance) / _range*2.0f;
         //fraction *= (1.0f + syncfrand(0.3f));
         //fraction *= 1.5f;
-        fraction = min( 1.0f, fraction );
+        fraction = std::min( 1.0f, fraction );
 
         entity->ChangeHealth( _damage * fraction * -1.0f );
 
@@ -1991,8 +1991,8 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
             {
                 //float fraction = (_range*3.0f - dist) / _range*3.0f;
                 float fraction = 1.0f - dist / maxBuildingRange;
-                fraction = max( 0.0f, fraction );
-                fraction = min( 1.0f, fraction );
+                fraction = std::max( 0.0f, fraction );
+                fraction = std::min( 1.0f, fraction );
                 building->Damage( _damage * fraction * -1.0f );
             }
         }

@@ -165,8 +165,8 @@ int RayTraceLoader::CastRay( int _x, int _y,
 //        RenderRay( _x, _y, _dx, _dy, outgoingPoint, outgoingDir, _numStepsRemaining-1, _intensity*0.9f );
 
         float intensity = intersectNormal * m_light * -1.0f;
-        intensity = max( intensity, 0.0f );
-        intensity = min( intensity, 1.0f );
+        intensity = std::max( intensity, 0.0f );
+        intensity = std::min( intensity, 1.0f );
         intensity *= _intensity;
         colour *= intensity;
         colour.a = 255 * m_reflectiveness;
@@ -189,7 +189,7 @@ int RayTraceLoader::CastRay( int _x, int _y,
             if( hitFloorWhite )
             {
                 float intensity = 100000.0f / ( intersectPoint ).MagSquared();
-                intensity = min( intensity, 1.0f );
+                intensity = std::min( intensity, 1.0f );
                 intensity *= _intensity;
                 RGBAColour floorColour( 200, 200, 200, 200 );
                 floorColour *= intensity;
@@ -257,12 +257,12 @@ void RayTraceLoader::AdvanceObjects(float _advanceTime)
     angle1.RotateAroundX( _advanceTime*0.75f );        // 0.75
 
     float zPos = 700.0f - sqrtf( m_time - m_startTime ) * 150.0f;
-    zPos = max( zPos, 0.0f );
+    zPos = std::max( zPos, 0.0f );
 
 //    if( m_time > m_startTime + 45.0f )
 //    {
 //        m_pixelWave += 0.01f;
-//        m_pixelWave = min( m_pixelWave, 2.0f );
+//        m_pixelWave = std::min( m_pixelWave, 2.0f );
 //    }
 
     if( m_time > m_startTime + 60.0f )
@@ -304,13 +304,13 @@ void RayTraceLoader::AdvanceControls( float _advanceTime )
 	if( g_inputManager.controlEvent( ControlRTLoaderReflectivenessIncrease ) )
     {
         m_reflectiveness += _advanceTime;
-        m_reflectiveness = min( m_reflectiveness, 1.0f );
+        m_reflectiveness = std::min( m_reflectiveness, 1.0f );
     }
 
 	if( g_inputManager.controlEvent( ControlRTLoaderReflectivenessDecrease ) )
     {
         m_reflectiveness -= _advanceTime;
-        m_reflectiveness = max( m_reflectiveness, 0.0f );
+        m_reflectiveness = std::max( m_reflectiveness, 0.0f );
     }
 
 	if( g_inputManager.controlEvent( ControlRTLoaderPixelWaveIncrease ) )
@@ -321,19 +321,19 @@ void RayTraceLoader::AdvanceControls( float _advanceTime )
 	if( g_inputManager.controlEvent( ControlRTLoaderPixelWaveDecrease ) )
     {
         m_pixelWave -= _advanceTime;
-        m_pixelWave = max( m_pixelWave, 0.0f );
+        m_pixelWave = std::max( m_pixelWave, 0.0f );
     }
 
 	if( g_inputManager.controlEvent( ControlRTLoaderMotionBlurIncrease ) )
     {
         m_motionBlur += _advanceTime * 0.1f;
-        m_motionBlur = min( m_motionBlur, 1.0f );
+        m_motionBlur = std::min( m_motionBlur, 1.0f );
     }
 
 	if( g_inputManager.controlEvent( ControlRTLoaderMotionBlurDecrease ) )
     {
         m_motionBlur -= _advanceTime * 0.1f;
-        m_motionBlur = max( m_motionBlur, 0.0f );
+        m_motionBlur = std::max( m_motionBlur, 0.0f );
     }
 
 	if( g_inputManager.controlEvent( ControlRTLoaderPixelBlurIncrease ) )
@@ -344,7 +344,7 @@ void RayTraceLoader::AdvanceControls( float _advanceTime )
 	if( g_inputManager.controlEvent( ControlRTLoaderPixelBlurDecrease ) )
     {
         m_pixelBlur--;
-        m_pixelBlur = max( m_pixelBlur, 1.0f );
+        m_pixelBlur = std::max( m_pixelBlur, 1.0f );
     }
 
 	if( g_inputManager.controlEvent( ControlRTLoaderBrightnessIncrease ) )
@@ -360,13 +360,13 @@ void RayTraceLoader::AdvanceControls( float _advanceTime )
 	if( g_inputManager.controlEvent( ControlRTLoaderResolutionDecrease ) )
     {
         m_resolution--;
-        m_resolution = max( m_resolution, 1 );
+        m_resolution = std::max( m_resolution, 1 );
     }
 
 	if( g_inputManager.controlEvent( ControlRTLoaderResolutionIncrease ) )
     {
         m_resolution++;
-        m_resolution = min( m_resolution, RAYTRACELOADER_MAXRES );
+        m_resolution = std::min( m_resolution, RAYTRACELOADER_MAXRES );
     }
 
 	if( g_inputManager.controlEvent( ControlRTLoaderCameraMode1 ) ) m_cameraMode = 0;
@@ -421,8 +421,8 @@ void RayTraceLoader::RenderMessage()
             alpha = 1.0f - alpha;
         }
 
-        alpha = min( alpha, 1.0f );
-        alpha = max( alpha, 0.0f );
+        alpha = std::min( alpha, 1.0f );
+        alpha = std::max( alpha, 0.0f );
 
         float screenX = 160;
         screenX += sinf(m_time*2.0f) * 0.5f;

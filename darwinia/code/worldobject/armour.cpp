@@ -85,8 +85,8 @@ void Armour::ChangeHealth( int _amount )
 
         int oldHealth = m_stats[StatHealth];
         int newHealth = oldHealth + _amount;
-        newHealth = max( newHealth, 0 );
-        newHealth = min( newHealth, 255 );
+        newHealth = std::max( newHealth, 0 );
+        newHealth = std::min( newHealth, 255 );
         m_stats[StatHealth] = newHealth;
 
         int healthBandBefore = int(oldHealth / 20.0f);
@@ -171,7 +171,7 @@ void Armour::AdvanceToTargetPos()
     else
     {
         m_speed -= 5.0f * SERVER_ADVANCE_PERIOD;
-        m_speed = max( m_speed, 0.0f );
+        m_speed = std::max( m_speed, 0.0f );
     }
 
 
@@ -201,7 +201,7 @@ void Armour::AdvanceToTargetPos()
     {
         m_vel.y -= 5.0f;
         m_pos.y += m_vel.y * SERVER_ADVANCE_PERIOD;
-        m_pos.y = max( m_pos.y, landHeight );
+        m_pos.y = std::max( m_pos.y, landHeight );
 
         float factor = SERVER_ADVANCE_PERIOD * 0.5f;
         Vector3 landUp = g_app->m_location->m_landscape.m_normalMap->GetValue( m_pos.x, m_pos.z );
@@ -520,7 +520,7 @@ void Armour::Render( float _predictionTime )
 
     Vector3 predictedPos = m_pos + m_vel * _predictionTime;
     //predictedPos.y = g_app->m_location->m_landscape.m_heightMap->GetValue( predictedPos.x, predictedPos.z );
-    //predictedPos.y = max( predictedPos.y, 0.0f );
+    //predictedPos.y = std::max( predictedPos.y, 0.0f );
     predictedPos.y += sinf(g_gameTime + m_id.GetUniqueId() ) * 2;
     Vector3 predictedUp = m_up;         //g_app->m_location->m_landscape.m_normalMap->GetValue( predictedPos.x, predictedPos.z );
     predictedUp.x += sinf( (g_gameTime + m_id.GetUniqueId() ) * 2 ) * 0.05f;

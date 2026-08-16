@@ -690,8 +690,8 @@ void Renderer::RenderFrame(bool withFlip)
             alpha = 1.0f;
         }
 
-        alpha = max( alpha, 0.0f );
-        alpha = min( alpha, 1.0f );
+        alpha = std::max( alpha, 0.0f );
+        alpha = std::min( alpha, 1.0f );
 
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR );
         glEnable( GL_BLEND );

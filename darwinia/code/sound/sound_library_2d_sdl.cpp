@@ -71,7 +71,7 @@ void SoundLibrary2dSDL::TopupBuffer()
 			unsigned int samplesStored = 0;
 			while (samplesStored < totalSamplesRequested)
 			{
-				unsigned int samplesRequested = min(m_freq, totalSamplesRequested - samplesStored);
+				unsigned int samplesRequested = std::min(m_freq, totalSamplesRequested - samplesStored);
 				
 				m_callback(m_callbackBuffer, samplesRequested);
 				m_ringBuffer->StoreAudio((short *)(m_callbackBuffer+samplesStored),
@@ -90,7 +90,7 @@ SoundLibrary2dSDL::SoundLibrary2dSDL()
 {
 	DarwiniaReleaseAssert(!g_soundLibrary2d, "SoundLibrary2dSDL already exists");
 
-	m_freq = min(g_prefsManager->GetInt("SoundMixFreq", 44100), 44100);
+	m_freq = std::min(g_prefsManager->GetInt("SoundMixFreq", 44100), 44100);
 #ifdef INVOKE_CALLBACK_FROM_SOUND_THREAD
 	m_samplesPerBuffer = g_prefsManager->GetInt("SoundBufferSize", 2000);
 #else

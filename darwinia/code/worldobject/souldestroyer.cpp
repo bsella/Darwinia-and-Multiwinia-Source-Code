@@ -71,8 +71,8 @@ void SoulDestroyer::ChangeHealth( int _amount )
         Entity::ChangeHealth(_amount);
 
         float fractionDead = 1.0f - (float) m_stats[StatHealth] / (float) EntityBlueprint::GetStat( TypeSoulDestroyer, StatHealth );
-        fractionDead = max( fractionDead, 0.0f );
-        fractionDead = min( fractionDead, 1.0f );
+        fractionDead = std::max( fractionDead, 0.0f );
+        fractionDead = std::min( fractionDead, 1.0f );
         if( m_dead ) fractionDead = 1.0f;
 
         Panic( 2.0f + syncfrand(2.0f) );
@@ -96,7 +96,7 @@ void SoulDestroyer::ChangeHealth( int _amount )
                 float scale = 1.0f - ( (float) i / (float) m_positionHistory.Size() );
                 scale *= 1.5f;
                 if( i == m_positionHistory.Size()-1 )   scale = 0.8f;
-                scale = max( scale, 0.5f );
+                scale = std::max( scale, 0.5f );
 
                 Matrix34 tailMat( front, up, pos );
                 tailMat.u *= scale;
@@ -231,7 +231,7 @@ void SoulDestroyer::Panic( float _time )
         g_app->m_soundSystem->TriggerEntityEvent( this, "Panic" );
     }
 
-    m_panic = max( _time, m_panic );
+    m_panic = std::max( _time, m_panic );
 }
 
 
@@ -249,7 +249,7 @@ bool SoulDestroyer::SearchForRetreatPosition()
         float angle = syncsfrand( M_PI * 1.0f );
         retreatVector.RotateAroundY( angle );
         m_targetPos = m_pos + retreatVector * distance;
-        m_targetPos.y = min( m_targetPos.y, 300.0f );
+        m_targetPos.y = std::min( m_targetPos.y, 300.0f );
         return true;
     }
 
@@ -341,8 +341,8 @@ void SoulDestroyer::RecordHistoryPosition()
 
     //int maxHistorys = 11;
     int maxHistorys = m_roamRange / 30.0f;
-    maxHistorys = max( 9, maxHistorys );
-    maxHistorys = min( 25, maxHistorys );
+    maxHistorys = std::max( 9, maxHistorys );
+    maxHistorys = std::min( 25, maxHistorys );
 
     for( int i = maxHistorys; i < m_positionHistory.Size(); ++i )
     {
@@ -391,7 +391,7 @@ bool SoulDestroyer::AdvanceToTargetPosition()
     Vector3 oldPos = m_pos;
     Vector3 newPos = m_pos + actualDir * speed * SERVER_ADVANCE_PERIOD;
     landHeight = g_app->m_location->m_landscape.m_heightMap->GetValue( newPos.x, newPos.z );
-    //newPos.y = max( newPos.y, landHeight );
+    //newPos.y = std::max( newPos.y, landHeight );
 
     Vector3 moved = newPos - oldPos;
     if( moved.Mag() > speed * SERVER_ADVANCE_PERIOD ) moved.SetLength( speed * SERVER_ADVANCE_PERIOD );
@@ -451,7 +451,7 @@ void SoulDestroyer::RenderShapes( float _predictionTime )
         float scale = 1.0f - ( (float) i / (float) m_positionHistory.Size() );
         scale *= 1.5f;
         if( i == m_positionHistory.Size()-1 )   scale = 0.8f;
-        scale = max( scale, 0.5f );
+        scale = std::max( scale, 0.5f );
 
         Matrix34 tailMat( front, up, pos );
         tailMat.u *= scale;
@@ -493,7 +493,7 @@ void SoulDestroyer::RenderShapesForPixelEffect( float _predictionTime )
         float scale = 1.0f - ( (float) i / (float) m_positionHistory.Size() );
         scale *= 1.5f;
         if( i == m_positionHistory.Size()-1 )   scale = 0.8f;
-        scale = max( scale, 0.5f );
+        scale = std::max( scale, 0.5f );
 
         Matrix34 tailMat( front, up, pos );
         tailMat.u *= scale;
@@ -547,7 +547,7 @@ void SoulDestroyer::Render( float _predictionTime )
             float scale = 1.0f - ( (float) i / (float) m_positionHistory.Size() );
             scale *= 1.5f;
             if( i == m_positionHistory.Size()-1 )   scale = 0.8f;
-            scale = max( scale, 0.5f );
+            scale = std::max( scale, 0.5f );
 
             RenderShadow( pos, scale*20.0f );
         }
@@ -577,8 +577,8 @@ void SoulDestroyer::Render( float _predictionTime )
                 else
                 {
                     float alpha = 1.0f - (timeNow - m_spirits[i]) / 60.0f;
-                    alpha = min( alpha, 1.0f );
-                    alpha = max( alpha, 0.0f );
+                    alpha = std::min( alpha, 1.0f );
+                    alpha = std::max( alpha, 0.0f );
                     Vector3 pos = m_pos + m_spiritPosition[i];
                     pos += m_vel * _predictionTime;
                     RenderSpirit( pos, alpha );
@@ -713,8 +713,8 @@ void Zombie::Render( float _predictionTime )
     float size = 5.0f;
 
     float alpha = 1.0f - (m_life/10.0f);
-    alpha = max( 0.1f, alpha );
-    alpha = min( 0.7f, alpha );
+    alpha = std::max( 0.1f, alpha );
+    alpha = std::min( 0.7f, alpha );
 
     float outerAlpha = (0.7f-alpha) * 0.1f;
 

@@ -262,7 +262,7 @@ bool DynamicHub::ChangeScore( int _points )
         m_currentScore < m_requiredScore )
     {
         m_currentScore += _points;
-        m_currentScore = min( m_currentScore, m_requiredScore );
+        m_currentScore = std::min( m_currentScore, m_requiredScore );
         return true;
     }
     return false;

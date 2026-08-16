@@ -147,8 +147,6 @@
 	#define stricmp strcasecmp
 	#define strnicmp strncasecmp
 	#define __stdcall
-	template<class T> inline T min (T a, T b) { return (a < b) ? a : b; }
-	template<class T> inline T max (T a, T b) { return (a > b) ? a : b; }
 	inline char * strlwr(char *s) {
 	  for (char *p = s; *p; p++)
 		*p = tolower(*p);
@@ -180,9 +178,6 @@
 	#include <ctype.h>
 	#define stricmp strcasecmp
 	#define strnicmp strncasecmp
-
-	template<class T> inline T min (T a, T b) { return (a < b) ? a : b; };
-	template<class T> inline T max (T a, T b) { return (a > b) ? a : b; };
 
 	inline char * strlwr(char *s) {
 	  for (char *p = s; *p; p++)

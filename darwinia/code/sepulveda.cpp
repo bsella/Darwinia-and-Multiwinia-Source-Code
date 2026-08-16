@@ -214,7 +214,7 @@ void Sepulveda::Advance()
         float timeNow = GetHighResTime();
         for( int i = 0; i < m_history.Size(); ++i )
         {
-            m_history[i]->m_timeSync = max( m_history[i]->m_timeSync, timeNow - 3.0f );
+            m_history[i]->m_timeSync = std::max( m_history[i]->m_timeSync, timeNow - 3.0f );
         }
     }
 
@@ -564,8 +564,8 @@ float Sepulveda::GetCaptionAlpha( float _timeSync )
 {
     float timePassed = GetHighResTime() - _timeSync;
     float alphaScale = 1.0f - timePassed / 20.0f;
-    alphaScale = max( alphaScale, 0.0f );
-    alphaScale = min( alphaScale, 1.0f );
+    alphaScale = std::max( alphaScale, 0.0f );
+    alphaScale = std::min( alphaScale, 1.0f );
     return alphaScale;
 }
 
@@ -616,7 +616,7 @@ void Sepulveda::RenderTextBoxCutsceneMode()
     if( m_caption[0] != '\0' )
     {
         //m_fade = m_fade * 0.95f + 0.05f;
-        //m_fade = min( 1.0f, m_fade );
+        //m_fade = std::min( 1.0f, m_fade );
         m_fade = 1.0f;
     }
     else
@@ -752,7 +752,7 @@ void Sepulveda::RenderTextBoxTaskManagerMode()
     if( m_caption[0] != '\0' )
     {
         m_fade = m_fade * 0.95f + 0.05f;
-        m_fade = min( 1.0f, m_fade );
+        m_fade = std::min( 1.0f, m_fade );
     }
     else
     {
@@ -918,8 +918,8 @@ void Sepulveda::RenderFace( float _x, float _y, float _w, float _h, float _alpha
 
     currentZoomFactor = currentZoomFactor * ( 1.0f-(g_advanceTime*4) ) + (zoomFactor*g_advanceTime*4);
     currentOffsetX = currentOffsetX * ( 1.0f-(g_advanceTime*4) ) + (offsetX*g_advanceTime*4);
-    currentOffsetX = min( currentOffsetX, currentZoomFactor );
-    currentOffsetX = max( currentOffsetX, -currentZoomFactor );
+    currentOffsetX = std::min( currentOffsetX, currentZoomFactor );
+    currentOffsetX = std::max( currentOffsetX, -currentZoomFactor );
 
     texX += currentZoomFactor;
     texX += currentOffsetX;
@@ -1051,7 +1051,7 @@ void Sepulveda::RenderTextBox()
     if( m_caption[0] != '\0' )
     {
         m_fade = m_fade * 0.95f + 0.05f;
-        m_fade = min( 1.0f, m_fade );
+        m_fade = std::min( 1.0f, m_fade );
     }
     else
     {
@@ -1171,7 +1171,7 @@ void Sepulveda::RenderTextBox()
                     }
 
                     float outlineAlpha = alpha * alphaScale;
-                    outlineAlpha = max( outlineAlpha, 0.0f );
+                    outlineAlpha = std::max( outlineAlpha, 0.0f );
 
                     g_gameFont.SetRenderOutline(true);
                     glColor4f( alpha*alphaScale*outlineAlpha, alpha*alphaScale*outlineAlpha, alpha*alphaScale*outlineAlpha, 0.0f );

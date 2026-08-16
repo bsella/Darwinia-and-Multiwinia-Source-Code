@@ -278,7 +278,7 @@ void Script::RunCommand_ShutUp()
 
 void Script::RunCommand_Wait(double _time)
 {
-    m_waitUntil = max( m_waitUntil,
+    m_waitUntil = std::max( m_waitUntil,
                        GetHighResTime() + _time );
 }
 

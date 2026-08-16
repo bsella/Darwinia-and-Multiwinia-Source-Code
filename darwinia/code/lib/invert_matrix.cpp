@@ -117,7 +117,7 @@ double inv(Matrix A, Matrix& Ainv)
   for( i=1; i<=N; i++ )
     b(i,i) = 1.0;
 
-  //* Set scale factor, scale(i) = max( |a(i,j)| ), for each row
+  //* Set scale factor, scale(i) = std::max( |a(i,j)| ), for each row
   for( i=1; i<=N; i++ ) {
     index[i] = i;			  // Initialize row index list
     double scalemax = 0.;
@@ -129,7 +129,7 @@ double inv(Matrix A, Matrix& Ainv)
   //* Loop over rows k = 1, ..., (N-1)
   int signDet = 1;
   for( k=1; k<=N-1; k++ ) {
-	//* Select pivot row from max( |a(j,k)/s(j)| )
+	//* Select pivot row from std::max( |a(j,k)/s(j)| )
     double ratiomax = 0.0;
 	int jPivot = k;
     for( i=k; i<=N; i++ ) {

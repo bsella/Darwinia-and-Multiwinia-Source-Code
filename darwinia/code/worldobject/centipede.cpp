@@ -64,7 +64,7 @@ void Centipede::Begin()
         if( myUnit )
         {
             float size = 0.2f * pow(1.1f, myUnit->m_entities.Size() );
-            size = min( size, 10.0f );
+            size = std::min( size, 10.0f );
 
             Centipede *prev = nullptr;
 
@@ -141,7 +141,7 @@ void Centipede::Panic( float _time )
         g_app->m_soundSystem->TriggerEntityEvent( this, "Panic" );
     }
 
-    m_panic = max( _time, m_panic );
+    m_panic = std::max( _time, m_panic );
 
     if( m_next.IsValid() )
     {
@@ -260,7 +260,7 @@ bool Centipede::Advance( Unit *_unit )
     {
         Centipede *prev = (Centipede *) g_app->m_location->GetEntitySafe( m_prev, TypeCentipede );
         targetSize = prev->m_size * 1.1f;
-        targetSize = min( targetSize, 1.0f );
+        targetSize = std::min( targetSize, 1.0f );
     }
 
     if( fabs( targetSize - m_size ) > 0.01f )
@@ -407,7 +407,7 @@ void Centipede::EatSpirits()
 
             centipede->m_pos = m_spawnPoint;
             centipede->m_size = tail->m_size;
-            centipede->m_size = max( 0.2f, centipede->m_size );
+            centipede->m_size = std::max( 0.2f, centipede->m_size );
             centipede->m_spawnPoint = m_spawnPoint;
             centipede->m_roamRange = m_roamRange;
             centipede->Begin();

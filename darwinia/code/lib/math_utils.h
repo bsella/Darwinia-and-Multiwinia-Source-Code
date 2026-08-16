@@ -25,11 +25,11 @@ inline float syncsfrand( float range = 1.0f ) { return (syncfrand() - 0.5f) * ra
 #endif
 
 //#ifndef max
-//#define max(a,b)            (((a) > (b)) ? (a) : (b))
+//#define std::max(a,b)            (((a) > (b)) ? (a) : (b))
 //#endif
 //
 //#ifndef min
-//#define min(a,b)            (((a) < (b)) ? (a) : (b))
+//#define std::min(a,b)            (((a) < (b)) ? (a) : (b))
 //#endif
 
 #define sign(a)				((a) < 0 ? -1 : 1)

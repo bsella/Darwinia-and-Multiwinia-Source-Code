@@ -117,8 +117,8 @@ class ExitDemoButton : public DarwiniaButton
 
         if( !window->ShowExitButton() )
         {
-            alpha = min( 0.1f, alpha );
-            buttonAlpha = min( 0.1f, buttonAlpha );
+            alpha = std::min( 0.1f, alpha );
+            buttonAlpha = std::min( 0.1f, buttonAlpha );
         }
 
         //
@@ -205,8 +205,8 @@ float DemoEndWindow::GetAlpha()
     float timeNow = GetHighResTime();
 
     float alpha = ( timeNow - m_timer ) / m_fadeInTime;
-    alpha = max( alpha, 0.0f );
-    alpha = min( alpha, 0.9f );
+    alpha = std::max( alpha, 0.0f );
+    alpha = std::min( alpha, 0.9f );
 
     return alpha;
 }

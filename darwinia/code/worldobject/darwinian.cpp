@@ -2146,7 +2146,7 @@ void Darwinian::Render( float _predictionTime, float _highDetail )
     if( _highDetail > 0.0f && m_shadowBuildingId == -1 && !m_dead )
     {
         int alpha = 150 * _highDetail;
-        alpha = min( alpha, 255 );
+        alpha = std::min( alpha, 255 );
         glColor4ub( 0, 0, 0, alpha  );
 
         Vector3 pos1 = predictedPos - entityRight;
@@ -2271,8 +2271,8 @@ void Darwinian::Render( float _predictionTime, float _highDetail )
                         alpha = 0.0f;
                     }
                 }
-                alpha = min( alpha, 1.0f );
-                alpha = max( alpha, 0.0f );
+                alpha = std::min( alpha, 1.0f );
+                alpha = std::max( alpha, 0.0f );
 
                 if( alpha > 0.0f )
                 {

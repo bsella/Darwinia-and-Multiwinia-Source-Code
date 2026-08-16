@@ -155,7 +155,7 @@ void FeedingTube::RenderSignal( float _predictionTime, float _radius, float _alp
     float distance = (startPos - endPos).Mag();
     float numRadii = 20.0f;
     int numSteps = int( distance / 200.0f );
-    numSteps = max( 1, numSteps );
+    numSteps = std::max( 1, numSteps );
 
     glEnable            (GL_TEXTURE_2D);
 

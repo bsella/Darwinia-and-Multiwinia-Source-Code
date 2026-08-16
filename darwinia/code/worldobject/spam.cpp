@@ -72,8 +72,8 @@ void Spam::Damage( float _damage )
     if( newHealthBand <= 0 || newHealthBand < oldHealthBand )
     {
         float percentDead = 1.0f - m_damage / SPAM_DAMAGE;
-        percentDead = min( percentDead, 1.0f );
-        percentDead = max( percentDead, 0.0f );
+        percentDead = std::min( percentDead, 1.0f );
+        percentDead = std::max( percentDead, 0.0f );
         Matrix34 mat( m_front, g_upVector, m_pos );
         g_explosionManager.AddExplosion( m_shape, mat, percentDead );
     }
@@ -158,7 +158,7 @@ void Spam::RenderAlphas( float _predictionTime )
         pos.z += cosf(timeIndex+i) * i * 0.3f;
 
         float size = 5.0f + sinf(timeIndex+i*10) * 7.0f;
-        size = max( size, 2.0f );
+        size = std::max( size, 2.0f );
 
         //glColor4f( 0.6f, 0.2f, 0.1f, alpha);
         glColor4f( 0.9f, 0.2f, 0.2f, alpha);
@@ -387,7 +387,7 @@ bool SpamInfection::SearchForRandomPosition()
     m_targetPos.z += syncsfrand(200.0f);
 
     float landHeight = g_app->m_location->m_landscape.m_heightMap->GetValue( m_targetPos.x, m_targetPos.z );
-    m_targetPos.y = max( m_targetPos.y, landHeight );
+    m_targetPos.y = std::max( m_targetPos.y, landHeight );
 
     return true;
 }
@@ -602,8 +602,8 @@ void SpamInfection::Render( float _time )
     glEnable( GL_BLEND );
     //glDepthMask( false );
     int maxLength = SPAMINFECTION_TAILLENGTH * (m_life / SPAMINFECTION_LIFE);
-    maxLength = max( maxLength, 2 );
-    maxLength = min( maxLength, m_positionHistory.Size() );
+    maxLength = std::max( maxLength, 2 );
+    maxLength = std::min( maxLength, m_positionHistory.Size() );
 
     Vector3 camPos = g_app->m_camera->GetPos();
     int numRepeats = 4;
