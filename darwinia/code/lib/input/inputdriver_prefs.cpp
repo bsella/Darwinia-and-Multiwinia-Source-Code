@@ -2,8 +2,6 @@
 #include <vector>
 #include "lib/input/inputdriver_prefs.h"
 
-using namespace std;
-
 enum {
 	COND_TRUE,
 	COND_FALSE
@@ -28,7 +26,7 @@ InputParserState PrefsInputDriver::parseInputSpecification( InputSpecTokens cons
 	state = STATE_WANT_CONTROL;
 	if ( idx >= tokens.length() ) return state;
 
-	string key = tokens[idx++];
+	std::string key = tokens[idx++];
 	spec.condition = COND_TRUE;
 	if ( "not" == key || "!" == key ) {
 		spec.condition = COND_FALSE;
@@ -73,7 +71,7 @@ void PrefsInputDriver::Advance()
 
 
 // In the same order as enum InputParserState (see inputdriver.h)
-static string errors[] = {
+static std::string errors[] = {
 	"An unknown error occurred.",
 	"The driver type was not recognised.",
 	"The preference key was not recognised.",
@@ -99,7 +97,7 @@ bool PrefsInputDriver::getInputDescription( InputSpec const &spec, InputDescript
 }
 
 
-int PrefsInputDriver::keyPosition( string const &key )
+int PrefsInputDriver::keyPosition( std::string const &key )
 {
 	for ( size_t i=0; i < m_keys.size(); i++ )
 		if ( m_keys[i] == key )

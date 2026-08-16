@@ -2,10 +2,7 @@
 #include "lib/input/input.h"
 #include <utility>
 
-using namespace std;
-
-
-static string nullErr = "";
+static std::string nullErr = "";
 
 
 ConjoinInputDriver::ConjoinInputDriver()
@@ -19,7 +16,7 @@ ConjoinInputDriver::ConjoinInputDriver()
 InputParserState ConjoinInputDriver::parseInputSpecification( InputSpecTokens const &tokens,
                                                               InputSpec &spec )
 {
-	string s = "";
+	std::string s = "";
 	InputSpecList speclist;
 	bool haveComplexInput = false;
 	bool hasParts = false;
@@ -37,7 +34,7 @@ InputParserState ConjoinInputDriver::parseInputSpecification( InputSpecTokens co
 			if ( PARSE_SUCCESS( pState ) ) {
 				if ( partspec.type > INPUT_TYPE_BOOL ) {
 					if ( haveComplexInput ) {
-						static string repError = "Too many complex inputs in conjunction.";
+						static std::string repError = "Too many complex inputs in conjunction.";
 						lastError = repError;
 						return STATE_CONJ_ERROR;
 					} else {
@@ -88,7 +85,7 @@ void ConjoinInputDriver::Advance()
 }
 
 
-const string &ConjoinInputDriver::getLastParseError( InputParserState )
+const std::string &ConjoinInputDriver::getLastParseError( InputParserState )
 {
 	return lastError;
 }

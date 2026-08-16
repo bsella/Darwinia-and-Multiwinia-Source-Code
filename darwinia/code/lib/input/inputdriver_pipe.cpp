@@ -1,5 +1,4 @@
 #include "lib/input/inputspec.h"
-#include "lib/universal_include.h"
 
 #include <memory>
 #include <sstream>
@@ -8,8 +7,6 @@
 #include "lib/input/input.h"
 #include "lib/input/inputfiltermanager.h"
 
-using namespace std;
-
 
 struct InputFilterWithArgs {
 	InputFilterSpec filter;
@@ -17,7 +14,7 @@ struct InputFilterWithArgs {
 };
 
 
-static string nullErr = "";
+static std::string nullErr = "";
 
 
 PipeInputDriver::PipeInputDriver()
@@ -28,11 +25,11 @@ PipeInputDriver::PipeInputDriver()
 }
 
 
-InputParserState PipeInputDriver::parseInputSpec( ostringstream &stream,
+InputParserState PipeInputDriver::parseInputSpec( std::ostringstream &stream,
                                                   InputSpecList &speclist )
 {
 	if ( stream.str() == "" ) {
-		static string emptyError = "An argument to the input converter is empty.";
+		static std::string emptyError = "An argument to the input converter is empty.";
 		lastError = emptyError;
 		return STATE_CONJ_ERROR;
 	}
@@ -51,7 +48,7 @@ InputParserState PipeInputDriver::parseInputSpec( ostringstream &stream,
 InputParserState PipeInputDriver::parseInputSpecification( InputSpecTokens const &tokens,
                                                            InputSpec &spec )
 {
-	string s = "";
+	std::string s = "";
 	std::unique_ptr<InputFilterWithArgs> filterWithArgs( new InputFilterWithArgs() );
 
 	spec.type = INPUT_TYPE_BOOL;
@@ -77,10 +74,10 @@ InputParserState PipeInputDriver::parseInputSpecification( InputSpecTokens const
 	// then parse the bits
 	int brackets = 0;
 	int parsingBrackets = 0;
-	ostringstream stream;
+	std::ostringstream stream;
 
 	stream.clear();
-	for ( string::const_iterator it = s.begin(); it != s.end(); ++it ) {
+	for ( std::string::const_iterator it = s.begin(); it != s.end(); ++it ) {
 		bool split = false;
 		switch ( *it ) {
 			case '[':
@@ -112,7 +109,7 @@ InputParserState PipeInputDriver::parseInputSpecification( InputSpecTokens const
 
 	// Check for unmatched brackets
 	if ( brackets != 0 ) {
-		static string bracketError = "Unmatched square brackets.";
+		static std::string bracketError = "Unmatched square brackets.";
 		lastError = bracketError;
 		return STATE_CONJ_ERROR;
 	}
@@ -147,7 +144,7 @@ void PipeInputDriver::Advance()
 }
 
 
-const string &PipeInputDriver::getLastParseError( InputParserState )
+const std::string &PipeInputDriver::getLastParseError( InputParserState )
 {
 	return lastError;
 }

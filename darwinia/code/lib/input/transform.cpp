@@ -1,10 +1,5 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/input/input.h"
+﻿#include "lib/input/input.h"
 #include "lib/input/transform.h"
-
-using namespace std;
-
 
 // ==================== class ControlEventFunctor ====================
 
@@ -28,7 +23,7 @@ bool ControlEventFunctor::operator()( InputDetails &details )
 }
 
 
-string ControlEventFunctor::noun()
+std::string ControlEventFunctor::noun()
 {
 	InputDescription desc;
 	g_inputManager.getBoundInputDescription( type, desc );
@@ -43,8 +38,8 @@ ToggleInputTransform::ToggleInputTransform( ControlType _on, ControlType _off )
   m_state( false ), m_change( false ) {}
 
 
-ToggleInputTransform::ToggleInputTransform( unique_ptr<InputTransform> _on,
-											unique_ptr<InputTransform> _off )
+ToggleInputTransform::ToggleInputTransform( std::unique_ptr<InputTransform> _on,
+											std::unique_ptr<InputTransform> _off )
 	: m_on( std::move(_on) ), m_off( std::move(_off) ), m_state( false ), m_change( false ) {}
 
 

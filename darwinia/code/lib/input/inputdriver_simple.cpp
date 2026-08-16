@@ -3,11 +3,8 @@
 #include "lib/input/inputspec.h"
 #include "lib/input/inputdriver_simple.h"
 
-using namespace std;
-
-
 // In the same order as enum InputParserState (see inputdriver.h)
-static string errors[] = {
+static std::string errors[] = {
 	"An unknown error occurred.",
 	"The driver type was not recognised.",
 	"The control type was not recognised.",
@@ -36,7 +33,7 @@ InputParserState SimpleInputDriver::parseInputSpecification( InputSpecTokens con
 } // End of parseInputSpecification
 
 
-bool SimpleInputDriver::acceptToken( InputParserState &state, string const &token,
+bool SimpleInputDriver::acceptToken( InputParserState &state, std::string const &token,
                                      InputSpec &spec ) {
 	switch ( state ) {
 
@@ -84,7 +81,7 @@ bool SimpleInputDriver::acceptToken( InputParserState &state, string const &toke
 }
 
 
-condition_t SimpleInputDriver::getConditionID( string const &name, inputtype_t &type ) {
+condition_t SimpleInputDriver::getConditionID( std::string const &name, inputtype_t &type ) {
 	return getDefaultConditionID( name, type );
 }
 
@@ -98,6 +95,6 @@ InputParserState SimpleInputDriver::parseExtraToken( std::string const &,
 	return STATE_BAD_EXTRA; // Got into STATE_WANT_MODIFIER with no handler.
 }
 
-const string &SimpleInputDriver::getLastParseError( InputParserState state ) {
+const std::string &SimpleInputDriver::getLastParseError( InputParserState state ) {
 	return errors[ state ];
 }

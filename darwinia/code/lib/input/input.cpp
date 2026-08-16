@@ -8,9 +8,6 @@
 
 #define Q(x) "\"" << x << "\""
 
-using namespace std;
-
-
 InputManager g_inputManager;
 
 
@@ -33,7 +30,7 @@ void InputManager::parseInputPrefs( TextReader &reader, bool replace )
 #ifdef TARGET_DEBUG
 	ofstream derr( "inputprefs_debug.txt" );
 #else
-	ostream &derr = cout;
+	std::ostream &derr = std::cout;
 #endif
 	while ( reader.ReadLine() ) {
 		// derr << "Line " << line++ << ": ";
@@ -45,12 +42,12 @@ void InputManager::parseInputPrefs( TextReader &reader, bool replace )
 				if ( eq && !strcmp( eq, "~" ) ) {
 					iconline = true;
 				} else {
-					derr << "Assignment not found." << endl;
+					derr << "Assignment not found." << std::endl;
 					continue;
 				}
 			}
 
-			string inputspec = reader.GetRestOfLine();
+			std::string inputspec = reader.GetRestOfLine();
 			controltype_t control_id = getControlID( control );
 			if ( control_id >= 0 ) {
 
@@ -62,35 +59,35 @@ void InputManager::parseInputPrefs( TextReader &reader, bool replace )
 						if ( inputspec[ len ] == '\r' )
 							inputspec = inputspec.substr( 0, len );
 						bindings.setIcon( control_id, inputspec );
-						derr << "Treated as icon: " << Q(bindings.getIcon( control_id )) << endl;
+						derr << "Treated as icon: " << Q(bindings.getIcon( control_id )) << std::endl;
 					} else
-						derr << "Empty icon line." << endl;
+						derr << "Empty icon line." << std::endl;
 					continue;
 				}
 
 				InputSpec spec;
-				string err;
+				std::string err;
 				if ( PARSE_SUCCESS( parseInputSpecString( inputspec, spec, err ) ) ) {
 					if ( bindings.bind( control_id, spec, replace ) )
-						derr << "Success. Driver = " << drivers[ spec.driver ]->getName() << endl;
+						derr << "Success. Driver = " << drivers[ spec.driver ]->getName() << std::endl;
 					else
-						derr << "Binding failed." << endl;
-				} else derr << "Parse failed - " << err << endl;
-			} else derr << "Control ID not found." << endl;
+						derr << "Binding failed." << std::endl;
+				} else derr << "Parse failed - " << err << std::endl;
+			} else derr << "Control ID not found." << std::endl;
 
-		} else derr << "Blank line." << endl;
+		} else derr << "Blank line." << std::endl;
 	}
 }
 
 
-InputParserState InputManager::parseInputSpecString( string const &description, InputSpec &spec, string &err )
+InputParserState InputManager::parseInputSpecString( std::string const &description, InputSpec &spec, std::string &err )
 {
 	InputSpecTokens tokens( description );
 	return parseInputSpecTokens( tokens, spec, err );
 }
 
 
-InputParserState InputManager::parseInputSpecTokens( InputSpecTokens const &tokens, InputSpec &spec, string &err )
+InputParserState InputManager::parseInputSpecTokens( InputSpecTokens const &tokens, InputSpec &spec, std::string &err )
 {
 	InputParserState state = STATE_ERROR;
 	InputParserState curr  = STATE_ERROR;
@@ -242,7 +239,7 @@ bool InputManager::getInputDescription( InputSpec const &spec, InputDescription 
 }
 
 
-controltype_t InputManager::getControlID( string const &control )
+controltype_t InputManager::getControlID( std::string const &control )
 {
 	return bindings.getControlID( control );
 }
@@ -254,10 +251,10 @@ void InputManager::getControlString( ControlType type, std::string &name )
 }
 
 
-void InputManager::replacePrimaryBinding( ControlType type, string const &prefString )
+void InputManager::replacePrimaryBinding( ControlType type, std::string const &prefString )
 {
 	InputSpec spec;
-	string err;
+	std::string err;
 	if ( PARSE_SUCCESS( parseInputSpecString( prefString, spec, err ) ) ) {
 		//bindings.replacePrimaryBinding( type, spec );
 		bindings.bind( type, spec, true );
@@ -287,8 +284,8 @@ void InputManager::printNumBindings()
 {
 	for ( controltype_t i = 0; i < NumControlTypes; ++i ) {
 		const InputSpecList &specs = bindings[ i ];
-		cout << "There are "
+		std::cout << "There are "
 		     << specs.size()
-	         << " binding for type " << i << endl;
+	         << " binding for type " << i << std::endl;
 	}
 }

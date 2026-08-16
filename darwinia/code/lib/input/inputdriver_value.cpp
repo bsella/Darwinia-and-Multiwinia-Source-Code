@@ -5,9 +5,6 @@
 #include "lib/preferences.h"
 #include "lib/input/inputdriver_value.h"
 
-using namespace std;
-
-
 enum {
 	#define DEF_VALUE(x,y) Value##x,
 	#include "lib/input/inputdriver_values.inc"
@@ -17,7 +14,7 @@ enum {
 };
 
 
-static string s_values[] = {
+static std::string s_values[] = {
 	#define DEF_VALUE(x,y) #x,
 	#include "lib/input/inputdriver_values.inc"
 	#undef DEF_VALUE
@@ -77,7 +74,7 @@ void ValueInputDriver::Advance()
 
 
 // In the same order as enum InputParserState (see inputdriver.h)
-static string errors[] = {
+static std::string errors[] = {
 	"An unknown error occurred.",
 	"The driver type was not recognised.",
 	"The value type was not recognised.",

@@ -3,7 +3,6 @@
 	#include <iostream>
 	#include "lib/debug.h"
 	#define TRACE_RET_B(x)  TRACE_LINE( "-> " << B(x) )
-	using namespace std;
 #else
 	#define TRACE_FUNC(x,y)
 	#define TRACE_LINE(x)

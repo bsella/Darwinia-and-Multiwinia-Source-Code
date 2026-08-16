@@ -2,13 +2,8 @@
 
 #include "lib/input/inputdriver_invert.h"
 #include "lib/input/input.h"
-#include <memory>
-//#include <fstream>
 
-using namespace std;
-
-
-static string nullErr = "";
+static std::string nullErr = "";
 
 
 InvertInputDriver::InvertInputDriver()
@@ -35,7 +30,7 @@ void InvertInputDriver::Advance()
 }
 
 
-const string &InvertInputDriver::getLastParseError( InputParserState )
+const std::string &InvertInputDriver::getLastParseError( InputParserState )
 {
 	return lastError;
 }
@@ -50,13 +45,13 @@ InputParserState InvertInputDriver::parseInputSpecification( InputSpecTokens con
 	if ( tokens.length() < 1 ) return STATE_ERROR;
 	if ( ( stricmp( tokens[0].c_str(), "not" ) == 0 ) ||
 	     tokens[0] == "!" ) {
-		unique_ptr<InputSpecTokens> newtokens = tokens( 1, -1 );
+		std::unique_ptr<InputSpecTokens> newtokens = tokens( 1, -1 );
 		//derr << "Part: " << *newtokens << endl;
 		InputSpec invspec;
 		InputParserState state = g_inputManager.parseInputSpecTokens( *newtokens, invspec, lastError );
 		if ( PARSE_SUCCESS( state ) ) {
 			if ( invspec.type != INPUT_TYPE_BOOL ) {
-				static string complexErr = "Complex input types cannot be negated.";
+				static std::string complexErr = "Complex input types cannot be negated.";
 				lastError = complexErr;
 				return STATE_CONJ_ERROR; // This check may be too restrictive
 			}

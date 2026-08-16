@@ -1,22 +1,17 @@
-﻿#include "lib/universal_include.h"
-
-#include <string>
+﻿#include <string>
 #include <sstream>
 
 #include "lib/input/inputspec.h"
 
-using namespace std;
-
-
-InputSpecTokens::InputSpecTokens( vector<string> _tokens )
+InputSpecTokens::InputSpecTokens( std::vector<std::string> _tokens )
 : m_tokens( _tokens ) {}
 
 
-InputSpecTokens::InputSpecTokens( string _string )
+InputSpecTokens::InputSpecTokens( std::string _string )
 : m_tokens()
 {
-	istringstream in( _string );
-	string token;
+	std::istringstream in( _string );
+	std::string token;
 
 	m_tokens.clear();
 
@@ -35,7 +30,7 @@ unsigned InputSpecTokens::length() const
 }
 
 
-const string &InputSpecTokens::operator[] ( unsigned _index ) const
+const std::string &InputSpecTokens::operator[] ( unsigned _index ) const
 {
 	if ( 0 <= _index && _index < length() )
 		return m_tokens[ _index ];
@@ -46,7 +41,7 @@ const string &InputSpecTokens::operator[] ( unsigned _index ) const
 
 std::unique_ptr<InputSpecTokens> InputSpecTokens::operator()( int _start, int _end ) const {
 
-	vector<string> vec;
+	std::vector<std::string> vec;
 	vec.clear();
 
 	int len = length();

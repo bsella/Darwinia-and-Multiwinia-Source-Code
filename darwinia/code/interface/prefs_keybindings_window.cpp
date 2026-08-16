@@ -1,5 +1,4 @@
 ﻿#include <string>
-#include <memory>
 
 #include "lib/preferences.h"
 #include "lib/text_renderer.h"
@@ -19,9 +18,6 @@
 #include "renderer.h"
 #include "taskmanager_interface_gestures.h"
 #include "taskmanager_interface_icons.h"
-
-using namespace std;
-
 
 #define CONTROL_MOUSEBUTTONS "ControlMouseButtons"
 #define CONTROL_METHOD "ControlMethod"
@@ -85,7 +81,7 @@ class ApplyKeybindingsButton : public DarwiniaButton
     void MouseUp()
     {
         PrefsKeybindingsWindow *parent = (PrefsKeybindingsWindow *) m_parent;
-		string key, val;
+		std::string key, val;
 		PrefsManager prefsMan( InputPrefs::GetUserPrefsPath() );
 		prefsMan.Clear();
 
@@ -97,8 +93,8 @@ class ApplyKeybindingsButton : public DarwiniaButton
 			g_inputManager.replacePrimaryBinding( s_controls[ i ].type, val );
 
 			if ( ControlIconsTaskManagerDisplay == s_controls[ i ].type ) {
-				string::size_type pos = val.find( "down", 0 );
-				if ( pos != string::npos ) {
+				std::string::size_type pos = val.find( "down", 0 );
+				if ( pos != std::string::npos ) {
 					g_inputManager.getControlString( ControlIconsTaskManagerHide, key );
 					val = val.replace( pos, 4, "up", 0, 2 );
 					prefsMan.SetString( key.c_str(), val.c_str() );
