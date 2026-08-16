@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <string>
 
 #include "lib/input/input_types.h"
@@ -11,12 +9,6 @@ using std::string;
 
 InputDescription::InputDescription()
 : noun(), verb(), pref() {}
-
-
-InputDescription::InputDescription( InputDescription const &_desc )
-: noun( _desc.noun ), verb( _desc.verb ),
-  pref( _desc.pref ), translated( _desc.translated ) {}
-
 
 InputDescription::InputDescription( string const &_noun, string const &_verb,
                                     string const &_pref, bool _translated )

@@ -1,5 +1,7 @@
+#include "lib/input/inputspec.h"
 #include "lib/universal_include.h"
 
+#include <memory>
 #include <sstream>
 
 #include "lib/input/inputdriver_pipe.h"
@@ -36,9 +38,9 @@ InputParserState PipeInputDriver::parseInputSpec( ostringstream &stream,
 	}
 
 	InputSpec spec;
-	InputParserState pState = g_inputManager->parseInputSpecString( stream.str(), spec, lastError );
+	InputParserState pState = g_inputManager.parseInputSpecString( stream.str(), spec, lastError );
 	if ( PARSE_SUCCESS( pState ) ) {
-		speclist.push_back( InputSpecPtr( new InputSpec( spec ) ) );
+		speclist.emplace_back( std::make_unique<InputSpec>(spec) );
 		stream.str("");
 		return pState;
 	} else
@@ -50,7 +52,7 @@ InputParserState PipeInputDriver::parseInputSpecification( InputSpecTokens const
                                                            InputSpec &spec )
 {
 	string s = "";
-	auto_ptr<InputFilterWithArgs> filterWithArgs( new InputFilterWithArgs() );
+	std::unique_ptr<InputFilterWithArgs> filterWithArgs( new InputFilterWithArgs() );
 
 	spec.type = INPUT_TYPE_BOOL;
 

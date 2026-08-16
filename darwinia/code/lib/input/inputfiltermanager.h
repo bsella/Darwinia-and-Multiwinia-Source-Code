@@ -3,10 +3,8 @@
 
 #include <string>
 
-#include "lib/auto_vector.h"
 #include "lib/input/inputfilter.h"
 #include "lib/input/inputfilterspec.h"
-#include "lib/input/inputspeclist.h"
 #include "lib/input/input_types.h"
 
 

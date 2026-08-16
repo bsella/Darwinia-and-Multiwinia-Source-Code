@@ -22,7 +22,7 @@ InvertInputDriver::InvertInputDriver()
 bool InvertInputDriver::getInput( InputSpec const &spec, InputDetails &details )
 {
 	if ( 0 <= spec.control_id && spec.control_id < m_specs.size() ) {
-		const InputSpec &invspec = *(m_specs[ spec.control_id ]);
+		const InputSpec &invspec = m_specs[ spec.control_id ];
 		bool ans = !( g_inputManager.checkInput( invspec, details ) );
 		return ans;
 	}
@@ -60,7 +60,7 @@ InputParserState InvertInputDriver::parseInputSpecification( InputSpecTokens con
 				lastError = complexErr;
 				return STATE_CONJ_ERROR; // This check may be too restrictive
 			}
-			m_specs.push_back( new InputSpec( invspec ) );
+			m_specs.emplace_back( invspec );
 			spec.type = INPUT_TYPE_BOOL;
 			spec.control_id = m_specs.size() - 1;
 			return STATE_DONE;
@@ -75,7 +75,7 @@ InputParserState InvertInputDriver::parseInputSpecification( InputSpecTokens con
 bool InvertInputDriver::getInputDescription( InputSpec const &spec, InputDescription &desc )
 {
 	if ( 0 <= spec.control_id && spec.control_id < m_specs.size() ) {
-		const InputSpec &invspec = *(m_specs[ spec.control_id ]);
+		const InputSpec &invspec = m_specs[ spec.control_id ];
 		if ( g_inputManager.getInputDescription( invspec, desc ) ) {
 			desc.verb = "not " + desc.verb;
 			return true;

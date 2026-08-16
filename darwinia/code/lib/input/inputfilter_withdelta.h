@@ -1,7 +1,6 @@
 #ifndef INCLUDED_INPUTFILTER_WITHDELTA_H
 #define INCLUDED_INPUTFILTER_WITHDELTA_H
 
-#include "lib/auto_vector.h"
 #include "lib/input/inputfilterspec.h"
 #include "lib/input/inputfilter.h"
 
@@ -9,9 +8,9 @@
 class InputFilterWithDelta : public InputFilter {
 
 private:
-	auto_vector<const InputFilterSpec> m_specs;
-	auto_vector<InputDetails> m_oldDetails;
-	auto_vector<InputDetails> m_details;
+	std::vector<InputFilterSpec> m_specs;
+	std::vector<InputDetails> m_oldDetails;
+	std::vector<InputDetails> m_details;
 
 protected:
 	void registerDeltaID( InputFilterSpec &spec );

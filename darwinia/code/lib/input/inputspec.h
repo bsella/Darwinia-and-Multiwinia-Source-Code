@@ -6,10 +6,10 @@
 #include <memory>
 #include <iostream>
 
-typedef int control_id_t;
-typedef int inputtype_t;
-typedef int condition_t;
-typedef int handler_id_t;
+using control_id_t = std::size_t;
+using inputtype_t  = std::size_t;
+using condition_t  = std::size_t;
+using handler_id_t = std::size_t;
 
 struct InputSpec {
 	unsigned driver;         // ID of InputDriver which handles this input
@@ -19,6 +19,7 @@ struct InputSpec {
 	condition_t condition;   // Condition upon which this triggers (down, up, held, clicked, etc.)
 };
 
+using InputSpecList = std::vector<InputSpec>;
 
 // Class to tokenise a prefs string
 class InputSpecTokens {

@@ -1,9 +1,7 @@
 ﻿#ifndef INCLUDED_INPUTDRIVER_CONJOIN_H
 #define INCLUDED_INPUTDRIVER_CONJOIN_H
 
-#include "lib/auto_vector.h"
 #include "lib/input/inputdriver.h"
-#include "lib/input/inputspeclist.h"
 
 
 // Enables input specifications to be combined using "&&" in the preferences
@@ -14,7 +12,7 @@ class ConjoinInputDriver : public InputDriver {
 
 private:
 	// List of lists of InputSpec
-	auto_vector<InputSpecList> m_specs;
+	std::vector<InputSpecList> m_specs;
 	std::string &lastError;
 
 public:

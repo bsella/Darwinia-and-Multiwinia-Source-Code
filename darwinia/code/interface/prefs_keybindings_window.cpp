@@ -92,7 +92,7 @@ class ApplyKeybindingsButton : public DarwiniaButton
 		for ( unsigned i = 0; s_controls[ i ].name != nullptr; ++i )
 		{
 			g_inputManager.getControlString( s_controls[ i ].type, key );
-			val = parent->m_bindings[ i ]->pref;
+			val = parent->m_bindings[ i ].pref;
 			prefsMan.SetString( key.c_str(), val.c_str() );
 			g_inputManager.replacePrimaryBinding( s_controls[ i ].type, val );
 
@@ -161,8 +161,8 @@ public:
 		{
 			InputSpec spec;
 			if ( g_inputManager.getFirstActiveInput( spec, m_instant ) ) {
-				std::unique_ptr<InputDescription> desc( new InputDescription() );
-				if ( g_inputManager.getInputDescription( spec, *desc ) ) {
+				InputDescription desc;
+				if ( g_inputManager.getInputDescription( spec, desc ) ) {
 					parent->m_bindings[m_id] = std::move(desc);
 					m_listening = false;
 				}
@@ -172,7 +172,7 @@ public:
 		int time = (int)(g_gameTime * 3.0f);
 		if (!m_listening || time & 1)
 		{
-			char const *keyName = parent->m_bindings[m_id]->noun.c_str();
+			char const *keyName = parent->m_bindings[m_id].noun.c_str();
 			SetCaption( keyName );
 		}
 		else
@@ -214,8 +214,8 @@ PrefsKeybindingsWindow::PrefsKeybindingsWindow()
 	unsigned i;
 	for ( i = 0; s_controls[i].type != ControlNull; ++i )
 	{
-		std::unique_ptr<InputDescription> desc( new InputDescription() );
-		g_inputManager.getBoundInputDescription( s_controls[i].type, *desc );
+		InputDescription desc;
+		g_inputManager.getBoundInputDescription( s_controls[i].type, desc );
 		m_bindings.push_back( desc );
 	}
 
@@ -270,7 +270,7 @@ void PrefsKeybindingsWindow::Create()
 		but->SetShortProperties(eventName, x, y+=h, buttonW, buttonH);
 		but->m_fontSize = GetMenuSize(15);
 		but->m_centered = true;
-		char const *keyName =  m_bindings[i]->noun.c_str();
+		char const *keyName =  m_bindings[i].noun.c_str();
 		strcpy(but->m_caption, keyName);
 		RegisterButton(but);
 		m_buttonOrder.PutData( but );

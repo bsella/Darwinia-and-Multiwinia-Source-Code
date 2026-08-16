@@ -1,12 +1,8 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/preferences.h"
+﻿#include "lib/preferences.h"
+#include <vector>
 #include "lib/input/inputdriver_prefs.h"
 
 using namespace std;
-
-typedef auto_vector<string>::iterator KeyIt;
-
 
 enum {
 	COND_TRUE,
@@ -60,7 +56,7 @@ bool PrefsInputDriver::getInput( InputSpec const &spec, InputDetails &details )
 {
 	details.type = INPUT_TYPE_BOOL;
 	if ( 0 <= spec.control_id && spec.control_id < m_keys.size() ) {
-		bool val = ( g_prefsManager->GetInt( m_keys[ spec.control_id ]->c_str(), 0 ) > 0 );
+		bool val = ( g_prefsManager->GetInt( m_keys[ spec.control_id ].c_str(), 0 ) > 0 );
 		switch ( spec.condition ) {
 			case COND_TRUE:  return  val;
 			case COND_FALSE: return !val;
@@ -105,14 +101,10 @@ bool PrefsInputDriver::getInputDescription( InputSpec const &spec, InputDescript
 
 int PrefsInputDriver::keyPosition( string const &key )
 {
-	KeyIt i;
-	for ( i = m_keys.begin(); i != m_keys.end(); ++i )
-		if ( **i == key ) break;
+	for ( size_t i=0; i < m_keys.size(); i++ )
+		if ( m_keys[i] == key )
+			return i;
 
-	if ( i == m_keys.end() ) {
-		m_keys.push_back( new string( key ) );
-		return m_keys.size();
-	} else {
-		return i - m_keys.begin();
-	}
+	m_keys.emplace_back( key );
+	return m_keys.size();
 }

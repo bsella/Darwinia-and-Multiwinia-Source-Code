@@ -1,12 +1,7 @@
-﻿#include "lib/universal_include.h"
-
-#include <memory>
+﻿#include <memory>
 
 #include "lib/input/input.h"
 #include "lib/input/movement2d.h"
-
-using std::auto_ptr;
-
 
 int Movement2D::velX() { return vX; }
 

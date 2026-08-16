@@ -1,11 +1,7 @@
 #ifndef INCLUDED_INPUTDRIVER_INVERT_H
 #define INCLUDED_INPUTDRIVER_INVERT_H
 
-#include "lib/auto_vector.h"
 #include "lib/input/inputdriver.h"
-
-typedef auto_vector<const InputSpec> InputSpecList;
-
 
 // Enables boolean input specifications to be negated with "not" or "!"
 

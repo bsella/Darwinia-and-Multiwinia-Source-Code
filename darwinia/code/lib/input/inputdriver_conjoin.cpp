@@ -1,7 +1,6 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/input/inputdriver_conjoin.h"
+﻿#include "lib/input/inputdriver_conjoin.h"
 #include "lib/input/input.h"
+#include <utility>
 
 using namespace std;
 
@@ -21,7 +20,7 @@ InputParserState ConjoinInputDriver::parseInputSpecification( InputSpecTokens co
                                                               InputSpec &spec )
 {
 	string s = "";
-	unique_ptr<InputSpecList> speclist( new InputSpecList() );
+	InputSpecList speclist;
 	bool haveComplexInput = false;
 	bool hasParts = false;
 
@@ -46,7 +45,7 @@ InputParserState ConjoinInputDriver::parseInputSpecification( InputSpecTokens co
 						spec.type = partspec.type;
 					}
 				}
-				speclist->push_back(new InputSpec( partspec ));
+				speclist.emplace_back( partspec );
 				s.clear(); // Ready for another spec
 			} else {
 				return STATE_CONJ_ERROR;
@@ -55,7 +54,7 @@ InputParserState ConjoinInputDriver::parseInputSpecification( InputSpecTokens co
 	}
 
 	// Parsing went OK. Save this.
-	m_specs.push_back( speclist );
+	m_specs.push_back( std::move(speclist) );
 	spec.control_id = m_specs.size() - 1;
 	return STATE_DONE;
 }
@@ -65,10 +64,10 @@ bool ConjoinInputDriver::getInput( InputSpec const &spec, InputDetails &details 
 {
 	if ( 0 <= spec.control_id && spec.control_id < m_specs.size() ) {
 		bool detailsSet = false;
-		const InputSpecList &specs = *(m_specs[ spec.control_id ]);
-		for ( InputSpecIt i = specs.begin(); i != specs.end(); ++i ) {
+		const InputSpecList &specs = m_specs[ spec.control_id ];
+		for ( const InputSpec spec : specs) {
 			InputDetails d;
-			if ( g_inputManager.checkInput( **i, d ) ) {
+			if ( g_inputManager.checkInput( spec, d ) ) {
 				if ( !detailsSet || d.type > INPUT_TYPE_BOOL ) { // This is our actual return value
 					details.type = d.type;
 					details.x = d.x;
@@ -103,11 +102,10 @@ bool ConjoinInputDriver::getInputDescription( InputSpec const &spec, InputDescri
 	if ( 0 <= spec.control_id && spec.control_id < m_specs.size() ) {
 		bool descSet = false;
 		inputtype_t curr_type = INPUT_TYPE_BOOL;
-		const InputSpecList &specs = *(m_specs[ spec.control_id ]);
+		const InputSpecList &specs = m_specs[ spec.control_id ];
 
-		for ( InputSpecIt i = specs.begin(); i != specs.end(); ++i ) {
+		for ( const InputSpec spec : specs) {
 			InputDescription d;
-			const InputSpec &spec = **i;
 			if ( g_inputManager.getInputDescription( spec, d ) ) {
 				if ( !descSet || spec.type >= curr_type ) { // This is our actual return value
 					desc.noun = d.noun;

@@ -4,7 +4,6 @@
 #include <string>
 
 #include "lib/input/inputspec.h"
-#include "lib/input/inputspeclist.h"
 #include "lib/input/control_types.h"
 
 

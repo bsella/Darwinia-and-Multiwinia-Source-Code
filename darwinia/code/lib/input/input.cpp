@@ -1,15 +1,10 @@
-﻿#include "lib/universal_include.h"
-
-#include <vector>
-#include <iostream>
-#include <fstream>
-
+﻿
 #include "lib/input/input.h"
 #include "lib/targetcursor.h"
-#include "lib/input/inputfiltermanager.h"
-#include "app.h"
-#include "lib/language_table.h"
-#include "lib/hi_res_time.h"
+
+#include <cstring>
+#include <vector>
+#include <iostream>
 
 #define Q(x) "\"" << x << "\""
 
@@ -123,7 +118,7 @@ bool InputManager::controlEventA( ControlType type, InputDetails &details )
 		const InputSpecList &specs = bindings[ type ];
 
 		for ( unsigned i = 0; i < specs.size(); ++i )
-			if ( checkInput( *(specs[ i ]), details ) ) return true;
+			if ( checkInput( specs[ i ], details ) ) return true;
 	}
 
 	details.type = INPUT_TYPE_FAIL;
@@ -231,8 +226,8 @@ bool InputManager::getBoundInputDescription( ControlType type, InputDescription 
 {
 	const InputSpecList &specs = bindings[ type ];
 	if ( specs.size() >= 1 )
-		for ( InputSpecIt i = specs.begin(); i != specs.end(); ++i )
-			if ( getInputDescription( **i, desc ) ) {
+		for ( const InputSpec& spec : specs )
+			if ( getInputDescription( spec, desc ) ) {
 				desc.translate();
 				return true;
 			}

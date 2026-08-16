@@ -1,14 +1,7 @@
-﻿#include "lib/universal_include.h"
-
-#include <algorithm>
-
-#include "lib/input/inputdriver_chord.h"
+﻿#include "lib/input/inputdriver_chord.h"
 #include "lib/input/input.h"
 
-using namespace std;
-
-
-static string nullErr = "";
+static std::string nullErr = "";
 
 
 ChordInputDriver::ChordInputDriver()
@@ -22,10 +15,10 @@ ChordInputDriver::ChordInputDriver()
 InputParserState ChordInputDriver::parseInputSpecification( InputSpecTokens const &tokens,
                                                             InputSpec &spec )
 {
-	string s;
+	std::string s;
 
-	unique_ptr<InputSpecList> speclist( new InputSpecList() );
-	vector<string> strings;
+	InputSpecList speclist;
+	std::vector<std::string> strings;
 	bool hasParts = false;
 
 	spec.type = INPUT_TYPE_BOOL;
@@ -54,18 +47,18 @@ InputParserState ChordInputDriver::parseInputSpecification( InputSpecTokens cons
 		InputParserState pState = g_inputManager.parseInputSpecString( s, partspec, lastError );
 		if ( PARSE_SUCCESS( pState ) ) {
 			if ( partspec.type > INPUT_TYPE_BOOL ) {
-				static string repError = "Complex inputs are not allowed in chords.";
+				static std::string repError = "Complex inputs are not allowed in chords.";
 				lastError = repError;
 				return STATE_CONJ_ERROR;
 			}
-			speclist->push_back( new InputSpec( partspec ));
+			speclist.emplace_back(partspec);
 		} else {
 			return STATE_CONJ_ERROR;
 		}
 	}
 
 	// Parsing went OK. Save this.
-	m_specs.push_back( speclist );
+	m_specs.push_back( std::move(speclist) );
 	spec.control_id = m_specs.size() - 1;
 	return STATE_DONE;
 }
@@ -75,9 +68,9 @@ InputParserState ChordInputDriver::parseInputSpecification( InputSpecTokens cons
 bool ChordInputDriver::getInput( InputSpec const &spec, InputDetails &details )
 {
 	if ( 0 <= spec.control_id && spec.control_id < m_specs.size() ) {
-		const InputSpecList &specs = *(m_specs[ spec.control_id ]);
-		for ( InputSpecIt i = specs.begin(); i != specs.end(); ++i )
-			if ( g_inputManager.checkInput( **i, details ) )
+		const InputSpecList &specs = m_specs[ spec.control_id ];
+		for ( const InputSpec& spec : specs )
+			if ( g_inputManager.checkInput( spec, details ) )
 				return true;
 	}
 	return false;
@@ -89,7 +82,7 @@ void ChordInputDriver::Advance()
 }
 
 
-const string &ChordInputDriver::getLastParseError( InputParserState )
+const std::string &ChordInputDriver::getLastParseError( InputParserState )
 {
 	return lastError;
 }
@@ -102,11 +95,10 @@ bool ChordInputDriver::getInputDescription( InputSpec const &spec, InputDescript
 	bool firstPart = true;
 
 	if ( 0 <= spec.control_id && spec.control_id < m_specs.size() ) {
-		const InputSpecList &specs = *(m_specs[ spec.control_id ]);
+		const InputSpecList &specs = m_specs[ spec.control_id ];
 
-		for ( InputSpecIt i = specs.begin(); i != specs.end(); ++i ) {
+		for ( const InputSpec spec : specs) {
 			InputDescription d;
-			const InputSpec &spec = **i;
 			if ( g_inputManager.getInputDescription( spec, d ) ) {
 				d.translate();
 				if ( firstPart ) {

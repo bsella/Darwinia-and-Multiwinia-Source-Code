@@ -2,9 +2,7 @@
 #define INCLUDED_INPUT_TYPES_H
 
 #include <string>
-#include <memory>
-#include "lib/auto_vector.h"
-
+#include <vector>
 
 enum InputType {
 	INPUT_TYPE_FAIL = 0,   // The InputDetails are invalid
@@ -22,15 +20,12 @@ struct InputDetails {
 	int y;           // Only meaningful if type is INPUT_TYPE_2D
 };
 
-typedef auto_vector<const InputDetails> InputDetailsList;
-typedef std::unique_ptr<InputDetails> InputDetailsPtr;
+typedef std::vector<InputDetails> InputDetailsList;
 
 class InputDescription {
 
 public:
 	InputDescription();
-
-	InputDescription( InputDescription const &_desc );
 
 	InputDescription( std::string const &_noun, std::string const &_verb,
 	                  std::string const &_pref, bool _translated = false );

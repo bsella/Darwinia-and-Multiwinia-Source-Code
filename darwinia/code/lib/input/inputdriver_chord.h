@@ -2,7 +2,6 @@
 #define INCLUDED_INPUTDRIVER_CHORD_H
 
 #include "lib/input/inputdriver.h"
-#include "lib/input/inputspeclist.h"
 
 
 // Enables partial input specifications to be combined using "++" in the
@@ -13,7 +12,7 @@ class ChordInputDriver : public InputDriver {
 
 private:
 	// List of lists of InputSpec
-	auto_vector<InputSpecList> m_specs;
+	std::vector<InputSpecList> m_specs;
 	std::string &lastError;
 
 public:

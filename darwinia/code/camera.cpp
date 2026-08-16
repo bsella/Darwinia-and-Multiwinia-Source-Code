@@ -39,6 +39,7 @@
 #include "worldobject/teleport.h"
 #include "worldobject/insertion_squad.h"
 
+#include <algorithm>
 
 #define MIN_GROUND_CLEARANCE	10.0f	// Minimum height relative to land
 #define MIN_HEIGHT				10.0f	// Height above sea level (which is y=0)

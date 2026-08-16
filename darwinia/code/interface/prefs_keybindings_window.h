@@ -2,18 +2,14 @@
 #define INCLUDED_KEYBINDINGS_WINDOW_H
 
 
-#include "lib/auto_vector.h"
 #include "lib/input/input.h"
 #include "interface/darwinia_window.h"
-
-
-typedef auto_vector<InputDescription> InputDescList;
-
+#include <vector>
 
 class PrefsKeybindingsWindow : public DarwiniaWindow
 {
 public:
-	InputDescList m_bindings;
+	std::vector<InputDescription> m_bindings;
 	int m_numMouseButtons;
     int m_controlMethod;
 

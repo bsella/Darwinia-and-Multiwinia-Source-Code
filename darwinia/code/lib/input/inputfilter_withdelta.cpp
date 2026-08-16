@@ -1,8 +1,7 @@
-#include "lib/universal_include.h"
-
 #include "lib/input/inputfilter_withdelta.h"
+#include <memory>
 
-typedef std::auto_ptr<const InputFilterSpec> FilterSpecPtr;
+typedef std::unique_ptr<const InputFilterSpec> FilterSpecPtr;
 
 
 void InputFilterWithDelta::registerDeltaID( InputFilterSpec &spec )
@@ -12,18 +11,15 @@ void InputFilterWithDelta::registerDeltaID( InputFilterSpec &spec )
 	details.type = spec.type;
 	details.x = details.y = 0;
 
-	m_specs.push_back( FilterSpecPtr( new InputFilterSpec( spec ) ) );
-	m_details.push_back( InputDetailsPtr( new InputDetails( details ) ) );
-	m_oldDetails.push_back( InputDetailsPtr( new InputDetails( details ) ) );
+	m_specs.emplace_back( spec );
+	m_details.emplace_back( details );
+	m_oldDetails.emplace_back( details );
 }
 
 
 InputDetails const &InputFilterWithDelta::getOldDetails( filterspec_id_t id ) const
 {
-	if ( 0 <= id && id < m_oldDetails.size() )
-		return *(m_oldDetails[ id ]);
-	else
-		throw "Invalid delta index.";
+	return m_oldDetails.at(id);
 }
 
 
@@ -35,10 +31,7 @@ InputDetails const &InputFilterWithDelta::getOldDetails( InputFilterSpec const &
 
 InputDetails const &InputFilterWithDelta::getDetails( filterspec_id_t id ) const
 {
-	if ( 0 <= id && id < m_details.size() )
-		return *(m_details[ id ]);
-	else
-		throw "Invalid delta index.";
+	return m_details.at( id );
 }
 
 
@@ -84,7 +77,7 @@ int InputFilterWithDelta::getDelta( InputFilterSpec const &spec, InputDetails &d
 
 void InputFilterWithDelta::ageDetails()
 {
-	m_details.swap( m_oldDetails ); // auto_vector has no assignment operator
+	m_details.swap( m_oldDetails );
 }
 
 
@@ -92,9 +85,9 @@ void InputFilterWithDelta::Advance()
 {
 	InputDetails details;
 	for ( unsigned i = 0; i < m_specs.size(); ++i ) {
-		calcDetails( *(m_specs[ i ]), details );
+		calcDetails( m_specs[ i ], details );
 		//m_details[ i ] = InputDetailsPtr( new InputDetails( details ) );
-		InputDetails &currDetails = *(m_details[ i ]);
+		InputDetails &currDetails = m_details[ i ];
 		currDetails.type = details.type;
 		currDetails.y = details.x;
 		currDetails.x = details.y;

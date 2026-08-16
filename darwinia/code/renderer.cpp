@@ -56,6 +56,8 @@
     #define USE_PIXEL_EFFECT_GRID_OPTIMISATION	1
 #endif
 
+#include <algorithm>
+
 enum
 {
 	PosterMakerInactive,

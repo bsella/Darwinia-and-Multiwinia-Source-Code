@@ -1,7 +1,5 @@
 ﻿#include "lib/universal_include.h"
 
-#include <memory>
-
 #include "lib/input/input_types.h"
 #include "lib/input/control_bindings.h"
 
@@ -102,12 +100,10 @@ void ControlBindings::setIcon( controltype_t id, std::string const &iconfile )
 bool ControlBindings::bind( int type, InputSpec const &spec, bool replace )
 {
 	if ( isAcceptibleInputType( type, spec.type ) ) {
-		std::unique_ptr<const InputSpec> specCopy( new InputSpec( spec ) );
 		if ( replace && bindings[ type ].size() > 0 ) {
-			bindings[ type ].erase( 0 );
-			bindings[ type ].insert( 0, specCopy );
+			bindings[ type ][0] = spec;
 		} else
-			bindings[ type ].push_back( specCopy );
+			bindings[ type ].push_back( spec );
 		return true;
 	} else
 		return false;

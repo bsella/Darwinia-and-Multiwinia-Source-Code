@@ -1,12 +1,10 @@
 #ifndef INCLUDED_INPUTDRIVER_PIPE_H
 #define INCLUDED_INPUTDRIVER_PIPE_H
 
+#include <memory>
 #include <sstream>
 
-#include "lib/auto_vector.h"
 #include "lib/input/inputdriver.h"
-#include "lib/input/inputspeclist.h"
-
 
 // Enables input specifications to be fed through converters
 // using [spec1, spec2, ..., specn] -> converter_spec syntax
@@ -18,7 +16,7 @@ class PipeInputDriver : public InputDriver {
 
 private:
 	// List of lists of InputSpec
-	auto_vector<InputFilterWithArgs> m_specs;
+	std::vector<std::unique_ptr<InputFilterWithArgs>> m_specs;
 	std::string &lastError;
 
 	// Parse an individual spec which is part of the left hand side of the
