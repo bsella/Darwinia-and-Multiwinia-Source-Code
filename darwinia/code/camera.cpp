@@ -478,12 +478,12 @@ void Camera::AdvanceSphereWorldOutroMode()
 
     if( runningTime > 70.0f )
     {
-        int loaderType = Loader::GetLoaderIndex("credits");
+        int loaderType = darw_GetLoaderIndex("credits");
         if( loaderType != -1 )
         {
-            Loader *loader = Loader::CreateLoader( loaderType );
-            loader->Run();
-            delete loader;
+            Loader *loader = darw_CreateLoader( loaderType );
+			darw_RunLoader(loader);
+			darw_DeleteLoader(loader);
         }
 
         RequestMode( ModeSphereWorld );

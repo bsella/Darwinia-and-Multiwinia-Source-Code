@@ -44,4 +44,15 @@ public:
 };
 
 
+extern "C"
+{
+    Loader* darw_CreateLoader( int type );
+    void darw_DeleteLoader(Loader*);
+    void darw_RunLoader(Loader*);
+    
+    const char* darw_GetLoaderName( int index );
+    int darw_GetLoaderIndex( const char *name );
+}
+
+
 #endif
