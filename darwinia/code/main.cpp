@@ -1167,12 +1167,12 @@ void RunBootLoaders()
 		}
 		else
 		{
-			int loaderType = Loader::GetLoaderIndex(loaderName);
+			int loaderType = darw_GetLoaderIndex(loaderName);
 			if( loaderType != -1 )
 			{
-				Loader *loader = Loader::CreateLoader( loaderType );
-				loader->Run();
-				delete loader;
+				Loader *loader = darw_CreateLoader( loaderType );
+				darw_RunLoader(loader);
+				darw_DeleteLoader(loader);
 			}
 		}
 

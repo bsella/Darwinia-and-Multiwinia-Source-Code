@@ -3,3 +3,6 @@
 darwinia/build
 darwinia/CMakeLists.txt.user
 darwinia/data
+
+darwinia/rust/target
+darwinia/rust/Cargo.lock

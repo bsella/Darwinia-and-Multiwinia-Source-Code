@@ -188,3 +188,22 @@ int Loader::GetLoaderIndex( const char *_name )
 
     return -1;
 }
+
+
+extern "C"
+{
+    Loader* darw_CreateLoader( int type )
+    {
+        return Loader::CreateLoader(type);
+    }
+
+    void darw_DeleteLoader(Loader* loader)
+    {
+        delete loader;
+    }
+
+    void darw_RunLoader(Loader* loader)
+    {
+        loader->Run();
+    }
+}
