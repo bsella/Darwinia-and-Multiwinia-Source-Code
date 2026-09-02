@@ -1377,7 +1377,7 @@ void SoundSystem::Advance()
 			m_music->OpenStream(false);
 			m_music->m_channelIndex = g_soundLibrary3d->m_musicChannelId;
 			g_soundLibrary3d->ResetChannel(m_music->m_channelIndex);
-			g_soundLibrary3d->SetChannelFrequency(m_music->m_channelIndex, m_music->m_cachedSampleHandle->m_cachedSample->m_freq);
+			g_soundLibrary3d->SetChannelFrequency(m_music->m_channelIndex, darw_CachedSampleNumFreq(m_music->m_cachedSampleHandle->m_cachedSample));
 		}
 
 

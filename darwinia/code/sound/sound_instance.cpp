@@ -612,7 +612,7 @@ bool SoundInstance::StartPlaying( int _channelIndex )
 
 	START_PROFILE(g_app->m_profiler, "Set freq/vol/pos");
     UpdateParameter( m_freq );
-    g_soundLibrary3d->SetChannelFrequency( m_channelIndex, m_cachedSampleHandle->m_cachedSample->m_freq * m_freq.GetOutput() );
+    g_soundLibrary3d->SetChannelFrequency( m_channelIndex, darw_CachedSampleNumFreq(m_cachedSampleHandle->m_cachedSample) * m_freq.GetOutput() );
 
     UpdateChannelVolume();
 
@@ -656,7 +656,7 @@ bool SoundInstance::Advance()
     if( amIDone ) return true;
 
     UpdateParameter( m_freq );
-    g_soundLibrary3d->SetChannelFrequency( m_channelIndex, m_cachedSampleHandle->m_cachedSample->m_freq * m_freq.GetOutput() );
+    g_soundLibrary3d->SetChannelFrequency( m_channelIndex, darw_CachedSampleNumFreq(m_cachedSampleHandle->m_cachedSample) * m_freq.GetOutput() );
 
     //if( m_loopDelayTimer > 0.0f ) AdvanceLoop();
     // This line was causing severe stuttering on sounds with ADSR and loopDelay > 0

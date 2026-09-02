@@ -10,3 +10,4 @@ name = "darwinia_rs"
 
 [dependencies]
 rand = "0.10.2"
+symphonia = "0.6.1"

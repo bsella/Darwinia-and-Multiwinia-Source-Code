@@ -11,24 +11,7 @@ class SoundStreamDecoder;
 // Class CachedSample
 //*****************************************************************************
 
-class CachedSample
-{
-protected:
-	SoundStreamDecoder *m_soundStreamDecoder;	// nullptr once sample has been read fully once
-	signed short	*m_rawSampleData;
-	unsigned int	m_amountCached;				// Zero at first, ranging up to m_numSamples once sample has been read fully
-
-public:
-	unsigned int	m_numChannels;
-	unsigned int	m_freq;
-	unsigned int	m_numSamples;
-
-	CachedSample(char const *_sampleName);
-	~CachedSample();
-
-	void Read(signed short *_data, unsigned int _startSample, unsigned int _numSamples);
-};
-
+class CachedSample;
 
 //*****************************************************************************
 // Class CachedSampleHandle
@@ -74,5 +57,17 @@ extern CachedSampleManager g_cachedSampleManager;
 
 extern bool g_deletingCachedSampleHandle;
 
+
+extern "C"
+{
+	CachedSample* darw_CreateCachedSample(const char* fileName);
+	void darw_DeleteCachedSample(CachedSample*);
+	
+	void darw_CachedSampleRead(CachedSample*, signed short *_data, unsigned int _startSample, unsigned int _numSamples);
+
+	unsigned int darw_CachedSampleNumSamples(const CachedSample*);
+	unsigned int darw_CachedSampleNumChannels(const CachedSample*);
+	unsigned int darw_CachedSampleNumFreq(const CachedSample*);
+}
 
 #endif
