@@ -9,59 +9,6 @@ bool g_deletingCachedSampleHandle = false;
 
 
 //*****************************************************************************
-// Class CachedSample
-//*****************************************************************************
-
-CachedSample::CachedSample(char const *_sampleName)
-:	m_amountCached(0)
-{
-    char fullPath[512] = "sounds/";
-	strcat(fullPath, _sampleName);
-
-	m_soundStreamDecoder = g_app->m_resource->GetSoundStreamDecoder(fullPath);
-    DarwiniaReleaseAssert( m_soundStreamDecoder, "Failed to open sound stream decoder : %s", fullPath );
-
-	m_numChannels = m_soundStreamDecoder->m_numChannels;
-	m_numSamples = m_soundStreamDecoder->m_numSamples;
-	m_freq = m_soundStreamDecoder->m_freq;
-
-	m_rawSampleData = new signed short[m_numChannels * m_numSamples];
-}
-
-
-CachedSample::~CachedSample()
-{
-	delete m_soundStreamDecoder; m_soundStreamDecoder = nullptr;
-	delete [] m_rawSampleData; m_rawSampleData = nullptr;
-}
-
-
-void CachedSample::Read(signed short *_data, unsigned int _startSample, unsigned int _numSamples)
-{
-	if (m_soundStreamDecoder)
-	{
-		unsigned int highestSampleRequested = _startSample + _numSamples - 1;
-		if (highestSampleRequested >= m_amountCached)
-		{
-			int amountToRead = highestSampleRequested - m_amountCached + 1;
-			unsigned int amountRead = m_soundStreamDecoder->Read(
-										&m_rawSampleData[m_amountCached],
-										amountToRead);
-			m_amountCached += amountRead;
-			DarwiniaDebugAssert(m_amountCached <= m_numSamples);
-			if (m_amountCached == m_numSamples)
-			{
-				delete m_soundStreamDecoder; m_soundStreamDecoder = nullptr;
-			}
-		}
-	}
-
-	memcpy(_data, &m_rawSampleData[_startSample], sizeof(signed short) * m_numChannels * _numSamples);
-}
-
-
-
-//*****************************************************************************
 // Class CachedSampleHandle
 //*****************************************************************************
 
@@ -81,13 +28,13 @@ CachedSampleHandle::~CachedSampleHandle()
 
 unsigned int CachedSampleHandle::Read(signed short *_data, unsigned int _numSamples)
 {
-	unsigned int samplesRemaining = m_cachedSample->m_numSamples - m_nextSampleIndex;
+	unsigned int samplesRemaining = darw_CachedSampleNumSamples(m_cachedSample) - m_nextSampleIndex;
 	if (_numSamples > samplesRemaining)
 	{
 		_numSamples = samplesRemaining;
 	}
 
-	m_cachedSample->Read(_data, m_nextSampleIndex, _numSamples);
+	darw_CachedSampleRead(m_cachedSample, _data, m_nextSampleIndex, _numSamples);
 	m_nextSampleIndex += _numSamples;
 
 	return _numSamples;
@@ -109,7 +56,7 @@ CachedSampleManager::~CachedSampleManager()
 {
 	for (unsigned int i = 0; i < m_cache.Size(); ++i)
 	{
-		delete m_cache.GetData(i);
+		darw_DeleteCachedSample(m_cache.GetData(i));
 	}
 }
 
@@ -120,7 +67,7 @@ CachedSampleHandle *CachedSampleManager::GetSample(char const *_sampleName)
 
 	if (!cachedSample)
 	{
-		cachedSample = new CachedSample(_sampleName);
+		cachedSample = darw_CreateCachedSample(_sampleName);
 		m_cache.PutData(_sampleName, cachedSample);
     }
 
@@ -144,11 +91,10 @@ int CachedSampleManager::GetMemoryUsage()
         if( m_cache.ValidIndex(i) )
         {
             CachedSample *sample = m_cache.GetData(i);
-            int sampleSize = sizeof(signed short) * sample->m_numChannels * sample->m_numSamples;
+            int sampleSize = sizeof(signed short) * darw_CachedSampleNumChannels(sample) * darw_CachedSampleNumSamples(sample);
             memoryUsage += sampleSize;
         }
     }
 
     return memoryUsage;
 }
-
