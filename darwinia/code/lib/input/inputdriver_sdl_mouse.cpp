@@ -1,7 +1,8 @@
 ﻿#include "lib/input/inputdriver_sdl_mouse.h"
 #include "lib/input/sdl_eventhandler.h"
 #include "lib/window_manager_sdl.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
 
 using std::string;
 
@@ -70,14 +71,6 @@ int SDLMouseInputDriver::HandleSDLEvent(const SDL_Event & event)
 				case SDL_BUTTON_RIGHT:
 					m_mb[RIGHT] = true;
 					break;
-					
-				case SDL_BUTTON_WHEELUP:
-					m_mousePos[Z]++;
-					break;
-					
-				case SDL_BUTTON_WHEELDOWN:
-					m_mousePos[Z]--;
-					break;
 			}
 			return 0;
 		}
@@ -100,6 +93,15 @@ int SDLMouseInputDriver::HandleSDLEvent(const SDL_Event & event)
 			}
 			return 0;
 		}
+
+		case SDL_MOUSEWHEEL:
+		{
+			if(event.wheel.y > 0)
+				m_mousePos[Z]++;
+			else
+				m_mousePos[Z]--;
+		}
+		break;
 	}
 	
 	return -1; // unhandled

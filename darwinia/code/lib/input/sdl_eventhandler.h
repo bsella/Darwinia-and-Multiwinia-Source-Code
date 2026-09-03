@@ -7,12 +7,20 @@
 #include "lib/input/sdl_eventproc.h"
 #include <vector>
 
+#include <SDL2/SDL.h>
+
 class SDLEventHandler : public EventHandler, public SDLEventProcessor
 {
 private:
 	std::vector<SDLEventProcessor *> eventProcessors;
+
+	SDL_Window& m_window;
+
+	bool m_has_focus;
 	
 public:
+	SDLEventHandler(SDL_Window&);
+
 	 bool WindowHasFocus();
 	 int HandleSDLEvent(const SDL_Event & event);
 	 

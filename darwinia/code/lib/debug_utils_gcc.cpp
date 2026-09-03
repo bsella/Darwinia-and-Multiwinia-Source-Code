@@ -17,7 +17,7 @@
 
 #ifndef NO_WINDOW_MANAGER
 #include "lib/window_manager.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #endif
 
 void DebugOut(char *_fmt, ...)

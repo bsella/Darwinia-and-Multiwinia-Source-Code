@@ -1,4 +1,6 @@
-﻿#include "lib/binary_stream_readers.h"
+﻿#include <GL/glew.h>
+
+#include "lib/binary_stream_readers.h"
 #include "lib/bitmap.h"
 #include "lib/debug_utils.h"
 #include "lib/filesys_utils.h"
@@ -876,7 +878,7 @@ int BitmapRGBA::ConvertToTexture(bool _mipmapping) const
 		else if (newWidth < newHeight)
 			newWidth = newHeight;
 
-		int result;
+		int result = 1;
 
 		// Our OpenGL implementation in Direct3D mandates power of 2 texture sizes
 #if !defined USE_DIRECT3D
@@ -884,10 +886,10 @@ int BitmapRGBA::ConvertToTexture(bool _mipmapping) const
 		bool scale = (bool) g_prefsManager->GetInt("ManuallyScaleTextures", 0);
 
 		if (sameDimensions || !scale)
-			result = gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA,
-					                   m_width, m_height,
-						               GL_RGBA, GL_UNSIGNED_BYTE,
-						               m_pixels);
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_pixels);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
 		else
 #endif // USE_DIRECT3D
 		{
@@ -897,10 +899,8 @@ int BitmapRGBA::ConvertToTexture(bool _mipmapping) const
 			scaled.Blit(0, 0, m_width, m_height, this,
 						0, 0, newWidth, newHeight, true);
 
-			result = gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA,
-					                   scaled.m_width, scaled.m_height,
-						               GL_RGBA, GL_UNSIGNED_BYTE,
-						               scaled.m_pixels);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, scaled.m_width, scaled.m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled.m_pixels);
+			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 
         DarwiniaReleaseAssert( result == 0,

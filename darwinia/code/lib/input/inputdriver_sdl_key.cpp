@@ -6,11 +6,13 @@
 #include "lib/language_table.h"
 #include "app.h"
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_keyboard.h>
+#include <SDL2/SDL_keycode.h>
 
 using std::string;
 
-static int ConvertSDLKeyIdToWin32KeyId(SDLKey _keyCode)
+static int ConvertSDLKeyIdToWin32KeyId(SDL_Keycode _keyCode)
 {
 	int keyCode = (int) _keyCode;
 
@@ -42,8 +44,8 @@ static int ConvertSDLKeyIdToWin32KeyId(SDLKey _keyCode)
 		case SDLK_RCTRL:
 			return KEY_CONTROL;
 		
-		case SDLK_LMETA:
-		case SDLK_RMETA:
+		case SDLK_LGUI:
+		case SDLK_RGUI:
 			return KEY_META;
 		
 		case SDLK_LALT:
@@ -64,7 +66,7 @@ SDLKeyboardInputDriver::SDLKeyboardInputDriver()
 {
 	setName("SDLKeyboard");
 	getSDLEventHandler()->AddEventProcessor(this);
-	SDL_EnableUNICODE(1);
+	SDL_StartTextInput();
 	
 	memset(m_keys, 0, KEY_MAX * sizeof(bool));
 	memset(m_keyDeltas, 0, KEY_MAX * sizeof(int));
@@ -80,15 +82,16 @@ int SDLKeyboardInputDriver::HandleSDLEvent(const SDL_Event & event)
 		// The first uses method uses raw Windows key codes, but the second takes ASCII/Unicode values.
 		case SDL_KEYDOWN:
 		{
-			uint16_t unicode = event.key.keysym.unicode;
 			int keyCode = ConvertSDLKeyIdToWin32KeyId(event.key.keysym.sym);
-			if (unicode == SDLK_DELETE)
-				unicode = SDLK_BACKSPACE;
+
 			m_keys[keyCode] = true;
 			m_keyNewDeltas[keyCode] = 1;
 			
+			//uint16_t unicode = event.key.keysym.unicode;
+			//if (unicode == SDLK_DELETE)
+			//	unicode = SDLK_BACKSPACE;
 			//SDLMod modifiers = event.key.keysym.mod;
-			if (0 < unicode && unicode <= 255)
+			//if (0 < unicode && unicode <= 255)
 			{
 #ifdef TARGET_OS_MACOSX
 				// Use the Command key, not Control, since that's what Mac users expect
@@ -140,12 +143,12 @@ void SDLKeyboardInputDriver::Advance()
 	// to be a problem, but hard enough to reproduce that it's not worth tracking down properly.
 	// It may be an OS-level issue in any case.
 	int sdlKeyMax;
-	Uint8 *sdlKeyStates = SDL_GetKeyState(&sdlKeyMax);
+	const Uint8 *sdlKeyStates = SDL_GetKeyboardState(&sdlKeyMax);
 	for (int sdlKey = 0; sdlKey < sdlKeyMax; sdlKey++)
 	{
 		if (m_keys[sdlKey] && !sdlKeyStates[sdlKey])
 		{
-			int keyCode = ConvertSDLKeyIdToWin32KeyId((SDLKey)sdlKeyStates[sdlKey]);
+			int keyCode = ConvertSDLKeyIdToWin32KeyId((SDL_Keycode)sdlKeyStates[sdlKey]);
 			m_keys[keyCode] = false;
 			m_keyNewDeltas[keyCode] = -1;
 		}
@@ -223,5 +226,6 @@ inputtype_t SDLKeyboardInputDriver::getControlType( control_id_t )
 
 SDLKeyboardInputDriver::~SDLKeyboardInputDriver()
 {
+	SDL_StopTextInput();
 	getSDLEventHandler()->RemoveEventProcessor(this);
 }

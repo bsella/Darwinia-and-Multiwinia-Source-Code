@@ -102,7 +102,7 @@ void Renderer::Initialise()
 		g_prefsManager->SetInt( "ScreenColourDepth", colourDepth );
     }
 
-	bool success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, true, true, L"Darwinia");
+	bool success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, true, true, "Darwinia");
 
     if( !success )
     {
@@ -126,12 +126,12 @@ void Renderer::Initialise()
         zDepth = 16;
         refreshRate = 60;
 
-		success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, true, true, L"Darwinia");
+		success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, true, true, "Darwinia");
 		if(!success)
 		{
 			// next try with 24bit z (colour depth is automatic in windowed mode)
 			zDepth = 24;
-			success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, true, true, L"Darwinia");
+			success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, colourDepth, refreshRate, zDepth, true, true, "Darwinia");
 		}
         DarwiniaReleaseAssert( success, "Failed to set screen mode" );
 

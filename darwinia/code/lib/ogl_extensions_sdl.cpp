@@ -2,7 +2,7 @@
 
 #include "lib/ogl_extensions.h"
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include <string.h>
 
 MultiTexCoord2fARB gglMultiTexCoord2fARB = nullptr;

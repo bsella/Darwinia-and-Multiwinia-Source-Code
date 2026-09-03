@@ -1,6 +1,10 @@
-﻿#include <SDL/SDL.h>
-#include <SDL/SDL_syswm.h>
+﻿#include <GL/glew.h>
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_syswm.h>
+
+#include <SDL2/SDL_video.h>
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,7 +35,6 @@ SDLMouseInputDriver *g_sdlMouseDriver = nullptr;
 // *** Constructor
 WindowManagerSDL::WindowManagerSDL()
 	:	m_tryingToCaptureMouse(false),
-		m_setVideoMode(false),
 		m_preventFullscreenStartup(false)
 {
 	DarwiniaReleaseAssert(SDL_Init(SDL_INIT_VIDEO) == 0, "Couldn't initialise SDL");
@@ -54,41 +57,44 @@ WindowManagerSDL::~WindowManagerSDL()
 
 void WindowManagerSDL::ListAllDisplayModes()
 {
-	SDL_Rect **validModes = SDL_ListModes(nullptr, SDL_OPENGL|SDL_FULLSCREEN);
+	auto display_index = 0;
 
-	for (; *validModes; validModes++) {
-		SDL_Rect *mode = *validModes;
-		Resolution *res = new Resolution(mode->w, mode->h);
-		if (GetResolutionId(mode->w, mode->h) == -1)
-			m_resolutions.PutData( res );
+	auto num_display_modes = SDL_GetNumDisplayModes(display_index);
+	
+	for(auto display_mode_index = 0; display_mode_index < num_display_modes; display_mode_index++)
+	{
+		SDL_DisplayMode mode;
+		if(SDL_GetDisplayMode(display_index, display_mode_index, &mode) == 0)
+		{
+			Resolution *res = new Resolution(mode.w, mode.h);
+			if (GetResolutionId(mode.w, mode.h) == -1)
+				m_resolutions.PutData( res );
+			else
+				delete res;
+		}
 	}
 }
 
 
 void WindowManagerSDL::PreventFullscreenStartup()
 {
-	if (!m_setVideoMode)
+	if (!m_window)
 		m_preventFullscreenStartup = true;
 }
 
 
 void WindowManagerSDL::SaveDesktop()
 {
-    const SDL_VideoInfo* info = SDL_GetVideoInfo();
+	SDL_DisplayMode mode;
 
-    m_desktopColourDepth = info->vfmt->BitsPerPixel;
-    m_desktopRefresh = 60;
+	if (SDL_GetDesktopDisplayMode(0, &mode) == 0)
+	{
+		m_desktopColourDepth = SDL_BITSPERPIXEL(mode.format);
+		m_desktopRefresh = mode.refresh_rate;
 
-#ifdef TARGET_OS_MACOSX
-	CGRect rect = CGDisplayBounds( CGMainDisplayID() );
-    m_desktopScreenW = rect.size.width;
-    m_desktopScreenH = rect.size.height;
-#else
-	#warning "Need to do code for linux to determine default Resolution"
-
-    m_desktopScreenW = 1024;
-    m_desktopScreenH = 768;
-#endif
+		m_desktopScreenW = mode.w;
+		m_desktopScreenH = mode.h;
+	}
 }
 
 
@@ -109,50 +115,49 @@ void WindowManagerSDL::NastyMoveMouse(int x, int y)
 
 
 bool WindowManagerSDL::CreateWin(int _width, int _height, bool _windowed, int _colourDepth, int _refreshRate,
-								 int _zDepth, bool _waitVRT, bool _antiAlias, const wchar_t *_title)
+								 int _zDepth, bool _waitVRT, bool _antiAlias, const char *_title)
 {
-    int bpp = 0;
+    int bpp = m_desktopColourDepth;
     int flags = 0;
 
-    const SDL_VideoInfo* info = SDL_GetVideoInfo();
-	SDL_PixelFormat vfmt = *info->vfmt;
-	
-	DarwiniaReleaseAssert(info, "SDL_GetVideoInfo failed: %s", SDL_GetError());
-	
 	m_windowed = _windowed || m_preventFullscreenStartup;
 	m_preventFullscreenStartup = false;
 
 	// Set the flags for creating the mode
-    flags = SDL_OPENGL; 
+	flags = SDL_WINDOW_OPENGL;
 	if (!_windowed)
 	{
-		flags |= SDL_FULLSCREEN;
+		flags |= SDL_WINDOW_FULLSCREEN;
 		
 		// Look for the best valid video mode
 		if (_colourDepth != -1)
-			vfmt.BitsPerPixel = _colourDepth;	
-		SDL_Rect **validModes = SDL_ListModes(&vfmt, flags);
-		SDL_Rect *bestMode = nullptr;
-		unsigned bestDiagonalDifference = (unsigned) -1;
-			
-		if (validModes == nullptr)
-			return false;
+			bpp = _colourDepth;
 
-		for (; *validModes; validModes++) {
-			SDL_Rect *mode = *validModes;
-			unsigned diagonalDifference = (_width - mode->w) * (_width - mode->w) + 
-										  (_height - mode->h) * (_height - mode->h);
+		unsigned best_diagonal_difference = (unsigned) -1;
+		SDL_DisplayMode best_mode;
+
+		{
+			auto display_index = 0;
+
+			auto num_display_modes = SDL_GetNumDisplayModes(display_index);
 			
-			if (bestMode == nullptr || diagonalDifference < bestDiagonalDifference) {
-				bestMode = mode;
-				bestDiagonalDifference = diagonalDifference;
+			for(auto display_mode_index = 0; display_mode_index < num_display_modes; display_mode_index++)
+			{
+				SDL_DisplayMode mode;
+				if(SDL_GetDisplayMode(display_index, display_mode_index, &mode) == 0)
+				{
+					unsigned diagonal_difference = (_width  - mode.w) * (_width  - mode.w) + 
+					                               (_height - mode.h) * (_height - mode.h);
+					if (diagonal_difference < best_diagonal_difference) {
+						best_mode = mode;
+						best_diagonal_difference = diagonal_difference;
+					}
+				}
 			}
 		}
-		DarwiniaReleaseAssert(bestMode != nullptr, "Failed to find any valid video modes");
 	
-		m_screenW = bestMode->w;
-		m_screenH = bestMode->h;		
-		bpp = vfmt.BitsPerPixel;
+		m_screenW = best_mode.w;
+		m_screenH = best_mode.h;
 	}
 	else {
 #ifdef TARGET_OS_MACOSX
@@ -182,7 +187,6 @@ bool WindowManagerSDL::CreateWin(int _width, int _height, bool _windowed, int _c
 			Resolution *res = new Resolution(_width, _height);
 			m_resolutions.PutData(res);
 		}
-		bpp = info->vfmt->BitsPerPixel;
 	}	
 	
 	switch (bpp) {	
@@ -201,13 +205,13 @@ bool WindowManagerSDL::CreateWin(int _width, int _height, bool _windowed, int _c
 		break;
 	}
 	
-    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );	
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );	
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, _zDepth );
 
- 	if ( _antiAlias ) {		
- 		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 2 );
- 		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, 4 );
- 	}
+	if ( _antiAlias ) {		
+		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 2 );
+		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, 4 );
+	}
 	else {
 		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 0 );
 		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, 0 );
@@ -216,35 +220,45 @@ bool WindowManagerSDL::CreateWin(int _width, int _height, bool _windowed, int _c
 	// Synchronize to the vertical refresh rate of the monitor, typically 60Hz. This
 	// does end up causing graphics flushing to block eventually. But that's what we
 	// want.
-	SDL_GL_SetAttribute ( SDL_GL_SWAP_CONTROL, 1 );
+	SDL_GL_SetSwapInterval ( 1 );
 	
-	bpp = SDL_VideoModeOK(m_screenW, m_screenH, _colourDepth, flags);
-	if (!bpp)
-		return false;
-	
-	m_setVideoMode = SDL_SetVideoMode(m_screenW, m_screenH, bpp, flags);
+
+#if 0
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#else
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+#endif
+
+	m_window = SDL_CreateWindow(_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _width, _height, flags);
 
 	// Fall back to not antialiased
-	if (!m_setVideoMode && _antiAlias) {
+	if (!m_window && _antiAlias) {
 		_antiAlias = 0;
 		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLEBUFFERS, 0 );
 		SDL_GL_SetAttribute ( SDL_GL_MULTISAMPLESAMPLES, 0 );
-		m_setVideoMode = SDL_SetVideoMode(m_screenW, m_screenH, bpp, flags);
+		m_window = SDL_CreateWindow(_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _width, _height, flags);
 	}
 	
 	// Fall back to a 16 bit Z-Buffer
-	if (!m_setVideoMode && _zDepth != 16) {
+	if (!m_window && _zDepth != 16) {
 		DebugOut ( "SDL_SetVideoMode failed with '%s'. Switching to 16-bit Z-Buffer.\n", SDL_GetError() );
 		_zDepth = 16;
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, _zDepth );
-		m_setVideoMode = SDL_SetVideoMode(m_screenW, m_screenH, bpp, flags);
+		m_window = SDL_CreateWindow(_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _width, _height, flags);
 	}
 	
-	if (!m_setVideoMode)
+	if (!m_window)
 	{
 		DebugOut ( "SDL_SetVideoMode failed with '%s'. Can't continue.\n", SDL_GetError() );
 		return false;
 	}
+
+	m_context = SDL_GL_CreateContext(m_window);
+
+	glewExperimental = GL_TRUE;
+	glewInit();
 
 	// Pass back the actual values to the Renderer
 	_width = m_screenW;
@@ -274,7 +288,7 @@ void WindowManagerSDL::Flip()
 	if (m_tryingToCaptureMouse) 
 		g_windowManager->CaptureMouse();
 	
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(m_window);
 }
 
 void WindowManagerSDL::PollForMessages()
@@ -322,8 +336,9 @@ void WindowManagerSDL::CaptureMouse()
 		return;
 		
 	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-	SDL_WM_GrabInput(SDL_GRAB_ON);
+	SDL_SetWindowGrab(m_window, SDL_TRUE);
 	SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	m_mouseCaptured = true;
 	m_tryingToCaptureMouse = false;
@@ -339,9 +354,10 @@ void WindowManagerSDL::UncaptureMouse()
 #ifdef VERBOSE_DEBUG
 	AppDebugOut("Uncapturing mouse\n");
 #endif
-	SDL_WM_GrabInput(SDL_GRAB_OFF);
+	SDL_SetRelativeMouseMode(SDL_FALSE);
+	SDL_SetWindowGrab(m_window, SDL_FALSE);
 	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-	SDL_WarpMouse(m_x, m_y);
+	SDL_WarpMouseInWindow(m_window, m_x, m_y);
 	SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
 	g_sdlMouseDriver->SetMousePosNoVelocity(m_x, m_y);
 
@@ -366,7 +382,7 @@ void WindowManagerSDL::UnhideMousePointer()
 void WindowManagerSDL::SetMousePos(int x, int y)
 {
 	if (!m_mouseCaptured)
-		SDL_WarpMouse(x, y);
+		SDL_WarpMouseInWindow(m_window, x, y);
 }
 
 
@@ -431,14 +447,11 @@ void WindowManagerSDL::NastyPollForMessages()
 
 PlatformWindow *WindowManagerSDL::Window()
 {
-	SDL_SysWMinfo *info = (SDL_SysWMinfo *)malloc(sizeof(SDL_SysWMinfo));
-	
-	SDL_VERSION(&(info->version));
-	if (SDL_GetWMInfo(info) != -1)
-		return (PlatformWindow *)info;
+	SDL_VERSION(&m_info.version);
+	SDL_GetWindowWMInfo(m_window, &m_info);
+
+	if (SDL_GetWindowWMInfo(m_window, &m_info))
+		return (PlatformWindow *)&m_info;
 	else
-	{
-		free(info);
 		return nullptr;
-	}
 }

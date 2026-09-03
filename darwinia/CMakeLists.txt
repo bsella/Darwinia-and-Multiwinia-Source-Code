@@ -335,9 +335,10 @@ target_link_libraries(darwinia
 	vorbis
 	png
 	unrar
-	-lSDL
+	-lSDL2
 	-lGL
 	-lGLU
 	#-lglut
 	ALSA::ALSA
+	-lGLEW
 	)

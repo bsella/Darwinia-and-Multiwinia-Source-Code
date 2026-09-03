@@ -1,14 +1,21 @@
 ﻿#include "sdl_eventhandler.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "app.h"
+#include <SDL2/SDL_video.h>
 #include <iostream>
 #include <algorithm>
 
 typedef std::vector<SDLEventProcessor *>::iterator ProcIt;
 
+SDLEventHandler::SDLEventHandler(SDL_Window& window)
+	: m_window(window)
+	, m_has_focus(false)
+{
+}
+
 bool SDLEventHandler::WindowHasFocus()
 {
-	return (SDL_GetAppState() | SDL_APPACTIVE) != 0;
+	return m_has_focus;
 }
 
 int SDLEventHandler::HandleSDLEvent(const SDL_Event & event)
@@ -17,6 +24,13 @@ int SDLEventHandler::HandleSDLEvent(const SDL_Event & event)
 	{
 		case SDL_QUIT:
 			g_app->m_requestQuit = true;
+			break;
+		case SDL_WINDOWEVENT:
+			switch (event.window.event)
+			{
+				case SDL_WINDOWEVENT_FOCUS_GAINED: m_has_focus = true; break;
+				case SDL_WINDOWEVENT_FOCUS_LOST:   m_has_focus = false; break;
+			}
 			break;
 	}
 	

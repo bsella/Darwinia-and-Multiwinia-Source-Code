@@ -1,6 +1,6 @@
 #ifndef INCLUDED_SDLEVENTPROC_H
 #define INCLUDED_SDLEVENTPROC_H
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 class SDLEventProcessor
 {

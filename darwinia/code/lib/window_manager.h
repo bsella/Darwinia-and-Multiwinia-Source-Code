@@ -64,7 +64,7 @@ public:
 	virtual bool CreateWin(int _width, int _height,		                // Set _colourDepth, _refreshRate and/or 
 						   bool _windowed, int _colourDepth,		    // _zDepth to -1 to get default values
 						   int _refreshRate, int _zDepth,  bool _waitVRT,
-						   bool _antiAlias, const wchar_t *_title) = 0;
+						   bool _antiAlias, const char *_title) = 0;
 
 	virtual void DestroyWin() = 0;
 	virtual PlatformWindow *Window() = 0;

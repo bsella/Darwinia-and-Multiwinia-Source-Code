@@ -5,7 +5,7 @@
 
 #include "sound/sound_library_2d_sdl.h"
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 static SDL_AudioSpec s_audioSpec;
 static int s_audioStarted = 0;

@@ -4,6 +4,8 @@
 #include "window_manager.h"
 #include "lib/input/sdl_eventproc.h"
 #include "lib/input/inputdriver_sdl_mouse.h"
+#include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_video.h>
 
 extern SDLMouseInputDriver *g_sdlMouseDriver;
 
@@ -25,7 +27,7 @@ public:
 			                         bool _windowed, int _colourDepth,	   // _zDepth to -1 to get default values
 			                         int _refreshRate, int _zDepth, bool _waitVRT,
 									 bool _antiAlias,
-									 const wchar_t *_title ) override;
+									 const char *_title ) override;
     
 	void		HideWin				();
 	void        DestroyWin          ()override;
@@ -51,13 +53,19 @@ public:
 	
 	PlatformWindow *Window()override;
 	void		PreventFullscreenStartup();
+
+	SDL_Window* SDLWindow() {return m_window;};
 	
 protected:
 	void        ListAllDisplayModes ()override;
 	bool		m_tryingToCaptureMouse;
 		
-	bool		m_setVideoMode;
 	bool		m_preventFullscreenStartup;
+
+	SDL_Window*    m_window;
+	SDL_GLContext  m_context;
+
+	SDL_SysWMinfo m_info;
 };
 
 #endif

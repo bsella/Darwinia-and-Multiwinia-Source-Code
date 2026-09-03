@@ -4,7 +4,7 @@
 #include "lib/input/inputdriver_simple.h"
 #include "lib/input/sdl_eventproc.h"
 #include <string>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 static const int NUM_MB = 3;
 static const int NUM_AXES = 3;

@@ -1067,8 +1067,9 @@ void DoVistaChecks()
 
 void Initialise()
 {
-	g_eventHandler = new SDLEventHandler();
-	g_windowManager = new WindowManagerSDL();
+	WindowManagerSDL* sdlWindowManager = new WindowManagerSDL();
+	g_windowManager = sdlWindowManager;
+	g_eventHandler = new SDLEventHandler(*sdlWindowManager->SDLWindow());
 	//
     // Initialise all our basic objects
 
