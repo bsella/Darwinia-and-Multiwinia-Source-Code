@@ -28,9 +28,9 @@
 // This constructor is used in the export process. The m_parents array is never
 // populated in the exporter, so it is intentionally left blank
 ShapeMarker::ShapeMarker(char const *_name, char *_parentName, int _depth, Matrix34 const &_transform)
-:	m_parents(nullptr),
+:	m_transform(_transform),
 	m_depth(_depth),
-	m_transform(_transform)
+	m_parents(nullptr)
 {
 	m_name = strdup(_name);
 	m_parentName = strdup(_parentName);
@@ -277,13 +277,13 @@ ShapeFragment::ShapeFragment(char const *_name, char const *_parentName)
 :	m_displayListName(nullptr),
 	m_numPositions(0),
 	m_positions(nullptr),
+	m_positionsInWS(nullptr),
 	m_numNormals(0),
 	m_normals(nullptr),
 	m_numColours(0),
 	m_colours(nullptr),
 	m_numVertices(0),
 	m_vertices(nullptr),
-	m_positionsInWS(nullptr),
 	m_numTriangles(0),
 	m_maxTriangles(0),
 	m_triangles(nullptr),
@@ -367,8 +367,6 @@ void ShapeFragment::BuildDisplayList()
 
 void ShapeFragment::WriteToFile(FILE *_out) const
 {
-    unsigned int i;
-
 	if (stricmp(m_name, "SceneRoot") != 0)
 	{
 		fprintf(_out, "Fragment: %s\n", m_name);
@@ -379,7 +377,7 @@ void ShapeFragment::WriteToFile(FILE *_out) const
 
 		// Write out the positions
 		fprintf(_out, "\tPositions: %d\n", m_numPositions);
-		for (i = 0; i < m_numPositions; i++)
+		for (unsigned int i = 0; i < m_numPositions; i++)
 		{
 			Vector3 const &v = m_positions[i];
 			fprintf(_out, "\t\t%d: %7.3f %7.3f %7.3f\n", i, v.x, v.y, v.z);
@@ -387,7 +385,7 @@ void ShapeFragment::WriteToFile(FILE *_out) const
 
 		// Write out the normals
 		fprintf(_out, "\tNormals: %d\n", m_numNormals);
-		for (i = 0; i < m_numNormals; i++)
+		for (unsigned int i = 0; i < m_numNormals; i++)
 		{
 			Vector3 const &n = m_normals[i];
 			fprintf(_out, "\t\t%d: %6.3f %6.3f %6.3f\n", i, n.x, n.y, n.z);
@@ -395,7 +393,7 @@ void ShapeFragment::WriteToFile(FILE *_out) const
 
 		// Write out the colours
 		fprintf(_out, "\tColours: %d\n", m_numColours);
-		for (i = 0; i < m_numColours; i++)
+		for (unsigned int i = 0; i < m_numColours; i++)
 		{
 			RGBAColour const &c = m_colours[i];
 			fprintf(_out, "\t\t%d: %d %d %d\n", i, c.r, c.g, c.b);
@@ -403,7 +401,7 @@ void ShapeFragment::WriteToFile(FILE *_out) const
 
 		// Write out the vertices
 		fprintf(_out, "\tVertices: %d    # Position ID then Colour ID\n", m_numVertices);
-		for (i = 0; i < m_numVertices; i++)
+		for (unsigned int i = 0; i < m_numVertices; i++)
 		{
 			VertexPosCol const &v = m_vertices[i];
 			fprintf(_out, "\t\t%d: %3d %3d\n", i, v.m_posId, v.m_colId);
@@ -411,7 +409,7 @@ void ShapeFragment::WriteToFile(FILE *_out) const
 
 		// Write out the triangles
 		fprintf(_out, "\tTriangles: %d\n", m_numTriangles);
-		for (i = 0; i < m_numTriangles; ++i)
+		for (unsigned int i = 0; i < m_numTriangles; ++i)
 		{
 			fprintf(_out, "\t\t%d,%d,%d\n",
 				m_triangles[i].v1,
@@ -423,13 +421,13 @@ void ShapeFragment::WriteToFile(FILE *_out) const
 	}
 
 	// Write out all the child fragments
-	for (i = 0; i < m_childFragments.Size(); ++i)
+	for (int i = 0; i < m_childFragments.Size(); ++i)
 	{
 		m_childFragments.GetData(i)->WriteToFile(_out);
 	}
 
 	// Write out all the child markers
-	for (i = 0; i < m_childMarkers.Size(); ++i)
+	for (int i = 0; i < m_childMarkers.Size(); ++i)
 	{
 		m_childMarkers.GetData(i)->WriteToFile(_out);
 	}
@@ -441,7 +439,7 @@ void ShapeFragment::ParsePositionBlock(TextReader *_in, unsigned int _numPositio
 {
 	Vector3 *positions = new Vector3[_numPositions];
 
-	int expectedId = 0;
+	unsigned  int expectedId = 0;
 	while (expectedId < _numPositions)
 	{
 		if (_in->ReadLine() == 0)
@@ -452,7 +450,7 @@ void ShapeFragment::ParsePositionBlock(TextReader *_in, unsigned int _numPositio
 		char *c = _in->GetNextToken();
 		if (c && isdigit(c[0]))
 		{
-			int id = atoi(c);
+			unsigned int id = atoi(c);
 			if (id != expectedId || id >= _numPositions)
 			{
 				return;
@@ -486,22 +484,16 @@ void ShapeFragment::ParseNormalBlock(TextReader *_in, unsigned int _numNorms)
 	}
 	m_numNormals = _numNorms;
 
-	int expectedId = 0;
+	unsigned int expectedId = 0;
 	while(expectedId < _numNorms)
 	{
-		if (_in->ReadLine() == 0)
-		{
-			DarwiniaDebugAssert(0);
-		}
+		DarwiniaDebugAssert(_in->ReadLine() != 0);
 
 		char *c = _in->GetNextToken();
 		if (c && isdigit(c[0]))
 		{
-			int id = atoi(c);
-			if (id != expectedId || id >= _numNorms)
-			{
-				DarwiniaDebugAssert(0);
-			}
+			unsigned int id = atoi(c);
+			DarwiniaDebugAssert(id == expectedId && id < _numNorms);
 
 			Vector3 *vect = &m_normals[id];
 			c = _in->GetNextToken();
@@ -526,22 +518,16 @@ void ShapeFragment::ParseColourBlock(TextReader *_in, unsigned int _numColours)
 	m_colours = new RGBAColour[_numColours];
 	m_numColours = _numColours;
 
-	int expectedId = 0;
+	unsigned int expectedId = 0;
 	while(expectedId < _numColours)
 	{
-		if (_in->ReadLine() == 0)
-		{
-			DarwiniaDebugAssert(0);
-		}
+		DarwiniaDebugAssert(_in->ReadLine() != 0);
 
 		char *c = _in->GetNextToken();
 		if (c && isdigit(c[0]))
 		{
-			int id = atoi(c);
-			if (id != expectedId || id >= _numColours)
-			{
-				DarwiniaDebugAssert(0);
-			}
+			unsigned int id = atoi(c);
+			DarwiniaDebugAssert(id == expectedId && id < _numColours);
 
 			RGBAColour *col = &m_colours[id];
 			c = _in->GetNextToken();
@@ -570,22 +556,16 @@ void ShapeFragment::ParseVertexBlock(TextReader *_in, unsigned int _numVerts)
 	m_vertices = new VertexPosCol[_numVerts];
 	m_numVertices = _numVerts;
 
-	int expectedId = 0;
+	unsigned int expectedId = 0;
 	while (expectedId < _numVerts)
 	{
-		if (_in->ReadLine() == 0)
-		{
-			DarwiniaDebugAssert(0);
-		}
+		DarwiniaDebugAssert(_in->ReadLine() != 0);
 
 		char *c = _in->GetNextToken();
 		if (c && isdigit(c[0]))
 		{
-			int id = atoi(c);
-			if (id != expectedId || id >= _numVerts)
-			{
-				DarwiniaDebugAssert(0);
-			}
+			unsigned int id = atoi(c);
+			DarwiniaDebugAssert(id == expectedId && id < _numVerts);
 
 			VertexPosCol *vert = &m_vertices[id];
 			c = _in->GetNextToken();
@@ -628,10 +608,7 @@ void ShapeFragment::ParseStripBlock(TextReader *_in)
 	int v1 = -1, v2 = -1;
 	while(i < numVerts)
 	{
-		if (_in->ReadLine() == 0)
-		{
-			DarwiniaDebugAssert(0);
-		}
+		DarwiniaDebugAssert(_in->ReadLine() != 0);
 
 		while (_in->TokenAvailable())
 		{
@@ -640,7 +617,7 @@ void ShapeFragment::ParseStripBlock(TextReader *_in)
 
 			c++;
 			int v3 = atoi(c);
-			DarwiniaDebugAssert(v3 < m_numVertices);
+			DarwiniaDebugAssert((unsigned int)v3 < m_numVertices);
 
 			if (i >= 2 && v1 != v2 && v2 != v3 && v1 != v3)
 			{
@@ -679,14 +656,14 @@ void ShapeFragment::ParseStripBlock(TextReader *_in)
 // *** ParseAllStripBlocks
 void ShapeFragment::ParseAllStripBlocks(TextReader *_in, unsigned int _numStrips)
 {
-	int expectedId = 0;
+	unsigned int expectedId = 0;
 	while(_in->ReadLine())
 	{
 		char *c = _in->GetNextToken();
 		if (c && stricmp(c, "Strip") == 0)
 		{
 			c = _in->GetNextToken();
-			int id = atoi(c);
+			unsigned int id = atoi(c);
 
 			DarwiniaDebugAssert(id == expectedId);
 
@@ -743,7 +720,7 @@ void ShapeFragment::GenerateNormals()
 	m_normals = new Vector3[m_numNormals];
 	int normId = 0;
 
-	for (int j = 0; j < m_numTriangles; ++j)
+	for (unsigned int j = 0; j < m_numTriangles; ++j)
 	{
 		ShapeTriangle *tri = &m_triangles[j];
 		VertexPosCol const &vertA = m_vertices[tri->v1];
@@ -765,7 +742,7 @@ void ShapeFragment::GenerateNormals()
 // *** RegisterPositions
 void ShapeFragment::RegisterPositions(Vector3 *_positions, unsigned int _numPositions)
 {
-	int i;
+	unsigned int i;
 
     delete [] m_positions;
     m_positions = _positions;
@@ -834,7 +811,7 @@ void ShapeFragment::RegisterPositions(Vector3 *_positions, unsigned int _numPosi
 				radiusSquared = magSquared;
 			}
 		}
-		float radius = sqrtf(radiusSquared);
+		//float radius = sqrtf(radiusSquared);
 		float height = m_mostPositiveY - m_mostNegativeY;
 		float cylinderVolume = M_PI * radiusSquared * height;
 		float sphereVolume = 4.0f/3.0f * M_PI * m_radius * m_radius * m_radius;
@@ -928,7 +905,7 @@ void ShapeFragment::RenderSlow()
 	glBegin(GL_TRIANGLES);
 
 	int norm = 0;
-	for (int i = 0; i < m_numTriangles; i++)
+	for (unsigned int i = 0; i < m_numTriangles; i++)
 	{
 		VertexPosCol const *vertA = &m_vertices[m_triangles[i].v1];
 		VertexPosCol const *vertB = &m_vertices[m_triangles[i].v2];
@@ -1132,13 +1109,13 @@ bool ShapeFragment::RayHit(RayPackage *_package, Matrix34 const &_transform, boo
 		}
 
 		// Compute World Space versions of all the vertices
-		for (int i = 0; i < m_numPositions; ++i)
+		for (unsigned int i = 0; i < m_numPositions; ++i)
 		{
 			m_positionsInWS[i] = m_positions[i] * totalMatrix;
 		}
 
 		// Check each triangle in this fragment for intersection
-		for (int j = 0; j < m_numTriangles; ++j)
+		for (unsigned int j = 0; j < m_numTriangles; ++j)
 		{
 			VertexPosCol *v1 = &m_vertices[m_triangles[j].v1];
 			VertexPosCol *v2 = &m_vertices[m_triangles[j].v2];
@@ -1189,13 +1166,13 @@ bool ShapeFragment::SphereHit(SpherePackage *_package, Matrix34 const &_transfor
 		}
 
 		// Compute World Space versions of all the vertices
-		for (int i = 0; i < m_numPositions; ++i)
+		for (unsigned int i = 0; i < m_numPositions; ++i)
 		{
 			m_positionsInWS[i] = m_positions[i] * totalMatrix;
 		}
 
 		// Check each triangle in this fragment for intersection
-		for (int j = 0; j < m_numTriangles; ++j)
+		for (unsigned int j = 0; j < m_numTriangles; ++j)
 		{
 			VertexPosCol *v1 = &m_vertices[m_triangles[j].v1];
 			VertexPosCol *v2 = &m_vertices[m_triangles[j].v2];
@@ -1311,10 +1288,10 @@ Shape::Shape()
 
 
 Shape::Shape(char const *filename, bool _animating)
-:	m_displayListName(nullptr),
+:	m_animating(_animating),
+	m_displayListName(nullptr),
 	m_rootFragment(nullptr),
-	m_name(nullptr),
-	m_animating(_animating)
+	m_name(nullptr)
 {
 	TextFileReader in(filename);
 	Load(&in);
@@ -1325,9 +1302,9 @@ Shape::Shape(char const *filename, bool _animating)
 
 
 Shape::Shape(TextReader *in, bool _animating)
-:	m_displayListName(nullptr),
-	m_rootFragment(nullptr),
-	m_animating(_animating)
+:	m_animating(_animating),
+	m_displayListName(nullptr),
+	m_rootFragment(nullptr)
 {
 	Load(in);
 	BuildDisplayList();
