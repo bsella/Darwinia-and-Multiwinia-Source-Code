@@ -10,6 +10,7 @@
 #include "location.h"
 #include "team.h"
 
+#include "FFP_emulation.h"
 
 Egg::Egg()
 :   Entity(),

@@ -28,6 +28,7 @@
 #include "main.h"
 #include "renderer.h"
 
+#include "FFP_emulation.h"
 
 #ifdef SOUND_EDITOR
 

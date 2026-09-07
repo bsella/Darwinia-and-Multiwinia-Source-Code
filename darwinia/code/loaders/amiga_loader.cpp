@@ -12,6 +12,7 @@
 #include "3d_sierpinski_gasket.h"
 #include "app.h"
 
+#include "FFP_emulation.h"
 
 class Star
 {

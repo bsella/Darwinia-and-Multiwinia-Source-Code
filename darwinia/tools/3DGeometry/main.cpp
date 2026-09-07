@@ -10,6 +10,7 @@
 #include "lib/vector2.h"
 #include "lib/vector3.h"
 
+#include "FFP_emulation.h"
 
 void DrawPoint(Vector3 &pos)
 {

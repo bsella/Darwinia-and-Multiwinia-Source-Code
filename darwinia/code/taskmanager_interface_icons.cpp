@@ -43,6 +43,7 @@
 #include "worldobject/insertion_squad.h"
 #include "worldobject/engineer.h"
 
+#include "FFP_emulation.h"
 
 // ============================================================================
 

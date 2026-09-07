@@ -14,6 +14,7 @@
 
 #include "sound/soundsystem.h"
 
+#include "FFP_emulation.h"
 
 SoulLoader::SoulLoader()
 :   Loader()

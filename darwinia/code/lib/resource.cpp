@@ -23,6 +23,8 @@
 #include "location.h"
 #include "renderer.h"
 
+#include "FFP_emulation.h"
+
 
 Resource::Resource()
 :	m_nameSeed(1),

@@ -16,6 +16,7 @@
 #include "renderer.h"
 #include "team.h"
 
+#include "FFP_emulation.h"
 
 ConstructionYard::ConstructionYard()
 :   Building(),

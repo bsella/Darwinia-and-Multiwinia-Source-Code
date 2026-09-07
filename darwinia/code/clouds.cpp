@@ -9,6 +9,7 @@
 #include "clouds.h"
 #include "location.h"
 
+#include "FFP_emulation.h"
 
 Clouds::Clouds()
 {

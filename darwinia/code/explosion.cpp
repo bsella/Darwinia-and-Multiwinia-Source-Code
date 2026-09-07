@@ -9,6 +9,7 @@
 #include "main.h"
 #include "renderer.h"
 
+#include "FFP_emulation.h"
 
 //#define EXPLOSION_LIFETIME		50.0f
 //#define MAX_INITIAL_SPEED		0.01f

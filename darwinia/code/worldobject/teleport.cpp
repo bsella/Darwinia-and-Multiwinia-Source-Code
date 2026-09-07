@@ -19,6 +19,8 @@
 #include "worldobject/teleport.h"
 #include "worldobject/insertion_squad.h"
 
+#include "FFP_emulation.h"
+
 LList<TeleportMap> Teleport::m_teleportMap;
 
 

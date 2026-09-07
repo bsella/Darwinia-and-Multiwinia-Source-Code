@@ -16,6 +16,7 @@
 
 #include "loaders/speccy_loader.h"
 
+#include "FFP_emulation.h"
 
 void SpeccyLoader::StartFrame()
 {

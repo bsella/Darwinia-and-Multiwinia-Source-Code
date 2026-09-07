@@ -143,6 +143,7 @@ add_executable(darwinia
 	code/3d_sierpinski_gasket.cpp
 	code/sepulveda_strings.cpp
 	code/landscape_renderer.cpp
+	code/FFP_emulation.cpp
 
 	code/loaders/loader.cpp
 	code/loaders/speccy_loader.cpp

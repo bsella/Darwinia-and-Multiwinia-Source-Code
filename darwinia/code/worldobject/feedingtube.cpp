@@ -20,6 +20,7 @@
 #include "worldobject/feedingtube.h"
 
 
+#include "FFP_emulation.h"
 
 FeedingTube::FeedingTube()
 :   m_receiverId(-1),

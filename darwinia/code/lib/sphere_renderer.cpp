@@ -7,6 +7,7 @@
 
 #include "sphere_renderer.h"
 
+#include "FFP_emulation.h"
 
 // ******************
 // * Class Triangle *

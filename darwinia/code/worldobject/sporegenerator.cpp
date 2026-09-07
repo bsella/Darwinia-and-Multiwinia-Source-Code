@@ -17,6 +17,8 @@
 
 #include "sound/soundsystem.h"
 
+#include "FFP_emulation.h"
+
 
 #define SPOREGENERATOR_HOVERHEIGHT          100.0f
 #define SPOREGENERATOR_EGGLAYHEIGHT         20.0f

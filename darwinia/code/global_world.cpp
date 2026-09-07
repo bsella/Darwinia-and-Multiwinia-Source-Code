@@ -39,6 +39,7 @@
 
 #include "interface/buynow_window.h"
 
+#include "FFP_emulation.h"
 
 // ****************************************************************************
 // Class GlobalLocation

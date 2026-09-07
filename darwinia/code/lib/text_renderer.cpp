@@ -12,6 +12,8 @@
 #include "camera.h"
 #include "text_renderer.h"
 
+#include "FFP_emulation.h"
+
 
 TextRenderer g_gameFont;
 TextRenderer g_editorFont;

@@ -3,6 +3,8 @@
 
 #include "3d_sierpinski_gasket.h"
 
+#include "FFP_emulation.h"
+
 #include <GL/gl.h>
 
 Sierpinski3D::Sierpinski3D(unsigned int _numPoints)

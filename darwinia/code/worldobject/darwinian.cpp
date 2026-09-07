@@ -33,6 +33,8 @@
 #include "worldobject/goddish.h"
 #include "worldobject/rocket.h"
 
+#include "FFP_emulation.h"
+
 Darwinian::Darwinian()
 :   Entity(),
     m_state(StateIdle),

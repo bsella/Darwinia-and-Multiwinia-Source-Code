@@ -17,6 +17,7 @@
 #include "worldobject/virii.h"
 #include "worldobject/egg.h"
 
+#include "FFP_emulation.h"
 
 Spirit::Spirit()
 :   WorldObject(),

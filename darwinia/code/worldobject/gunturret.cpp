@@ -23,6 +23,7 @@
 
 #include "sound/soundsystem.h"
 
+#include "FFP_emulation.h"
 
 GunTurret::GunTurret()
 :   Building(),

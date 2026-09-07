@@ -14,7 +14,7 @@
 #include "entity_grid.h"
 #include "global_world.h"
 
-
+#include "FFP_emulation.h"
 
 SafeArea::SafeArea()
 :   Building(),

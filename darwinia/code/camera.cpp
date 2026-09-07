@@ -39,6 +39,8 @@
 #include "worldobject/teleport.h"
 #include "worldobject/insertion_squad.h"
 
+#include "FFP_emulation.h"
+
 #include <algorithm>
 
 #define MIN_GROUND_CLEARANCE	10.0f	// Minimum height relative to land

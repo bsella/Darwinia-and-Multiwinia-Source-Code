@@ -18,6 +18,8 @@
 #include "renderer.h"
 #include "entity_grid.h"
 
+#include "FFP_emulation.h"
+
 #include "sound/soundsystem.h"
 
 

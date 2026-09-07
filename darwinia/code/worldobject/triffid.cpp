@@ -23,6 +23,8 @@
 #include "entity_grid.h"
 #include "unit.h"
 
+#include "FFP_emulation.h"
+
 
 Triffid::Triffid()
 :   Building(),

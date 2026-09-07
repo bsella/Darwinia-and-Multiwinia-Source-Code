@@ -22,6 +22,8 @@
 #include "sound/soundsystem.h"
 #include "sound/sound_library_2d.h"
 
+#include "FFP_emulation.h"
+
 Loader::Loader()
 {
 }

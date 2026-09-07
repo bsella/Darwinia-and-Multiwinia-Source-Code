@@ -3,6 +3,7 @@
 #include "lib/ogl_extensions.h"
 #include "lib/render_utils.h"
 
+#include "FFP_emulation.h"
 
 void RenderSplitUpQuadTextured(
 		float posNorth, float posSouth, float posEast, float posWest, float height,

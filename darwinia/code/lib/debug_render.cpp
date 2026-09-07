@@ -13,6 +13,8 @@
 
 #include <GL/glu.h>
 
+#include "FFP_emulation.h"
+
 #ifdef DEBUG_RENDER_ENABLED
 
 

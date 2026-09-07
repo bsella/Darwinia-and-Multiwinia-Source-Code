@@ -49,6 +49,7 @@
 #include "worldobject/ai.h"
 #include "worldobject/laserfence.h"
 
+#include "FFP_emulation.h"
 
 
 // ****************************************************************************

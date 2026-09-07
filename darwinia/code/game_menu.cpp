@@ -8,6 +8,8 @@
 #include "global_internet.h"
 #include "renderer.h"
 
+#include "FFP_emulation.h"
+
 // *************************
 // Button Classes
 // *************************

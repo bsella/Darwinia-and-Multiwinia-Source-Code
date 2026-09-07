@@ -20,6 +20,8 @@
 #include "location.h"
 #include "global_world.h"
 
+#include "FFP_emulation.h"
+
 #ifdef USE_DIRECT3D
 #include "lib/opengl_directx_internals.h"
 #endif

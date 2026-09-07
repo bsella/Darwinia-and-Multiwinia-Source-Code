@@ -17,6 +17,7 @@
 
 #include "sound/soundsystem.h"
 
+#include "FFP_emulation.h"
 
 
 GodDish::GodDish()

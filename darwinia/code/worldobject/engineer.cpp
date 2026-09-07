@@ -30,7 +30,7 @@
 #include "worldobject/bridge.h"
 #include "worldobject/researchitem.h"
 
-
+#include "FFP_emulation.h"
 
 Engineer::Engineer()
 :   Entity(),

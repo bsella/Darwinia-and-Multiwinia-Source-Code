@@ -16,6 +16,8 @@
 //#include "input.h"
 #include "app.h"
 
+#include "FFP_emulation.h"
+
 //#include "app.h"
 //#include "renderer.h"
 
@@ -223,9 +225,10 @@ bool WindowManagerSDL::CreateWin(int _width, int _height, bool _windowed, int _c
 	SDL_GL_SetSwapInterval ( 1 );
 	
 
-#if 0
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#ifdef FFP_ENABLE_EMULATION
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 #else
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);

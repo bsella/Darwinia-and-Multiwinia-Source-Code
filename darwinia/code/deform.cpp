@@ -13,6 +13,8 @@
 #include "lib/resource.h"
 #include "lib/vector3.h"
 
+#include "FFP_emulation.h"
+
 #define STRETCH_RECT // should make FSAA possible (for small penalty with non-FSAA setups)
 
 #define CHECK_OK if(!m_deformFullscreenShader) return

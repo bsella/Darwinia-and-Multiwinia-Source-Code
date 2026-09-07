@@ -28,6 +28,8 @@
 #include "helpsystem.h"
 #include "taskmanager.h"
 
+#include "FFP_emulation.h"
+
 #include "sound/soundsystem.h"
 
 

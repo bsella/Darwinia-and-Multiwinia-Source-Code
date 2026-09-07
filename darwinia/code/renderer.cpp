@@ -43,6 +43,7 @@
 #include "demoendsequence.h"
 #include "tutorial.h"
 #include "control_help.h"
+#include "FFP_emulation.h"
 
 #include "sound/soundsystem.h"
 
@@ -146,6 +147,10 @@ void Renderer::Initialise()
 	InitialiseOGLExtensions();
 
 	BuildOpenGlState();
+
+#ifdef FFP_ENABLE_EMULATION
+	ffp_emulation::init();
+#endif
 }
 
 void Renderer::Restart()

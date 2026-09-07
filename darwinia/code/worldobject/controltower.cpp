@@ -28,6 +28,8 @@
 #include "worldobject/controltower.h"
 #include "worldobject/trunkport.h"
 
+#include "FFP_emulation.h"
+
 Shape *ControlTower::s_dishShape = nullptr;
 
 

@@ -13,6 +13,8 @@
 
 #include "worldobject/bridge.h"
 
+#include "FFP_emulation.h"
+
 
 Bridge::Bridge()
 :   Teleport(),

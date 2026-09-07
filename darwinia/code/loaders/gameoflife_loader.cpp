@@ -12,6 +12,7 @@
 
 #include "sound/soundsystem.h"
 
+#include "FFP_emulation.h"
 
 #define CELLSIZE        20.0f
 #define MAXAGE          50.0f

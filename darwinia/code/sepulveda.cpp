@@ -27,7 +27,7 @@
 
 #include "sound/soundsystem.h"
 
-
+#include "FFP_emulation.h"
 
 Sepulveda::Sepulveda()
 :   m_timeSync(0.0),

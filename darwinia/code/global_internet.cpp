@@ -12,6 +12,7 @@
 #include "global_world.h"
 #include "main.h"
 
+#include "FFP_emulation.h"
 
 #define DISPLAY_LIST_NAME_LINKS "GlobalInternetLinks"
 #define DISPLAY_LIST_NAME_NODES "GlobalInternetNodes"

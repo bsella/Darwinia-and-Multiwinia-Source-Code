@@ -63,7 +63,7 @@
 #include "worldobject/generichub.h"
 #include "worldobject/feedingtube.h"
 
-
+#include "FFP_emulation.h"
 
 Shape *Building::s_controlPad = nullptr;
 ShapeMarker *Building::s_controlPadStatus = nullptr;

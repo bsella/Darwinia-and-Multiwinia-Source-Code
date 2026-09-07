@@ -9,6 +9,8 @@
 
 #include "app.h"
 
+#include "FFP_emulation.h"
+
 
 ScrollBar::ScrollBar( EclWindow *parent )
 :   m_x(0),

@@ -21,7 +21,7 @@
 
 #include "worldobject/radardish.h"
 
-
+#include "FFP_emulation.h"
 
 RadarDish::RadarDish()
 :   Teleport(),

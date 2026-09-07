@@ -19,6 +19,7 @@
 #include "worldobject/darwinian.h"
 #include "worldobject/blueprintstore.h"
 
+#include "FFP_emulation.h"
 
 AI::AI()
 :   Entity(),

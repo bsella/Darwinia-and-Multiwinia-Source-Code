@@ -12,6 +12,7 @@
 
 #include "app.h"
 
+#include "FFP_emulation.h"
 
 FodderLoader::FodderLoader()
 :   Loader()

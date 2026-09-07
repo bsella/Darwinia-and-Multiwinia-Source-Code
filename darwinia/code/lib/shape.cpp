@@ -13,6 +13,8 @@
 #include "lib/shape.h"
 #include "lib/text_stream_readers.h"
 
+#include "FFP_emulation.h"
+
 #ifndef EXPORTER_BUILD
 #include "lib/resource.h"
 #include "../app.h"

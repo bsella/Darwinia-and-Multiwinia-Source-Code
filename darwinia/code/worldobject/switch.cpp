@@ -20,6 +20,7 @@
 #include "worldobject/switch.h"
 #include "worldobject/generator.h"
 
+#include "FFP_emulation.h"
 
 // ****************************************************************************
 // Class FenceSwitch

@@ -21,6 +21,7 @@
 #include "worldobject/virii.h"
 #include "worldobject/egg.h"
 
+#include "FFP_emulation.h"
 
 ViriiUnit::ViriiUnit(int teamId, int unitId, int numEntities, Vector3 const &_pos)
 :   Unit(Entity::TypeVirii, teamId, unitId, numEntities, _pos),

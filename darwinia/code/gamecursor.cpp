@@ -27,6 +27,7 @@
 #include "worldobject/radardish.h"
 #include "worldobject/insertion_squad.h"
 
+#include "FFP_emulation.h"
 
 GameCursor::GameCursor()
 :	m_selectionArrowBoost(0.0f),

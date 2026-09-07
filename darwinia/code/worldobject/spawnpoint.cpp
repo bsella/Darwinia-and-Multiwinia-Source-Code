@@ -21,6 +21,8 @@
 
 #include "worldobject/spawnpoint.h"
 
+#include "FFP_emulation.h"
+
 SpawnBuilding::SpawnBuilding()
 :   Building(),
     m_spiritLink(nullptr),

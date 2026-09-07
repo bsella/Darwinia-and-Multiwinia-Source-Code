@@ -13,6 +13,7 @@
 #include "level_file.h"
 #include "global_world.h"
 
+#include "FFP_emulation.h"
 
 DemoEndSequence::DemoEndSequence()
 {

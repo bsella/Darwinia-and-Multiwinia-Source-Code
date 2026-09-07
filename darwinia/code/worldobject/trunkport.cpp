@@ -19,6 +19,7 @@
 #include "main.h"
 #include "renderer.h"
 
+#include "FFP_emulation.h"
 
 TrunkPort::TrunkPort()
 :   Building(),

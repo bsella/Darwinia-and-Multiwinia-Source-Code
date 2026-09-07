@@ -26,6 +26,8 @@
 
 #include "worldobject/insertion_squad.h"
 
+#include "FFP_emulation.h"
+
 #include <vector>
 
 

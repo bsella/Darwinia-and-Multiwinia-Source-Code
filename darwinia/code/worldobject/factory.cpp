@@ -15,6 +15,8 @@
 
 #include "worldobject/factory.h"
 
+#include "FFP_emulation.h"
+
 Factory::Factory()
 :   Building(),
     m_troopType(Entity::TypeInvalid),

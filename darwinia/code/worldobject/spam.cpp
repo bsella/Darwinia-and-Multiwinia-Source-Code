@@ -18,6 +18,8 @@
 
 #include "sound/soundsystem.h"
 
+#include "FFP_emulation.h"
+
 static inline float SpamReloadTime()
 {
 	return SPAM_RELOADTIME - (SPAM_RELOADTIME / 2.0) * g_app->m_difficultyLevel / 10.0;

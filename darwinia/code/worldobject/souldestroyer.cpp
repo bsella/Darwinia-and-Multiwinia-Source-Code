@@ -20,6 +20,8 @@
 
 #include "worldobject/souldestroyer.h"
 
+#include "FFP_emulation.h"
+
 Shape *SoulDestroyer::s_shapeHead = nullptr;
 Shape *SoulDestroyer::s_shapeTail = nullptr;
 ShapeMarker *SoulDestroyer::s_tailMarker = nullptr;

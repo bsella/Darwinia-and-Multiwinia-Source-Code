@@ -7,6 +7,8 @@
 #include "main.h"
 #include "camera.h"
 
+#include "FFP_emulation.h"
+
 
 Flag::Flag()
 {

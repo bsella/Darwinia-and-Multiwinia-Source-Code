@@ -30,6 +30,8 @@
 
 #include "sound/soundsystem.h"
 
+#include "FFP_emulation.h"
+
 
 Shape *FuelBuilding::s_fuelPipe = nullptr;
 

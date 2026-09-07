@@ -7,6 +7,7 @@
 
 #include "worldobject/spiritstore.h"
 
+#include "FFP_emulation.h"
 
 SpiritStore::SpiritStore()
 :   m_sizeX(0.0f),

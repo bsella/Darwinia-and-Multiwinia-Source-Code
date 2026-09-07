@@ -16,6 +16,7 @@
 #include "location.h"
 #include "team.h"
 
+#include "FFP_emulation.h"
 
 #define END_OF_LIST -100000
 
