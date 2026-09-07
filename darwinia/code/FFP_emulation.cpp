@@ -5,6 +5,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/quaternion_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat4x4.hpp>
@@ -12,6 +13,8 @@
 
 #include <GL/glext.h>
 #include <cstdint>
+#include <glm/matrix.hpp>
+#include <glm/trigonometric.hpp>
 #include <vector>
 #include <iostream>
 #include <stack>
@@ -47,8 +50,6 @@ namespace ffp_emulation
 
         GLint g_model_view_location;
         GLint g_projection_location;
-
-        unsigned int g_vertex_index;
 
         constexpr const char* vertex_shader_source =
 R"(
@@ -92,6 +93,19 @@ void main()
     out_colour = in_colour;
 }
 )";
+
+        glm::mat4& get_current_matrix()
+        {
+            assert(g_matrix_mode == GL_MODELVIEW || g_matrix_mode == GL_PROJECTION);
+
+            switch (g_matrix_mode)
+            {
+                case GL_MODELVIEW:  return g_model_view.top();
+                case GL_PROJECTION: return g_projection.top();
+            }
+
+            return g_model_view.top();
+        }
 
     }
 
@@ -189,8 +203,6 @@ void main()
         g_primitive_mode = mode;
 
         g_vertex_buffer.clear();
-
-        g_vertex_index = 0;
     }
 
     void glEnd()
@@ -207,7 +219,7 @@ void main()
 
         auto primitive_mode = g_primitive_mode;
         if (primitive_mode == GL_QUADS)      primitive_mode = GL_TRIANGLES;
-        if (primitive_mode == GL_QUAD_STRIP) primitive_mode = GL_TRIANGLES;
+        if (primitive_mode == GL_QUAD_STRIP) primitive_mode = GL_TRIANGLE_STRIP;
 
         assert(
             primitive_mode == GL_POINTS ||
@@ -236,13 +248,7 @@ void main()
 
     void glLoadIdentity()
     {
-        assert(g_matrix_mode == GL_MODELVIEW || g_matrix_mode == GL_PROJECTION);
-
-        switch (g_matrix_mode)
-        {
-            case GL_MODELVIEW:  g_model_view.top() = glm::mat4(1.0); break;
-            case GL_PROJECTION: g_projection.top() = glm::mat4(1.0); break;
-        }
+        get_current_matrix() = glm::mat4(1.0);
     }
 
     void glMultMatrixf(const GLfloat *m)
@@ -254,13 +260,7 @@ void main()
             m[12], m[13], m[14], m[15]
         );
 
-        assert(g_matrix_mode == GL_MODELVIEW || g_matrix_mode == GL_PROJECTION);
-
-        switch (g_matrix_mode)
-        {
-            case GL_MODELVIEW:  g_model_view.top() *= mat; break;
-            case GL_PROJECTION: g_projection.top() *= mat; break;
-        }
+        get_current_matrix() *= mat;
     }
 
     void glPushMatrix()
@@ -269,8 +269,8 @@ void main()
 
         switch (g_matrix_mode)
         {
-            case GL_MODELVIEW:  g_model_view.push(glm::mat4(1.0)); break;
-            case GL_PROJECTION: g_projection.push(glm::mat4(1.0)); break;
+            case GL_MODELVIEW:  g_model_view.push(g_model_view.top()); break;
+            case GL_PROJECTION: g_projection.push(g_projection.top()); break;
         }
     }
 
@@ -287,66 +287,119 @@ void main()
 
     void glLoadMatrixd(const GLdouble *m)
     {
-        assert(g_matrix_mode == GL_MODELVIEW || g_matrix_mode == GL_PROJECTION);
+        get_current_matrix() = glm::mat4(
+            m[0],  m[1],  m[2],  m[3],
+            m[4],  m[5],  m[6],  m[7],
+            m[8],  m[9],  m[10], m[11],
+            m[12], m[13], m[14], m[15]
+        );
+    }
 
-        switch (g_matrix_mode)
+    void glScalef(GLfloat x, GLfloat y, GLfloat z)
+    {
+        get_current_matrix() = glm::scale(get_current_matrix(), {x, y, z});
+    }
+
+    void glTranslatef(GLfloat x, GLfloat y, GLfloat z)
+    {
+        get_current_matrix() = glm::translate(get_current_matrix(), {x, y, z});
+    }
+
+    void glRotatef(GLfloat angle_degrees, GLfloat x, GLfloat y, GLfloat z)
+    {
+        get_current_matrix() = glm::rotate(get_current_matrix(), glm::radians(angle_degrees), {x,y,z});
+    }
+
+    void glGetIntegerv(GLenum pname, GLint *params)
+    {
+        if(pname == GL_MATRIX_MODE)
         {
-            case GL_MODELVIEW:  g_model_view.top() = glm::mat4(
-            m[0],  m[1],  m[2],  m[3],
-            m[4],  m[5],  m[6],  m[7],
-            m[8],  m[9],  m[10], m[11],
-            m[12], m[13], m[14], m[15]
-            );
-            break;
-            case GL_PROJECTION: g_projection.top() = glm::mat4(
-            m[0],  m[1],  m[2],  m[3],
-            m[4],  m[5],  m[6],  m[7],
-            m[8],  m[9],  m[10], m[11],
-            m[12], m[13], m[14], m[15]
-            );
-            break;
+            params[0] = g_matrix_mode;
+            return;
         }
+
+        ::glGetIntegerv(pname, params);
+    }
+
+    void glGetDoublev(GLenum pname, GLdouble *params)
+    {
+        if(pname == GL_MODELVIEW_MATRIX)
+        {
+            auto& matrix = g_model_view.top();
+
+            const float* m = glm::value_ptr(matrix);
+
+            params[0]  = m[0];
+            params[1]  = m[1];
+            params[2]  = m[2];
+            params[3]  = m[3];
+            params[4]  = m[4]; 
+            params[5]  = m[5];
+            params[6]  = m[6];
+            params[7]  = m[7];
+            params[8]  = m[8]; 
+            params[9]  = m[9];
+            params[10] = m[10];
+            params[11] = m[11];
+            params[12] = m[12];
+            params[13] = m[13];
+            params[14] = m[14];
+            params[15] = m[15];
+
+            return;
+        }
+
+        if(pname == GL_PROJECTION_MATRIX)
+        {
+            auto& matrix = g_projection.top();
+
+            const float* m = glm::value_ptr(matrix);
+
+            params[0]  = m[0];
+            params[1]  = m[1];
+            params[2]  = m[2];
+            params[3]  = m[3];
+            params[4]  = m[4]; 
+            params[5]  = m[5];
+            params[6]  = m[6];
+            params[7]  = m[7];
+            params[8]  = m[8]; 
+            params[9]  = m[9];
+            params[10] = m[10];
+            params[11] = m[11];
+            params[12] = m[12];
+            params[13] = m[13];
+            params[14] = m[14];
+            params[15] = m[15];
+
+            return;
+        }
+
+        ::glGetDoublev(pname, params);
     }
 
     void gluLookAt(GLdouble pos_x, GLdouble pos_y, GLdouble pos_z,
                    GLdouble forwards_x, GLdouble forwards_y, GLdouble forwards_z,
                    GLdouble up_x, GLdouble up_y, GLdouble up_z)
     {
-        assert(g_matrix_mode == GL_MODELVIEW || g_matrix_mode == GL_PROJECTION);
-
         glm::vec3 eye{pos_x, pos_y, pos_z};
         glm::vec3 forwards{forwards_x, forwards_y,  forwards_z};
 
-        glm::vec3 target = eye + forwards;
         glm::vec3 up{up_x, up_y, up_z};
 
-        switch (g_matrix_mode)
-        {
-            case GL_MODELVIEW:  g_model_view.top() = glm::lookAt(eye, target, up); break;
-            case GL_PROJECTION: g_projection.top() = glm::lookAt(eye, target, up); break;
-        }
+        get_current_matrix() *= glm::lookAt(eye, forwards, up);
     }
 
-    void gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
+    void gluPerspective(GLdouble fovy_degrees, GLdouble aspect, GLdouble zNear, GLdouble zFar)
     {
-        assert(g_matrix_mode == GL_PROJECTION);
+        auto fovy = glm::radians(fovy_degrees);
 
-        switch (g_matrix_mode)
-        {
-            case GL_MODELVIEW:  g_model_view.top() = glm::perspective(fovy, aspect, zNear, zFar); break;
-            case GL_PROJECTION: g_projection.top() = glm::perspective(fovy, aspect, zNear, zFar); break;
-        }
+        get_current_matrix() *= glm::perspective((float)fovy, (float)aspect, (float)zNear, (float)zFar);
     }
 
     void gluOrtho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top)
     {
-        assert(g_matrix_mode == GL_PROJECTION);
-
-        switch (g_matrix_mode)
-        {
-            case GL_MODELVIEW:  g_model_view.top() = glm::ortho(left, right, bottom, top); break;
-            case GL_PROJECTION: g_projection.top() = glm::ortho(left, right, bottom, top); break;
-        }
+        get_current_matrix() *= glm::ortho((float)left, (float)right, (float)bottom, (float)top);
     }
 
     void glVertex3f( GLfloat x, GLfloat y, GLfloat z )
@@ -355,7 +408,7 @@ void main()
         g_current_vertex.y = y;
         g_current_vertex.z = z;
         
-        if((g_primitive_mode == GL_QUADS || g_primitive_mode == GL_QUAD_STRIP) && ((g_vertex_index - 3) % 4) == 0 )
+        if(g_primitive_mode == GL_QUADS && ((g_vertex_buffer.size() - 3) % 4) == 0 )
         {
             auto vertex1 = g_vertex_buffer[g_vertex_buffer.size() - 3];
             auto vertex2 = g_vertex_buffer[g_vertex_buffer.size() - 1];
@@ -364,32 +417,7 @@ void main()
             g_vertex_buffer.push_back(vertex2);
         }
 
-        else
-        
-        if(g_primitive_mode == GL_QUAD_STRIP && g_vertex_index > 4)
-        {
-            if(((g_vertex_index - 4) % 2) == 0)
-            {
-                auto vertex1 = g_vertex_buffer[g_vertex_buffer.size() - 3];
-                auto vertex2 = g_vertex_buffer[g_vertex_buffer.size() - 1];
-                g_vertex_buffer.push_back(vertex1);
-                g_vertex_buffer.push_back(vertex2);
-            }
-            
-            else
-
-            if(((g_vertex_index - 5) % 2) == 0)
-            {
-                auto vertex1 = g_vertex_buffer[g_vertex_buffer.size() - 3];
-                auto vertex2 = g_vertex_buffer[g_vertex_buffer.size() - 1];
-                g_vertex_buffer.push_back(vertex1);
-                g_vertex_buffer.push_back(vertex2);
-            }
-        }
-
         g_vertex_buffer.push_back(g_current_vertex);
-
-        g_vertex_index++;
     }
     void glVertex2f( GLfloat x, GLfloat y )
     {
@@ -472,6 +500,11 @@ void main()
     }
 
     void glColorMaterial(GLenum face, GLenum mode)
+    {
+        // TODO
+    }
+
+    void glMaterialfv(GLenum face, GLenum pname, const GLfloat *params)
     {
         // TODO
     }

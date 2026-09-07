@@ -18,6 +18,12 @@ namespace ffp_emulation
     void glPushMatrix();
     void glPopMatrix();
     void glLoadMatrixd(const GLdouble *m);
+    void glScalef(GLfloat x, GLfloat y, GLfloat z);
+    void glTranslatef(GLfloat x, GLfloat y, GLfloat z);
+    void glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
+
+    void glGetIntegerv(GLenum pname, GLint *params );
+    void glGetDoublev(GLenum pname, GLdouble *params);
 
     void gluLookAt(GLdouble pos_x, GLdouble pos_y, GLdouble pos_z,
                    GLdouble forwards_x, GLdouble forwards_y, GLdouble forwards_z,
@@ -49,6 +55,7 @@ namespace ffp_emulation
     void glAlphaFunc(GLenum func, GLclampf ref);
 
     void glColorMaterial(GLenum face, GLenum mode);
+    void glMaterialfv(GLenum face, GLenum pname, const GLfloat *params);
 
     GLuint glGenLists(GLsizei range);
     void glNewList(GLuint list, GLenum mode);
@@ -76,12 +83,18 @@ namespace ffp_emulation
 #define glBegin(mode) ffp_emulation::glBegin(mode)
 #define glEnd()       ffp_emulation::glEnd()
 
-#define glMatrixMode(mode) ffp_emulation::glMatrixMode(mode)
-#define glLoadIdentity()   ffp_emulation::glLoadIdentity()
-#define glMultMatrixf(m)   ffp_emulation::glMultMatrixf(m)
-#define glPushMatrix()     ffp_emulation::glPushMatrix()
-#define glPopMatrix()      ffp_emulation::glPopMatrix()
-#define glLoadMatrixd(m)   ffp_emulation::glLoadMatrixd(m)
+#define glMatrixMode(mode)        ffp_emulation::glMatrixMode(mode)
+#define glLoadIdentity()          ffp_emulation::glLoadIdentity()
+#define glMultMatrixf(m)          ffp_emulation::glMultMatrixf(m)
+#define glPushMatrix()            ffp_emulation::glPushMatrix()
+#define glPopMatrix()             ffp_emulation::glPopMatrix()
+#define glLoadMatrixd(m)          ffp_emulation::glLoadMatrixd(m)
+#define glScalef(x, y, z)         ffp_emulation::glScalef(x, y, z)
+#define glTranslatef(x, y, z)     ffp_emulation::glTranslatef(x, y, z)
+#define glRotatef(angle, x, y, z) ffp_emulation::glRotatef(angle, x, y, z)
+
+#define glGetIntegerv(pname, params) ffp_emulation::glGetIntegerv(pname, params)
+#define glGetDoublev(pname, params) ffp_emulation::glGetDoublev(pname, params)
 
 #define gluLookAt(pos_x, pos_y, pos_z, forwards_x, forwards_y, forwards_z, up_x, up_y, up_z) ffp_emulation::gluLookAt(pos_x, pos_y, pos_z, forwards_x, forwards_y, forwards_z, up_x, up_y, up_z)
 #define gluPerspective(fovy, aspect, zNear, zFar) ffp_emulation::gluPerspective(fovy, aspect, zNear, zFar)
@@ -108,7 +121,8 @@ namespace ffp_emulation
 
 #define glAlphaFunc(func, ref) ffp_emulation::glAlphaFunc(func, ref)
 
-#define glColorMaterial(face, mode) ffp_emulation::glColorMaterial(face, mode)
+#define glColorMaterial(face, mode)       ffp_emulation::glColorMaterial(face, mode)
+#define glMaterialfv(face, pname, params) ffp_emulation::glMaterialfv(face, pname, params)
 
 #define glGenLists(range)     ffp_emulation::glGenLists(range)
 #define glNewList(list, mode) ffp_emulation::glNewList(list, mode)
