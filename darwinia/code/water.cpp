@@ -486,20 +486,20 @@ void Water::RenderFlatWaterTiles(
 				float tx1 = texEast1 + i * texStepX1;
 				float tx2 = texEast2 + i * texStepX2;
 
-				glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1 + texStepX1, tz1);
-				glMultiTexCoord2fARB(GL_TEXTURE1_ARB, tx2 + texStepX2, tz2);
+				glMultiTexCoord2fARB(GL_TEXTURE0, tx1 + texStepX1, tz1);
+				glMultiTexCoord2fARB(GL_TEXTURE1, tx2 + texStepX2, tz2);
 				glVertex3f(px + posStepX, height, pz);
 
-				glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1 + texStepX1, tz1 + texStepZ1);
-				glMultiTexCoord2fARB(GL_TEXTURE1_ARB, tx2 + texStepX2, tz2 + texStepZ2);
+				glMultiTexCoord2fARB(GL_TEXTURE0, tx1 + texStepX1, tz1 + texStepZ1);
+				glMultiTexCoord2fARB(GL_TEXTURE1, tx2 + texStepX2, tz2 + texStepZ2);
 				glVertex3f(px + posStepX, height, pz + posStepZ);
 
-				glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1, tz1 + texStepZ1);
-				glMultiTexCoord2fARB(GL_TEXTURE1_ARB, tx2, tz2 + texStepZ2);
+				glMultiTexCoord2fARB(GL_TEXTURE0, tx1, tz1 + texStepZ1);
+				glMultiTexCoord2fARB(GL_TEXTURE1, tx2, tz2 + texStepZ2);
 				glVertex3f(px, height, pz + posStepZ);
 
-				glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1, tz1);
-				glMultiTexCoord2fARB(GL_TEXTURE1_ARB, tx2, tz2);
+				glMultiTexCoord2fARB(GL_TEXTURE0, tx1, tz1);
+				glMultiTexCoord2fARB(GL_TEXTURE1, tx2, tz2);
 				glVertex3f(px, height, pz);
 			}
 		}
@@ -535,7 +535,7 @@ void Water::RenderFlatWater()
         strcpy( waterFilename, "terrain/water_icecaps.bmp" );
     }
 
-	glActiveTextureARB (GL_TEXTURE0_ARB);
+	glActiveTexture     (GL_TEXTURE0);
     glBindTexture	    (GL_TEXTURE_2D, g_app->m_resource->GetTexture(waterFilename, true, true));
 	glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
@@ -546,7 +546,7 @@ void Water::RenderFlatWater()
 	glEnable		    (GL_TEXTURE_2D);
 
 	// JAK HACK (DISABLED)
-	glActiveTextureARB (GL_TEXTURE1_ARB);
+	glActiveTexture     (GL_TEXTURE1);
     glBindTexture	    (GL_TEXTURE_2D, g_app->m_resource->GetTexture(LIGHTMAP_TEXTURE_NAME));
 	glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
@@ -573,10 +573,10 @@ void Water::RenderFlatWater()
 		0.0f, 1.0f, 0.0f, 1.0f,
 		m_flatWaterTiles->GetNumColumns());
 
-	glActiveTextureARB  (GL_TEXTURE1_ARB);
+	glActiveTexture     (GL_TEXTURE1);
     glDisable		    (GL_TEXTURE_2D);
 
-	glActiveTextureARB  (GL_TEXTURE0_ARB);
+	glActiveTexture     (GL_TEXTURE0);
     glDisable		    (GL_TEXTURE_2D);
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );

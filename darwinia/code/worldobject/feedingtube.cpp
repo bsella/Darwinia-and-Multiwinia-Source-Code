@@ -160,7 +160,7 @@ void FeedingTube::RenderSignal( float _predictionTime, float _radius, float _alp
 
     glEnable            (GL_TEXTURE_2D);
 
-	glActiveTextureARB  (GL_TEXTURE0_ARB);
+	glActiveTexture     (GL_TEXTURE0);
     glBindTexture	    (GL_TEXTURE_2D, g_app->m_resource->GetTexture("textures/laserfence.bmp", true, true));
 	glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
@@ -170,7 +170,7 @@ void FeedingTube::RenderSignal( float _predictionTime, float _radius, float _alp
     glTexEnvf           (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_REPLACE);
     glEnable            (GL_TEXTURE_2D);
 
-	glActiveTextureARB  (GL_TEXTURE1_ARB);
+	glActiveTexture     (GL_TEXTURE1);
     glBindTexture	    (GL_TEXTURE_2D, g_app->m_resource->GetTexture("textures/radarsignal.bmp", true, true));
 	glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
@@ -242,12 +242,12 @@ void FeedingTube::RenderSignal( float _predictionTime, float _radius, float _alp
 
         for( int r = 0; r <= numRadii; ++r )
         {
-			glMultiTexCoord2fARB    ( GL_TEXTURE0_ARB, texXInner, r/numRadii );
-			glMultiTexCoord2fARB    ( GL_TEXTURE1_ARB, texXOuter, r/numRadii );
+			glMultiTexCoord2fARB    ( GL_TEXTURE0, texXInner, r/numRadii );
+			glMultiTexCoord2fARB    ( GL_TEXTURE1, texXOuter, r/numRadii );
             glVertex3fv             ( (currentPos + deltaFrom).GetData() );
 
-			glMultiTexCoord2fARB    ( GL_TEXTURE0_ARB, texXInner+10.0f/(float)numSteps, (r)/numRadii );
-			glMultiTexCoord2fARB    ( GL_TEXTURE1_ARB, texXOuter+distance/(200.0f *(float)numSteps), (r)/numRadii );
+			glMultiTexCoord2fARB    ( GL_TEXTURE0, texXInner+10.0f/(float)numSteps, (r)/numRadii );
+			glMultiTexCoord2fARB    ( GL_TEXTURE1, texXOuter+distance/(200.0f *(float)numSteps), (r)/numRadii );
             glVertex3fv             ( (currentPos + deltaTo).GetData() );
 
             currentPos.RotateAround( deltaNorm * ( 2.0f * M_PI / (float) numRadii ) );
@@ -272,12 +272,12 @@ void FeedingTube::RenderSignal( float _predictionTime, float _radius, float _alp
     glBlendFunc         (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable            (GL_CULL_FACE);
 
-	glActiveTextureARB  (GL_TEXTURE1_ARB);
+	glActiveTexture     (GL_TEXTURE1);
     glDisable           (GL_TEXTURE_2D);
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
 
-	glActiveTextureARB  (GL_TEXTURE0_ARB);
+	glActiveTexture     (GL_TEXTURE0);
     glDisable           (GL_TEXTURE_2D);
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );

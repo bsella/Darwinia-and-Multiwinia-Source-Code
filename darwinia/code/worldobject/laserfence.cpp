@@ -291,7 +291,7 @@ void LaserFence::RenderAlphas( float predictionTime )
             {
                 glEnable            (GL_TEXTURE_2D);
 
-                gglActiveTextureARB  (GL_TEXTURE0_ARB);
+                glActiveTexture     (GL_TEXTURE0);
                 glBindTexture       (GL_TEXTURE_2D, g_app->m_resource->GetTexture( "textures/laserfence.bmp" ) );
 	            glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	            glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
@@ -301,7 +301,7 @@ void LaserFence::RenderAlphas( float predictionTime )
                 glTexEnvf           (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_REPLACE);
                 glEnable            (GL_TEXTURE_2D);
 
-                gglActiveTextureARB  (GL_TEXTURE1_ARB);
+                glActiveTexture     (GL_TEXTURE1);
                 glBindTexture       (GL_TEXTURE_2D, g_app->m_resource->GetTexture( "textures/laserfence2.bmp" ) );
 	            glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	            glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
@@ -313,29 +313,29 @@ void LaserFence::RenderAlphas( float predictionTime )
 
 
                 glBegin(GL_QUADS);
-                    gglMultiTexCoord2fARB ( GL_TEXTURE0_ARB, timeOff, 0.0f );
-                    gglMultiTexCoord2fARB ( GL_TEXTURE1_ARB, 0, 0 );
+                    gglMultiTexCoord2fARB ( GL_TEXTURE0, timeOff, 0.0f );
+                    gglMultiTexCoord2fARB ( GL_TEXTURE1, 0, 0 );
                     glVertex3fv ( (m_pos - Vector3(0,ourFenceHeight/3,0)).GetData() );
 
-                    gglMultiTexCoord2fARB ( GL_TEXTURE0_ARB, timeOff, dz );
-                    gglMultiTexCoord2fARB ( GL_TEXTURE1_ARB, 0, 1 );
+                    gglMultiTexCoord2fARB ( GL_TEXTURE0, timeOff, dz );
+                    gglMultiTexCoord2fARB ( GL_TEXTURE1, 0, 1 );
                     glVertex3fv ( (m_pos + Vector3(0,ourFenceHeight,0)).GetData() );
 
-                    gglMultiTexCoord2fARB ( GL_TEXTURE0_ARB, timeOff + dx, dz );
-                    gglMultiTexCoord2fARB ( GL_TEXTURE1_ARB, 1, 1 );
+                    gglMultiTexCoord2fARB ( GL_TEXTURE0, timeOff + dx, dz );
+                    gglMultiTexCoord2fARB ( GL_TEXTURE1, 1, 1 );
                     glVertex3fv ( (nextFence->m_pos + Vector3(0,theirFenceHeight,0)).GetData() );
 
-                    gglMultiTexCoord2fARB ( GL_TEXTURE0_ARB, timeOff + dx, 0.0f );
-                    gglMultiTexCoord2fARB ( GL_TEXTURE1_ARB, 1, 0 );
+                    gglMultiTexCoord2fARB ( GL_TEXTURE0, timeOff + dx, 0.0f );
+                    gglMultiTexCoord2fARB ( GL_TEXTURE1, 1, 0 );
                     glVertex3fv ( (nextFence->m_pos - Vector3(0,theirFenceHeight/3,0)).GetData() );
                 glEnd();
 
-                gglActiveTextureARB  (GL_TEXTURE1_ARB);
+                gglActiveTextureARB  (GL_TEXTURE1);
                 glDisable           (GL_TEXTURE_2D);
                 glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
                 glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
 
-                gglActiveTextureARB  (GL_TEXTURE0_ARB);
+                gglActiveTextureARB  (GL_TEXTURE0);
                 glDisable           (GL_TEXTURE_2D);
                 glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
                 glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );

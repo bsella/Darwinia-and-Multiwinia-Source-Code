@@ -79,20 +79,20 @@ void RenderSplitUpQuadMultiTextured(
 				float tx1 = texEast1 + i * texStepX1;
 				float tx2 = texEast2 + i * texStepX2;
 
-				gglMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1 + texStepX1, tz1);
-				gglMultiTexCoord2fARB(GL_TEXTURE1_ARB, tx2 + texStepX2, tz2);
+				gglMultiTexCoord2fARB(GL_TEXTURE0, tx1 + texStepX1, tz1);
+				gglMultiTexCoord2fARB(GL_TEXTURE1, tx2 + texStepX2, tz2);
 				glVertex3f(px + posStepX, height, pz);
 
-				gglMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1 + texStepX1, tz1 + texStepZ1);
-				gglMultiTexCoord2fARB(GL_TEXTURE1_ARB, tx2 + texStepX2, tz2 + texStepZ2);
+				gglMultiTexCoord2fARB(GL_TEXTURE0, tx1 + texStepX1, tz1 + texStepZ1);
+				gglMultiTexCoord2fARB(GL_TEXTURE1, tx2 + texStepX2, tz2 + texStepZ2);
 				glVertex3f(px + posStepX, height, pz + posStepZ);
 
-				gglMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1, tz1 + texStepZ1);
-				gglMultiTexCoord2fARB(GL_TEXTURE1_ARB, tx2, tz2 + texStepZ2);
+				gglMultiTexCoord2fARB(GL_TEXTURE0, tx1, tz1 + texStepZ1);
+				gglMultiTexCoord2fARB(GL_TEXTURE1, tx2, tz2 + texStepZ2);
 				glVertex3f(px, height, pz + posStepZ);
 
-				gglMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1, tz1);
-				gglMultiTexCoord2fARB(GL_TEXTURE1_ARB, tx2, tz2);
+				gglMultiTexCoord2fARB(GL_TEXTURE0, tx1, tz1);
+				gglMultiTexCoord2fARB(GL_TEXTURE1, tx2, tz2);
 				glVertex3f(px, height, pz);
 			}
 		}

@@ -1091,7 +1091,7 @@ void TaskManagerInterfaceGestures::RenderTaskManager()
 
     glEnable            (GL_TEXTURE_2D );
 
-    gglActiveTextureARB (GL_TEXTURE0_ARB);
+    glActiveTexture     (GL_TEXTURE0);
     glBindTexture       (GL_TEXTURE_2D, g_app->m_resource->GetTexture( "textures/interface_red.bmp" ) );
     glTexParameteri     (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri     (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
@@ -1101,7 +1101,7 @@ void TaskManagerInterfaceGestures::RenderTaskManager()
     glTexParameteri     (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
     glEnable            (GL_TEXTURE_2D );
 
-    gglActiveTextureARB (GL_TEXTURE1_ARB);
+    glActiveTexture     (GL_TEXTURE1);
     glBindTexture       (GL_TEXTURE_2D, s_alphaMaskId );
     glTexEnvf           (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_RGB_EXT);
     glTexEnvf           (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
@@ -1113,24 +1113,24 @@ void TaskManagerInterfaceGestures::RenderTaskManager()
     glBlendFunc     ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glBegin( GL_QUADS );
-        gglMultiTexCoord2fARB(GL_TEXTURE1_ARB,0,1);
-        gglMultiTexCoord2fARB(GL_TEXTURE0_ARB,0,0);
+        gglMultiTexCoord2fARB(GL_TEXTURE1,0,1);
+        gglMultiTexCoord2fARB(GL_TEXTURE0,0,0);
         glVertex2f( x, y );
-        gglMultiTexCoord2fARB(GL_TEXTURE1_ARB,1,1);
-        gglMultiTexCoord2fARB(GL_TEXTURE0_ARB,10,0);
+        gglMultiTexCoord2fARB(GL_TEXTURE1,1,1);
+        gglMultiTexCoord2fARB(GL_TEXTURE0,10,0);
         glVertex2f( x+height, y );
-        gglMultiTexCoord2fARB(GL_TEXTURE1_ARB,1,0);
-        gglMultiTexCoord2fARB(GL_TEXTURE0_ARB,10,1);
+        gglMultiTexCoord2fARB(GL_TEXTURE1,1,0);
+        gglMultiTexCoord2fARB(GL_TEXTURE0,10,1);
         glVertex2f( x+height, y+height );
-        gglMultiTexCoord2fARB(GL_TEXTURE1_ARB,0,0);
-        gglMultiTexCoord2fARB(GL_TEXTURE0_ARB,0,1);
+        gglMultiTexCoord2fARB(GL_TEXTURE1,0,0);
+        gglMultiTexCoord2fARB(GL_TEXTURE0,0,1);
         glVertex2f( x, y+height );
     glEnd();
 
-	glActiveTextureARB (GL_TEXTURE1_ARB);
+	glActiveTexture     (GL_TEXTURE1);
     glDisable		    (GL_TEXTURE_2D);
 
-	glActiveTextureARB (GL_TEXTURE0_ARB);
+	glActiveTexture     (GL_TEXTURE0);
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
     glTexParameteri	    (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     glTexEnvf           (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
