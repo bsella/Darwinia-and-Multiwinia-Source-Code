@@ -1,12 +1,14 @@
 //#include "FFP_emulation.h"
 #include <GL/glew.h>
 
+#include <array>
 #include <cassert>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/quaternion_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/glm.hpp>
@@ -48,8 +50,25 @@ namespace ffp_emulation
         std::stack<glm::mat4> g_model_view;
         std::stack<glm::mat4> g_projection;
 
+        constexpr uint32_t NONE = 0;
+
+        struct TextureEnvironment
+        {
+            GLuint    mode  = NONE;
+            glm::vec4 color = {0.0, 0.0, 0.0, 0.0};
+        };
+
+        GLuint g_active_texture = 0;
+        std::array<TextureEnvironment, 2> g_texture_env;
+
         GLint g_model_view_location;
         GLint g_projection_location;
+        GLint g_texture0_env_mode_loc;
+        GLint g_texture0_env_color_loc;
+        GLint g_texture0_location;
+        GLint g_texture1_env_mode_loc;
+        GLint g_texture1_env_color_loc;
+        GLint g_texture1_location;
 
         constexpr const char* vertex_shader_source =
 R"(
@@ -82,15 +101,47 @@ constexpr const char* fragment_shader_source =
 R"(
 #version 410
 
+#define GL_ADD 0x0104
+#define GL_MODULATE 0x2100
+#define GL_DECAL 0x2101
+#define GL_BLEND 0x0BE2
+#define GL_REPLACE 0x1E01
+#define GL_COMBINE 0x8570
+
 layout (location = 0) in vec4 in_colour;
 layout (location = 1) in vec3 in_normal;
 layout (location = 2) in vec2 in_uv_texcoord;
 
 layout (location = 0) out vec4 out_colour;
 
+uniform uint u_texture0_env_mode;
+uniform vec4 u_texture0_env_color;
+
+uniform uint u_texture1_env_mode;
+uniform vec4 u_texture1_env_color;
+
+uniform sampler2D texture0;
+uniform sampler2D texture1;
+
 void main()
 {
     out_colour = in_colour;
+
+    switch(u_texture0_env_mode)
+    {
+    case GL_ADD:
+        out_colour += texture(texture0, in_uv_texcoord);
+        break;
+    case GL_MODULATE:
+        out_colour *= texture(texture0, in_uv_texcoord);
+        break;
+    case GL_REPLACE:
+        out_colour = texture(texture0, in_uv_texcoord);
+        break;
+    case GL_DECAL:
+        out_colour = texture(texture0, in_uv_texcoord);
+        break;
+    }
 }
 )";
 
@@ -183,8 +234,14 @@ void main()
             }
         }
 
-        g_model_view_location = glGetUniformLocation(g_program, "u_model_view");
-        g_projection_location = glGetUniformLocation(g_program, "u_projection");
+        g_model_view_location    = glGetUniformLocation(g_program, "u_model_view");
+        g_projection_location    = glGetUniformLocation(g_program, "u_projection");
+        g_texture0_env_mode_loc  = glGetUniformLocation(g_program, "u_texture0_env_mode");
+        g_texture0_env_color_loc = glGetUniformLocation(g_program, "u_texture0_env_color");
+        g_texture0_location      = glGetUniformLocation(g_program, "texture0");
+        g_texture1_env_mode_loc  = glGetUniformLocation(g_program, "u_texture1_env_mode");
+        g_texture1_env_color_loc = glGetUniformLocation(g_program, "u_texture1_env_color");
+        g_texture1_location      = glGetUniformLocation(g_program, "texture1");
 
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
@@ -195,7 +252,7 @@ void main()
 
     void quit()
     {
-
+        // TODO
     }
 
     void glBegin(GLenum mode)
@@ -216,6 +273,15 @@ void main()
         // Upload the matrices
         glUniformMatrix4fv(g_model_view_location, 1, GL_FALSE, glm::value_ptr(g_model_view.top()));
         glUniformMatrix4fv(g_projection_location, 1, GL_FALSE, glm::value_ptr(g_projection.top()));
+
+        // Update the bound texture id
+        glUniform1i(g_texture0_location, 0);
+        glUniform1i(g_texture1_location, 1);
+
+        glUniform1ui(g_texture0_env_mode_loc, g_texture_env[0].mode);
+        glUniform4f(g_texture0_env_color_loc, g_texture_env[0].color.r, g_texture_env[0].color.g, g_texture_env[0].color.b, g_texture_env[0].color.a);
+        glUniform1ui(g_texture1_env_mode_loc, g_texture_env[1].mode);
+        glUniform4f(g_texture1_env_color_loc, g_texture_env[1].color.r, g_texture_env[1].color.g, g_texture_env[1].color.b, g_texture_env[1].color.a);
 
         auto primitive_mode = g_primitive_mode;
         if (primitive_mode == GL_QUADS)      primitive_mode = GL_TRIANGLES;
@@ -565,16 +631,56 @@ void main()
         // TODO
     }
 
+    void _glActiveTexture(GLenum texture)
+    {
+        switch (texture)
+        {
+            case GL_TEXTURE0: g_active_texture = 0; break;
+            case GL_TEXTURE1: g_active_texture = 1; break;
+        }
+
+        ::glActiveTexture(texture);
+    }
+
+    void glBindTexture(GLenum target, GLuint texture)
+    {
+        assert(target == GL_TEXTURE_2D);
+
+        ::glBindTexture(target, texture);
+    }
+
+    void glTexEnvf(GLenum target, GLenum pname, GLfloat param)
+    {
+        if(target == GL_TEXTURE_ENV)
+        {
+            switch (pname)
+            {
+                case GL_TEXTURE_ENV_MODE:
+                    g_texture_env[g_active_texture].mode = param;
+                break;
+            }
+        }
+    }
+
     void glTexEnvi(GLenum target, GLenum pname, GLint param)
     {
-        // TODO
+        glTexEnvf(target, pname, param);
     }
     void glTexEnviv(GLenum target, GLenum pname, const GLint* params)
     {
-        // TODO
-    }
-    void glTexEnvf(GLenum target, GLenum pname, GLfloat param)
-    {
-        // TODO
+        if(target == GL_TEXTURE_ENV)
+        {
+            switch (pname)
+            {
+                case GL_TEXTURE_ENV_COLOR:
+                    g_texture_env[g_active_texture].color = glm::vec4(
+                        static_cast<float>(params[0]) / 255.0,
+                        static_cast<float>(params[1]) / 255.0,
+                        static_cast<float>(params[2]) / 255.0,
+                        static_cast<float>(params[3]) / 255.0
+                    );
+                break;
+            }
+        }
     }
 }

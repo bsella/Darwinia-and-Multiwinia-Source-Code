@@ -73,6 +73,8 @@ namespace ffp_emulation
 
     void glShadeModel(GLenum mode);
 
+    void _glActiveTexture(GLenum texture);
+    void glBindTexture(GLenum target, GLuint texture);
     void glTexEnvi(GLenum target, GLenum pname, GLint param);
     void glTexEnviv(GLenum target, GLenum pname, const GLint* params);
     void glTexEnvf(GLenum target, GLenum pname, GLfloat param);
@@ -140,6 +142,8 @@ namespace ffp_emulation
 
 #define glShadeModel(mode) ffp_emulation::glShadeModel(mode)
 
+#define glActiveTexture(texture)          ffp_emulation::_glActiveTexture(texture)
+#define glBindTexture(target, texture)    ffp_emulation::glBindTexture(target, texture)
 #define glTexEnvi(target, pname, param)   ffp_emulation::glTexEnvi(target, pname, param)
 #define glTexEnviv(target, pname, params) ffp_emulation::glTexEnviv(target, pname, params)
 #define glTexEnvf(target, pname, param)   ffp_emulation::glTexEnvf(target, pname, param)
