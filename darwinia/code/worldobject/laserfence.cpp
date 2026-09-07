@@ -24,6 +24,8 @@
 #include "worldobject/building.h"
 #include "worldobject/laserfence.h"
 
+#include "FFP_emulation.h"
+
 LaserFence::LaserFence()
 :   Building(),
     m_status(0.0f),

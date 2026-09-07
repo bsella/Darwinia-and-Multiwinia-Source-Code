@@ -32,6 +32,7 @@
 #include "taskmanager_interface.h"
 #include "script.h"
 
+#include "FFP_emulation.h"
 
 // *** AdvanceTeleportControl
 void LocationInput::AdvanceRadarDishControl(Building *_building)

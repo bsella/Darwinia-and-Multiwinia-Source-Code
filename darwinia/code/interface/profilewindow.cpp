@@ -11,6 +11,7 @@
 
 #include "interface/profilewindow.h"
 
+#include "FFP_emulation.h"
 
 #ifdef PROFILER_ENABLED
 

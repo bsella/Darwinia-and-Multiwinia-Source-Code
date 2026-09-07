@@ -14,6 +14,7 @@
 #include "app.h"
 #include "renderer.h"
 
+#include "FFP_emulation.h"
 
 #define SOUND_LIBRARY       "SoundLibrary"
 #define SOUND_MIXFREQ       "SoundMixFreq"

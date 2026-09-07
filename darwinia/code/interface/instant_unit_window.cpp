@@ -16,6 +16,8 @@
 
 #include "worldobject/entity.h"
 
+#include "FFP_emulation.h"
+
 #ifdef LOCATION_EDITOR
 
 

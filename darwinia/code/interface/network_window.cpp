@@ -10,6 +10,8 @@
 
 #include <GL/gl.h>
 
+#include "FFP_emulation.h"
+
 NetworkWindow::NetworkWindow( const char *name )
 :   DarwiniaWindow( name )
 {

@@ -16,6 +16,7 @@
 
 #include "interface/input_field.h"
 
+#include "FFP_emulation.h"
 
 #define PIXELS_PER_CHAR	7
 

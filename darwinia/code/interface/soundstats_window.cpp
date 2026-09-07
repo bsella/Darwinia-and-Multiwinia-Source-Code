@@ -19,6 +19,7 @@
 #include "camera.h"
 #include "main.h"
 
+#include "FFP_emulation.h"
 
 #ifdef SOUND_EDITOR
 

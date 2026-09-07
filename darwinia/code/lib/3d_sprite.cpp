@@ -6,6 +6,8 @@
 
 #include <GL/gl.h>
 
+#include "FFP_emulation.h"
+
 void Render3DSprite(Vector3 const &_pos, float _width, float _height, int _textureId)
 {
 	Vector3 camUp = g_app->m_camera->GetUp();

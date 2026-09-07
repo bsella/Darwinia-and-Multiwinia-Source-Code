@@ -11,6 +11,7 @@
 #include "app.h"
 #include "renderer.h"
 
+#include "FFP_emulation.h"
 
 // ****************************************************************************
 // Class DarwiniaButton

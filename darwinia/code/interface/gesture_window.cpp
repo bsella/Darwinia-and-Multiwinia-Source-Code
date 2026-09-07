@@ -14,6 +14,7 @@
 #include "gesture.h"
 #include "global_world.h"
 
+#include "FFP_emulation.h"
 
 #ifdef GESTURE_EDITOR
 

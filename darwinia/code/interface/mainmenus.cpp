@@ -22,6 +22,8 @@
 #include "global_world.h"
 #include "script.h"
 
+#include "FFP_emulation.h"
+
 class WebsiteButton;
 
 class SkipPrologueWindowButton : public DarwiniaButton

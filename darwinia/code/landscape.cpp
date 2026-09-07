@@ -16,6 +16,8 @@
 #include "location.h"
 #include "water.h"
 
+#include "FFP_emulation.h"
+
 #include <algorithm>
 
 // ****************************************************************************

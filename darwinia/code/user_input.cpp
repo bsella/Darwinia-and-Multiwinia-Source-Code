@@ -22,6 +22,7 @@
 #include "renderer.h"
 #include "user_input.h"
 
+#include "FFP_emulation.h"
 
 // *** Constructor
 UserInput::UserInput()

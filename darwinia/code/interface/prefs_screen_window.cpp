@@ -12,6 +12,8 @@
 #include "app.h"
 #include "renderer.h"
 
+#include "FFP_emulation.h"
+
 #ifdef TARGET_MSVC
 #include "lib/input/win32_eventhandler.h"
 #include "lib/window_manager_win32.h"

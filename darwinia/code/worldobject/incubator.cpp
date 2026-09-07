@@ -15,7 +15,7 @@
 
 #include "worldobject/incubator.h"
 
-
+#include "FFP_emulation.h"
 
 Incubator::Incubator()
 :   Building(),

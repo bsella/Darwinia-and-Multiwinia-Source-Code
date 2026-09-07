@@ -25,6 +25,8 @@
 #include "location.h"
 #include "level_file.h"
 
+#include "FFP_emulation.h"
+
 #define LIGHTMAP_TEXTURE_NAME "water_lightmap"
 
 float const waveBrightnessScale = 4.0f;

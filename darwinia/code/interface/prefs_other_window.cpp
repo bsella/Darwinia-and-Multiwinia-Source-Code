@@ -12,6 +12,8 @@
 #include "level_file.h"
 #include "water.h"
 
+#include "FFP_emulation.h"
+
 class ApplyOtherButton : public DarwiniaButton
 {
     void MouseUp()

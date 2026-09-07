@@ -32,6 +32,8 @@
 #include "worldobject/worldobject.h"
 #include "worldobject/darwinian.h"
 
+#include "FFP_emulation.h"
+
 
 // ****************************************************************************
 //  Class Team

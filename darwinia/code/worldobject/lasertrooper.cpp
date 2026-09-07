@@ -8,6 +8,7 @@
 
 #include "worldobject/lasertrooper.h"
 
+#include "FFP_emulation.h"
 
 // *** Advance
 

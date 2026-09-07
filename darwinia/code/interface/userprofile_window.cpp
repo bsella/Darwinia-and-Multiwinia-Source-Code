@@ -14,6 +14,7 @@
 #include "level_file.h"
 #include "renderer.h"
 
+#include "FFP_emulation.h"
 
 
 class LoadUserProfileButton : public DarwiniaButton

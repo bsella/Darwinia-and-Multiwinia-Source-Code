@@ -10,6 +10,7 @@
 #include "lib/preferences.h"
 #include "lib/preference_names.h"
 
+#include "FFP_emulation.h"
 
 class BuyNowButton : public DarwiniaButton
 {

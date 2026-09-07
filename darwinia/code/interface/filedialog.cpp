@@ -16,6 +16,7 @@
 
 #include "app.h"
 
+#include "FFP_emulation.h"
 
 //*****************************************************************************
 // Class FileOKButton

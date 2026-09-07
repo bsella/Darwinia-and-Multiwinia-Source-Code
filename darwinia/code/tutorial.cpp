@@ -13,6 +13,8 @@
 #include "camera.h"
 #include "team.h"
 
+#include "FFP_emulation.h"
+
 Tutorial::Tutorial()
 :   m_chapter(0),
     m_nextChapterTimer(-1.0f),

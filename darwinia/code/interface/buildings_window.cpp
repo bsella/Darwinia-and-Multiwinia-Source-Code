@@ -37,7 +37,7 @@
 #include "location.h"
 #include "team.h"
 
-
+#include "FFP_emulation.h"
 
 #ifdef LOCATION_EDITOR
 

@@ -12,6 +12,8 @@
 #include "level_file.h"
 #include "water.h"
 
+#include "FFP_emulation.h"
+
 #define GRAPHICS_LANDDETAIL         "RenderLandscapeDetail"
 #define GRAPHICS_WATERDETAIL        "RenderWaterDetail"
 #define GRAPHICS_PIXELRANGE         "RenderPixelShader"

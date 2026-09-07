@@ -8,6 +8,7 @@
 #include "app.h"
 #include "location.h"
 
+#include "FFP_emulation.h"
 
 // ****************************************************************************
 // Class Snow

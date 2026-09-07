@@ -8,7 +8,7 @@
 
 #include "worldobject/laserfence.h"
 
-
+#include "FFP_emulation.h"
 
 ObstructionGrid::ObstructionGrid( float _cellSizeX, float _cellSizeZ )
 {

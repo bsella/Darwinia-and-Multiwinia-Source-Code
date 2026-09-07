@@ -36,6 +36,7 @@
 #include "team.h"
 #include "user_input.h"
 
+#include "FFP_emulation.h"
 
 #ifdef LOCATION_EDITOR
 

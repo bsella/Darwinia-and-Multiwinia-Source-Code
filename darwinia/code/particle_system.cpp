@@ -11,6 +11,7 @@
 #include "particle_system.h"
 #include "location.h"
 
+#include "FFP_emulation.h"
 
 // ****************************************************************************
 // ParticleType

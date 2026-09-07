@@ -9,6 +9,7 @@
 
 #include "interface/demoend_window.h"
 
+#include "FFP_emulation.h"
 
 class BuyOnlineButton : public DarwiniaButton
 {

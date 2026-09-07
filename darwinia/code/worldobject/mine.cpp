@@ -30,6 +30,8 @@
 #include "worldobject/constructionyard.h"
 #include "worldobject/trunkport.h"
 
+#include "FFP_emulation.h"
+
 // ****************************************************************************
 // Class MineBuilding
 // ****************************************************************************

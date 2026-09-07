@@ -18,6 +18,8 @@
 #include "renderer.h"
 #include "level_file.h"
 
+#include "FFP_emulation.h"
+
 
 #define MAIN_DISPLAY_LIST_NAME "LandscapeMain"
 #define OVERLAY_DISPLAY_LIST_NAME "LandscapeOverlay"
