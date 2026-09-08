@@ -511,14 +511,22 @@ void main()
         g_current_vertex.x = x;
         g_current_vertex.y = y;
         g_current_vertex.z = z;
-        
-        if(g_primitive_mode == GL_QUADS && ((g_vertex_buffer.size() - 3) % 4) == 0 )
-        {
-            auto vertex1 = g_vertex_buffer[g_vertex_buffer.size() - 3];
-            auto vertex2 = g_vertex_buffer[g_vertex_buffer.size() - 1];
 
-            g_vertex_buffer.push_back(vertex1);
-            g_vertex_buffer.push_back(vertex2);
+        if(g_primitive_mode == GL_QUADS)
+        {
+            auto triangle_count = g_vertex_buffer.size() / 3;
+
+            bool odd_triangle_count = triangle_count % 2 != 0;
+
+            if(odd_triangle_count)
+            {
+                auto vertex1 = g_vertex_buffer[g_vertex_buffer.size() - 3];
+                auto vertex2 = g_vertex_buffer[g_vertex_buffer.size() - 1];
+    
+                g_vertex_buffer.push_back(vertex1);
+                g_vertex_buffer.push_back(vertex2);
+            }
+
         }
 
         g_vertex_buffer.push_back(g_current_vertex);
