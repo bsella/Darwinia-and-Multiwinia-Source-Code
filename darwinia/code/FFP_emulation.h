@@ -78,6 +78,9 @@ namespace ffp_emulation
     void glTexEnvi(GLenum target, GLenum pname, GLint param);
     void glTexEnviv(GLenum target, GLenum pname, const GLint* params);
     void glTexEnvf(GLenum target, GLenum pname, GLfloat param);
+
+    void glEnable(GLenum cap);
+    void glDisable(GLenum cap);
 }
 
 #ifdef FFP_ENABLE_EMULATION
@@ -147,5 +150,8 @@ namespace ffp_emulation
 #define glTexEnvi(target, pname, param)   ffp_emulation::glTexEnvi(target, pname, param)
 #define glTexEnviv(target, pname, params) ffp_emulation::glTexEnviv(target, pname, params)
 #define glTexEnvf(target, pname, param)   ffp_emulation::glTexEnvf(target, pname, param)
+
+#define glEnable(cap)  ffp_emulation::glEnable(cap)
+#define glDisable(cap) ffp_emulation::glDisable(cap)
 
 #endif

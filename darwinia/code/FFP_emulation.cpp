@@ -50,12 +50,11 @@ namespace ffp_emulation
         std::stack<glm::mat4> g_model_view;
         std::stack<glm::mat4> g_projection;
 
-        constexpr uint32_t NONE = 0;
-
         struct TextureEnvironment
         {
-            GLuint    mode  = NONE;
-            glm::vec4 color = {0.0, 0.0, 0.0, 0.0};
+            bool      enabled = false;
+            GLuint    mode    = GL_MODULATE;
+            glm::vec4 color   = {0.0, 0.0, 0.0, 0.0};
         };
 
         GLuint g_active_texture = 0;
@@ -272,6 +271,8 @@ void main()
             }
         }
 
+        g_texture_env[0].enabled = true;
+
         g_model_view_location    = glGetUniformLocation(g_program, "u_model_view");
         g_projection_location    = glGetUniformLocation(g_program, "u_projection");
         g_texture0_env_mode_loc  = glGetUniformLocation(g_program, "u_texture0_env_mode");
@@ -316,9 +317,9 @@ void main()
         glUniform1i(g_texture0_location, 0);
         glUniform1i(g_texture1_location, 1);
 
-        glUniform1ui(g_texture0_env_mode_loc, g_texture_env[0].mode);
+        glUniform1ui(g_texture0_env_mode_loc, g_texture_env[0].enabled ? g_texture_env[0].mode : 0);
         glUniform4f(g_texture0_env_color_loc, g_texture_env[0].color.r, g_texture_env[0].color.g, g_texture_env[0].color.b, g_texture_env[0].color.a);
-        glUniform1ui(g_texture1_env_mode_loc, g_texture_env[1].mode);
+        glUniform1ui(g_texture1_env_mode_loc, g_texture_env[1].enabled ? g_texture_env[1].mode : 0);
         glUniform4f(g_texture1_env_color_loc, g_texture_env[1].color.r, g_texture_env[1].color.g, g_texture_env[1].color.b, g_texture_env[1].color.a);
 
         auto primitive_mode = g_primitive_mode;
@@ -728,5 +729,21 @@ void main()
                 break;
             }
         }
+    }
+
+    void glEnable(GLenum cap)
+    {
+        if(cap == GL_TEXTURE_2D)
+            g_texture_env[g_active_texture].enabled = true;
+
+        ::glEnable(cap);
+    }
+
+    void glDisable(GLenum cap)
+    {
+        if(cap == GL_TEXTURE_2D)
+            g_texture_env[g_active_texture].enabled = false;
+
+        ::glDisable(cap);
     }
 }
