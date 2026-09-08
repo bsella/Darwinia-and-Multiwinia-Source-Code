@@ -123,25 +123,63 @@ uniform vec4 u_texture1_env_color;
 uniform sampler2D texture0;
 uniform sampler2D texture1;
 
+vec4 sample_texture(uint stage)
+{
+    switch(stage)
+    {
+        case 0: return texture(texture0, in_uv_texcoord);
+        case 1: return texture(texture1, in_uv_texcoord);
+    }
+
+    return texture(texture0, in_uv_texcoord);
+}
+
+vec4 apply_texture(vec4 color, uint stage)
+{
+    uint texture_env_mode;
+    vec4 texture_env_color;
+
+    switch(stage)
+    {
+        case 0:
+            texture_env_mode  = u_texture0_env_mode;
+            texture_env_color = u_texture0_env_color;
+        break;
+
+        case 1:
+            texture_env_mode  = u_texture1_env_mode;
+            texture_env_color = u_texture1_env_color;
+        break;
+
+        default: return color;
+    }
+
+    switch(texture_env_mode)
+    {
+    case GL_ADD:
+        color += sample_texture(stage);
+        break;
+    case GL_MODULATE:
+        color *= sample_texture(stage);
+        break;
+    case GL_REPLACE:
+        color = sample_texture(stage);
+        break;
+    case GL_DECAL:
+        vec4 color_sample = sample_texture(stage);
+        color.rgb = color.rgb * (1 - color_sample.a) + color_sample.rgb * color_sample.a;
+        break;
+    }
+    
+    return color;
+}
+
 void main()
 {
     out_colour = in_colour;
 
-    switch(u_texture0_env_mode)
-    {
-    case GL_ADD:
-        out_colour += texture(texture0, in_uv_texcoord);
-        break;
-    case GL_MODULATE:
-        out_colour *= texture(texture0, in_uv_texcoord);
-        break;
-    case GL_REPLACE:
-        out_colour = texture(texture0, in_uv_texcoord);
-        break;
-    case GL_DECAL:
-        out_colour = texture(texture0, in_uv_texcoord);
-        break;
-    }
+    out_colour = apply_texture(out_colour, 0);
+    out_colour = apply_texture(out_colour, 1);
 }
 )";
 
