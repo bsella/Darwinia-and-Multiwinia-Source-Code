@@ -35,7 +35,7 @@ namespace ffp_emulation
             float x, y, z;
             float r, g, b, a;
             float n_x, n_y, n_z;
-            float u, v;
+            float u0, v0, u1, v1;
         };
 
         std::vector<VertexData> g_vertex_buffer;
@@ -52,9 +52,10 @@ namespace ffp_emulation
 
         struct TextureEnvironment
         {
-            bool      enabled = false;
-            GLuint    mode    = GL_MODULATE;
-            glm::vec4 color   = {0.0, 0.0, 0.0, 0.0};
+            bool      enabled     = false;
+            GLuint    mode        = GL_MODULATE;
+            GLuint    combine_rgb = 0;
+            glm::vec4 color       = {0.0, 0.0, 0.0, 0.0};
         };
 
         GLuint g_active_texture = 0;
@@ -64,9 +65,11 @@ namespace ffp_emulation
         GLint g_projection_location;
         GLint g_texture0_env_mode_loc;
         GLint g_texture0_env_color_loc;
+        GLint g_texture0_env_combine_rgb_loc;
         GLint g_texture0_location;
         GLint g_texture1_env_mode_loc;
         GLint g_texture1_env_color_loc;
+        GLint g_texture1_env_combine_rgb_loc;
         GLint g_texture1_location;
 
         constexpr const char* vertex_shader_source =
@@ -76,11 +79,13 @@ R"(
 layout (location = 0) in vec3 in_position;
 layout (location = 1) in vec4 in_colour;
 layout (location = 2) in vec3 in_normal;
-layout (location = 3) in vec2 in_uv_texcoord;
+layout (location = 3) in vec2 in_uv0_texcoord;
+layout (location = 4) in vec2 in_uv1_texcoord;
 
 layout (location = 0) out vec4 out_colour;
 layout (location = 1) out vec3 out_normal;
-layout (location = 2) out vec2 out_uv_texcoord;
+layout (location = 2) out vec2 out_uv0_texcoord;
+layout (location = 3) out vec2 out_uv1_texcoord;
 
 uniform mat4 u_model_view;
 uniform mat4 u_projection;
@@ -91,7 +96,8 @@ void main()
 
     out_colour      = in_colour;
     out_normal      = in_normal;
-    out_uv_texcoord = in_uv_texcoord;
+    out_uv0_texcoord = in_uv0_texcoord;
+    out_uv1_texcoord = in_uv1_texcoord;
 }
 )";
 
@@ -106,17 +112,23 @@ R"(
 #define GL_BLEND 0x0BE2
 #define GL_REPLACE 0x1E01
 #define GL_COMBINE 0x8570
+#define GL_ADD_SIGNED 0x8574
+#define GL_INTERPOLATE 0x8575
+#define GL_SUBTRACT 0x84E7
 
 layout (location = 0) in vec4 in_colour;
 layout (location = 1) in vec3 in_normal;
-layout (location = 2) in vec2 in_uv_texcoord;
+layout (location = 2) in vec2 in_uv0_texcoord;
+layout (location = 3) in vec2 in_uv1_texcoord;
 
 layout (location = 0) out vec4 out_colour;
 
 uniform uint u_texture0_env_mode;
+uniform uint u_texture0_env_combine_rgb;
 uniform vec4 u_texture0_env_color;
 
 uniform uint u_texture1_env_mode;
+uniform uint u_texture1_env_combine_rgb;
 uniform vec4 u_texture1_env_color;
 
 uniform sampler2D texture0;
@@ -126,28 +138,31 @@ vec4 sample_texture(uint stage)
 {
     switch(stage)
     {
-        case 0: return texture(texture0, in_uv_texcoord);
-        case 1: return texture(texture1, in_uv_texcoord);
+        case 0: return texture(texture0, in_uv0_texcoord);
+        case 1: return texture(texture1, in_uv1_texcoord);
     }
 
-    return texture(texture0, in_uv_texcoord);
+    return texture(texture0, in_uv0_texcoord);
 }
 
 vec4 apply_texture(vec4 color, uint stage)
 {
     uint texture_env_mode;
+    uint texture_env_combine_rgb;
     vec4 texture_env_color;
 
     switch(stage)
     {
         case 0:
-            texture_env_mode  = u_texture0_env_mode;
-            texture_env_color = u_texture0_env_color;
+            texture_env_mode        = u_texture0_env_mode;
+            texture_env_color       = u_texture0_env_color;
+            texture_env_combine_rgb = u_texture0_env_combine_rgb;
         break;
 
         case 1:
-            texture_env_mode  = u_texture1_env_mode;
-            texture_env_color = u_texture1_env_color;
+            texture_env_mode        = u_texture1_env_mode;
+            texture_env_color       = u_texture1_env_color;
+            texture_env_combine_rgb = u_texture1_env_combine_rgb;
         break;
 
         default: return color;
@@ -168,6 +183,28 @@ vec4 apply_texture(vec4 color, uint stage)
         vec4 color_sample = sample_texture(stage);
         color.rgb = color.rgb * (1 - color_sample.a) + color_sample.rgb * color_sample.a;
         break;
+    case GL_COMBINE:
+        switch(texture_env_combine_rgb)
+        {
+        case GL_REPLACE:
+            color.rgb = sample_texture(stage).rgb;
+            break;
+        case GL_MODULATE:
+            color.rgb *= sample_texture(stage).rgb;
+            break;
+        case GL_ADD:
+            color.rgb += sample_texture(stage).rgb;
+            break;
+        case GL_ADD_SIGNED:
+            color.rgb += sample_texture(stage).rgb - vec3(0.5);
+            break;
+        case GL_INTERPOLATE:
+            // TODO
+            break;
+        case GL_SUBTRACT:
+            color.rgb -= sample_texture(stage).rgb;
+            break;
+        }
     }
     
     return color;
@@ -210,11 +247,13 @@ void main()
             glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 3  * sizeof(float));
             glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 7  * sizeof(float));
             glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 10 * sizeof(float));
+            glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 12 * sizeof(float));
 
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
             glEnableVertexAttribArray(2);
             glEnableVertexAttribArray(3);
+            glEnableVertexAttribArray(4);
         }
 
         glBindVertexArray(0);
@@ -282,6 +321,9 @@ void main()
         g_texture1_env_color_loc = glGetUniformLocation(g_program, "u_texture1_env_color");
         g_texture1_location      = glGetUniformLocation(g_program, "texture1");
 
+        g_texture0_env_combine_rgb_loc = glGetUniformLocation(g_program, "u_texture0_env_combine_rgb");
+        g_texture1_env_combine_rgb_loc = glGetUniformLocation(g_program, "u_texture1_env_combine_rgb");
+
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
 
@@ -318,8 +360,10 @@ void main()
         glUniform1i(g_texture1_location, 1);
 
         glUniform1ui(g_texture0_env_mode_loc, g_texture_env[0].enabled ? g_texture_env[0].mode : 0);
+        glUniform1ui(g_texture0_env_combine_rgb_loc, g_texture_env[0].combine_rgb);
         glUniform4f(g_texture0_env_color_loc, g_texture_env[0].color.r, g_texture_env[0].color.g, g_texture_env[0].color.b, g_texture_env[0].color.a);
         glUniform1ui(g_texture1_env_mode_loc, g_texture_env[1].enabled ? g_texture_env[1].mode : 0);
+        glUniform1ui(g_texture1_env_combine_rgb_loc, g_texture_env[1].combine_rgb);
         glUniform4f(g_texture1_env_color_loc, g_texture_env[1].color.r, g_texture_env[1].color.g, g_texture_env[1].color.b, g_texture_env[1].color.a);
 
         auto primitive_mode = g_primitive_mode;
@@ -599,8 +643,8 @@ void main()
     }
     void glTexCoord2f( GLfloat u, GLfloat v )
     {
-        g_current_vertex.u = u;
-        g_current_vertex.v = v;
+        g_current_vertex.u0 = u;
+        g_current_vertex.v0 = v;
     }
     void glTexCoord2i( GLint s, GLint t )
     {
@@ -705,6 +749,10 @@ void main()
                 case GL_TEXTURE_ENV_MODE:
                     g_texture_env[g_active_texture].mode = param;
                 break;
+
+                case GL_COMBINE_RGB: //GL_COMBINE_RGB_EXT
+                    g_texture_env[g_active_texture].combine_rgb = param;
+                break;
             }
         }
     }
@@ -745,5 +793,51 @@ void main()
             g_texture_env[g_active_texture].enabled = false;
 
         ::glDisable(cap);
+    }
+
+    void glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
+    {
+        // TODO
+    }
+
+    void glDisableClientState(GLenum array)
+    {
+        // TODO
+    }
+
+    void glEnableClientState(GLenum array)
+    {
+        // TODO
+    }
+
+    void glNormalPointer(GLenum type, GLsizei stride, const GLvoid *pointer)
+    {
+        // TODO
+    }
+
+    void glTexCoordPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
+    {
+        // TODO
+    }
+
+    void glVertexPointer(GLint size, GLenum type, GLsizei stride, GLvoid *pointer)
+    {
+        // TODO
+    }
+
+    void _glMultiTexCoord2fARB(GLenum target, GLfloat s, GLfloat t)
+    {
+        switch (target)
+        {
+            case GL_TEXTURE0:
+                g_current_vertex.u0 = s;
+                g_current_vertex.v0 = t;
+            break;
+
+            case GL_TEXTURE1:
+                g_current_vertex.u1 = s;
+                g_current_vertex.v1 = t;
+            break;
+        }
     }
 }
