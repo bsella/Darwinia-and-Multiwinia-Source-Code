@@ -908,7 +908,7 @@ int BitmapRGBA::ConvertToTexture(bool _mipmapping) const
 	}
 	else
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, 4, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_pixels);
 	}
 
 //    if (!texturingWasEnabled)
