@@ -6,8 +6,22 @@
 
 namespace ffp_emulation
 {
+    namespace
+    {
+        struct VertexData
+        {
+            float x, y, z;
+            float r, g, b, a;
+            float n_x, n_y, n_z;
+            float u0, v0, u1, v1;
+        };
+    }
+
     void init();
     void quit();
+
+    void create_vertex_buffers(GLuint& vao, GLuint& vbo);
+    void draw_buffer(GLuint vao, GLenum primitive_mode, GLint first, GLsizei count);
 
     void glBegin(GLenum);
     void glEnd();

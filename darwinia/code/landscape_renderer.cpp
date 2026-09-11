@@ -1,10 +1,12 @@
+#include <GL/glew.h>
 #include <float.h>
+#include <memory>
+#include <vector>
 
 #include "lib/2d_surface_map.h"
 #include "lib/binary_stream_readers.h"
 #include "lib/bitmap.h"
 #include "lib/math_utils.h"
-#include "lib/ogl_extensions.h"
 #include "lib/preferences.h"
 #include "lib/profiler.h"
 #include "lib/resource.h"
@@ -24,6 +26,10 @@
 #define MAIN_DISPLAY_LIST_NAME "LandscapeMain"
 #define OVERLAY_DISPLAY_LIST_NAME "LandscapeOverlay"
 
+struct LandscapeRenderer::Impl
+{
+	std::vector<ffp_emulation::VertexData> m_vertsFFP;
+};
 
 //*****************************************************************************
 // Protected Functions
@@ -254,6 +260,7 @@ const unsigned LandscapeRenderer::m_uvOffset(sizeof(Vector3) * 2 + sizeof(RGBACo
 
 LandscapeRenderer::LandscapeRenderer(SurfaceMap2D <float> *_heightMap)
 :	m_vertexBuffer(0)
+, m_impl(std::make_unique<Impl>())
 {
     char fullFilname[256];
     sprintf( fullFilname, "terrain/%s", g_app->m_location->m_levelFile->m_landscapeColourFilename );
@@ -267,13 +274,17 @@ LandscapeRenderer::LandscapeRenderer(SurfaceMap2D <float> *_heightMap)
 #ifdef USE_DIRECT3D
 	m_renderMode = RenderModeVertexBufferObject;
 #else
-	m_renderMode = g_prefsManager->GetInt("RenderLandscapeMode", 2);
+	#ifdef FFP_ENABLE_EMULATION
+		m_renderMode = RenderModeFFPEmulation;
+	#else
+		m_renderMode = g_prefsManager->GetInt("RenderLandscapeMode", 2);
+	#endif
 #endif
 
 	// Make sure the selected mode is supported on the user's hardware
 	if (m_renderMode == RenderModeVertexBufferObject)
 	{
-		if (!gglBindBufferARB)
+		if (!glBindBuffer)
 		{
 			// Vertex Buffer Objects not supported, so fallback to display lists
 			m_renderMode = RenderModeDisplayList;
@@ -319,7 +330,7 @@ void LandscapeRenderer::ReleaseD3DResources()
 	ReleaseD3DPoolDefaultResources();
 	if(m_vertexBuffer)
 	{
-		gglDeleteBuffersARB( 1, &m_vertexBuffer );
+		glDeleteBuffersARB( 1, &m_vertexBuffer );
 		m_vertexBuffer = 0;
 	}
 }
@@ -349,6 +360,32 @@ void LandscapeRenderer::BuildOpenGlState(SurfaceMap2D <float> *_heightMap)
 	BuildColourArray();
 	BuildUVArray(_heightMap);
 
+	m_impl->m_vertsFFP.reserve(m_verts.Size());
+
+	for(int i = 0; i < m_verts.Size(); i++)
+	{
+		if(!m_verts.ValidIndex(i))
+			continue;
+
+		m_impl->m_vertsFFP.push_back(ffp_emulation::VertexData{
+			.x = m_verts[i].m_pos.x,
+			.y = m_verts[i].m_pos.y,
+			.z = m_verts[i].m_pos.z,
+
+			.r = float(m_verts[i].m_col.r) / 255.f,
+			.g = float(m_verts[i].m_col.g) / 255.f,
+			.b = float(m_verts[i].m_col.b) / 255.f,
+			.a = float(m_verts[i].m_col.a) / 255.f,
+
+			.n_x = m_verts[i].m_norm.x,
+			.n_y = m_verts[i].m_norm.y,
+			.n_z = m_verts[i].m_norm.z,
+			
+			.u0 = m_verts[i].m_uv.u,
+			.v0 = m_verts[i].m_uv.v,
+		});
+	}
+
 #ifdef USE_DIRECT3D
 	// Flip the normals for Direct3D
 	const int numUsed = m_verts.NumUsed();
@@ -365,10 +402,16 @@ void LandscapeRenderer::BuildOpenGlState(SurfaceMap2D <float> *_heightMap)
 	switch (m_renderMode) {
 		case RenderModeVertexBufferObject:
 			DarwiniaDebugAssert(!m_vertexBuffer);
-			gglGenBuffersARB( 1, &m_vertexBuffer );
-			gglBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertexBuffer );
-			gglBufferDataARB( GL_ARRAY_BUFFER_ARB, m_verts.Size() * sizeof(LandVertex), m_verts.GetPointer(0), GL_STATIC_DRAW_ARB );
-			gglBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+			glGenBuffers( 1, &m_vertexBuffer );
+			glBindBuffer( GL_ARRAY_BUFFER_ARB, m_vertexBuffer );
+			glBufferData( GL_ARRAY_BUFFER_ARB, m_verts.Size() * sizeof(LandVertex), m_verts.GetPointer(0), GL_STATIC_DRAW_ARB );
+			glBindBuffer( GL_ARRAY_BUFFER_ARB, 0 );
+			break;
+
+		case RenderModeFFPEmulation:
+			ffp_emulation::create_vertex_buffers(m_vao, m_vertexBuffer);
+			glBufferData( GL_ARRAY_BUFFER, m_impl->m_vertsFFP.size() * sizeof(ffp_emulation::VertexData), m_impl->m_vertsFFP.data(), GL_STATIC_DRAW);
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			break;
 
 		case RenderModeDisplayList:
@@ -417,7 +460,7 @@ void LandscapeRenderer::RenderMainSlow()
 	switch (m_renderMode) {
 		case RenderModeVertexBufferObject:
 			DarwiniaDebugAssert(m_vertexBuffer);
-			gglBindBufferARB	( GL_ARRAY_BUFFER_ARB, m_vertexBuffer );
+			glBindBuffer	( GL_ARRAY_BUFFER_ARB, m_vertexBuffer );
 #ifdef USE_DIRECT3D
 			OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( GetVertexDecl() );
 			OpenGLD3D::g_pd3dDevice->SetStreamSource( 0, *OpenGLD3D::g_currentVertexBuffer, 0, sizeof(LandVertex) );
@@ -427,6 +470,7 @@ void LandscapeRenderer::RenderMainSlow()
 			glColorPointer		( 4, GL_UNSIGNED_BYTE, sizeof(LandVertex), (char*)m_colOffset );
 #endif
 			break;
+		case RenderModeFFPEmulation: break;
 
 		default:
 		{
@@ -444,13 +488,21 @@ void LandscapeRenderer::RenderMainSlow()
 			if(strip->m_numVerts>2)
 				OpenGLD3D::g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, strip->m_firstVertIndex, strip->m_numVerts-2);
 #else
+		if(m_renderMode == RenderModeFFPEmulation)
+		{
+			ffp_emulation::draw_buffer(m_vao, GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
+		}
+		else
+		{
 			glDrawArrays(GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
+		}
+
 #endif
 	}
 
 	if (m_renderMode == RenderModeVertexBufferObject)
     {
-		gglBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+		glBindBuffer( GL_ARRAY_BUFFER_ARB, 0 );
 	}
 
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -500,7 +552,7 @@ void LandscapeRenderer::RenderOverlaySlow()
 	switch (m_renderMode) {
 		case RenderModeVertexBufferObject:
 			DarwiniaDebugAssert(m_vertexBuffer);
-			gglBindBufferARB	( GL_ARRAY_BUFFER_ARB, m_vertexBuffer );
+			glBindBuffer	( GL_ARRAY_BUFFER_ARB, m_vertexBuffer );
 #ifdef USE_DIRECT3D
 			OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( GetVertexDecl() );
 			OpenGLD3D::g_pd3dDevice->SetStreamSource( 0, *OpenGLD3D::g_currentVertexBuffer, 0, sizeof(LandVertex) );
@@ -511,6 +563,8 @@ void LandscapeRenderer::RenderOverlaySlow()
 			glTexCoordPointer	( 2, GL_FLOAT, sizeof(LandVertex), (char*)m_uvOffset);
 #endif
 			break;
+
+		case RenderModeFFPEmulation : break;
 
 		default:
 			{
@@ -530,14 +584,21 @@ void LandscapeRenderer::RenderOverlaySlow()
 #ifdef USE_DIRECT3D
 		OpenGLD3D::g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, strip->m_firstVertIndex, strip->m_numVerts-2);
 #else
-		glDrawArrays(GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
+		if(m_renderMode == RenderModeFFPEmulation)
+		{
+			ffp_emulation::draw_buffer(m_vao, GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
+		}
+		else
+		{
+			glDrawArrays(GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
+		}
 #endif
 
 	}
 
 	switch (m_renderMode) {
 		case RenderModeVertexBufferObject:
-			gglBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			break;
 	}
 

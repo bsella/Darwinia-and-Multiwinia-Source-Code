@@ -7,6 +7,7 @@
 #include "lib/rgb_colour.h"
 #include "lib/texture_uv.h"
 #include "lib/vector3.h"
+#include <memory>
 
 
 class BitmapRGBA;
@@ -50,7 +51,8 @@ protected:
 		RenderModeVertexArray,
 		RenderModeDisplayList,
 		RenderModeVertexBufferObject,
-		RenderModeVertexBufferDirect3D
+		RenderModeVertexBufferDirect3D,
+		RenderModeFFPEmulation
 	};
 
     BitmapRGBA      *m_landscapeColour;
@@ -59,6 +61,7 @@ protected:
 
 	FastDArray		<LandVertex> m_verts;
 
+	unsigned int	m_vao;
 	unsigned int	m_vertexBuffer;
 
 	FastDArray		<LandTriangleStrip *> m_strips;
@@ -69,6 +72,9 @@ protected:
 	void GetLandscapeColour(float _height, float _gradient,
 							unsigned int _x, unsigned int _y, RGBAColour *_colour);
 	void BuildColourArray();
+
+	struct Impl;
+	const std::unique_ptr<Impl> m_impl;
 
 public:
 	static const unsigned int	m_posOffset;

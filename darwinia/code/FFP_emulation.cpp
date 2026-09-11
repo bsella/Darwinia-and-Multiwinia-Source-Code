@@ -253,31 +253,6 @@ void main()
             return g_model_view.top();
         }
 
-        void create_vertex_buffers(GLuint& vao, GLuint& vbo)
-        {
-            glGenVertexArrays(1, &vao);
-            glBindVertexArray(vao);
-
-            {
-                glGenBuffers(1, &vbo);
-
-                glBindBuffer(GL_ARRAY_BUFFER, vbo);
-                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr));
-                glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 3  * sizeof(float));
-                glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 7  * sizeof(float));
-                glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 10 * sizeof(float));
-                glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 12 * sizeof(float));
-
-                glEnableVertexAttribArray(0);
-                glEnableVertexAttribArray(1);
-                glEnableVertexAttribArray(2);
-                glEnableVertexAttribArray(3);
-                glEnableVertexAttribArray(4);
-            }
-
-            glBindVertexArray(0);
-        }
-
         void draw_list(const DrawList& draw_list)
         {
             glUseProgram(g_program);
@@ -337,6 +312,31 @@ void main()
                     .texture_env = g_texture_env,
             });
         }
+    }
+
+    void create_vertex_buffers(GLuint& vao, GLuint& vbo)
+    {
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+
+        {
+            glGenBuffers(1, &vbo);
+
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr));
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 3  * sizeof(float));
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 7  * sizeof(float));
+            glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 10 * sizeof(float));
+            glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 12 * sizeof(float));
+
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+            glEnableVertexAttribArray(2);
+            glEnableVertexAttribArray(3);
+            glEnableVertexAttribArray(4);
+        }
+
+        glBindVertexArray(0);
     }
 
     void init()
@@ -418,6 +418,12 @@ void main()
     void quit()
     {
         // TODO
+    }
+
+    void draw_buffer(GLuint vao, GLenum primitive_mode, GLint first, GLsizei num_vertices)
+    {
+        glBindVertexArray(vao);
+        glDrawArrays(primitive_mode, first, num_vertices);
     }
 
     void glBegin(GLenum mode)
@@ -964,34 +970,39 @@ void main()
         ::glDisable(cap);
     }
 
-    void glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
-    {
-        // TODO
-    }
-
+    
     void glDisableClientState(GLenum array)
     {
         // TODO
     }
-
+    
     void glEnableClientState(GLenum array)
     {
         // TODO
     }
-
+    
+    void glVertexPointer(GLint size, GLenum type, GLsizei stride, GLvoid *pointer)
+    {
+        //glVertexAttribPointer(0, size, type, GL_FALSE, stride, pointer);
+        //glEnableVertexAttribArray(0);
+    }
+    
     void glNormalPointer(GLenum type, GLsizei stride, const GLvoid *pointer)
     {
-        // TODO
+        //glVertexAttribPointer(1, 3, type, GL_FALSE, stride, pointer);
+        //glEnableVertexAttribArray(1);
+    }
+
+    void glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
+    {
+        //glVertexAttribPointer(2, size, type, GL_FALSE, stride, pointer);
+        //glEnableVertexAttribArray(2);
     }
 
     void glTexCoordPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
     {
-        // TODO
-    }
-
-    void glVertexPointer(GLint size, GLenum type, GLsizei stride, GLvoid *pointer)
-    {
-        // TODO
+        //glVertexAttribPointer(3, size, type, GL_FALSE, stride, pointer);
+        //glEnableVertexAttribArray(3);
     }
 
     void _glMultiTexCoord2fARB(GLenum target, GLfloat s, GLfloat t)
