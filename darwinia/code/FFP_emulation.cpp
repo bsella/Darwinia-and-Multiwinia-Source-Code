@@ -64,6 +64,7 @@ namespace ffp_emulation
             GLuint vbo;
             GLenum primitive_mode;
 
+            GLint   offset = 0;
             GLsizei num_vertices;
 
             glm::mat4 diff_model_view;
@@ -290,7 +291,7 @@ void main()
     
             // Draw the primitives
             glBindVertexArray(draw_list.vao);
-            glDrawArrays(primitive_mode, 0, draw_list.num_vertices);
+            glDrawArrays(primitive_mode, draw_list.offset, draw_list.num_vertices);
         }
 
         void draw()
@@ -416,8 +417,17 @@ void main()
 
     void draw_buffer(GLuint vao, GLenum primitive_mode, GLint first, GLsizei num_vertices)
     {
-        glBindVertexArray(vao);
-        glDrawArrays(primitive_mode, first, num_vertices);
+        draw_list(
+                DrawList{
+                    .vao = vao,
+                    .vbo = 0, // We don't really need the vbo for this function
+                    .primitive_mode = primitive_mode,
+                    .offset       = first,
+                    .num_vertices = num_vertices,
+                    .diff_model_view = glm::mat4(1.0),
+                    .diff_projection = glm::mat4(1.0),
+                    .texture_env = g_texture_env,
+            });
     }
 
     void glBegin(GLenum mode)
