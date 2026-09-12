@@ -816,14 +816,14 @@ void main()
     {
         if(mode == GL_COMPILE)
             g_current_draw_list = &g_draw_lists[list];
-
-        assert(g_draw_list_model_view_stack_level == 0);
-        assert(g_draw_list_projection_stack_level == 0);
     }
 
     void glEndList()
     {
         g_current_draw_list = nullptr;
+
+        assert(g_draw_list_model_view_stack_level == 0);
+        assert(g_draw_list_projection_stack_level == 0);
     }
 
     void glCallList(GLuint list)
