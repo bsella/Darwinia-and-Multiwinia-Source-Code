@@ -1,3 +1,4 @@
+#pragma once
 namespace ffp_emulation
 {
     struct VertexData
