@@ -19,6 +19,10 @@
 #include "lib/2d_surface_map.h"
 #include "lib/vector3.h"
 
+#include <vector>
+
+
+#include "FFP_VertexData.h"
 
 // ****************************************************************************
 // Class WaterTriangleStrip
@@ -77,6 +81,11 @@ protected:
 	int				m_waveTableSizeZ;
 
 	bool			m_renderWaterEffect;
+
+	unsigned int	m_vao;
+	unsigned int	m_vbo;
+
+	std::vector<ffp_emulation::VertexData> m_vertsFFP;
 
 	bool			IsVertNeeded			(float x, float z);
 	void			BuildTriangleStrips		();
