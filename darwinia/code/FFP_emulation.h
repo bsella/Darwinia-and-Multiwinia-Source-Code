@@ -1,3 +1,5 @@
+#pragma once
+
 #include <GL/gl.h>
 
 #if 0
@@ -6,17 +8,6 @@
 
 namespace ffp_emulation
 {
-    namespace
-    {
-        struct VertexData
-        {
-            float x, y, z;
-            float r, g, b, a;
-            float n_x, n_y, n_z;
-            float u0, v0, u1, v1;
-        };
-    }
-
     void init();
     void quit();
 

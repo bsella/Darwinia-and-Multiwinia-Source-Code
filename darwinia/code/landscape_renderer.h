@@ -7,8 +7,10 @@
 #include "lib/rgb_colour.h"
 #include "lib/texture_uv.h"
 #include "lib/vector3.h"
-#include <memory>
 
+#include <vector>
+
+#include "FFP_VertexData.h"
 
 class BitmapRGBA;
 
@@ -73,8 +75,7 @@ protected:
 							unsigned int _x, unsigned int _y, RGBAColour *_colour);
 	void BuildColourArray();
 
-	struct Impl;
-	const std::unique_ptr<Impl> m_impl;
+	std::vector<ffp_emulation::VertexData> m_vertsFFP;
 
 public:
 	static const unsigned int	m_posOffset;

@@ -1,7 +1,5 @@
 #include <GL/glew.h>
 #include <float.h>
-#include <memory>
-#include <vector>
 
 #include "lib/2d_surface_map.h"
 #include "lib/binary_stream_readers.h"
@@ -25,11 +23,6 @@
 
 #define MAIN_DISPLAY_LIST_NAME "LandscapeMain"
 #define OVERLAY_DISPLAY_LIST_NAME "LandscapeOverlay"
-
-struct LandscapeRenderer::Impl
-{
-	std::vector<ffp_emulation::VertexData> m_vertsFFP;
-};
 
 //*****************************************************************************
 // Protected Functions
@@ -260,7 +253,6 @@ const unsigned LandscapeRenderer::m_uvOffset(sizeof(Vector3) * 2 + sizeof(RGBACo
 
 LandscapeRenderer::LandscapeRenderer(SurfaceMap2D <float> *_heightMap)
 :	m_vertexBuffer(0)
-, m_impl(std::make_unique<Impl>())
 {
     char fullFilname[256];
     sprintf( fullFilname, "terrain/%s", g_app->m_location->m_levelFile->m_landscapeColourFilename );
@@ -360,14 +352,14 @@ void LandscapeRenderer::BuildOpenGlState(SurfaceMap2D <float> *_heightMap)
 	BuildColourArray();
 	BuildUVArray(_heightMap);
 
-	m_impl->m_vertsFFP.reserve(m_verts.Size());
+	m_vertsFFP.reserve(m_verts.Size());
 
 	for(int i = 0; i < m_verts.Size(); i++)
 	{
 		if(!m_verts.ValidIndex(i))
 			continue;
 
-		m_impl->m_vertsFFP.push_back(ffp_emulation::VertexData{
+		m_vertsFFP.push_back(ffp_emulation::VertexData{
 			.x = m_verts[i].m_pos.x,
 			.y = m_verts[i].m_pos.y,
 			.z = m_verts[i].m_pos.z,
@@ -410,7 +402,7 @@ void LandscapeRenderer::BuildOpenGlState(SurfaceMap2D <float> *_heightMap)
 
 		case RenderModeFFPEmulation:
 			ffp_emulation::create_vertex_buffers(m_vao, m_vertexBuffer);
-			glBufferData( GL_ARRAY_BUFFER, m_impl->m_vertsFFP.size() * sizeof(ffp_emulation::VertexData), m_impl->m_vertsFFP.data(), GL_STATIC_DRAW);
+			glBufferData( GL_ARRAY_BUFFER, m_vertsFFP.size() * sizeof(ffp_emulation::VertexData), m_vertsFFP.data(), GL_STATIC_DRAW);
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			break;
 

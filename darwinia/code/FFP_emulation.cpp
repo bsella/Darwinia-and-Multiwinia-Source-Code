@@ -1,6 +1,8 @@
 //#include "FFP_emulation.h"
 #include <GL/glew.h>
 
+#include "FFP_VertexData.h"
+
 #include <array>
 #include <cassert>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -29,14 +31,6 @@ namespace ffp_emulation
 
         GLenum g_primitive_mode = UNSET_MODE;
         GLenum g_matrix_mode    = GL_MODELVIEW;
-
-        struct VertexData
-        {
-            float x, y, z;
-            float r, g, b, a;
-            float n_x, n_y, n_z;
-            float u0, v0, u1, v1;
-        };
 
         std::vector<VertexData> g_vertex_buffer;
 
