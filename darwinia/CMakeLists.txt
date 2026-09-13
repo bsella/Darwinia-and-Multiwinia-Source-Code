@@ -5,7 +5,9 @@ file(COPY data DESTINATION .)
 
 find_package(ALSA REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -pedantic -Wextra")
+set (CMAKE_CXX_STANDARD 20)
+
+set(CMAKE_CXX_FLAGS "-Wall -pedantic -Wextra")
 
 include_directories(code
 	contrib/libvorbis-1.1.2/include
