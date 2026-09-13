@@ -6,9 +6,12 @@
 #ifndef _included_resource_h
 #define _included_resource_h
 
+#include <memory>
+#include <unordered_map>
 #include <unrar.h>
 #include <string>
 
+#include "FFP_VertexData.h"
 #include "lib/btree.h"
 #include "lib/llist.h"
 #include "lib/fast_darray.h"
@@ -39,7 +42,7 @@ protected:
 	// can regenerate textures for them when the OpenGL context is destroyed.
 	HashTable<BitmapRGBA *>		m_bitmaps;
 
-	HashTable<int>				m_displayLists;
+	std::unordered_map<std::string, std::unique_ptr<ffp_emulation::DynamicVertexBuffer>> m_vertex_buffers;
 
 	HashTable<int>				m_textures;
 	HashTable<Shape *>			m_shapes;
@@ -81,9 +84,9 @@ public:
 	GestureDemo		*GetGestureDemo		(char const *_name);
 
 	// *** Display lists ***
-	int				CreateDisplayList	(char const *_name);	// Adds _name to the hashtable and calls glGenLists
-	int				GetDisplayList		(char const *_name);	// Returns -1 if _name doesn't exist
-	void			DeleteDisplayList	(char const *_name);	// Removes _name from the hashtable and calls glDeleteLists
+	std::unique_ptr<ffp_emulation::DynamicVertexBuffer>& CreateVertexBuffer(char const *_name);
+	ffp_emulation::DynamicVertexBuffer* GetVertexBuffer(char const *_name);
+	void			DeleteVertexBuffer(char const *_name);
 
     void			FlushOpenGlState	();
 	void			RegenerateOpenGlState();

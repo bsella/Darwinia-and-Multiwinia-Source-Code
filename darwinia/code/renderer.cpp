@@ -148,9 +148,7 @@ void Renderer::Initialise()
 
 	BuildOpenGlState();
 
-#ifdef FFP_ENABLE_EMULATION
 	ffp_emulation::init();
-#endif
 }
 
 void Renderer::Restart()

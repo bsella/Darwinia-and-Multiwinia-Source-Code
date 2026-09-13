@@ -8,6 +8,7 @@
 #include "lib/texture_uv.h"
 #include "lib/vector3.h"
 
+#include <optional>
 #include <vector>
 
 #include "FFP_VertexData.h"
@@ -59,12 +60,10 @@ protected:
 
     BitmapRGBA      *m_landscapeColour;
 	float			m_highest;
-	int				m_renderMode;
 
 	FastDArray		<LandVertex> m_verts;
 
-	unsigned int	m_vao;
-	unsigned int	m_vertexBuffer;
+	std::optional<ffp_emulation::StaticVertexBuffer> m_vertex_buffer;
 
 	FastDArray		<LandTriangleStrip *> m_strips;
 

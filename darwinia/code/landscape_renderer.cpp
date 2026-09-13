@@ -252,7 +252,6 @@ const unsigned LandscapeRenderer::m_colOffset(sizeof(Vector3) * 2);
 const unsigned LandscapeRenderer::m_uvOffset(sizeof(Vector3) * 2 + sizeof(RGBAColour));
 
 LandscapeRenderer::LandscapeRenderer(SurfaceMap2D <float> *_heightMap)
-:	m_vertexBuffer(0)
 {
     char fullFilname[256];
     sprintf( fullFilname, "terrain/%s", g_app->m_location->m_levelFile->m_landscapeColourFilename );
@@ -261,27 +260,6 @@ LandscapeRenderer::LandscapeRenderer(SurfaceMap2D <float> *_heightMap)
     {
         strcpy( fullFilname, "terrain/landscape_icecaps.bmp" );
     }
-
-	// Read render mode from prefs file
-#ifdef USE_DIRECT3D
-	m_renderMode = RenderModeVertexBufferObject;
-#else
-	#ifdef FFP_ENABLE_EMULATION
-		m_renderMode = RenderModeFFPEmulation;
-	#else
-		m_renderMode = g_prefsManager->GetInt("RenderLandscapeMode", 2);
-	#endif
-#endif
-
-	// Make sure the selected mode is supported on the user's hardware
-	if (m_renderMode == RenderModeVertexBufferObject)
-	{
-		if (!glBindBuffer)
-		{
-			// Vertex Buffer Objects not supported, so fallback to display lists
-			m_renderMode = RenderModeDisplayList;
-		}
-	}
 
 	BinaryReader *reader = g_app->m_resource->GetBinaryReader(fullFilname);
 	DarwiniaReleaseAssert(reader != nullptr, "Failed to get resource %s", fullFilname);
@@ -294,12 +272,6 @@ LandscapeRenderer::LandscapeRenderer(SurfaceMap2D <float> *_heightMap)
 
 LandscapeRenderer::~LandscapeRenderer()
 {
-	if (m_renderMode == RenderModeDisplayList)
-	{
-		g_app->m_resource->DeleteDisplayList(MAIN_DISPLAY_LIST_NAME);
-		g_app->m_resource->DeleteDisplayList(OVERLAY_DISPLAY_LIST_NAME);
-	}
-
 	m_verts.Empty();
 
 #ifdef USE_DIRECT3D
@@ -390,36 +362,7 @@ void LandscapeRenderer::BuildOpenGlState(SurfaceMap2D <float> *_heightMap)
 	if (m_verts.NumUsed() <= 0)
 		return;
 
-
-	switch (m_renderMode) {
-		case RenderModeVertexBufferObject:
-			DarwiniaDebugAssert(!m_vertexBuffer);
-			glGenBuffers( 1, &m_vertexBuffer );
-			glBindBuffer( GL_ARRAY_BUFFER_ARB, m_vertexBuffer );
-			glBufferData( GL_ARRAY_BUFFER_ARB, m_verts.Size() * sizeof(LandVertex), m_verts.GetPointer(0), GL_STATIC_DRAW_ARB );
-			glBindBuffer( GL_ARRAY_BUFFER_ARB, 0 );
-			break;
-
-		case RenderModeFFPEmulation:
-			ffp_emulation::create_vertex_buffers(m_vao, m_vertexBuffer);
-			glBufferData( GL_ARRAY_BUFFER, m_vertsFFP.size() * sizeof(ffp_emulation::VertexData), m_vertsFFP.data(), GL_STATIC_DRAW);
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			break;
-
-		case RenderModeDisplayList:
-			// Generate main display list
-			int id = g_app->m_resource->CreateDisplayList(MAIN_DISPLAY_LIST_NAME);
-			glNewList(id, GL_COMPILE);
-			RenderMainSlow();
-			glEndList();
-
-			// Generate overlay display list
-			id = g_app->m_resource->CreateDisplayList(OVERLAY_DISPLAY_LIST_NAME);
-			glNewList(id, GL_COMPILE);
-			RenderOverlaySlow();
-			glEndList();
-			break;
-	}
+	m_vertex_buffer.emplace(m_vertsFFP);
 }
 
 void LandscapeRenderer::RenderMainSlow()
@@ -445,61 +388,13 @@ void LandscapeRenderer::RenderMainSlow()
         glBlendFunc     (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR);
     }
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-
-	switch (m_renderMode) {
-		case RenderModeVertexBufferObject:
-			DarwiniaDebugAssert(m_vertexBuffer);
-			glBindBuffer	( GL_ARRAY_BUFFER_ARB, m_vertexBuffer );
-#ifdef USE_DIRECT3D
-			OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( GetVertexDecl() );
-			OpenGLD3D::g_pd3dDevice->SetStreamSource( 0, *OpenGLD3D::g_currentVertexBuffer, 0, sizeof(LandVertex) );
-#else
-			glVertexPointer		( 3, GL_FLOAT, sizeof(LandVertex), (char*)m_posOffset );
-			glNormalPointer		( GL_FLOAT, sizeof(LandVertex), (char*)m_normOffset );
-			glColorPointer		( 4, GL_UNSIGNED_BYTE, sizeof(LandVertex), (char*)m_colOffset );
-#endif
-			break;
-		case RenderModeFFPEmulation: break;
-
-		default:
-		{
-			char *vertData = (char *)m_verts.GetPointer(0);
-			glVertexPointer		( 3, GL_FLOAT, sizeof(LandVertex), vertData + m_posOffset );
-			glNormalPointer		( GL_FLOAT, sizeof(LandVertex), vertData + m_normOffset );
-			glColorPointer		( 4, GL_UNSIGNED_BYTE, sizeof(LandVertex), vertData + m_colOffset );
-		}
-	}
-
 	for (int z = 0; z < m_strips.Size(); ++z)
 	{
 			LandTriangleStrip *strip = m_strips[z];
-#ifdef USE_DIRECT3D
-			if(strip->m_numVerts>2)
-				OpenGLD3D::g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, strip->m_firstVertIndex, strip->m_numVerts-2);
-#else
-		if(m_renderMode == RenderModeFFPEmulation)
-		{
-			ffp_emulation::draw_buffer(m_vao, GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
-		}
-		else
-		{
-			glDrawArrays(GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
-		}
 
-#endif
+		m_vertex_buffer->draw(GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
+
 	}
-
-	if (m_renderMode == RenderModeVertexBufferObject)
-    {
-		glBindBuffer( GL_ARRAY_BUFFER_ARB, 0 );
-	}
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
 
     glDisable		(GL_COLOR_MATERIAL);
 	glDisable		(GL_LIGHTING);
@@ -536,68 +431,13 @@ void LandscapeRenderer::RenderOverlaySlow()
 	glMaterialfv	(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialDiffuse);
 	glMaterialfv	(GL_FRONT, GL_SHININESS, materialShininess);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-
-	switch (m_renderMode) {
-		case RenderModeVertexBufferObject:
-			DarwiniaDebugAssert(m_vertexBuffer);
-			glBindBuffer	( GL_ARRAY_BUFFER_ARB, m_vertexBuffer );
-#ifdef USE_DIRECT3D
-			OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( GetVertexDecl() );
-			OpenGLD3D::g_pd3dDevice->SetStreamSource( 0, *OpenGLD3D::g_currentVertexBuffer, 0, sizeof(LandVertex) );
-#else
-			glVertexPointer		( 3, GL_FLOAT, sizeof(LandVertex), (char*)m_posOffset );
-			glNormalPointer		( GL_FLOAT, sizeof(LandVertex), (char*)m_normOffset );
-			glColorPointer		( 4, GL_UNSIGNED_BYTE, sizeof(LandVertex), (char*)m_colOffset );
-			glTexCoordPointer	( 2, GL_FLOAT, sizeof(LandVertex), (char*)m_uvOffset);
-#endif
-			break;
-
-		case RenderModeFFPEmulation : break;
-
-		default:
-			{
-				char *vertData = (char *)m_verts.GetPointer(0);
-				glVertexPointer		( 3, GL_FLOAT, sizeof(LandVertex), vertData + m_posOffset );
-				glNormalPointer		( GL_FLOAT, sizeof(LandVertex), vertData + m_normOffset );
-				glColorPointer		( 4, GL_UNSIGNED_BYTE, sizeof(LandVertex), vertData + m_colOffset );
-				glTexCoordPointer	( 2, GL_FLOAT, sizeof(LandVertex), vertData + m_uvOffset);
-			}
-			break;
-	}
-
 	for (int z = 0; z < m_strips.Size(); ++z)
 	{
 		LandTriangleStrip *strip = m_strips[z];
 
-#ifdef USE_DIRECT3D
-		OpenGLD3D::g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, strip->m_firstVertIndex, strip->m_numVerts-2);
-#else
-		if(m_renderMode == RenderModeFFPEmulation)
-		{
-			ffp_emulation::draw_buffer(m_vao, GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
-		}
-		else
-		{
-			glDrawArrays(GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
-		}
-#endif
+		m_vertex_buffer->draw(GL_TRIANGLE_STRIP, strip->m_firstVertIndex, strip->m_numVerts);
 
 	}
-
-	switch (m_renderMode) {
-		case RenderModeVertexBufferObject:
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			break;
-	}
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
 
 	glDisable		(GL_COLOR_MATERIAL);
     glDisable		(GL_BLEND);
@@ -623,38 +463,16 @@ void LandscapeRenderer::Render()
 
 	START_PROFILE(g_app->m_profiler, "Render Landscape Main");
 
-	switch (m_renderMode) {
-		case RenderModeDisplayList:
-			{
-				int id = g_app->m_resource->GetDisplayList(MAIN_DISPLAY_LIST_NAME);
-				DarwiniaDebugAssert(id != -1);
-				glCallList(id);
-			}
-			break;
+	RenderMainSlow();
 
-		default:
-			RenderMainSlow();
-			break;
-	}
 	END_PROFILE(g_app->m_profiler, "Render Landscape Main");
 
     int landscapeDetail = g_prefsManager->GetInt( "RenderLandscapeDetail", 1 );
     if( landscapeDetail < 4 )
     {
 	    START_PROFILE(g_app->m_profiler, "Render Landscape Overlay");
-		switch (m_renderMode) {
-			case RenderModeDisplayList:
-				{
-					int id = g_app->m_resource->GetDisplayList(OVERLAY_DISPLAY_LIST_NAME);
-					DarwiniaDebugAssert(id != -1);
-					glCallList(id);
-				}
-				break;
-
-			default:
-			    RenderOverlaySlow();
-				;
-	    }
+		
+		RenderOverlaySlow();
 	    END_PROFILE(g_app->m_profiler, "Render Landscape Overlay");
     }
 

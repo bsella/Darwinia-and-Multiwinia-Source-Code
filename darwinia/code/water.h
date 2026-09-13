@@ -82,8 +82,7 @@ protected:
 
 	bool			m_renderWaterEffect;
 
-	unsigned int	m_vao;
-	unsigned int	m_vbo;
+	ffp_emulation::DynamicVertexBuffer m_vertex_buffer;
 
 	std::vector<ffp_emulation::VertexData> m_vertsFFP;
 

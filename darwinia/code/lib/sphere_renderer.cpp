@@ -64,21 +64,18 @@ Sphere::Sphere()
 	m_topLevelTriangle[18] = Triangle( c[5], c[2], c[9]);
 	m_topLevelTriangle[19] = Triangle(c[11], c[2], c[7]);
 
-    m_displayListId = glGenLists(1);
-	glNewList(m_displayListId, GL_COMPILE);
-		RenderLong();
-	glEndList();
+	RenderLong();
+
+	m_vertex_buffer.emplace(ffp_emulation::get_current_vertex_buffer());
 }
 
 void Sphere::ConsiderTriangle(int level, Vector3 const &a, Vector3 const &b, Vector3 const &c)
 {
 	if (level > 0)
 	{
-		glBegin(GL_TRIANGLES);
-			glVertex3f(a.x, a.y, a.z);
-			glVertex3f(b.x, b.y, b.z);
-			glVertex3f(c.x, c.y, c.z);
-		glEnd();
+		glVertex3f(a.x, a.y, a.z);
+		glVertex3f(b.x, b.y, b.z);
+		glVertex3f(c.x, c.y, c.z);
 	}
 	else
 	{
@@ -98,12 +95,14 @@ void Sphere::ConsiderTriangle(int level, Vector3 const &a, Vector3 const &b, Vec
 
 void Sphere::RenderLong()
 {
+	glBegin(GL_TRIANGLES);
 	// Render each top level triangle
 	for(int i = 0; i < 20; i++) {
 		ConsiderTriangle(0, m_topLevelTriangle[i].m_corner[0],
 						 m_topLevelTriangle[i].m_corner[1],
 						 m_topLevelTriangle[i].m_corner[2]);
 	}
+	glEnd();
 }
 
 
@@ -115,7 +114,7 @@ void Sphere::Render(Vector3 const &pos, float radius)
 	glScalef(radius, radius, radius);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(1.0f);
-	glCallList(m_displayListId);
+	m_vertex_buffer->draw_buffer(GL_TRIANGLES);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glPopMatrix();
 }

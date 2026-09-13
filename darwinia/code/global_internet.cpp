@@ -172,8 +172,8 @@ void GlobalInternet::DeleteInternet()
     m_leafs.Empty();
     m_bursts.Empty();
 
-    g_app->m_resource->DeleteDisplayList(DISPLAY_LIST_NAME_LINKS);
-    g_app->m_resource->DeleteDisplayList(DISPLAY_LIST_NAME_NODES);
+    g_app->m_resource->DeleteVertexBuffer(DISPLAY_LIST_NAME_LINKS);
+    g_app->m_resource->DeleteVertexBuffer(DISPLAY_LIST_NAME_NODES);
 }
 
 
@@ -214,18 +214,14 @@ void GlobalInternet::Render()
     glEnable        ( GL_TEXTURE_2D );
 
 
-	int linksId = g_app->m_resource->GetDisplayList(DISPLAY_LIST_NAME_LINKS);
-    if( linksId >= 0 )
+    if( m_links_vb )
     {
         glBindTexture   ( GL_TEXTURE_2D, g_app->m_resource->GetTexture( "textures/laserfence2.bmp") );
 
-        glCallList( linksId );
+        m_links_vb->draw_buffer(GL_QUADS);
     }
     else
     {
-        linksId = g_app->m_resource->CreateDisplayList(DISPLAY_LIST_NAME_LINKS);
-        glNewList(linksId, GL_COMPILE);
-
         glColor4f       ( 0.25f, 0.25f, 0.5f, 0.8f );
 
 		//
@@ -254,22 +250,18 @@ void GlobalInternet::Render()
         }
         glEnd();
 
-        glEndList();
+        m_links_vb.emplace(ffp_emulation::get_current_vertex_buffer());
     }
 
 
-    int nodesId = g_app->m_resource->GetDisplayList(DISPLAY_LIST_NAME_NODES);
-    if( nodesId >= 0 )
+    if( m_nodes_vb )
     {
         glBindTexture   ( GL_TEXTURE_2D, g_app->m_resource->GetTexture( "textures/glow.bmp") );
 
-        glCallList( nodesId );
+        m_nodes_vb->draw_buffer(GL_QUADS);
     }
     else
     {
-        nodesId = g_app->m_resource->CreateDisplayList(DISPLAY_LIST_NAME_NODES);
-        glNewList(nodesId, GL_COMPILE);
-
         glColor4f       ( 0.8f, 0.8f, 1.0f, 0.6f );
         float nodeSize = 10.0f;
 
@@ -290,7 +282,7 @@ void GlobalInternet::Render()
         }
         glEnd();
 
-        glEndList();
+        m_nodes_vb.emplace(ffp_emulation::get_current_vertex_buffer());
     }
 
 

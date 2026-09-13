@@ -1,8 +1,10 @@
 #ifndef INCLUDED_SHAPE_H
 #define INCLUDED_SHAPE_H
 
+#include <optional>
 #include <stdio.h>
 
+#include "FFP_VertexData.h"
 #include "lib/llist.h"
 #include "lib/matrix34.h"
 #include "lib/rgb_colour.h"
@@ -111,7 +113,7 @@ class ShapeFragment
 {
 friend class ShapeExporter;
 protected:
-	char			*m_displayListName;
+	std::optional<ffp_emulation::StaticVertexBuffer> m_vertex_buffer;
 
 	void ParsePositionBlock		(TextReader *in, unsigned int numPositions);
 	void ParseNormalBlock		(TextReader *in, unsigned int numNorms);
@@ -194,7 +196,6 @@ class Shape
 protected:
 	void Load					(TextReader *_in);
 	bool						m_animating;		// If false then whole shape in one display list otherwise one display list per fragment
-	char						*m_displayListName;
 
 public:
 	ShapeFragment				*m_rootFragment;

@@ -37,6 +37,7 @@ float const shoreNoiseFactor = 0.25f;
 LPDIRECT3DVERTEXDECLARATION9 s_vertexDecl = nullptr;
 #endif
 
+#define FFP_ENABLE_EMULATION
 
 // ****************************************************************************
 // Class Water
@@ -313,11 +314,6 @@ void Water::BuildOpenGlState()
 {
 #ifdef USE_DIRECT3D
 	SAFE_RELEASE(m_vertexBuffer);
-#endif
-
-#ifdef FFP_ENABLE_EMULATION
-	ffp_emulation::create_vertex_buffers(m_vao, m_vbo);
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
 #endif
 }
 
@@ -850,8 +846,7 @@ void Water::UpdateDynamicWater()
 #endif
 
 #ifdef FFP_ENABLE_EMULATION
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBufferData( GL_ARRAY_BUFFER, m_vertsFFP.size() * sizeof(ffp_emulation::VertexData), m_vertsFFP.data(), GL_DYNAMIC_DRAW);
+	m_vertex_buffer.update(m_vertsFFP);
 #endif
 
 }
@@ -900,7 +895,7 @@ void Water::RenderDynamicWater()
 #else
 
 #ifdef FFP_ENABLE_EMULATION
-		ffp_emulation::draw_buffer(m_vao, GL_TRIANGLE_STRIP, strip->m_startRenderVertIndex, strip->m_numVerts);
+		m_vertex_buffer.draw(GL_TRIANGLE_STRIP, strip->m_startRenderVertIndex, strip->m_numVerts);
 #else
 		glDrawArrays(GL_TRIANGLE_STRIP,
 					strip->m_startRenderVertIndex,

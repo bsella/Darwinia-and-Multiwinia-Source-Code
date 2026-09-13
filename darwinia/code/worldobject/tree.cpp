@@ -28,8 +28,6 @@
 
 Tree::Tree()
 :   Building(),
-    m_branchDisplayListId(-1),
-    m_leafDisplayListId(-1),
     m_fireDamage(0.0f),
     m_onFire(0.0f),
     m_burnSoundPlaying(false),
@@ -222,17 +220,7 @@ static void intToArray(unsigned x, unsigned char *a)
 
 void Tree::DeleteDisplayLists()
 {
-    if( m_branchDisplayListId != -1 )
-    {
-        glDeleteLists( m_branchDisplayListId, 1 );
-        m_branchDisplayListId = -1;
-    }
 
-    if( m_leafDisplayListId != -1 )
-    {
-        glDeleteLists( m_leafDisplayListId, 1 );
-        m_leafDisplayListId = -1;
-    }
 }
 
 void Tree::Generate()
@@ -257,31 +245,36 @@ void Tree::Generate()
         m_leafColourArray[3] = alpha;
     }
 
-    darwiniaSeedRandom( m_seed );
-    m_branchDisplayListId = glGenLists(1);
-    glNewList       ( m_branchDisplayListId, GL_COMPILE );
-    glBegin         ( GL_QUADS );
-#ifdef USE_DIRECT3D
-	// The colour is not supposed to be specified here so that it can be changed
-	// easily in the editor (when experimenting).
-	// Really, the Trees should be rewritten for Direct3D to use Meshes
-    glColor4ubv     ( m_branchColourArray ); // Direct3D hack
-#endif
-    RenderBranch    ( g_zeroVector, g_upVector, m_iterations, false, true, false );
-    glEnd           ();
-    glEndList       ();
+    if( Location::ChristmasModEnabled() == 1 )
+    {
+        m_branchColourArray[0] = 180;
+        m_branchColourArray[1] = 100;
+        m_branchColourArray[2] = 50;
+    }
 
     darwiniaSeedRandom( m_seed );
-    m_leafDisplayListId = glGenLists(1);
-    glNewList       ( m_leafDisplayListId, GL_COMPILE );
-#ifdef USE_DIRECT3D
-    glColor4ubv     ( m_leafColourArray );	// Direct3D hack
-#endif
-    glBegin         ( GL_QUADS );
-    RenderBranch    ( g_zeroVector, g_upVector, m_iterations, false, false, true );
-    glEnd           ();
-    glEndList       ();
+    {
+        glBegin         ( GL_QUADS );
+        glColor4ubv     ( m_branchColourArray );
+        RenderBranch    ( g_zeroVector, g_upVector, m_iterations, false, true, false );
+        glEnd           ();
 
+        m_branchVB.update(ffp_emulation::get_current_vertex_buffer());
+    }
+
+    darwiniaSeedRandom( m_seed );
+    {
+        glBegin         ( GL_QUADS );
+
+        if( Location::ChristmasModEnabled() != 1 )
+        {
+            glColor4ubv     ( m_leafColourArray );
+        }
+
+        RenderBranch    ( g_zeroVector, g_upVector, m_iterations, false, false, true );
+        glEnd           ();
+        m_leafVB.update(ffp_emulation::get_current_vertex_buffer());
+    }
 
     //
     // We now have all the leaf positions accumulated in m_hitcheckCentre
@@ -293,6 +286,8 @@ void Tree::Generate()
 
     float totalTime = GetHighResTime() - timeNow;
     DebugOut( "Tree generated in %dms\n", int(totalTime * 1000.0f) );
+
+    m_valid = true;
 }
 
 void Tree::Render( [[maybe_unused]] float _predictionTime )
@@ -310,16 +305,9 @@ bool Tree::PerformDepthSort( Vector3 &_centrePos )
 
 void Tree::RenderAlphas( float _predictionTime )
 {
-    if( m_branchDisplayListId == -1 ||
-        m_leafDisplayListId == -1 )
+    if( ! m_valid )
     {
         Generate();
-    }
-
-    if( g_app->m_editing )
-    {
-	    intToArray(m_branchColour, m_branchColourArray);
-	    intToArray(m_leafColour, m_leafColourArray);
     }
 
     float actualHeight = GetActualHeight( _predictionTime );
@@ -339,21 +327,9 @@ void Tree::RenderAlphas( float _predictionTime )
     glMultMatrixf   ( mat.ConvertToOpenGLFormat());
     glScalef        ( actualHeight, actualHeight, actualHeight );
 
-    if( Location::ChristmasModEnabled() == 1 )
-    {
-        m_branchColourArray[0] = 180;
-        m_branchColourArray[1] = 100;
-        m_branchColourArray[2] = 50;
-    }
+    m_branchVB.draw_buffer(GL_QUADS);
 
-    glColor4ubv     ( m_branchColourArray );
-    glCallList      ( m_branchDisplayListId );
-
-    if( Location::ChristmasModEnabled() != 1 )
-    {
-        glColor4ubv     ( m_leafColourArray );
-        glCallList      ( m_leafDisplayListId );
-    }
+    m_leafVB.draw_buffer(GL_QUADS);
 
     glPopMatrix     ();
 

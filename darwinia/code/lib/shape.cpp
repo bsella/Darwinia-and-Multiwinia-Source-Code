@@ -1,3 +1,4 @@
+#include "FFP_VertexData.h"
 #include "lib/universal_include.h"
 
 #include <float.h>
@@ -14,6 +15,7 @@
 #include "lib/text_stream_readers.h"
 
 #include "FFP_emulation.h"
+#include "lib/vector3.h"
 
 #ifndef EXPORTER_BUILD
 #include "lib/resource.h"
@@ -165,8 +167,7 @@ void ShapeMarker::WriteToFile(FILE *_out) const
 
 // This constructor is used to load a shape from a file.
 ShapeFragment::ShapeFragment(TextReader *_in, char const *_name)
-:	m_displayListName(nullptr),
-	m_numPositions(0),
+:	m_numPositions(0),
 	m_positions(nullptr),
 	m_positionsInWS(nullptr),
 	m_numNormals(0),
@@ -276,8 +277,7 @@ ShapeFragment::ShapeFragment(TextReader *_in, char const *_name)
 // This constructor is used when you want to build a shape from scratch yourself,
 // eg in the exporter.
 ShapeFragment::ShapeFragment(char const *_name, char const *_parentName)
-:	m_displayListName(nullptr),
-	m_numPositions(0),
+:	m_numPositions(0),
 	m_positions(nullptr),
 	m_positionsInWS(nullptr),
 	m_numNormals(0),
@@ -346,23 +346,29 @@ ShapeFragment::~ShapeFragment()
     delete [] m_triangles;		m_triangles = nullptr;
 	m_childFragments.EmptyAndDelete();
 	m_childMarkers.EmptyAndDelete();
-#ifndef EXPORTER_BUILD
-	g_app->m_resource->DeleteDisplayList(m_displayListName);
-	delete [] m_displayListName;
-	m_displayListName = nullptr;
-#endif
 }
 
 
 void ShapeFragment::BuildDisplayList()
 {
 #ifndef EXPORTER_BUILD
-	DarwiniaDebugAssert(m_displayListName == nullptr);
-	m_displayListName = g_app->m_resource->GenerateName();
-	int id = g_app->m_resource->CreateDisplayList(m_displayListName);
-	glNewList(id, GL_COMPILE);
+	DarwiniaDebugAssert(!m_vertex_buffer.has_value());
+
+	{
 		RenderSlow();
-	glEndList();
+
+		auto vbd = ffp_emulation::get_current_vertex_buffer();
+
+		if(!vbd.empty())
+		{
+			m_vertex_buffer.emplace(vbd);
+		}
+	}
+
+	for (int i = 0; i < m_childFragments.Size(); ++i)
+	{
+		m_childFragments.GetData(i)->BuildDisplayList();
+	}
 #endif
 }
 
@@ -873,18 +879,8 @@ void ShapeFragment::Render(float _predictionTime)
 		glMultMatrixf(predictedTransform.ConvertToOpenGLFormat());
 	}
 
-#ifdef USE_DISPLAY_LISTS
-	int id = -1;
-	if (m_displayListName) id = g_app->m_resource->GetDisplayList(m_displayListName);
-	if (id != -1)
-	{
-		glCallList(id);
-	}
-	else
-#endif
-	{
-		RenderSlow();
-	}
+	if(m_vertex_buffer.has_value())
+		m_vertex_buffer->draw_buffer(GL_TRIANGLES);
 
     int numChildren = m_childFragments.Size();
 	for (int i = 0; i < numChildren; ++i)
@@ -903,7 +899,7 @@ void ShapeFragment::Render(float _predictionTime)
 void ShapeFragment::RenderSlow()
 {
 #ifndef EXPORTER_BUILD
-	if(!m_numTriangles) return;
+	//if(!m_numTriangles) return;
 	glBegin(GL_TRIANGLES);
 
 	int norm = 0;
@@ -1291,7 +1287,6 @@ Shape::Shape()
 
 Shape::Shape(char const *filename, bool _animating)
 :	m_animating(_animating),
-	m_displayListName(nullptr),
 	m_rootFragment(nullptr),
 	m_name(nullptr)
 {
@@ -1305,7 +1300,6 @@ Shape::Shape(char const *filename, bool _animating)
 
 Shape::Shape(TextReader *in, bool _animating)
 :	m_animating(_animating),
-	m_displayListName(nullptr),
 	m_rootFragment(nullptr)
 {
 	Load(in);
@@ -1317,24 +1311,15 @@ Shape::~Shape()
 {
 	delete m_rootFragment;
 	free(m_name);
-#ifndef EXPORTER_BUILD
-	g_app->m_resource->DeleteDisplayList(m_displayListName);
-	delete [] m_displayListName;
-	m_displayListName = nullptr;
-#endif
 }
 
 
 void Shape::BuildDisplayList()
 {
 #ifndef EXPORTER_BUILD
-	if (!m_animating)
+	//if (!m_animating)
 	{
-		m_displayListName = g_app->m_resource->GenerateName();
-		int id = g_app->m_resource->CreateDisplayList(m_displayListName);
-		glNewList(id, GL_COMPILE);
-			m_rootFragment->Render(0.0f);
-		glEndList();
+		m_rootFragment->BuildDisplayList();
 	}
 #endif
 }
@@ -1434,18 +1419,7 @@ void Shape::Render(float _predictionTime, Matrix34 const &_transform)
 	glPushMatrix    ();
 	glMultMatrixf   (_transform.ConvertToOpenGLFormat());
 
-#ifdef USE_DISPLAY_LISTS
-	int id = -1;
-	if (m_displayListName) id = g_app->m_resource->GetDisplayList(m_displayListName);
-	if (id != -1)
-	{
-		glCallList(id);
-	}
-	else
-#endif
-	{
-		m_rootFragment->Render(_predictionTime);
-	}
+	m_rootFragment->Render(_predictionTime);
 
 	glDisable       (GL_COLOR_MATERIAL);
 	glMatrixMode    (GL_MODELVIEW);

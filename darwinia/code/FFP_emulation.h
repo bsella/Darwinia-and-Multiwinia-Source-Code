@@ -2,17 +2,16 @@
 
 #include <GL/gl.h>
 
-#if 0
-#define FFP_ENABLE_EMULATION
-#endif
+#include "FFP_VertexData.h"
+
+#include <span>
 
 namespace ffp_emulation
 {
     void init();
     void quit();
 
-    void create_vertex_buffers(GLuint& vao, GLuint& vbo);
-    void draw_buffer(GLuint vao, GLenum primitive_mode, GLint first, GLsizei count);
+    std::span<const VertexData> get_current_vertex_buffer();
 
     void glBegin(GLenum);
     void glEnd();
@@ -62,11 +61,6 @@ namespace ffp_emulation
     void glColorMaterial(GLenum face, GLenum mode);
     void glMaterialfv(GLenum face, GLenum pname, const GLfloat *params);
 
-    GLuint glGenLists(GLsizei range);
-    void glNewList(GLuint list, GLenum mode);
-    void glEndList();
-    void glCallList(GLuint list);
-
     void glFogf(GLenum pname, GLfloat param);
     void glFogi(GLenum pname, GLint param);
     void glFogfv(GLenum pname, const GLfloat* params);
@@ -98,8 +92,6 @@ namespace ffp_emulation
 
     void _glMultiTexCoord2fARB(GLenum target, GLfloat s, GLfloat t);
 }
-
-#ifdef FFP_ENABLE_EMULATION
 
 #define glBegin(mode) ffp_emulation::glBegin(mode)
 #define glEnd()       ffp_emulation::glEnd()
@@ -145,11 +137,6 @@ namespace ffp_emulation
 #define glColorMaterial(face, mode)       ffp_emulation::glColorMaterial(face, mode)
 #define glMaterialfv(face, pname, params) ffp_emulation::glMaterialfv(face, pname, params)
 
-#define glGenLists(range)     ffp_emulation::glGenLists(range)
-#define glNewList(list, mode) ffp_emulation::glNewList(list, mode)
-#define glEndList()           ffp_emulation::glEndList()
-#define glCallList(list)      ffp_emulation::glCallList(list)
-
 #define glFogf(pname, param)   ffp_emulation::glFogf(pname, param)
 #define glFogi(pname, param)   ffp_emulation::glFogi(pname, param)
 #define glFogfv(pname, params) ffp_emulation::glFogfv(pname, params)
@@ -180,5 +167,3 @@ namespace ffp_emulation
 #define glVertexPointer(size, type, stride, pointer)   ffp_emulation::glVertexPointer(size, type, stride, pointer)
 
 #define glMultiTexCoord2fARB(target, s, t) ffp_emulation::_glMultiTexCoord2fARB(target, s, t)
-
-#endif

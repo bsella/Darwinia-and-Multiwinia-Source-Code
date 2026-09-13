@@ -1,7 +1,9 @@
 #ifndef SPHERE_RENDERER_H
 #define SPHERE_RENDERER_H
 
+#include "FFP_VertexData.h"
 #include "lib/vector3.h"
+#include <optional>
 
 
 class Triangle
@@ -23,7 +25,7 @@ public:
 
 private:
 	Triangle	m_topLevelTriangle[20];
-	int m_displayListId;
+	std::optional<ffp_emulation::StaticVertexBuffer> m_vertex_buffer;
 
 	void ConsiderTriangle(int level, Vector3 const &a, Vector3 const &b, Vector3 const &c);
 };

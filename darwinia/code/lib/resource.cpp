@@ -1,5 +1,6 @@
 ﻿#include "lib/universal_include.h"
 
+#include <memory>
 #include <stdio.h>
 #include <unrar.h>
 
@@ -432,55 +433,38 @@ int Resource::WildCmp(char const *wild, char const *string)
 	return !*wild;
 }
 
-
-int Resource::CreateDisplayList(char const *_name)
+std::unique_ptr<ffp_emulation::DynamicVertexBuffer>& Resource::CreateVertexBuffer(char const *_name)
 {
 	// Make sure name isn't nullptr and isn't too long
 	DarwiniaDebugAssert(_name && strlen(_name) < 20);
 
-	unsigned int id = glGenLists(1);
-	m_displayLists.PutData(_name, id);
+	auto [itr, inserted ] = m_vertex_buffers.insert({_name, std::make_unique<ffp_emulation::DynamicVertexBuffer>()});
 
-	return id;
+	return itr->second;
 }
 
-
-int Resource::GetDisplayList(char const *_name)
+ffp_emulation::DynamicVertexBuffer* Resource::GetVertexBuffer(char const *_name)
 {
-	// Make sure name isn't nullptr and isn't too long
-	DarwiniaDebugAssert(_name && strlen(_name) < 20);
+	auto vb = m_vertex_buffers.find(_name);
+	if(vb != m_vertex_buffers.end())
+		return (*vb).second.get();
 
-	return m_displayLists.GetData(_name, -1);
+	return nullptr;
 }
 
-
-void Resource::DeleteDisplayList(char const *_name)
+void Resource::DeleteVertexBuffer(char const *_name)
 {
 	if (!_name) return;
 
 	// Make sure name isn't too long
 	DarwiniaDebugAssert(strlen(_name) < 20);
-
-	int id = m_displayLists.GetData(_name,-1);
-    if (id >= 0)
-	{
-		glDeleteLists(id, 1);
-		m_displayLists.RemoveData(_name);
-	}
+	
+	m_vertex_buffers.erase(_name);
 }
-
 
 void Resource::FlushOpenGlState()
 {
 #if 1 // Try to catch crash on shutdown bug
-		// Tell OpenGL to delete the display lists
-		for (unsigned int i = 0; i < m_displayLists.Size(); ++i)
-		{
-			if (m_displayLists.ValidIndex(i))
-			{
-				glDeleteLists(m_displayLists[i], 1);
-			}
-		}
 
 		// Tell OpenGL to delete the textures
 		for (unsigned int i = 0; i < m_textures.Size(); ++i)
@@ -492,9 +476,6 @@ void Resource::FlushOpenGlState()
 			}
 		}
 #endif
-
-	// Forget all the display lists
-	m_displayLists.Empty();
 
 	// Forget all the texture handles
 	m_textures.Empty();

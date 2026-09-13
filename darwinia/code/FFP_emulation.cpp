@@ -19,6 +19,8 @@
 #include <cstdint>
 #include <glm/matrix.hpp>
 #include <glm/trigonometric.hpp>
+#include <optional>
+#include <span>
 #include <vector>
 #include <iostream>
 #include <stack>
@@ -32,20 +34,16 @@ namespace ffp_emulation
         GLenum g_primitive_mode = UNSET_MODE;
         GLenum g_matrix_mode    = GL_MODELVIEW;
 
-        std::vector<VertexData> g_vertex_buffer;
+        std::vector<VertexData> g_vertex_buffer_data;
 
         VertexData g_current_vertex;
 
-        GLuint g_vao = 0;
-        GLuint g_vbo;
+        std::optional<DynamicVertexBuffer> g_vertex_buffer;
 
         GLuint g_program;
 
         std::stack<glm::mat4> g_model_view;
         std::stack<glm::mat4> g_projection;
-
-        int g_draw_list_model_view_stack_level = 0;
-        int g_draw_list_projection_stack_level = 0;
 
         struct TextureEnvironment
         {
@@ -57,25 +55,6 @@ namespace ffp_emulation
 
         GLuint g_active_texture = 0;
         std::array<TextureEnvironment, 2> g_texture_env;
-
-        struct DrawList
-        {
-            GLuint vao;
-            GLuint vbo;
-            GLenum primitive_mode;
-
-            GLint   offset = 0;
-            GLsizei num_vertices;
-
-            glm::mat4 diff_model_view;
-            glm::mat4 diff_projection;
-
-            std::array<TextureEnvironment, 2> texture_env;
-        };
-
-        std::vector<DrawList> g_draw_lists;
-
-        DrawList* g_current_draw_list = nullptr;
 
         GLint g_model_view_location;
         GLint g_projection_location;
@@ -247,77 +226,17 @@ void main()
 
             return g_model_view.top();
         }
-
-        void draw_list(const DrawList& draw_list)
-        {
-            glUseProgram(g_program);
-    
-            // Upload the matrices
-            glUniformMatrix4fv(g_model_view_location, 1, GL_FALSE, glm::value_ptr(g_model_view.top() * draw_list.diff_model_view));
-            glUniformMatrix4fv(g_projection_location, 1, GL_FALSE, glm::value_ptr(g_projection.top() * draw_list.diff_projection));
-    
-            // Update the bound texture id
-            glUniform1i(g_texture0_location, 0);
-            glUniform1i(g_texture1_location, 1);
-    
-            auto& tex0_env = draw_list.texture_env[0];
-            auto& tex1_env = draw_list.texture_env[1];
-
-            glUniform1ui(g_texture0_env_mode_loc, tex0_env.enabled ? tex0_env.mode : 0);
-            glUniform1ui(g_texture0_env_combine_rgb_loc, tex0_env.combine_rgb);
-            glUniform4f(g_texture0_env_color_loc, tex0_env.color.r, tex0_env.color.g, tex0_env.color.b, tex0_env.color.a);
-            glUniform1ui(g_texture1_env_mode_loc, tex1_env.enabled ? tex1_env.mode : 0);
-            glUniform1ui(g_texture1_env_combine_rgb_loc, tex1_env.combine_rgb);
-            glUniform4f(g_texture1_env_color_loc, tex1_env.color.r, tex1_env.color.g, tex1_env.color.b, tex1_env.color.a);
-    
-            auto primitive_mode = draw_list.primitive_mode;
-            if (primitive_mode == GL_QUADS)      primitive_mode = GL_TRIANGLES;
-            if (primitive_mode == GL_QUAD_STRIP) primitive_mode = GL_TRIANGLE_STRIP;
-    
-            assert(
-                primitive_mode == GL_POINTS ||
-                primitive_mode == GL_LINE_STRIP ||
-                primitive_mode == GL_LINE_LOOP ||
-                primitive_mode == GL_LINES ||
-                primitive_mode == GL_LINE_STRIP_ADJACENCY ||
-                primitive_mode == GL_LINES_ADJACENCY ||
-                primitive_mode == GL_TRIANGLE_STRIP ||
-                primitive_mode == GL_TRIANGLE_FAN ||
-                primitive_mode == GL_TRIANGLES ||
-                primitive_mode == GL_TRIANGLE_STRIP_ADJACENCY ||
-                primitive_mode == GL_TRIANGLES_ADJACENCY ||
-                primitive_mode == GL_PATCHES
-            );
-    
-            // Draw the primitives
-            glBindVertexArray(draw_list.vao);
-            glDrawArrays(primitive_mode, draw_list.offset, draw_list.num_vertices);
-        }
-
-        void draw()
-        {
-            draw_list(
-                DrawList{
-                    .vao = g_vao,
-                    .vbo = g_vbo,
-                    .primitive_mode = g_primitive_mode,
-                    .num_vertices = (GLsizei)g_vertex_buffer.size(),
-                    .diff_model_view = glm::mat4(1.0),
-                    .diff_projection = glm::mat4(1.0),
-                    .texture_env = g_texture_env,
-            });
-        }
     }
 
-    void create_vertex_buffers(GLuint& vao, GLuint& vbo)
+    VertexBuffer::VertexBuffer()
     {
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
+        glGenVertexArrays(1, &m_vao);
+        glBindVertexArray(m_vao);
 
         {
-            glGenBuffers(1, &vbo);
+            glGenBuffers(1, &m_vbo);
 
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr));
             glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 3  * sizeof(float));
             glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), ((std::uint8_t*)nullptr) + 7  * sizeof(float));
@@ -334,10 +253,84 @@ void main()
         glBindVertexArray(0);
     }
 
+    VertexBuffer::~VertexBuffer()
+    {
+        glDeleteBuffers(1, &m_vbo);
+        glDeleteVertexArrays(1, &m_vao);
+    }
+
+    StaticVertexBuffer::StaticVertexBuffer(std::span<const VertexData> vertex_data)
+        : m_num_vertices(vertex_data.size())
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertex_data.size() * sizeof(VertexData), vertex_data.data(), GL_STATIC_DRAW);
+    }
+
+    void StaticVertexBuffer::draw_buffer(unsigned int primitive_mode) const
+    {
+        VertexBuffer::draw(primitive_mode, 0, m_num_vertices);
+    }
+
+    void DynamicVertexBuffer::draw_buffer(unsigned int primitive_mode) const
+    {
+        VertexBuffer::draw(primitive_mode, 0, m_num_vertices);
+    }
+
+    void DynamicVertexBuffer::update(std::span<const VertexData> vertex_data)
+    {
+        m_num_vertices = vertex_data.size();
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertex_data.size() * sizeof(VertexData), vertex_data.data(), GL_DYNAMIC_DRAW);
+    }
+
+    void VertexBuffer::draw(GLenum primitive_mode, GLint first, GLsizei num_vertices) const
+    {
+        glUseProgram(g_program);
+    
+        // Upload the matrices
+        glUniformMatrix4fv(g_model_view_location, 1, GL_FALSE, glm::value_ptr(g_model_view.top()));
+        glUniformMatrix4fv(g_projection_location, 1, GL_FALSE, glm::value_ptr(g_projection.top()));
+
+        // Update the bound texture id
+        glUniform1i(g_texture0_location, 0);
+        glUniform1i(g_texture1_location, 1);
+
+        auto& tex0_env = g_texture_env[0];
+        auto& tex1_env = g_texture_env[1];
+
+        glUniform1ui(g_texture0_env_mode_loc, tex0_env.enabled ? tex0_env.mode : 0);
+        glUniform1ui(g_texture0_env_combine_rgb_loc, tex0_env.combine_rgb);
+        glUniform4f(g_texture0_env_color_loc, tex0_env.color.r, tex0_env.color.g, tex0_env.color.b, tex0_env.color.a);
+        glUniform1ui(g_texture1_env_mode_loc, tex1_env.enabled ? tex1_env.mode : 0);
+        glUniform1ui(g_texture1_env_combine_rgb_loc, tex1_env.combine_rgb);
+        glUniform4f(g_texture1_env_color_loc, tex1_env.color.r, tex1_env.color.g, tex1_env.color.b, tex1_env.color.a);
+
+        if (primitive_mode == GL_QUADS)      primitive_mode = GL_TRIANGLES;
+        if (primitive_mode == GL_QUAD_STRIP) primitive_mode = GL_TRIANGLE_STRIP;
+
+        assert(
+            primitive_mode == GL_POINTS ||
+            primitive_mode == GL_LINE_STRIP ||
+            primitive_mode == GL_LINE_LOOP ||
+            primitive_mode == GL_LINES ||
+            primitive_mode == GL_LINE_STRIP_ADJACENCY ||
+            primitive_mode == GL_LINES_ADJACENCY ||
+            primitive_mode == GL_TRIANGLE_STRIP ||
+            primitive_mode == GL_TRIANGLE_FAN ||
+            primitive_mode == GL_TRIANGLES ||
+            primitive_mode == GL_TRIANGLE_STRIP_ADJACENCY ||
+            primitive_mode == GL_TRIANGLES_ADJACENCY ||
+            primitive_mode == GL_PATCHES
+        );
+
+        // Draw the primitives
+        glBindVertexArray(m_vao);
+        glDrawArrays(primitive_mode, first, num_vertices);
+    }
+
     void init()
     {
-        create_vertex_buffers(g_vao, g_vbo);
-
         int success;
         char infoLog[512];
 
@@ -408,6 +401,8 @@ void main()
 
         g_model_view.push(glm::mat4(1.0));
         g_projection.push(glm::mat4(1.0));
+
+        g_vertex_buffer.emplace();
     }
 
     void quit()
@@ -415,91 +410,22 @@ void main()
         // TODO
     }
 
-    void draw_buffer(GLuint vao, GLenum primitive_mode, GLint first, GLsizei num_vertices)
+    std::span<const VertexData> get_current_vertex_buffer()
     {
-        draw_list(
-                DrawList{
-                    .vao = vao,
-                    .vbo = 0, // We don't really need the vbo for this function
-                    .primitive_mode = primitive_mode,
-                    .offset       = first,
-                    .num_vertices = num_vertices,
-                    .diff_model_view = glm::mat4(1.0),
-                    .diff_projection = glm::mat4(1.0),
-                    .texture_env = g_texture_env,
-            });
+        return g_vertex_buffer_data;
     }
 
     void glBegin(GLenum mode)
     {
-        if(g_current_draw_list)
-        {
-            g_current_draw_list->primitive_mode = mode;
-            g_current_draw_list->diff_model_view = glm::mat4(1.0);
-            g_current_draw_list->diff_projection = glm::mat4(1.0);
-        }
-        else
-            g_primitive_mode = mode;
+        g_primitive_mode = mode;
 
-        g_vertex_buffer.clear();
+        g_vertex_buffer_data.clear();
     }
 
     void glEnd()
     {
-        // Upload the vertex data buffer
-        if(g_current_draw_list)
-        {
-            glBindBuffer(GL_ARRAY_BUFFER, g_current_draw_list->vbo);
-            glBufferData(GL_ARRAY_BUFFER, g_vertex_buffer.size() * sizeof(VertexData), g_vertex_buffer.data(), GL_STATIC_DRAW);
-
-            g_current_draw_list->num_vertices = g_vertex_buffer.size();
-
-            glm::mat4 diff_matrix = glm::mat4(1.0);
-            std::vector<glm::mat4> diff_matrices;
-
-            {
-                for(int i = 0; i < g_draw_list_model_view_stack_level; i++)
-                {
-                    diff_matrix *= diff_matrices.emplace_back(g_model_view.top());
-
-                    g_model_view.pop();
-                }
-                for(const auto& m : diff_matrices)
-                {
-                    g_model_view.push(m);
-                }
-            }
-
-            g_current_draw_list->diff_model_view *= diff_matrix;
-
-            diff_matrix = glm::mat4(1.0);
-            diff_matrices.clear();
-
-            {
-                for(int i = 0; i < g_draw_list_projection_stack_level; i++)
-                {
-                    diff_matrix *= diff_matrices.emplace_back(g_projection.top());
-
-                    g_projection.pop();
-                }
-                for(const auto& m : diff_matrices)
-                {
-                    g_projection.push(m);
-                }
-            }
-
-            g_current_draw_list->diff_projection *= diff_matrix;
-        }
-        else
-        {
-            glBindBuffer(GL_ARRAY_BUFFER, g_vbo);
-            glBufferData(GL_ARRAY_BUFFER, g_vertex_buffer.size() * sizeof(VertexData), g_vertex_buffer.data(), GL_DYNAMIC_DRAW);
-        }
-
-        if(!g_current_draw_list)
-        {
-            draw();
-        }
+        g_vertex_buffer->update(get_current_vertex_buffer());
+        g_vertex_buffer->draw_buffer(g_primitive_mode);
     }
 
     void glMatrixMode(GLenum mode)
@@ -522,19 +448,6 @@ void main()
         );
 
         get_current_matrix() *= mat;
-
-        switch (g_matrix_mode)
-        {
-            case GL_MODELVIEW:
-                if(g_current_draw_list)
-                    g_current_draw_list->diff_model_view *= mat;
-                break;
-
-            case GL_PROJECTION:
-                if(g_current_draw_list)
-                    g_current_draw_list->diff_projection *= mat;
-                break;
-        }
     }
 
     void glPushMatrix()
@@ -544,14 +457,10 @@ void main()
         switch (g_matrix_mode)
         {
             case GL_MODELVIEW:
-                if(g_current_draw_list)
-                    g_draw_list_model_view_stack_level++;
                 g_model_view.push(g_model_view.top());
                 break;
 
             case GL_PROJECTION:
-                if(g_current_draw_list)
-                    g_draw_list_projection_stack_level++;
                 g_projection.push(g_projection.top());
                 break;
         }
@@ -565,13 +474,9 @@ void main()
         {
             case GL_MODELVIEW:
                 g_model_view.pop();
-                if(g_current_draw_list)
-                    g_draw_list_model_view_stack_level--;
                 break;
             case GL_PROJECTION:
                 g_projection.pop();
-                if(g_current_draw_list)
-                    g_draw_list_projection_stack_level--;
                 break;
         }
     }
@@ -701,22 +606,22 @@ void main()
 
         if(g_primitive_mode == GL_QUADS)
         {
-            auto triangle_count = g_vertex_buffer.size() / 3;
+            auto triangle_count = g_vertex_buffer_data.size() / 3;
 
             bool odd_triangle_count = triangle_count % 2 != 0;
 
             if(odd_triangle_count)
             {
-                auto vertex1 = g_vertex_buffer[g_vertex_buffer.size() - 3];
-                auto vertex2 = g_vertex_buffer[g_vertex_buffer.size() - 1];
+                auto vertex1 = g_vertex_buffer_data[g_vertex_buffer_data.size() - 3];
+                auto vertex2 = g_vertex_buffer_data[g_vertex_buffer_data.size() - 1];
     
-                g_vertex_buffer.push_back(vertex1);
-                g_vertex_buffer.push_back(vertex2);
+                g_vertex_buffer_data.push_back(vertex1);
+                g_vertex_buffer_data.push_back(vertex2);
             }
 
         }
 
-        g_vertex_buffer.push_back(g_current_vertex);
+        g_vertex_buffer_data.push_back(g_current_vertex);
     }
     void glVertex2f( GLfloat x, GLfloat y )
     {
@@ -808,39 +713,6 @@ void main()
         // TODO
     }
 
-    GLuint glGenLists(GLsizei range)
-    {
-        auto previous_list_index = g_draw_lists.size();
-
-        for(GLsizei i = 0; i < range; i++)
-        {
-            auto& new_list = g_draw_lists.emplace_back();
-
-            create_vertex_buffers(new_list.vao, new_list.vbo);
-        }
-
-        return previous_list_index;
-    }
-
-    void glNewList(GLuint list, GLenum mode)
-    {
-        if(mode == GL_COMPILE)
-            g_current_draw_list = &g_draw_lists[list];
-    }
-
-    void glEndList()
-    {
-        g_current_draw_list = nullptr;
-
-        assert(g_draw_list_model_view_stack_level == 0);
-        assert(g_draw_list_projection_stack_level == 0);
-    }
-
-    void glCallList(GLuint list)
-    {
-        draw_list(g_draw_lists[list]);
-    }
-
     void glFogf(GLenum pname, GLfloat param)
     {
         // TODO
@@ -901,18 +773,12 @@ void main()
             switch (pname)
             {
                 case GL_TEXTURE_ENV_MODE:
-                    if(g_current_draw_list)
-                        g_current_draw_list->texture_env[g_active_texture].mode = param;
-                    else
-                        g_texture_env[g_active_texture].mode = param;
+                    g_texture_env[g_active_texture].mode = param;
 
                 break;
 
                 case GL_COMBINE_RGB: //GL_COMBINE_RGB_EXT
-                    if(g_current_draw_list)
-                        g_current_draw_list->texture_env[g_active_texture].combine_rgb = param;
-                    else
-                        g_texture_env[g_active_texture].combine_rgb = param;
+                    g_texture_env[g_active_texture].combine_rgb = param;
                 break;
             }
         }
@@ -929,20 +795,12 @@ void main()
             switch (pname)
             {
                 case GL_TEXTURE_ENV_COLOR:
-                    if(g_current_draw_list)
-                        g_current_draw_list->texture_env[g_active_texture].color = glm::vec4(
-                            static_cast<float>(params[0]) / 255.0,
-                            static_cast<float>(params[1]) / 255.0,
-                            static_cast<float>(params[2]) / 255.0,
-                            static_cast<float>(params[3]) / 255.0
-                        );
-                    else
-                        g_texture_env[g_active_texture].color = glm::vec4(
-                            static_cast<float>(params[0]) / 255.0,
-                            static_cast<float>(params[1]) / 255.0,
-                            static_cast<float>(params[2]) / 255.0,
-                            static_cast<float>(params[3]) / 255.0
-                        );
+                    g_texture_env[g_active_texture].color = glm::vec4(
+                        static_cast<float>(params[0]) / 255.0,
+                        static_cast<float>(params[1]) / 255.0,
+                        static_cast<float>(params[2]) / 255.0,
+                        static_cast<float>(params[3]) / 255.0
+                    );
                 break;
             }
         }
@@ -952,10 +810,7 @@ void main()
     {
         if(cap == GL_TEXTURE_2D)
         {
-            if(g_current_draw_list)
-                g_current_draw_list->texture_env[g_active_texture].enabled = true;
-            else
-                g_texture_env[g_active_texture].enabled = true;
+            g_texture_env[g_active_texture].enabled = true;
         }
 
         ::glEnable(cap);
@@ -965,10 +820,7 @@ void main()
     {
         if(cap == GL_TEXTURE_2D)
         {
-            if(g_current_draw_list)
-                g_current_draw_list->texture_env[g_active_texture].enabled = false;
-            else
-                g_texture_env[g_active_texture].enabled = false;
+            g_texture_env[g_active_texture].enabled = false;
         }
 
         ::glDisable(cap);

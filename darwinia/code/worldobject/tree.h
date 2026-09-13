@@ -4,12 +4,16 @@
 
 #include "worldobject/building.h"
 
+#include "FFP_VertexData.h"
 
 class Tree : public Building
 {
 protected:
-    int     m_branchDisplayListId;
-    int     m_leafDisplayListId;
+    ffp_emulation::DynamicVertexBuffer m_branchVB;
+    ffp_emulation::DynamicVertexBuffer m_leafVB;
+
+    bool m_valid = false;
+
     void    RenderBranch   ( Vector3 _from, Vector3 _to, int _iterations,
                              bool _calcRadius, bool _renderBranch, bool _renderLeaf );
 

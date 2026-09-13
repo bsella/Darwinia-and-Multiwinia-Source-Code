@@ -2,9 +2,11 @@
 #define INCLUDED_GLOBAL_INTERNET
 
 
+#include "FFP_VertexData.h"
 #include "lib/fast_darray.h"
 #include "lib/llist.h"
 #include "lib/vector3.h"
+#include <optional>
 
 
 #define GLOBALINTERNET_ITERATIONS       7
@@ -60,6 +62,9 @@ protected:
 	unsigned short	        m_numLinks;
     LList       <int>       m_leafs;
     LList       <int>       m_bursts;
+
+    std::optional<ffp_emulation::StaticVertexBuffer> m_links_vb;
+    std::optional<ffp_emulation::StaticVertexBuffer> m_nodes_vb;
 
     int                     m_nearestNodeToCentre;
     float                   m_nearestDistance;
