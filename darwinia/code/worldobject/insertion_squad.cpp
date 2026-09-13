@@ -31,6 +31,7 @@
 #include "worldobject/insertion_squad.h"
 #include "worldobject/teleport.h"
 
+#include "FFP_emulation.h"
 
 unsigned int HistoricWayPoint::s_lastId = 0;
 
