@@ -67,7 +67,6 @@ namespace ffp_emulation
     void glFogiv(GLenum pname, const GLint* params);
 
     void glLightfv(GLenum  light, GLenum  pname, const GLfloat *params);
-    void glLightModelf(GLenum  pname, GLfloat *param);
     void glLightModelfv(GLenum  pname, const GLfloat *params);
 
     void glShadeModel(GLenum mode);
@@ -143,7 +142,6 @@ namespace ffp_emulation
 #define glFogiv(pname, params) ffp_emulation::glFogiv(pname, params)
 
 #define glLightfv(light, pname, params) ffp_emulation::glLightfv(light, pname, params)
-#define glLightModelf(pname, param)     ffp_emulation::glLightModelf(pname, param)
 #define glLightModelfv(pname, params)   ffp_emulation::glLightModelfv(pname, params)
 
 #define glShadeModel(mode) ffp_emulation::glShadeModel(mode)

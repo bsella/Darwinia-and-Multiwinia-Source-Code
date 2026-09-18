@@ -56,6 +56,36 @@ namespace ffp_emulation
         GLuint g_active_texture = 0;
         std::array<TextureEnvironment, 2> g_texture_env;
 
+        struct Light
+        {
+            int       enabled = false;
+            GLint     enabled_location;
+
+            glm::vec4 position = {0.0, 0.0, 1.0, 0.0};
+            GLint     position_location;
+
+            glm::vec4 ambient  = {0.0, 0.0, 0.0, 1.0};
+            GLint     ambient_location;
+
+            glm::vec4 diffuse  = {0.0, 0.0, 0.0, 1.0};
+            GLint     diffuse_location;
+
+            glm::vec4 specular = {0.0, 0.0, 0.0, 1.0};
+            GLint     specular_location;
+        };
+
+        std::array<Light, 2> g_lights;
+
+        bool g_color_material_enabled = false;
+        bool g_lighting_enabled = false;
+
+        float g_material_shininess;
+        glm::vec4 g_material_specular = {0.0, 0.0, 0.0, 1.0};
+        glm::vec4 g_material_diffuse  = {0.8, 0.8, 0.8, 1.0};
+        glm::vec4 g_material_ambient  = {0.2, 0.2, 0.2, 1.0};
+
+        glm::vec4 g_scene_ambient  = {0.2, 0.2, 0.2, 1.0};
+
         GLint g_model_view_location;
         GLint g_projection_location;
         GLint g_texture0_env_mode_loc;
@@ -66,6 +96,13 @@ namespace ffp_emulation
         GLint g_texture1_env_color_loc;
         GLint g_texture1_env_combine_rgb_loc;
         GLint g_texture1_location;
+        GLint g_color_material_enabled_loc;
+        GLint g_lighting_enabled_loc;
+        GLint g_material_shininess_loc;
+        GLint g_material_specular_loc;
+        GLint g_material_diffuse_loc;
+        GLint g_material_ambient_loc;
+        GLint g_scene_ambient_loc;
 
         constexpr const char* vertex_shader_source =
 R"(
@@ -81,16 +118,20 @@ layout (location = 0) out vec4 out_colour;
 layout (location = 1) out vec3 out_normal;
 layout (location = 2) out vec2 out_uv0_texcoord;
 layout (location = 3) out vec2 out_uv1_texcoord;
+layout (location = 4) out vec4 out_vertex_position;
 
 uniform mat4 u_model_view;
 uniform mat4 u_projection;
 
 void main()
 {
-    gl_Position = u_projection * u_model_view * vec4(in_position, 1.0);
+    out_vertex_position = u_model_view * vec4(in_position, 1.0);
+    gl_Position = u_projection * out_vertex_position;
+
+    out_vertex_position /= out_vertex_position.w;
 
     out_colour      = in_colour;
-    out_normal      = in_normal;
+    out_normal      = normalize((u_model_view * vec4(in_normal, 0.0)).xyz);
     out_uv0_texcoord = in_uv0_texcoord;
     out_uv1_texcoord = in_uv1_texcoord;
 }
@@ -115,6 +156,7 @@ layout (location = 0) in vec4 in_colour;
 layout (location = 1) in vec3 in_normal;
 layout (location = 2) in vec2 in_uv0_texcoord;
 layout (location = 3) in vec2 in_uv1_texcoord;
+layout (location = 4) in vec4 in_vertex_position;
 
 layout (location = 0) out vec4 out_colour;
 
@@ -128,6 +170,28 @@ uniform vec4 u_texture1_env_color;
 
 uniform sampler2D texture0;
 uniform sampler2D texture1;
+
+uniform int   u_color_material_enabled;
+uniform int   u_lighting_enabled;
+
+uniform int   u_light0_enabled;
+uniform vec4  u_light0_position;
+uniform vec4  u_light0_ambient;
+uniform vec4  u_light0_diffuse;
+uniform vec4  u_light0_specular;
+
+uniform int   u_light1_enabled;
+uniform vec4  u_light1_position;
+uniform vec4  u_light1_ambient;
+uniform vec4  u_light1_diffuse;
+uniform vec4  u_light1_specular;
+
+uniform float u_material_shininess;
+uniform vec4  u_material_specular;
+uniform vec4  u_material_diffuse;
+uniform vec4  u_material_ambient;
+
+uniform vec4  u_scene_ambient;
 
 vec4 sample_texture(uint stage)
 {
@@ -205,9 +269,118 @@ vec4 apply_texture(vec4 color, uint stage)
     return color;
 }
 
+const uint GL_SINGLE_COLOR            = 0;
+const uint GL_SEPARATE_SPECULAR_COLOR = 1;
+
+const uint COLOR_CONTROL = GL_SINGLE_COLOR;
+
+bool light_enabled(uint index)
+{
+    switch(index)
+    {
+        case 0: return u_light0_enabled != 0;
+        case 1: return u_light1_enabled != 0;
+    }
+    return u_light0_enabled != 0;
+}
+
+vec4 light_position(uint index)
+{
+    switch(index)
+    {
+        case 0: return u_light0_position;
+        case 1: return u_light1_position;
+    }
+    return u_light0_position;
+}
+vec4 light_ambient(uint index)
+{
+    switch(index)
+    {
+        case 0: return u_light0_ambient;
+        case 1: return u_light1_ambient;
+    }
+    return u_light0_ambient;
+}
+vec4 light_diffuse(uint index)
+{
+    switch(index)
+    {
+        case 0: return u_light0_diffuse;
+        case 1: return u_light1_diffuse;
+    }
+    return u_light0_diffuse;
+}
+vec4 light_specular(uint index)
+{
+    switch(index)
+    {
+        case 0: return u_light0_specular;
+        case 1: return u_light1_specular;
+    }
+    return u_light0_specular;
+}
+
+const float CONSTANT_ATTENUATION  = 1.0;
+const float LINEAR_ATTENUATION    = 0.0;
+const float QUADRATIC_ATTENUATION = 0.0;
+
+vec3 vector(vec4 P1, vec4 P2)
+{
+    if(P2.w == 0.0)
+    {
+        return normalize(P2.xyz);
+    }
+
+    if(P1.w == 0.0)
+    {
+        return normalize(-P1.xyz);
+    }
+
+    return normalize(P2.xyz - P1.xyz);
+}
+
 void main()
 {
     out_colour = in_colour;
+
+    if(u_lighting_enabled != 0)
+    {
+        vec4 light = u_material_ambient * u_scene_ambient;
+
+        for(uint i = 0; i < 2; i++)
+        {
+            if(!light_enabled(i))
+                continue;
+
+            vec4 position = light_position(i);
+
+            float atti = 1.0;
+
+            if(position.w != 0)
+            {
+                float VP_dist = distance(in_vertex_position.xyz, position.xyz);
+                atti = 1.0 / (CONSTANT_ATTENUATION + LINEAR_ATTENUATION * VP_dist + QUADRATIC_ATTENUATION * VP_dist * VP_dist );
+            }
+
+            vec3 VP = vector(in_vertex_position, position);
+
+            float nVP = max(dot(in_normal, VP), 0.0);
+
+            float fi = nVP != 0 ? 1.0 : 0.0;
+
+            vec3 hi = VP + vec3(0.0, 0.0, 1.0);
+
+            vec4 light_colour =
+                  u_material_ambient * light_ambient(i)
+                + nVP * u_material_diffuse * light_diffuse(i)
+                + fi * pow(max(dot(in_normal, normalize(hi)), 0.0), u_material_shininess) * u_material_specular * light_specular(i);
+
+            light += atti * light_colour;
+        }
+
+        out_colour *= vec4(light.xyz, 1.0);
+    }
 
     out_colour = apply_texture(out_colour, 0);
     out_colour = apply_texture(out_colour, 1);
@@ -306,6 +479,23 @@ void main()
         glUniform1ui(g_texture1_env_combine_rgb_loc, tex1_env.combine_rgb);
         glUniform4f(g_texture1_env_color_loc, tex1_env.color.r, tex1_env.color.g, tex1_env.color.b, tex1_env.color.a);
 
+        glUniform1i(g_color_material_enabled_loc, g_color_material_enabled);
+        glUniform1i(g_lighting_enabled_loc, g_lighting_enabled);
+
+        for(const auto& light : g_lights)
+        {
+            glUniform1i(light.enabled_location, light.enabled);
+            glUniform4f(light.position_location, light.position.x, light.position.y, light.position.z, light.position.w);
+            glUniform4f(light.ambient_location, light.ambient.x, light.ambient.y, light.ambient.z, light.ambient.w);
+            glUniform4f(light.diffuse_location, light.diffuse.x, light.diffuse.y, light.diffuse.z, light.diffuse.w);
+            glUniform4f(light.specular_location, light.specular.x, light.specular.y, light.specular.z, light.specular.w);
+        }
+        glUniform1f(g_material_shininess_loc, g_material_shininess);
+        glUniform4f(g_material_specular_loc, g_material_specular.r, g_material_specular.g, g_material_specular.b, g_material_specular.a);
+        glUniform4f(g_material_diffuse_loc, g_material_diffuse.r, g_material_diffuse.g, g_material_diffuse.b, g_material_diffuse.a);
+        glUniform4f(g_material_ambient_loc, g_material_ambient.r, g_material_ambient.g, g_material_ambient.b, g_material_ambient.a);
+        glUniform4f(g_scene_ambient_loc, g_scene_ambient.r, g_scene_ambient.g, g_scene_ambient.b, g_scene_ambient.a);
+
         if (primitive_mode == GL_QUADS)      primitive_mode = GL_TRIANGLES;
         if (primitive_mode == GL_QUAD_STRIP) primitive_mode = GL_TRIANGLE_STRIP;
 
@@ -382,6 +572,9 @@ void main()
             }
         }
 
+        g_lights[0].diffuse = {1.0, 1.0, 1.0, 1.0};
+        g_lights[0].specular = {1.0, 1.0, 1.0, 1.0};
+
         g_texture_env[0].enabled = true;
 
         g_model_view_location    = glGetUniformLocation(g_program, "u_model_view");
@@ -392,6 +585,28 @@ void main()
         g_texture1_env_mode_loc  = glGetUniformLocation(g_program, "u_texture1_env_mode");
         g_texture1_env_color_loc = glGetUniformLocation(g_program, "u_texture1_env_color");
         g_texture1_location      = glGetUniformLocation(g_program, "texture1");
+
+        g_color_material_enabled_loc  = glGetUniformLocation(g_program, "u_color_material_enabled");
+        g_lighting_enabled_loc        = glGetUniformLocation(g_program, "u_lighting_enabled");
+
+        g_lights[0].enabled_location  = glGetUniformLocation(g_program, "u_light0_enabled");
+        g_lights[0].position_location = glGetUniformLocation(g_program, "u_light0_position");
+        g_lights[0].ambient_location  = glGetUniformLocation(g_program, "u_light0_ambient");
+        g_lights[0].diffuse_location  = glGetUniformLocation(g_program, "u_light0_diffuse");
+        g_lights[0].specular_location = glGetUniformLocation(g_program, "u_light0_specular");
+
+        g_lights[1].enabled_location  = glGetUniformLocation(g_program, "u_light1_enabled");
+        g_lights[1].position_location = glGetUniformLocation(g_program, "u_light1_position");
+        g_lights[1].ambient_location  = glGetUniformLocation(g_program, "u_light1_ambient");
+        g_lights[1].diffuse_location  = glGetUniformLocation(g_program, "u_light1_diffuse");
+        g_lights[1].specular_location = glGetUniformLocation(g_program, "u_light1_specular");
+
+        g_material_shininess_loc      = glGetUniformLocation(g_program, "u_material_shininess");
+        g_material_specular_loc       = glGetUniformLocation(g_program, "u_material_specular");
+        g_material_diffuse_loc        = glGetUniformLocation(g_program, "u_material_diffuse");
+        g_material_ambient_loc        = glGetUniformLocation(g_program, "u_material_ambient");
+
+        g_scene_ambient_loc = glGetUniformLocation(g_program, "u_scene_ambient");
 
         g_texture0_env_combine_rgb_loc = glGetUniformLocation(g_program, "u_texture0_env_combine_rgb");
         g_texture1_env_combine_rgb_loc = glGetUniformLocation(g_program, "u_texture1_env_combine_rgb");
@@ -710,7 +925,17 @@ void main()
 
     void glMaterialfv(GLenum face, GLenum pname, const GLfloat *params)
     {
-        // TODO
+        switch (pname)
+        {
+            case GL_SPECULAR:  g_material_specular  = {params[0],params[1], params[2], params[3]}; break;
+            case GL_DIFFUSE:   g_material_diffuse   = {params[0],params[1], params[2], params[3]}; break;
+            case GL_SHININESS: g_material_shininess = params[0]; break;
+            case GL_AMBIENT:   g_material_ambient   = {params[0],params[1], params[2], params[3]}; break;
+            case GL_AMBIENT_AND_DIFFUSE:
+                g_material_ambient = {params[0],params[1], params[2], params[3]};
+                g_material_diffuse = {params[0],params[1], params[2], params[3]};
+            break;
+        }
     }
 
     void glFogf(GLenum pname, GLfloat param)
@@ -730,17 +955,66 @@ void main()
         // TODO
     }
 
-    void glLightfv(GLenum  light, GLenum  pname, const GLfloat *params)
+    void glLightfv(GLenum light_index, GLenum  pname, const GLfloat *params)
     {
-        // TODO
+        auto& light = g_lights[light_index - GL_LIGHT0];
+
+        switch (pname)
+        {
+            case GL_POSITION:
+            {
+                light.position.x = params[0];
+                light.position.y = params[1];
+                light.position.z = params[2];
+                light.position.w = params[3];
+    
+                bool is_at_infinity = light.position.w == 0.0;
+
+                // We need to change the space (coordinate system) of the position of the light
+                // to eye (camera) space. Normally whenever the light position is set, the top
+                // of the model-view matrix contains only the view matrix.
+                light.position = g_model_view.top() * light.position;
+
+                // If w is 0, this means that the light is considered at infinity, pointed by the
+                // xyz direction starting from the origin.
+                if(!is_at_infinity)
+                    light.position /= light.position.w;
+            }
+            break;
+
+            case GL_DIFFUSE:
+                light.diffuse.x = params[0];
+                light.diffuse.y = params[1];
+                light.diffuse.z = params[2];
+                light.diffuse.w = params[3];
+            break;
+
+            case GL_SPECULAR:
+                light.specular.x = params[0];
+                light.specular.y = params[1];
+                light.specular.z = params[2];
+                light.specular.w = params[3];
+            break;
+
+            case GL_AMBIENT:
+                light.ambient.x = params[0];
+                light.ambient.y = params[1];
+                light.ambient.z = params[2];
+                light.ambient.w = params[3];
+            break;
+        }
+
     }
-    void glLightModelf(GLenum  pname, GLfloat *param)
-    {
-        // TODO
-    }
+
     void glLightModelfv(GLenum  pname, const GLfloat *params)
     {
-        // TODO
+        if(pname == GL_LIGHT_MODEL_AMBIENT)
+        {
+            g_scene_ambient.r = params[0];
+            g_scene_ambient.g = params[1];
+            g_scene_ambient.b = params[2];
+            g_scene_ambient.a = params[3];
+        }
     }
 
     void glShadeModel(GLenum mode)
@@ -808,9 +1082,17 @@ void main()
 
     void glEnable(GLenum cap)
     {
-        if(cap == GL_TEXTURE_2D)
+        switch (cap)
         {
-            g_texture_env[g_active_texture].enabled = true;
+            case GL_TEXTURE_2D:
+                g_texture_env[g_active_texture].enabled = true;
+            break;
+
+            case GL_LIGHTING: g_lighting_enabled  = true; break;
+            case GL_LIGHT0:   g_lights[0].enabled = true; break;
+            case GL_LIGHT1:   g_lights[1].enabled = true; break;
+
+            case GL_COLOR_MATERIAL: g_color_material_enabled = true; break;
         }
 
         ::glEnable(cap);
@@ -818,9 +1100,17 @@ void main()
 
     void glDisable(GLenum cap)
     {
-        if(cap == GL_TEXTURE_2D)
+        switch (cap)
         {
-            g_texture_env[g_active_texture].enabled = false;
+            case GL_TEXTURE_2D:
+                g_texture_env[g_active_texture].enabled = false;
+            break;
+
+            case GL_LIGHTING: g_lighting_enabled  = false; break;
+            case GL_LIGHT0:   g_lights[0].enabled = false; break;
+            case GL_LIGHT1:   g_lights[1].enabled = false; break;
+
+            case GL_COLOR_MATERIAL: g_color_material_enabled = false; break;
         }
 
         ::glDisable(cap);
