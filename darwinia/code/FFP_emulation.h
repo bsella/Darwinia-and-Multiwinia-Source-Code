@@ -79,6 +79,7 @@ namespace ffp_emulation
 
     void glEnable(GLenum cap);
     void glDisable(GLenum cap);
+    GLboolean glIsEnabled(GLenum cap);
 
     void glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 
@@ -152,8 +153,9 @@ namespace ffp_emulation
 #define glTexEnviv(target, pname, params) ffp_emulation::glTexEnviv(target, pname, params)
 #define glTexEnvf(target, pname, param)   ffp_emulation::glTexEnvf(target, pname, param)
 
-#define glEnable(cap)  ffp_emulation::glEnable(cap)
-#define glDisable(cap) ffp_emulation::glDisable(cap)
+#define glEnable(cap)    ffp_emulation::glEnable(cap)
+#define glDisable(cap)   ffp_emulation::glDisable(cap)
+#define glIsEnabled(cap) ffp_emulation::glIsEnabled(cap)
 
 #define glColorPointer(size, type, stride, pointer) ffp_emulation::glColorPointer(size, type, stride, pointer)
 

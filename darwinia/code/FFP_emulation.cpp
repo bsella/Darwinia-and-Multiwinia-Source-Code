@@ -1119,7 +1119,22 @@ void main()
         ::glDisable(cap);
     }
 
-    
+    GLboolean glIsEnabled(GLenum cap)
+    {
+        switch (cap)
+        {
+            case GL_TEXTURE_2D: return g_texture_env[g_active_texture].enabled;
+            case GL_LIGHTING:   return g_lighting_enabled;
+            case GL_LIGHT0:     return g_lights[0].enabled;
+            case GL_LIGHT1:     return g_lights[1].enabled;
+
+            case GL_COLOR_MATERIAL: return g_color_material_enabled;
+        }
+
+        return ::glIsEnabled(cap);
+    }
+
+
     void glDisableClientState(GLenum array)
     {
         // TODO
