@@ -384,6 +384,9 @@ void main()
 
     out_colour = apply_texture(out_colour, 0);
     out_colour = apply_texture(out_colour, 1);
+
+    if (out_colour.w == 0.0)
+        discard;
 }
 )";
 
