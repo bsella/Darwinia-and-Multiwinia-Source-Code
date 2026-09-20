@@ -82,6 +82,8 @@ namespace ffp_emulation
     GLboolean glIsEnabled(GLenum cap);
 
     void _glMultiTexCoord2fARB(GLenum target, GLfloat s, GLfloat t);
+
+    void glClipPlane(GLenum plane, const GLdouble *equation);
 }
 
 #define glBegin(mode) ffp_emulation::glBegin(mode)
@@ -149,3 +151,5 @@ namespace ffp_emulation
 #define glIsEnabled(cap) ffp_emulation::glIsEnabled(cap)
 
 #define glMultiTexCoord2fARB(target, s, t) ffp_emulation::_glMultiTexCoord2fARB(target, s, t)
+
+#define glClipPlane(plane, equation) ffp_emulation::glClipPlane(plane, equation)

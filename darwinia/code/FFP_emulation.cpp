@@ -29,8 +29,9 @@ namespace ffp_emulation
 {
     namespace
     {
-        constexpr unsigned int MAX_LIGHTS   = 8;
-        constexpr unsigned int MAX_TEXTURES = 2;
+        constexpr unsigned int MAX_LIGHTS      = 8;
+        constexpr unsigned int MAX_TEXTURES    = 2;
+        constexpr unsigned int MAX_CLIP_PLANES = 6;
 
         constexpr GLenum UNSET_MODE = ~0;
 
@@ -73,6 +74,12 @@ namespace ffp_emulation
         GLint g_light_diffuse_location;
         GLint g_light_specular_location;
 
+        std::array<int,       MAX_CLIP_PLANES> g_clip_plane_enabled;
+        std::array<glm::vec4, MAX_CLIP_PLANES> g_clip_planes;
+
+        GLint g_clip_plane_enabled_location;
+        GLint g_clip_plane_location;
+        
         bool g_color_material_enabled = false;
         bool g_lighting_enabled = false;
 
@@ -150,8 +157,9 @@ layout (location = 4) in vec4 in_vertex_position;
 
 layout (location = 0) out vec4 out_colour;
 
-const uint MAX_LIGHTS   = 8;
-const uint MAX_TEXTURES = 2;
+const uint MAX_LIGHTS      = 8;
+const uint MAX_TEXTURES    = 2;
+const uint MAX_CLIP_PLANES = 6;
 
 uniform int  u_texture_enabled         [MAX_TEXTURES];
 uniform uint u_texture_env_mode        [MAX_TEXTURES];
@@ -167,6 +175,9 @@ uniform vec4 u_light_position [MAX_LIGHTS];
 uniform vec4 u_light_ambient  [MAX_LIGHTS];
 uniform vec4 u_light_diffuse  [MAX_LIGHTS];
 uniform vec4 u_light_specular [MAX_LIGHTS];
+
+uniform int  u_clip_plane_enabled [MAX_CLIP_PLANES];
+uniform vec4 u_clip_plane         [MAX_CLIP_PLANES];
 
 uniform float u_material_shininess;
 uniform vec4  u_material_specular;
@@ -263,6 +274,18 @@ vec3 vector(vec4 P1, vec4 P2)
 
 void main()
 {
+    for(uint i = 0; i < MAX_CLIP_PLANES; i++)
+    {
+        if(u_clip_plane_enabled[i] != 0)
+        {
+            if(u_clip_plane[i].x * in_vertex_position.x
+             + u_clip_plane[i].y * in_vertex_position.y
+             + u_clip_plane[i].z * in_vertex_position.z
+             + u_clip_plane[i].w < 0)
+             discard;
+        }
+    }
+
     out_colour = in_colour;
 
     if(u_lighting_enabled != 0)
@@ -410,6 +433,9 @@ void main()
         glUniform4fv(g_light_diffuse_location, MAX_LIGHTS, glm::value_ptr(*g_lights_diffuse.data()));
         glUniform4fv(g_light_specular_location, MAX_LIGHTS,glm::value_ptr(*g_lights_specular.data()));
 
+        glUniform1iv(g_clip_plane_enabled_location, MAX_CLIP_PLANES, g_clip_plane_enabled.data());
+        glUniform4fv(g_clip_plane_location, MAX_CLIP_PLANES, glm::value_ptr(*g_clip_planes.data()));
+
         glUniform1f(g_material_shininess_loc, g_material_shininess);
         glUniform4f(g_material_specular_loc, g_material_specular.r, g_material_specular.g, g_material_specular.b, g_material_specular.a);
         glUniform4f(g_material_diffuse_loc, g_material_diffuse.r, g_material_diffuse.g, g_material_diffuse.b, g_material_diffuse.a);
@@ -527,12 +553,14 @@ void main()
         g_color_material_enabled_loc  = glGetUniformLocation(g_program, "u_color_material_enabled");
         g_lighting_enabled_loc        = glGetUniformLocation(g_program, "u_lighting_enabled");
 
-        
         g_light_enabled_location  = glGetUniformLocation(g_program, "u_light_enabled");
         g_light_position_location = glGetUniformLocation(g_program, "u_light_position");
         g_light_ambient_location  = glGetUniformLocation(g_program, "u_light_ambient");
         g_light_diffuse_location  = glGetUniformLocation(g_program, "u_light_diffuse");
         g_light_specular_location = glGetUniformLocation(g_program, "u_light_specular");
+
+        g_clip_plane_enabled_location = glGetUniformLocation(g_program, "u_clip_plane_enabled");
+        g_clip_plane_location         = glGetUniformLocation(g_program, "u_clip_plane");
 
         g_material_shininess_loc      = glGetUniformLocation(g_program, "u_material_shininess");
         g_material_specular_loc       = glGetUniformLocation(g_program, "u_material_specular");
@@ -1033,6 +1061,15 @@ void main()
             break;
 
             case GL_COLOR_MATERIAL: g_color_material_enabled = true; break;
+
+            case GL_CLIP_PLANE0:
+            case GL_CLIP_PLANE1:
+            case GL_CLIP_PLANE2:
+            case GL_CLIP_PLANE3:
+            case GL_CLIP_PLANE4:
+            case GL_CLIP_PLANE5:
+                g_clip_plane_enabled[cap - GL_CLIP_PLANE0] = true;
+            break;
         }
 
         ::glEnable(cap);
@@ -1060,6 +1097,15 @@ void main()
             break;
 
             case GL_COLOR_MATERIAL: g_color_material_enabled = false; break;
+
+            case GL_CLIP_PLANE0:
+            case GL_CLIP_PLANE1:
+            case GL_CLIP_PLANE2:
+            case GL_CLIP_PLANE3:
+            case GL_CLIP_PLANE4:
+            case GL_CLIP_PLANE5:
+                g_clip_plane_enabled[cap - GL_CLIP_PLANE0] = false;
+            break;
         }
 
         ::glDisable(cap);
@@ -1085,6 +1131,15 @@ void main()
             break;
 
             case GL_COLOR_MATERIAL: return g_color_material_enabled;
+
+            case GL_CLIP_PLANE0:
+            case GL_CLIP_PLANE1:
+            case GL_CLIP_PLANE2:
+            case GL_CLIP_PLANE3:
+            case GL_CLIP_PLANE4:
+            case GL_CLIP_PLANE5:
+                return g_clip_plane_enabled[cap - GL_CLIP_PLANE0];
+            break;
         }
 
         return ::glIsEnabled(cap);
@@ -1104,5 +1159,17 @@ void main()
                 g_current_vertex.v1 = t;
             break;
         }
+    }
+
+    void glClipPlane(GLenum plane, const GLdouble *equation)
+    {
+        auto plane_index = plane - GL_CLIP_PLANE0;
+
+        g_clip_planes[plane_index].x = equation[0];
+        g_clip_planes[plane_index].y = equation[1];
+        g_clip_planes[plane_index].z = equation[2];
+        g_clip_planes[plane_index].w = equation[3];
+
+        g_clip_planes[plane_index] = glm::transpose(glm::inverse(g_model_view.top())) * g_clip_planes[plane_index];
     }
 }
