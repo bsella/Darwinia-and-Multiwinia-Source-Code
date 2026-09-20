@@ -391,12 +391,12 @@ void RadarDish::RenderSignal( float _predictionTime, float _radius, float _alpha
 
         for( int r = 0; r <= numRadii; ++r )
         {
-            gglMultiTexCoord2fARB    ( GL_TEXTURE0, texXInner, r/numRadii );
-            gglMultiTexCoord2fARB    ( GL_TEXTURE1, texXOuter, r/numRadii );
+            glMultiTexCoord2fARB    ( GL_TEXTURE0, texXInner, r/numRadii );
+            glMultiTexCoord2fARB    ( GL_TEXTURE1, texXOuter, r/numRadii );
             glVertex3fv             ( (currentPos + deltaFrom).GetData() );
 
-            gglMultiTexCoord2fARB    ( GL_TEXTURE0, texXInner+10.0f/(float)numSteps, (r)/numRadii );
-            gglMultiTexCoord2fARB    ( GL_TEXTURE1, texXOuter+distance/(200.0f *(float)numSteps), (r)/numRadii );
+            glMultiTexCoord2fARB    ( GL_TEXTURE0, texXInner+10.0f/(float)numSteps, (r)/numRadii );
+            glMultiTexCoord2fARB    ( GL_TEXTURE1, texXOuter+distance/(200.0f *(float)numSteps), (r)/numRadii );
             glVertex3fv             ( (currentPos + deltaTo).GetData() );
 
             currentPos.RotateAround( deltaNorm * ( 2.0f * M_PI / (float) numRadii ) );

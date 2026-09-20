@@ -1113,17 +1113,17 @@ void TaskManagerInterfaceGestures::RenderTaskManager()
     glBlendFunc     ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glBegin( GL_QUADS );
-        gglMultiTexCoord2fARB(GL_TEXTURE1,0,1);
-        gglMultiTexCoord2fARB(GL_TEXTURE0,0,0);
+        glMultiTexCoord2fARB(GL_TEXTURE1,0,1);
+        glMultiTexCoord2fARB(GL_TEXTURE0,0,0);
         glVertex2f( x, y );
-        gglMultiTexCoord2fARB(GL_TEXTURE1,1,1);
-        gglMultiTexCoord2fARB(GL_TEXTURE0,10,0);
+        glMultiTexCoord2fARB(GL_TEXTURE1,1,1);
+        glMultiTexCoord2fARB(GL_TEXTURE0,10,0);
         glVertex2f( x+height, y );
-        gglMultiTexCoord2fARB(GL_TEXTURE1,1,0);
-        gglMultiTexCoord2fARB(GL_TEXTURE0,10,1);
+        glMultiTexCoord2fARB(GL_TEXTURE1,1,0);
+        glMultiTexCoord2fARB(GL_TEXTURE0,10,1);
         glVertex2f( x+height, y+height );
-        gglMultiTexCoord2fARB(GL_TEXTURE1,0,0);
-        gglMultiTexCoord2fARB(GL_TEXTURE0,0,1);
+        glMultiTexCoord2fARB(GL_TEXTURE1,0,0);
+        glMultiTexCoord2fARB(GL_TEXTURE0,0,1);
         glVertex2f( x, y+height );
     glEnd();
 
