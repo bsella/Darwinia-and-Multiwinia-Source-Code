@@ -79,6 +79,8 @@ namespace ffp_emulation
 
         GLint g_clip_plane_enabled_location;
         GLint g_clip_plane_location;
+
+        int g_alpha_test = false;
         
         bool g_color_material_enabled = false;
         bool g_lighting_enabled = false;
@@ -100,6 +102,8 @@ namespace ffp_emulation
         GLint g_material_diffuse_loc;
         GLint g_material_ambient_loc;
         GLint g_scene_ambient_loc;
+
+        GLint g_alpha_test_location;
 
         constexpr const char* vertex_shader_source =
 R"(
@@ -185,6 +189,8 @@ uniform vec4  u_material_diffuse;
 uniform vec4  u_material_ambient;
 
 uniform vec4 u_scene_ambient;
+
+uniform int u_alpha_test;
 
 vec4 sample_texture(uint stage)
 {
@@ -331,7 +337,7 @@ void main()
         out_colour = apply_texture(out_colour, i);
     }
 
-    if (out_colour.w == 0.0)
+    if(u_alpha_test != 0 && out_colour.w == 0.0)
         discard;
 }
 )";
@@ -441,6 +447,8 @@ void main()
         glUniform4f(g_material_diffuse_loc, g_material_diffuse.r, g_material_diffuse.g, g_material_diffuse.b, g_material_diffuse.a);
         glUniform4f(g_material_ambient_loc, g_material_ambient.r, g_material_ambient.g, g_material_ambient.b, g_material_ambient.a);
         glUniform4f(g_scene_ambient_loc, g_scene_ambient.r, g_scene_ambient.g, g_scene_ambient.b, g_scene_ambient.a);
+
+        glUniform1i(g_alpha_test_location, g_alpha_test);
 
         if (primitive_mode == GL_QUADS)      primitive_mode = GL_TRIANGLES;
         if (primitive_mode == GL_QUAD_STRIP) primitive_mode = GL_TRIANGLE_STRIP;
@@ -568,6 +576,8 @@ void main()
         g_material_ambient_loc        = glGetUniformLocation(g_program, "u_material_ambient");
 
         g_scene_ambient_loc = glGetUniformLocation(g_program, "u_scene_ambient");
+
+        g_alpha_test_location = glGetUniformLocation(g_program, "u_alpha_test");
 
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
@@ -1070,6 +1080,8 @@ void main()
             case GL_CLIP_PLANE5:
                 g_clip_plane_enabled[cap - GL_CLIP_PLANE0] = true;
             break;
+
+            case GL_ALPHA_TEST: g_alpha_test = true; break;
         }
 
         ::glEnable(cap);
@@ -1106,6 +1118,8 @@ void main()
             case GL_CLIP_PLANE5:
                 g_clip_plane_enabled[cap - GL_CLIP_PLANE0] = false;
             break;
+
+            case GL_ALPHA_TEST: g_alpha_test = false; break;
         }
 
         ::glDisable(cap);
@@ -1140,6 +1154,8 @@ void main()
             case GL_CLIP_PLANE5:
                 return g_clip_plane_enabled[cap - GL_CLIP_PLANE0];
             break;
+
+            case GL_ALPHA_TEST: return g_alpha_test;
         }
 
         return ::glIsEnabled(cap);
