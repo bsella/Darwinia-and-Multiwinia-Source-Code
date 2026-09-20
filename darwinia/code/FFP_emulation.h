@@ -81,15 +81,6 @@ namespace ffp_emulation
     void glDisable(GLenum cap);
     GLboolean glIsEnabled(GLenum cap);
 
-    void glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
-
-    void glDisableClientState(GLenum array);
-    void glEnableClientState(GLenum array);
-
-    void glNormalPointer(GLenum type, GLsizei stride, const GLvoid *pointer);
-    void glTexCoordPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
-    void glVertexPointer(GLint size, GLenum type, GLsizei stride, GLvoid *pointer);
-
     void _glMultiTexCoord2fARB(GLenum target, GLfloat s, GLfloat t);
 }
 
@@ -156,14 +147,5 @@ namespace ffp_emulation
 #define glEnable(cap)    ffp_emulation::glEnable(cap)
 #define glDisable(cap)   ffp_emulation::glDisable(cap)
 #define glIsEnabled(cap) ffp_emulation::glIsEnabled(cap)
-
-#define glColorPointer(size, type, stride, pointer) ffp_emulation::glColorPointer(size, type, stride, pointer)
-
-#define glDisableClientState(array) ffp_emulation::glDisableClientState(array)
-#define glEnableClientState(array)  ffp_emulation::glEnableClientState(array)
-
-#define glNormalPointer(type, stride, pointer)         ffp_emulation::glNormalPointer(type, stride, pointer)
-#define glTexCoordPointer(size, type, stride, pointer) ffp_emulation::glTexCoordPointer(size, type, stride, pointer)
-#define glVertexPointer(size, type, stride, pointer)   ffp_emulation::glVertexPointer(size, type, stride, pointer)
 
 #define glMultiTexCoord2fARB(target, s, t) ffp_emulation::_glMultiTexCoord2fARB(target, s, t)

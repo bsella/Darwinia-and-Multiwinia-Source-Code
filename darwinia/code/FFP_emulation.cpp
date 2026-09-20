@@ -1134,41 +1134,6 @@ void main()
         return ::glIsEnabled(cap);
     }
 
-
-    void glDisableClientState(GLenum array)
-    {
-        // TODO
-    }
-    
-    void glEnableClientState(GLenum array)
-    {
-        // TODO
-    }
-    
-    void glVertexPointer(GLint size, GLenum type, GLsizei stride, GLvoid *pointer)
-    {
-        //glVertexAttribPointer(0, size, type, GL_FALSE, stride, pointer);
-        //glEnableVertexAttribArray(0);
-    }
-    
-    void glNormalPointer(GLenum type, GLsizei stride, const GLvoid *pointer)
-    {
-        //glVertexAttribPointer(1, 3, type, GL_FALSE, stride, pointer);
-        //glEnableVertexAttribArray(1);
-    }
-
-    void glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
-    {
-        //glVertexAttribPointer(2, size, type, GL_FALSE, stride, pointer);
-        //glEnableVertexAttribArray(2);
-    }
-
-    void glTexCoordPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
-    {
-        //glVertexAttribPointer(3, size, type, GL_FALSE, stride, pointer);
-        //glEnableVertexAttribArray(3);
-    }
-
     void _glMultiTexCoord2fARB(GLenum target, GLfloat s, GLfloat t)
     {
         switch (target)

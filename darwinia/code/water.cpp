@@ -870,12 +870,6 @@ void Water::RenderDynamicWater()
 	OpenGLD3D::g_pd3dDevice->GetVertexDeclaration( &savedDecl );
 	OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( GetVertexDeclWater() );
 	OpenGLD3D::g_pd3dDevice->SetStreamSource( 0, m_vertexBuffer, 0, sizeof(WaterVertex) );
-#else
-	glEnableClientState	(GL_VERTEX_ARRAY);
-	glEnableClientState	(GL_COLOR_ARRAY);
-
-	glVertexPointer	(3, GL_FLOAT, sizeof(WaterVertex), &m_renderVerts[0].m_pos);
-	glColorPointer	(4, GL_UNSIGNED_BYTE, sizeof(WaterVertex), &m_renderVerts[0].m_col);
 #endif
 
 #ifdef USE_DIRECT3D
@@ -914,9 +908,6 @@ void Water::RenderDynamicWater()
 
 #ifdef USE_DIRECT3D
 	OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( savedDecl );
-#else
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
 #endif
 
     glDisable           (GL_FOG);
