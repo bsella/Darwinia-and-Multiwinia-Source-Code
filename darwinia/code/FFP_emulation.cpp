@@ -29,6 +29,9 @@ namespace ffp_emulation
 {
     namespace
     {
+        constexpr unsigned int MAX_LIGHTS   = 8;
+        constexpr unsigned int MAX_TEXTURES = 2;
+
         constexpr GLenum UNSET_MODE = ~0;
 
         GLenum g_primitive_mode = UNSET_MODE;
@@ -44,37 +47,31 @@ namespace ffp_emulation
 
         std::stack<glm::mat4> g_model_view;
         std::stack<glm::mat4> g_projection;
-
-        struct TextureEnvironment
-        {
-            bool      enabled     = false;
-            GLuint    mode        = GL_MODULATE;
-            GLuint    combine_rgb = 0;
-            glm::vec4 color       = {0.0, 0.0, 0.0, 0.0};
-        };
-
+        
         GLuint g_active_texture = 0;
-        std::array<TextureEnvironment, 2> g_texture_env;
 
-        struct Light
-        {
-            int       enabled = false;
-            GLint     enabled_location;
+        std::array<int,       MAX_TEXTURES> g_texture_enabled;
+        std::array<GLuint,    MAX_TEXTURES> g_texture_env_mode;
+        std::array<GLuint,    MAX_TEXTURES> g_texture_env_combine_rgb;
+        std::array<glm::vec4, MAX_TEXTURES> g_texture_env_color;
 
-            glm::vec4 position = {0.0, 0.0, 1.0, 0.0};
-            GLint     position_location;
+        GLint g_texture_enabled_loc;
+        GLint g_texture_env_mode_loc;
+        GLint g_texture_env_color_loc;
+        GLint g_texture_env_combine_rgb_loc;
+        GLint g_texture_location;
 
-            glm::vec4 ambient  = {0.0, 0.0, 0.0, 1.0};
-            GLint     ambient_location;
+        std::array<int,       MAX_LIGHTS> g_lights_enabled;
+        std::array<glm::vec4, MAX_LIGHTS> g_lights_position;
+        std::array<glm::vec4, MAX_LIGHTS> g_lights_ambient;
+        std::array<glm::vec4, MAX_LIGHTS> g_lights_diffuse;
+        std::array<glm::vec4, MAX_LIGHTS> g_lights_specular;
 
-            glm::vec4 diffuse  = {0.0, 0.0, 0.0, 1.0};
-            GLint     diffuse_location;
-
-            glm::vec4 specular = {0.0, 0.0, 0.0, 1.0};
-            GLint     specular_location;
-        };
-
-        std::array<Light, 2> g_lights;
+        GLint g_light_enabled_location;
+        GLint g_light_position_location;
+        GLint g_light_ambient_location;
+        GLint g_light_diffuse_location;
+        GLint g_light_specular_location;
 
         bool g_color_material_enabled = false;
         bool g_lighting_enabled = false;
@@ -88,14 +85,7 @@ namespace ffp_emulation
 
         GLint g_model_view_location;
         GLint g_projection_location;
-        GLint g_texture0_env_mode_loc;
-        GLint g_texture0_env_color_loc;
-        GLint g_texture0_env_combine_rgb_loc;
-        GLint g_texture0_location;
-        GLint g_texture1_env_mode_loc;
-        GLint g_texture1_env_color_loc;
-        GLint g_texture1_env_combine_rgb_loc;
-        GLint g_texture1_location;
+
         GLint g_color_material_enabled_loc;
         GLint g_lighting_enabled_loc;
         GLint g_material_shininess_loc;
@@ -160,72 +150,50 @@ layout (location = 4) in vec4 in_vertex_position;
 
 layout (location = 0) out vec4 out_colour;
 
-uniform uint u_texture0_env_mode;
-uniform uint u_texture0_env_combine_rgb;
-uniform vec4 u_texture0_env_color;
+const uint MAX_LIGHTS   = 8;
+const uint MAX_TEXTURES = 2;
 
-uniform uint u_texture1_env_mode;
-uniform uint u_texture1_env_combine_rgb;
-uniform vec4 u_texture1_env_color;
+uniform int  u_texture_enabled         [MAX_TEXTURES];
+uniform uint u_texture_env_mode        [MAX_TEXTURES];
+uniform uint u_texture_env_combine_rgb [MAX_TEXTURES];
+uniform vec4 u_texture_env_color       [MAX_TEXTURES];
+uniform sampler2D u_texture            [MAX_TEXTURES];
 
-uniform sampler2D texture0;
-uniform sampler2D texture1;
+uniform int u_color_material_enabled;
+uniform int u_lighting_enabled;
 
-uniform int   u_color_material_enabled;
-uniform int   u_lighting_enabled;
-
-uniform int   u_light0_enabled;
-uniform vec4  u_light0_position;
-uniform vec4  u_light0_ambient;
-uniform vec4  u_light0_diffuse;
-uniform vec4  u_light0_specular;
-
-uniform int   u_light1_enabled;
-uniform vec4  u_light1_position;
-uniform vec4  u_light1_ambient;
-uniform vec4  u_light1_diffuse;
-uniform vec4  u_light1_specular;
+uniform int  u_light_enabled  [MAX_LIGHTS];
+uniform vec4 u_light_position [MAX_LIGHTS];
+uniform vec4 u_light_ambient  [MAX_LIGHTS];
+uniform vec4 u_light_diffuse  [MAX_LIGHTS];
+uniform vec4 u_light_specular [MAX_LIGHTS];
 
 uniform float u_material_shininess;
 uniform vec4  u_material_specular;
 uniform vec4  u_material_diffuse;
 uniform vec4  u_material_ambient;
 
-uniform vec4  u_scene_ambient;
+uniform vec4 u_scene_ambient;
 
 vec4 sample_texture(uint stage)
 {
     switch(stage)
     {
-        case 0: return texture(texture0, in_uv0_texcoord);
-        case 1: return texture(texture1, in_uv1_texcoord);
+        case 0: return texture(u_texture[stage], in_uv0_texcoord);
+        case 1: return texture(u_texture[stage], in_uv1_texcoord);
     }
 
-    return texture(texture0, in_uv0_texcoord);
+    return texture(u_texture[0], in_uv0_texcoord);
 }
 
 vec4 apply_texture(vec4 color, uint stage)
 {
-    uint texture_env_mode;
-    uint texture_env_combine_rgb;
-    vec4 texture_env_color;
+    if(u_texture_enabled[stage] == 0)
+        return color;
 
-    switch(stage)
-    {
-        case 0:
-            texture_env_mode        = u_texture0_env_mode;
-            texture_env_color       = u_texture0_env_color;
-            texture_env_combine_rgb = u_texture0_env_combine_rgb;
-        break;
-
-        case 1:
-            texture_env_mode        = u_texture1_env_mode;
-            texture_env_color       = u_texture1_env_color;
-            texture_env_combine_rgb = u_texture1_env_combine_rgb;
-        break;
-
-        default: return color;
-    }
+    uint texture_env_mode        = u_texture_env_mode[stage];
+    uint texture_env_combine_rgb = u_texture_env_combine_rgb[stage];
+    vec4 texture_env_color       = u_texture_env_color[stage];
 
     switch(texture_env_mode)
     {
@@ -274,53 +242,6 @@ const uint GL_SEPARATE_SPECULAR_COLOR = 1;
 
 const uint COLOR_CONTROL = GL_SINGLE_COLOR;
 
-bool light_enabled(uint index)
-{
-    switch(index)
-    {
-        case 0: return u_light0_enabled != 0;
-        case 1: return u_light1_enabled != 0;
-    }
-    return u_light0_enabled != 0;
-}
-
-vec4 light_position(uint index)
-{
-    switch(index)
-    {
-        case 0: return u_light0_position;
-        case 1: return u_light1_position;
-    }
-    return u_light0_position;
-}
-vec4 light_ambient(uint index)
-{
-    switch(index)
-    {
-        case 0: return u_light0_ambient;
-        case 1: return u_light1_ambient;
-    }
-    return u_light0_ambient;
-}
-vec4 light_diffuse(uint index)
-{
-    switch(index)
-    {
-        case 0: return u_light0_diffuse;
-        case 1: return u_light1_diffuse;
-    }
-    return u_light0_diffuse;
-}
-vec4 light_specular(uint index)
-{
-    switch(index)
-    {
-        case 0: return u_light0_specular;
-        case 1: return u_light1_specular;
-    }
-    return u_light0_specular;
-}
-
 const float CONSTANT_ATTENUATION  = 1.0;
 const float LINEAR_ATTENUATION    = 0.0;
 const float QUADRATIC_ATTENUATION = 0.0;
@@ -348,12 +269,12 @@ void main()
     {
         vec4 light = u_material_ambient * u_scene_ambient;
 
-        for(uint i = 0; i < 2; i++)
+        for(uint i = 0; i < MAX_LIGHTS; i++)
         {
-            if(!light_enabled(i))
+            if(u_light_enabled[i] == 0)
                 continue;
 
-            vec4 position = light_position(i);
+            vec4 position = u_light_position[i];
 
             float atti = 1.0;
 
@@ -372,9 +293,9 @@ void main()
             vec3 hi = VP + vec3(0.0, 0.0, 1.0);
 
             vec4 light_colour =
-                  u_material_ambient * light_ambient(i)
-                + nVP * u_material_diffuse * light_diffuse(i)
-                + fi * pow(max(dot(in_normal, normalize(hi)), 0.0), u_material_shininess) * u_material_specular * light_specular(i);
+                  u_material_ambient * u_light_ambient[i]
+                + nVP * u_material_diffuse * u_light_diffuse[i]
+                + fi * pow(max(dot(in_normal, normalize(hi)), 0.0), u_material_shininess) * u_material_specular * u_light_specular[i];
 
             light += atti * light_colour;
         }
@@ -382,8 +303,10 @@ void main()
         out_colour *= vec4(light.xyz, 1.0);
     }
 
-    out_colour = apply_texture(out_colour, 0);
-    out_colour = apply_texture(out_colour, 1);
+    for(uint i = 0; i < MAX_TEXTURES; i++)
+    {
+        out_colour = apply_texture(out_colour, i);
+    }
 
     if (out_colour.w == 0.0)
         discard;
@@ -468,31 +391,25 @@ void main()
         glUniformMatrix4fv(g_model_view_location, 1, GL_FALSE, glm::value_ptr(g_model_view.top()));
         glUniformMatrix4fv(g_projection_location, 1, GL_FALSE, glm::value_ptr(g_projection.top()));
 
+        std::array<int, MAX_TEXTURES> texture_indices = {0, 1};
+
         // Update the bound texture id
-        glUniform1i(g_texture0_location, 0);
-        glUniform1i(g_texture1_location, 1);
+        glUniform1iv(g_texture_location, MAX_TEXTURES, texture_indices.data());
 
-        auto& tex0_env = g_texture_env[0];
-        auto& tex1_env = g_texture_env[1];
-
-        glUniform1ui(g_texture0_env_mode_loc, tex0_env.enabled ? tex0_env.mode : 0);
-        glUniform1ui(g_texture0_env_combine_rgb_loc, tex0_env.combine_rgb);
-        glUniform4f(g_texture0_env_color_loc, tex0_env.color.r, tex0_env.color.g, tex0_env.color.b, tex0_env.color.a);
-        glUniform1ui(g_texture1_env_mode_loc, tex1_env.enabled ? tex1_env.mode : 0);
-        glUniform1ui(g_texture1_env_combine_rgb_loc, tex1_env.combine_rgb);
-        glUniform4f(g_texture1_env_color_loc, tex1_env.color.r, tex1_env.color.g, tex1_env.color.b, tex1_env.color.a);
+        glUniform1iv(g_texture_enabled_loc, MAX_TEXTURES, g_texture_enabled.data());
+        glUniform1uiv(g_texture_env_mode_loc, MAX_TEXTURES, g_texture_env_mode.data());
+        glUniform1uiv(g_texture_env_combine_rgb_loc, MAX_TEXTURES, g_texture_env_combine_rgb.data());
+        glUniform4fv(g_texture_env_color_loc, MAX_TEXTURES, glm::value_ptr(*g_texture_env_color.data()));
 
         glUniform1i(g_color_material_enabled_loc, g_color_material_enabled);
         glUniform1i(g_lighting_enabled_loc, g_lighting_enabled);
 
-        for(const auto& light : g_lights)
-        {
-            glUniform1i(light.enabled_location, light.enabled);
-            glUniform4f(light.position_location, light.position.x, light.position.y, light.position.z, light.position.w);
-            glUniform4f(light.ambient_location, light.ambient.x, light.ambient.y, light.ambient.z, light.ambient.w);
-            glUniform4f(light.diffuse_location, light.diffuse.x, light.diffuse.y, light.diffuse.z, light.diffuse.w);
-            glUniform4f(light.specular_location, light.specular.x, light.specular.y, light.specular.z, light.specular.w);
-        }
+        glUniform1iv(g_light_enabled_location, MAX_LIGHTS, g_lights_enabled.data());
+        glUniform4fv(g_light_position_location, MAX_LIGHTS, glm::value_ptr(*g_lights_position.data()));
+        glUniform4fv(g_light_ambient_location, MAX_LIGHTS, glm::value_ptr(*g_lights_ambient.data()));
+        glUniform4fv(g_light_diffuse_location, MAX_LIGHTS, glm::value_ptr(*g_lights_diffuse.data()));
+        glUniform4fv(g_light_specular_location, MAX_LIGHTS,glm::value_ptr(*g_lights_specular.data()));
+
         glUniform1f(g_material_shininess_loc, g_material_shininess);
         glUniform4f(g_material_specular_loc, g_material_specular.r, g_material_specular.g, g_material_specular.b, g_material_specular.a);
         glUniform4f(g_material_diffuse_loc, g_material_diffuse.r, g_material_diffuse.g, g_material_diffuse.b, g_material_diffuse.a);
@@ -575,34 +492,47 @@ void main()
             }
         }
 
-        g_lights[0].diffuse = {1.0, 1.0, 1.0, 1.0};
-        g_lights[0].specular = {1.0, 1.0, 1.0, 1.0};
+        for(size_t i = 0; i < MAX_TEXTURES; i++)
+        {
+            g_texture_enabled[i]         = false;
+            g_texture_env_mode[i]        = GL_MODULATE;
+            g_texture_env_combine_rgb[i] = 0;
+            g_texture_env_color[i]       = {0.0, 0.0, 0.0, 0.0};
+        }
 
-        g_texture_env[0].enabled = true;
+        // The first texture is enabled by default
+        g_texture_enabled[0] = true;
+
+        for(size_t i = 0; i < MAX_LIGHTS; i++)
+        {
+            g_lights_enabled[i]  = false;
+            g_lights_position[i] = {0.0, 0.0, 1.0, 0.0};
+            g_lights_ambient[i]  = {0.0, 0.0, 0.0, 1.0};
+            g_lights_diffuse[i]  = {0.0, 0.0, 0.0, 1.0};
+            g_lights_specular[i] = {0.0, 0.0, 0.0, 1.0};
+        }
+
+        g_lights_diffuse[0]  = {1.0, 1.0, 1.0, 1.0};
+        g_lights_specular[0] = {1.0, 1.0, 1.0, 1.0};
 
         g_model_view_location    = glGetUniformLocation(g_program, "u_model_view");
         g_projection_location    = glGetUniformLocation(g_program, "u_projection");
-        g_texture0_env_mode_loc  = glGetUniformLocation(g_program, "u_texture0_env_mode");
-        g_texture0_env_color_loc = glGetUniformLocation(g_program, "u_texture0_env_color");
-        g_texture0_location      = glGetUniformLocation(g_program, "texture0");
-        g_texture1_env_mode_loc  = glGetUniformLocation(g_program, "u_texture1_env_mode");
-        g_texture1_env_color_loc = glGetUniformLocation(g_program, "u_texture1_env_color");
-        g_texture1_location      = glGetUniformLocation(g_program, "texture1");
+
+        g_texture_enabled_loc         = glGetUniformLocation(g_program, "u_texture_enabled");
+        g_texture_env_mode_loc        = glGetUniformLocation(g_program, "u_texture_env_mode");
+        g_texture_env_color_loc       = glGetUniformLocation(g_program, "u_texture_env_color");
+        g_texture_location            = glGetUniformLocation(g_program, "u_texture");
+        g_texture_env_combine_rgb_loc = glGetUniformLocation(g_program, "u_texture_env_combine_rgb");
 
         g_color_material_enabled_loc  = glGetUniformLocation(g_program, "u_color_material_enabled");
         g_lighting_enabled_loc        = glGetUniformLocation(g_program, "u_lighting_enabled");
 
-        g_lights[0].enabled_location  = glGetUniformLocation(g_program, "u_light0_enabled");
-        g_lights[0].position_location = glGetUniformLocation(g_program, "u_light0_position");
-        g_lights[0].ambient_location  = glGetUniformLocation(g_program, "u_light0_ambient");
-        g_lights[0].diffuse_location  = glGetUniformLocation(g_program, "u_light0_diffuse");
-        g_lights[0].specular_location = glGetUniformLocation(g_program, "u_light0_specular");
-
-        g_lights[1].enabled_location  = glGetUniformLocation(g_program, "u_light1_enabled");
-        g_lights[1].position_location = glGetUniformLocation(g_program, "u_light1_position");
-        g_lights[1].ambient_location  = glGetUniformLocation(g_program, "u_light1_ambient");
-        g_lights[1].diffuse_location  = glGetUniformLocation(g_program, "u_light1_diffuse");
-        g_lights[1].specular_location = glGetUniformLocation(g_program, "u_light1_specular");
+        
+        g_light_enabled_location  = glGetUniformLocation(g_program, "u_light_enabled");
+        g_light_position_location = glGetUniformLocation(g_program, "u_light_position");
+        g_light_ambient_location  = glGetUniformLocation(g_program, "u_light_ambient");
+        g_light_diffuse_location  = glGetUniformLocation(g_program, "u_light_diffuse");
+        g_light_specular_location = glGetUniformLocation(g_program, "u_light_specular");
 
         g_material_shininess_loc      = glGetUniformLocation(g_program, "u_material_shininess");
         g_material_specular_loc       = glGetUniformLocation(g_program, "u_material_specular");
@@ -610,9 +540,6 @@ void main()
         g_material_ambient_loc        = glGetUniformLocation(g_program, "u_material_ambient");
 
         g_scene_ambient_loc = glGetUniformLocation(g_program, "u_scene_ambient");
-
-        g_texture0_env_combine_rgb_loc = glGetUniformLocation(g_program, "u_texture0_env_combine_rgb");
-        g_texture1_env_combine_rgb_loc = glGetUniformLocation(g_program, "u_texture1_env_combine_rgb");
 
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
@@ -958,52 +885,53 @@ void main()
         // TODO
     }
 
-    void glLightfv(GLenum light_index, GLenum  pname, const GLfloat *params)
+    void glLightfv(GLenum light, GLenum  pname, const GLfloat *params)
     {
-        auto& light = g_lights[light_index - GL_LIGHT0];
+        auto light_index = light - GL_LIGHT0;
 
         switch (pname)
         {
             case GL_POSITION:
             {
-                light.position.x = params[0];
-                light.position.y = params[1];
-                light.position.z = params[2];
-                light.position.w = params[3];
+                auto& position = g_lights_position[light_index];
+                position.x = params[0];
+                position.y = params[1];
+                position.z = params[2];
+                position.w = params[3];
     
-                bool is_at_infinity = light.position.w == 0.0;
+                bool is_at_infinity = position.w == 0.0;
 
                 // We need to change the space (coordinate system) of the position of the light
                 // to eye (camera) space. Normally whenever the light position is set, the top
                 // of the model-view matrix contains only the view matrix.
-                light.position = g_model_view.top() * light.position;
+                position = g_model_view.top() * position;
 
                 // If w is 0, this means that the light is considered at infinity, pointed by the
                 // xyz direction starting from the origin.
                 if(!is_at_infinity)
-                    light.position /= light.position.w;
+                    position /= position.w;
             }
             break;
 
             case GL_DIFFUSE:
-                light.diffuse.x = params[0];
-                light.diffuse.y = params[1];
-                light.diffuse.z = params[2];
-                light.diffuse.w = params[3];
+                g_lights_diffuse[light_index].x = params[0];
+                g_lights_diffuse[light_index].y = params[1];
+                g_lights_diffuse[light_index].z = params[2];
+                g_lights_diffuse[light_index].w = params[3];
             break;
 
             case GL_SPECULAR:
-                light.specular.x = params[0];
-                light.specular.y = params[1];
-                light.specular.z = params[2];
-                light.specular.w = params[3];
+                g_lights_specular[light_index].x = params[0];
+                g_lights_specular[light_index].y = params[1];
+                g_lights_specular[light_index].z = params[2];
+                g_lights_specular[light_index].w = params[3];
             break;
 
             case GL_AMBIENT:
-                light.ambient.x = params[0];
-                light.ambient.y = params[1];
-                light.ambient.z = params[2];
-                light.ambient.w = params[3];
+                g_lights_ambient[light_index].x = params[0];
+                g_lights_ambient[light_index].y = params[1];
+                g_lights_ambient[light_index].z = params[2];
+                g_lights_ambient[light_index].w = params[3];
             break;
         }
 
@@ -1050,12 +978,12 @@ void main()
             switch (pname)
             {
                 case GL_TEXTURE_ENV_MODE:
-                    g_texture_env[g_active_texture].mode = param;
+                    g_texture_env_mode[g_active_texture] = param;
 
                 break;
 
                 case GL_COMBINE_RGB: //GL_COMBINE_RGB_EXT
-                    g_texture_env[g_active_texture].combine_rgb = param;
+                    g_texture_env_combine_rgb[g_active_texture] = param;
                 break;
             }
         }
@@ -1072,7 +1000,7 @@ void main()
             switch (pname)
             {
                 case GL_TEXTURE_ENV_COLOR:
-                    g_texture_env[g_active_texture].color = glm::vec4(
+                    g_texture_env_color[g_active_texture] = glm::vec4(
                         static_cast<float>(params[0]) / 255.0,
                         static_cast<float>(params[1]) / 255.0,
                         static_cast<float>(params[2]) / 255.0,
@@ -1088,12 +1016,21 @@ void main()
         switch (cap)
         {
             case GL_TEXTURE_2D:
-                g_texture_env[g_active_texture].enabled = true;
+                g_texture_enabled[g_active_texture] = true;
             break;
 
-            case GL_LIGHTING: g_lighting_enabled  = true; break;
-            case GL_LIGHT0:   g_lights[0].enabled = true; break;
-            case GL_LIGHT1:   g_lights[1].enabled = true; break;
+            case GL_LIGHTING: g_lighting_enabled = true; break;
+
+            case GL_LIGHT0:
+            case GL_LIGHT1:
+            case GL_LIGHT2:
+            case GL_LIGHT3:
+            case GL_LIGHT4:
+            case GL_LIGHT5:
+            case GL_LIGHT6:
+            case GL_LIGHT7:
+                g_lights_enabled[cap - GL_LIGHT0] = true;
+            break;
 
             case GL_COLOR_MATERIAL: g_color_material_enabled = true; break;
         }
@@ -1106,12 +1043,21 @@ void main()
         switch (cap)
         {
             case GL_TEXTURE_2D:
-                g_texture_env[g_active_texture].enabled = false;
+                g_texture_enabled[g_active_texture] = false;
             break;
 
-            case GL_LIGHTING: g_lighting_enabled  = false; break;
-            case GL_LIGHT0:   g_lights[0].enabled = false; break;
-            case GL_LIGHT1:   g_lights[1].enabled = false; break;
+            case GL_LIGHTING: g_lighting_enabled = false; break;
+
+            case GL_LIGHT0:
+            case GL_LIGHT1:
+            case GL_LIGHT2:
+            case GL_LIGHT3:
+            case GL_LIGHT4:
+            case GL_LIGHT5:
+            case GL_LIGHT6:
+            case GL_LIGHT7:
+                g_lights_enabled[cap - GL_LIGHT0] = false;
+            break;
 
             case GL_COLOR_MATERIAL: g_color_material_enabled = false; break;
         }
@@ -1123,10 +1069,20 @@ void main()
     {
         switch (cap)
         {
-            case GL_TEXTURE_2D: return g_texture_env[g_active_texture].enabled;
-            case GL_LIGHTING:   return g_lighting_enabled;
-            case GL_LIGHT0:     return g_lights[0].enabled;
-            case GL_LIGHT1:     return g_lights[1].enabled;
+            case GL_TEXTURE_2D: return g_texture_enabled[g_active_texture];
+
+            case GL_LIGHTING: return g_lighting_enabled;
+
+            case GL_LIGHT0:
+            case GL_LIGHT1:
+            case GL_LIGHT2:
+            case GL_LIGHT3:
+            case GL_LIGHT4:
+            case GL_LIGHT5:
+            case GL_LIGHT6:
+            case GL_LIGHT7:
+                return g_lights_enabled[cap - GL_LIGHT0];
+            break;
 
             case GL_COLOR_MATERIAL: return g_color_material_enabled;
         }
