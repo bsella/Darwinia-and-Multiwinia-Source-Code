@@ -43,6 +43,9 @@
 #include "demoendsequence.h"
 #include "tutorial.h"
 #include "control_help.h"
+
+#include "water_reflection.h"
+
 #include "FFP_emulation.h"
 
 #include "sound/soundsystem.h"
@@ -160,6 +163,8 @@ void Renderer::Restart()
 void Renderer::BuildOpenGlState()
 {
     glGenTextures( 1, &m_pixelEffectTexId );
+
+	g_waterReflectionEffect = WaterReflectionEffect::Create();
 }
 
 
@@ -472,26 +477,26 @@ void Renderer::RenderFrame(bool withFlip)
 		if (g_app->m_locationId != -1)
 		{
 			if( renderPixelShaderPref > 0 )
-            {
+			{
 				switch (m_renderingPoster)
 				{
 					case PosterMakerInactive:
 						PreRenderPixelEffect();
 
-#ifdef USE_DIRECT3D
 						if( renderPixelShaderPref == 1 )
 						{
 							if (g_waterReflectionEffect)
 							{
 								g_waterReflectionEffect->PreRenderWaterReflection();
 							}
+#ifdef USE_DIRECT3D
 							if(g_deformEffect)
 							{
 								deformStarted = true;
 								g_deformEffect->Start();
 							}
-						}
 #endif
+						}
 						START_PROFILE(g_app->m_profiler, "Render Clear");
 						glClear	(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 						END_PROFILE(g_app->m_profiler, "Render Clear");
@@ -1578,7 +1583,7 @@ void Renderer::Get2DScreenPos(Vector3 const &v, Vector3 *_out)
 	_out->z = out[3];
 }
 
-const double* Renderer::GetTotalMatrix()
+const float* Renderer::GetTotalMatrix()
 {
 	return m_totalMatrix;
 }

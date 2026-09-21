@@ -412,9 +412,9 @@ void main()
         glBufferData(GL_ARRAY_BUFFER, vertex_data.size() * sizeof(VertexData), vertex_data.data(), GL_DYNAMIC_DRAW);
     }
 
-    void VertexBuffer::draw(GLenum primitive_mode, GLint first, GLsizei num_vertices) const
+    void VertexBuffer::draw(GLenum primitive_mode, GLint first, GLsizei num_vertices, GLuint program) const
     {
-        glUseProgram(g_program);
+        glUseProgram(program);
     
         // Upload the matrices
         glUniformMatrix4fv(g_model_view_location, 1, GL_FALSE, glm::value_ptr(g_model_view.top()));
@@ -471,6 +471,11 @@ void main()
         // Draw the primitives
         glBindVertexArray(m_vao);
         glDrawArrays(primitive_mode, first, num_vertices);
+    }
+
+    void VertexBuffer::draw(GLenum primitive_mode, GLint first, GLsizei num_vertices) const
+    {
+        draw(primitive_mode, first, num_vertices, g_program);
     }
 
     void init()

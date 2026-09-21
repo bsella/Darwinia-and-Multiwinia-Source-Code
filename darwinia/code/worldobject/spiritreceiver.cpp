@@ -18,6 +18,8 @@
 #include "renderer.h"
 #include "entity_grid.h"
 
+#include "water_reflection.h"
+
 #include "FFP_emulation.h"
 
 #include "sound/soundsystem.h"
@@ -90,10 +92,8 @@ void ReceiverBuilding::Render( float _predictionTime )
 
 void ReceiverBuilding::RenderAlphas ( float _predictionTime )
 {
-#ifdef USE_DIRECT3D
 	// don't reflect us in water
 	if(g_waterReflectionEffect && g_waterReflectionEffect->IsPrerendering()) return;
-#endif
 
 	Building::RenderAlphas( _predictionTime );
 
@@ -542,10 +542,8 @@ void SpiritProcessor::Render( float _predictionTime )
 
 void SpiritProcessor::RenderAlphas( float _predictionTime )
 {
-#ifdef USE_DIRECT3D
 	// don't reflect us in water
 	if(g_waterReflectionEffect && g_waterReflectionEffect->IsPrerendering()) return;
-#endif
 
     ReceiverBuilding::RenderAlphas( _predictionTime );
 

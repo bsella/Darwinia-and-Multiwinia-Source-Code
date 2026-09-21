@@ -1,7 +1,4 @@
-#ifndef INCLUDED_WATER_REFLECTION_H
-#define INCLUDED_WATER_REFLECTION_H
-
-#ifdef USE_DIRECT3D
+#pragma once
 
 class WaterReflectionEffect
 {
@@ -11,16 +8,26 @@ public:
 	bool IsPrerendering() {return m_prerendering;}
 	void Start();
 	void Stop();
+
+	unsigned int GetProgram() const;
+
 	~WaterReflectionEffect();
 private:
 	WaterReflectionEffect();
-	class Texture   *m_waterReflectionTexture;
-	class Shader    *m_waterMeshWavesShader;
-	bool             m_prerendering;
+
+	unsigned int m_program;
+	unsigned int m_framebuffer;
+	unsigned int m_texture;
+	unsigned int m_depth_buffer;
+
+	int m_time_location;
+	int m_world_view_projection_loc;
+	int m_water_texture_location;
+
+	const unsigned int m_width;
+	const unsigned int m_height;
+
+	bool m_prerendering;
 };
 
 extern WaterReflectionEffect* g_waterReflectionEffect;
-
-#endif
-
-#endif

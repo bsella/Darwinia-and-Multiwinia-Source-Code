@@ -36,7 +36,7 @@ private:
 	int		m_screenH;
 	int		m_tileIndex;			// Used when rendering a poster
 
-	double	m_totalMatrix[16];		// Modelview matrix * Projection matrix
+	float	m_totalMatrix[16];		// Modelview matrix * Projection matrix
 
 	float	m_fadedness;			// 1.0 means black screen. 0.0 means not fade out at all.
 	float	m_fadeRate;				// +ve means fading out, -ve means fading in
@@ -92,7 +92,7 @@ public:
 
 	void	UpdateTotalMatrix();
 	void	Get2DScreenPos(Vector3 const &_in, Vector3 *_out);
-	const double* GetTotalMatrix();
+	const float* GetTotalMatrix();
 
 	void	RasteriseSphere(Vector3 const &_pos, float _radius);
 	void	MarkUsedCells(ShapeFragment const *_frag, Matrix34 const &_transform);

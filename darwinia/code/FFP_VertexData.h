@@ -16,6 +16,7 @@ namespace ffp_emulation
     {
     public:
         void draw(unsigned int primitive_mode, int first, int num_vertices) const;
+        void draw(unsigned int primitive_mode, int first, int num_vertices, unsigned int program) const;
     protected:
         VertexBuffer();
         ~VertexBuffer();

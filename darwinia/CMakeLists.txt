@@ -146,6 +146,7 @@ add_executable(darwinia
 	code/sepulveda_strings.cpp
 	code/landscape_renderer.cpp
 	code/FFP_emulation.cpp
+	code/water_reflection.cpp
 
 	code/loaders/loader.cpp
 	code/loaders/speccy_loader.cpp

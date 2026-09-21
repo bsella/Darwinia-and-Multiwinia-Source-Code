@@ -26,6 +26,8 @@
 #include "location.h"
 #include "level_file.h"
 
+#include "water_reflection.h"
+
 #include "FFP_emulation.h"
 
 #define LIGHTMAP_TEXTURE_NAME "water_lightmap"
@@ -872,39 +874,32 @@ void Water::RenderDynamicWater()
 	OpenGLD3D::g_pd3dDevice->SetStreamSource( 0, m_vertexBuffer, 0, sizeof(WaterVertex) );
 #endif
 
-#ifdef USE_DIRECT3D
 	if (m_renderWaterEffect && g_waterReflectionEffect)
 	{
 		g_waterReflectionEffect->Start();
 	}
-#endif
 
 	int numStrips = m_strips.Size();
 	for (int i = 0; i < numStrips; ++i)
 	{
 		WaterTriangleStrip *strip = m_strips[i];
 
-#ifdef USE_DIRECT3D
-		OpenGLD3D::g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, strip->m_startRenderVertIndex, strip->m_numVerts-2);
-#else
+//#ifdef USE_DIRECT3D
+//		OpenGLD3D::g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, strip->m_startRenderVertIndex, strip->m_numVerts-2);
+//#else
+//#endif
 
-#ifdef FFP_ENABLE_EMULATION
-		m_vertex_buffer.draw(GL_TRIANGLE_STRIP, strip->m_startRenderVertIndex, strip->m_numVerts);
-#else
-		glDrawArrays(GL_TRIANGLE_STRIP,
-					strip->m_startRenderVertIndex,
-					strip->m_numVerts);
-#endif
+		if (m_renderWaterEffect && g_waterReflectionEffect)
+			m_vertex_buffer.draw(GL_TRIANGLE_STRIP, strip->m_startRenderVertIndex, strip->m_numVerts, g_waterReflectionEffect->GetProgram());
+		else
+			m_vertex_buffer.draw(GL_TRIANGLE_STRIP, strip->m_startRenderVertIndex, strip->m_numVerts);
 
-#endif
 	}
 
-#ifdef USE_DIRECT3D
 	if (m_renderWaterEffect && g_waterReflectionEffect)
 	{
 		g_waterReflectionEffect->Stop();
 	}
-#endif
 
 #ifdef USE_DIRECT3D
 	OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( savedDecl );

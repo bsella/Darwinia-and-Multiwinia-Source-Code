@@ -1,42 +1,181 @@
-#include "lib/universal_include.h"
+#include <GL/glew.h>
 
-#ifdef USE_DIRECT3D
-
-#include "lib/opengl_directx_internals.h"
-#include "lib/preferences.h"
 #include "lib/profiler.h"
-#include "lib/shader.h"
-#include "lib/texture.h"
 #include "app.h"
 #include "camera.h"
 #include "location.h"
-#include "particle_system.h"
 #include "renderer.h"
 #include "water_reflection.h"
 
-namespace OpenGLD3D {
-	extern D3DPRESENT_PARAMETERS g_d3dpp;
-};
+#include "FFP_emulation.h"
+
+#include <iostream>
+#include <chrono>
+
+static unsigned long long GetTickCount()
+{
+	using namespace std::chrono;
+	return duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
+}
 
 WaterReflectionEffect* WaterReflectionEffect::Create()
 {
-	if(!OpenGLD3D::g_supportsHwVertexProcessing) return nullptr;
-	WaterReflectionEffect* w = new WaterReflectionEffect();
-	if(!w->m_waterReflectionTexture || !w->m_waterMeshWavesShader)
-		SAFE_DELETE(w);
-	return w;
+	return new WaterReflectionEffect();
 }
 
 WaterReflectionEffect::WaterReflectionEffect()
+	: m_width (g_app->m_renderer->ScreenW()/2)
+	, m_height(g_app->m_renderer->ScreenH()/2)
 {
-	m_waterReflectionTexture = Texture::Create(TextureParams(g_app->m_renderer->ScreenW()/2,g_app->m_renderer->ScreenH()/2,OpenGLD3D::g_d3dpp.BackBufferFormat,TF_RENDERTARGET));
-	LPCSTR prof = D3DXGetPixelShaderProfile(OpenGLD3D::g_pd3dDevice);
-	bool hasPs3 = prof && prof[0]=='p' && prof[1]=='s' && prof[2]=='_' && prof[3]>'2';
-	m_waterMeshWavesShader = hasPs3 ? Shader::Create("shaders/water-meshwaves.vs","shaders/water-meshwaves.ps3") : nullptr;
-	if(!m_waterMeshWavesShader)
 	{
-		m_waterMeshWavesShader = Shader::Create("shaders/water-meshwaves.vs","shaders/water-meshwaves.ps");
+		GLint old_fbo = 0;
+		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &old_fbo);
+
+		glGenFramebuffers(1, &m_framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
+	
+		// The texture we're going to render to
+		glGenTextures(1, &m_texture);
+	
+		// "Bind" the newly created texture : all future texture functions will modify this texture
+		glBindTexture(GL_TEXTURE_2D, m_texture);
+	
+		// Give an empty image to OpenGL ( the last "0" )
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	
+		// Poor filtering. Needed !
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
+		glGenRenderbuffers(1, &m_depth_buffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_depth_buffer);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_width, m_height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depth_buffer);
+
+		// Set "renderedTexture" as our colour attachement #0
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_texture, 0);
+	
+		// Set the list of draw buffers.
+		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+		glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
+
+		glBindFramebuffer(GL_FRAMEBUFFER, old_fbo);
 	}
+
+
+	GLuint vertex_shader, fragment_shader;
+	
+	constexpr const char* vertex_shader_source =
+R"(
+#version 410
+
+uniform mat4 u_model_view_projection;
+
+layout (location = 0) in vec3 in_position;
+layout (location = 1) in vec4 in_colour;
+layout (location = 2) in vec3 in_normal;
+layout (location = 3) in vec2 in_uv0_texcoord;
+layout (location = 4) in vec2 in_uv1_texcoord;
+
+layout (location = 0) out vec4 out_pos_world;
+layout (location = 1) out vec4 out_refl_coord;
+layout (location = 2) out vec4 out_colour;
+
+void main()
+{
+	out_pos_world  = vec4(in_position, 1.0);
+	gl_Position    = u_model_view_projection * vec4(in_position, 1.0);
+	out_refl_coord = u_model_view_projection * vec4(in_position + in_normal, 1.0);
+	out_colour     = in_colour;
+}
+)";
+
+constexpr const char* fragment_shader_source =
+R"(
+#version 410
+
+uniform sampler2D water;
+uniform vec2 u_time; // x=time in seconds, y=small wave amplitude (eg. 0.003)
+
+layout (location = 0) in vec4 in_pos_world;  //xz
+layout (location = 1) in vec4 in_refl_coord; //xyw
+layout (location = 2) in vec4 in_colour;     //xyz
+
+layout (location = 0) out vec4 out_colour;
+
+void main()
+{
+	// big mesh waves
+	vec2 uv = 0.5*( vec2(1.0, 1.0)-in_refl_coord.xy/in_refl_coord.w );
+	// small shader waves
+	vec2 tmp = abs(dFdx(in_pos_world.xz));
+	uv += u_time.y*sin((0.2*in_pos_world.yy+in_pos_world.xz)*0.25+u_time.xx*4)/(tmp.x+tmp.y);
+	// fix 1pix seam between water and land
+	uv.y += 0.004;
+	// blend
+
+	uv.y = -uv.y;
+
+	out_colour = 0.7 * in_colour + 0.7 * (in_colour.r+in_colour.g+in_colour.b) * texture(water,uv);
+	out_colour.a = 0.7;
+}
+)";
+
+	int success;
+	char infoLog[512];
+
+	{
+		vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+
+		glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
+		
+		glCompileShader(vertex_shader);
+
+		// print compile errors if any
+		glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+		if(!success)
+		{
+			glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
+			std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		};
+	}
+
+	{
+		fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+
+		glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
+		
+		glCompileShader(fragment_shader);
+
+		// print compile errors if any
+		glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+		if(!success)
+		{
+			glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
+			std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+		};
+	}
+
+	{
+		m_program = glCreateProgram();
+		glAttachShader(m_program, vertex_shader);
+		glAttachShader(m_program, fragment_shader);
+		glLinkProgram(m_program);
+		// print linking errors if any
+		glGetProgramiv(m_program, GL_LINK_STATUS, &success);
+		if(!success)
+		{
+			glGetProgramInfoLog(m_program, 512, NULL, infoLog);
+			std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+		}
+	}
+
+	m_time_location               = glGetUniformLocation(m_program, "u_time");
+	m_world_view_projection_loc   = glGetUniformLocation(m_program, "u_model_view_projection");
+	m_water_texture_location      = glGetUniformLocation(m_program, "water");
+
+	glDeleteShader(vertex_shader);
+	glDeleteShader(fragment_shader);
 }
 
 void WaterReflectionEffect::PreRenderWaterReflection()
@@ -46,11 +185,14 @@ void WaterReflectionEffect::PreRenderWaterReflection()
 	//
 	// Prepare render target
 
-	IDirect3DSurface9* oldRenderTarget;
-	OpenGLD3D::g_pd3dDevice->GetRenderTarget(0,&oldRenderTarget);
-	OpenGLD3D::g_pd3dDevice->SetRenderTarget(0,m_waterReflectionTexture->GetRenderTarget());
-	glViewport( 0, 0, m_waterReflectionTexture->GetParams().m_w, m_waterReflectionTexture->GetParams().m_h );
-	GLdouble plane[4] = {0,1,0,0};
+	GLint old_fbo = 0;
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &old_fbo);
+
+	// Render to our framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
+	glViewport( 0, 0, m_width, m_height );
+
+	GLdouble plane[4] = {0,-1,0,0};
 	glClipPlane(GL_CLIP_PLANE2,plane); // planes 0 and 1 used by radar
 	glEnable(GL_CLIP_PLANE2);
 
@@ -58,9 +200,6 @@ void WaterReflectionEffect::PreRenderWaterReflection()
 	// Clipping hack start
 
 	glMatrixMode(GL_MODELVIEW);
-	void SwapToViewMatrix();
-	void SwapToModelMatrix();
-	SwapToViewMatrix();
 
 	//
 	// Clear
@@ -102,15 +241,13 @@ void WaterReflectionEffect::PreRenderWaterReflection()
 	//
 	// Clipping hack end
 
-	SwapToModelMatrix();
-
 	//
 	// Restore render target
 
 	glEnable(GL_CULL_FACE);
 	glDisable(GL_CLIP_PLANE2);
-	OpenGLD3D::g_pd3dDevice->SetRenderTarget(0,oldRenderTarget);
-	oldRenderTarget->Release();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, old_fbo);
 	glViewport( 0, 0, g_app->m_renderer->ScreenW(), g_app->m_renderer->ScreenH() );
 
 	CHECK_OPENGL_STATE();
@@ -119,30 +256,33 @@ void WaterReflectionEffect::PreRenderWaterReflection()
 
 void WaterReflectionEffect::Start()
 {
-	m_waterMeshWavesShader->Bind();
-	m_waterMeshWavesShader->SetUniform("time",(GetTickCount()%10000000)/1000.0f,0.001f*1024/g_app->m_renderer->ScreenW());
-	m_waterMeshWavesShader->SetMatrix("worldViewProjMatrix",g_app->m_renderer->GetTotalMatrix());
-	int sampler = m_waterMeshWavesShader->SetSampler("water",m_waterReflectionTexture);
-	if(sampler>=0)
-	{
-		OpenGLD3D::g_pd3dDevice->SetSamplerState(sampler,D3DSAMP_MAGFILTER,D3DTEXF_LINEAR);
-		OpenGLD3D::g_pd3dDevice->SetSamplerState(sampler,D3DSAMP_MINFILTER,D3DTEXF_LINEAR);
-		OpenGLD3D::g_pd3dDevice->SetSamplerState(sampler,D3DSAMP_MIPFILTER,D3DTEXF_NONE);
-	}
+	glUseProgram(m_program);
+
+	glUniform2f(m_time_location, (GetTickCount()%10000000)/1000.0f, 0.001f*1024/g_app->m_renderer->ScreenW());
+
+	glUniformMatrix4fv(m_world_view_projection_loc, 1, GL_FALSE, g_app->m_renderer->GetTotalMatrix());
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
+
+	glUniform1i(m_water_texture_location, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 }
 
 void WaterReflectionEffect::Stop()
 {
-	m_waterMeshWavesShader->SetSampler("water",nullptr);
-	m_waterMeshWavesShader->Unbind();
 }
 
 WaterReflectionEffect::~WaterReflectionEffect()
 {
-	SAFE_DELETE(m_waterReflectionTexture);
-	SAFE_DELETE(m_waterMeshWavesShader);
+	glDeleteProgram(m_program);
 }
 
 WaterReflectionEffect* g_waterReflectionEffect = nullptr;
 
-#endif
+unsigned int WaterReflectionEffect::GetProgram() const
+{
+	return m_program;
+}
