@@ -278,6 +278,9 @@ void WaterReflectionEffect::Stop()
 WaterReflectionEffect::~WaterReflectionEffect()
 {
 	glDeleteProgram(m_program);
+	glDeleteRenderbuffers(1, &m_depth_buffer);
+	glDeleteTextures(1, &m_texture);
+	glDeleteFramebuffers(1, &m_framebuffer);
 }
 
 WaterReflectionEffect* g_waterReflectionEffect = nullptr;
