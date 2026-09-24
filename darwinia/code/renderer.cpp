@@ -24,6 +24,7 @@
 
 #include "app.h"
 #include "camera.h"
+#include "deform.h"
 #include "explosion.h"
 #include "global_world.h"
 #include "helpsystem.h"
@@ -165,6 +166,7 @@ void Renderer::BuildOpenGlState()
     glGenTextures( 1, &m_pixelEffectTexId );
 
 	g_waterReflectionEffect = WaterReflectionEffect::Create();
+	g_deformEffect = DeformEffect::Create();
 }
 
 
@@ -455,7 +457,7 @@ void Renderer::RenderFrame(bool withFlip)
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	END_PROFILE(g_app->m_profiler, "Render Clear");
 
-	//bool deformStarted = false;
+	bool deformStarted = false;
 
 	if (g_app->m_editing)
 	{
@@ -489,13 +491,11 @@ void Renderer::RenderFrame(bool withFlip)
 							{
 								g_waterReflectionEffect->PreRenderWaterReflection();
 							}
-#ifdef USE_DIRECT3D
 							if(g_deformEffect)
 							{
 								deformStarted = true;
 								g_deformEffect->Start();
 							}
-#endif
 						}
 						START_PROFILE(g_app->m_profiler, "Render Clear");
 						glClear	(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -533,13 +533,11 @@ void Renderer::RenderFrame(bool withFlip)
     if( g_app->m_tutorial ) g_app->m_tutorial->Render();
 	g_explosionManager.Render();
     g_app->m_particleSystem->Render();
-#ifdef USE_DIRECT3D
 	if( renderPixelShaderPref == 1 )
 	{
 		if( g_deformEffect && deformStarted )
 			g_deformEffect->Stop();
 	}
-#endif
 
     if( g_app->m_demoEndSequence )
     {

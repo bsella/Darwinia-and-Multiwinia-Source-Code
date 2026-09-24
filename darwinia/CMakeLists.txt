@@ -147,6 +147,7 @@ add_executable(darwinia
 	code/landscape_renderer.cpp
 	code/FFP_emulation.cpp
 	code/water_reflection.cpp
+	code/deform.cpp
 
 	code/loaders/loader.cpp
 	code/loaders/speccy_loader.cpp

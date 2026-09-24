@@ -30,6 +30,7 @@ namespace ffp_emulation
         StaticVertexBuffer(std::span<const VertexData>);
 
         void draw_buffer(unsigned int primitive_mode) const;
+        void draw_buffer(unsigned int primitive_mode, unsigned int program) const;
     private:
         const int m_num_vertices;
     };
@@ -42,6 +43,7 @@ namespace ffp_emulation
         void update(std::span<const VertexData>);
 
         void draw_buffer(unsigned int primitive_mode) const;
+        void draw_buffer(unsigned int primitive_mode, unsigned int program) const;
     private:
         int m_num_vertices = 0;
     };

@@ -404,6 +404,16 @@ void main()
         VertexBuffer::draw(primitive_mode, 0, m_num_vertices);
     }
 
+    void StaticVertexBuffer::draw_buffer(unsigned int primitive_mode, unsigned int program) const
+    {
+        VertexBuffer::draw(primitive_mode, 0, m_num_vertices, program);
+    }
+
+    void DynamicVertexBuffer::draw_buffer(unsigned int primitive_mode, unsigned int program) const
+    {
+        VertexBuffer::draw(primitive_mode, 0, m_num_vertices, program);
+    }
+
     void DynamicVertexBuffer::update(std::span<const VertexData> vertex_data)
     {
         m_num_vertices = vertex_data.size();

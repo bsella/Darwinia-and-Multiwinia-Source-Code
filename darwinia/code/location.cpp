@@ -17,6 +17,7 @@
 #include "app.h"
 #include "camera.h"
 #include "clouds.h"
+#include "deform.h"
 #include "entity_grid.h"
 #include "global_world.h"
 #include "landscape.h"
@@ -1973,10 +1974,7 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
 	//
 	// Punch effect
 
-#ifdef USE_DIRECT3D
 	if(g_deformEffect && isVisible) g_deformEffect->AddPunch( _pos, _range );
-#endif
-
 
 	//
 	// Wow, that was a big bang. Maybe we killed a building
