@@ -1,5 +1,7 @@
 #include <math.h>
+#include <vector>
 
+#include "FFP_VertexData.h"
 #include "lib/resource.h"
 #include "lib/preferences.h"
 #include "lib/profiler.h"
@@ -12,6 +14,41 @@
 #include "FFP_emulation.h"
 
 Clouds::Clouds()
+    : m_sky_vertex_buffer{
+        []
+        {
+            float r = 3.0f;
+            float height = 1200.0f;
+            float gridSize = 80.0f;
+            float lineWidth = 8.0f;
+
+            float xStart = -2000.0f*r;
+            float xEnd = 2000.0f + 2000.0f*r;
+            float zStart = -2000.0f*r;
+            float zEnd = 2000.0f + 2000.0f*r;
+
+            std::vector<ffp_emulation::VertexData> vertices;
+
+            for( int x = xStart; x < xEnd; x += gridSize )
+            {
+                vertices.push_back(ffp_emulation::VertexData{ .x = x-lineWidth, .y = height, .z = zStart, .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 0, .v0 = 0 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = x+lineWidth, .y = height, .z = zStart, .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 0, .v0 = 1 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = x+lineWidth, .y = height, .z = zEnd,   .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 1, .v0 = 1 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = x-lineWidth, .y = height, .z = zStart, .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 0, .v0 = 0 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = x+lineWidth, .y = height, .z = zEnd,   .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 1, .v0 = 1 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = x-lineWidth, .y = height, .z = zEnd,   .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 1, .v0 = 0 });
+
+                vertices.push_back(ffp_emulation::VertexData{ .x = xEnd, .y = height, .z = x-lineWidth,   .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 1, .v0 = 0 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = xEnd, .y = height, .z = x+lineWidth,   .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 1, .v0 = 1 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = xStart, .y = height, .z = x+lineWidth, .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 0, .v0 = 1 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = xEnd, .y = height, .z = x-lineWidth,   .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 1, .v0 = 0 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = xStart, .y = height, .z = x+lineWidth, .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 0, .v0 = 1 });
+                vertices.push_back(ffp_emulation::VertexData{ .x = xStart, .y = height, .z = x-lineWidth, .r= 0.5, .g = 0.5, .b=1.0, .a=0.3, .n_x = 0, .n_y = -1, .n_z = 0, .u0 = 0, .v0 = 0 });
+            }
+
+            return ffp_emulation::StaticVertexBuffer(vertices);
+        }()
+    }
 {
     m_offset.Set(0.0f,0.0f,0.0f);
     m_vel.Set(0.04f,0.0f,0.0f);
@@ -216,16 +253,6 @@ void Clouds::RenderBlobby( float _predictionTime )
 // *** RenderSky
 void Clouds::RenderSky()
 {
-    float r = 3.0f;
-    float height = 1200.0f;
-    float gridSize = 80.0f;
-    float lineWidth = 8.0f;
-
-    float xStart = -2000.0f*r;
-    float xEnd = 2000.0f + 2000.0f*r;
-    float zStart = -2000.0f*r;
-    float zEnd = 2000.0f + 2000.0f*r;
-
     float fogColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     glEnable		(GL_BLEND);
@@ -237,25 +264,11 @@ void Clouds::RenderSky()
     glEnable        (GL_FOG);
 //    glDisable       (GL_CULL_FACE);
     glLineWidth		(1.0f);
-    glColor4f		(0.5, 0.5, 1.0, 0.3);
 
     glEnable        (GL_TEXTURE_2D);
     glBindTexture   (GL_TEXTURE_2D, g_app->m_resource->GetTexture( "textures/laser.bmp" ) );
 
-    glBegin( GL_QUADS );
-    for( int x = xStart; x < xEnd; x += gridSize )
-    {
-        glTexCoord2i(0,0);      glVertex3f( x-lineWidth, height, zStart );
-        glTexCoord2i(0,1);      glVertex3f( x+lineWidth, height, zStart );
-        glTexCoord2i(1,1);      glVertex3f( x+lineWidth, height, zEnd );
-        glTexCoord2i(1,0);      glVertex3f( x-lineWidth, height, zEnd );
-
-        glTexCoord2i(1,0);      glVertex3f( xEnd, height, x-lineWidth );
-        glTexCoord2i(1,1);      glVertex3f( xEnd, height, x+lineWidth );
-        glTexCoord2i(0,1);      glVertex3f( xStart, height, x+lineWidth );
-        glTexCoord2i(0,0);      glVertex3f( xStart, height, x-lineWidth );
-    }
-    glEnd();
+    m_sky_vertex_buffer.draw_buffer(GL_TRIANGLES);
 
 	glDisable       ( GL_TEXTURE_2D);
 //    glEnable        ( GL_CULL_FACE);
