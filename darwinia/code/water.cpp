@@ -1,10 +1,6 @@
-﻿#include <GL/glew.h>
-
-#ifdef USE_DIRECT3D
-#include "lib/opengl_directx_internals.h"
-#include "lib/shader.h"
-#include "lib/texture.h"
-#endif
+﻿#include "FFP_VertexData.h"
+#include <GL/glew.h>
+#include <cstddef>
 
 #include <math.h>
 #include <float.h>
@@ -35,22 +31,13 @@
 float const waveBrightnessScale = 4.0f;
 float const shoreBrighteningFactor = 250.0f;
 float const shoreNoiseFactor = 0.25f;
-#ifdef USE_DIRECT3D
-LPDIRECT3DVERTEXDECLARATION9 s_vertexDecl = nullptr;
-#endif
-
-#define FFP_ENABLE_EMULATION
 
 // ****************************************************************************
 // Class Water
 // ****************************************************************************
 
 Water::Water()
-:	
-#ifdef USE_DIRECT3D
-	m_vertexBuffer(nullptr),
-#endif
-	m_waterDepths(nullptr),
+:	m_waterDepths(nullptr),
 	m_shoreNoise(nullptr),
 	m_waterDepthMap(nullptr),
 	m_colourTable(nullptr),
@@ -92,17 +79,8 @@ Water::Water()
 			    m_numColours = bmp.m_width;
 			    for( int x = 0; x < bmp.m_width; ++x )
 			    {
-#ifndef USE_DIRECT3D
 				    m_colourTable[x] = bmp.GetPixel( x, 1 );
 				    m_colourTable[x].a = alpha;
-#else
-                    RGBAColour col = bmp.GetPixel( x, 1 );
-                    col.a = alpha;
-
-                    D3DCOLOR c = D3DCOLOR_RGBA( col.r, col.g, col.b, col.a );
-                    memcpy( &m_colourTable[x], &c, sizeof(D3DCOLOR) );
-#endif
-
 			    }
 			    delete in;
 		    }
@@ -122,16 +100,11 @@ Water::Water()
 
 Water::~Water()
 {
-
-	m_renderVerts.Empty();
 	delete [] m_waterDepths;	m_waterDepths = nullptr;
 	delete [] m_shoreNoise;		m_shoreNoise = nullptr;
 	delete [] m_colourTable;	m_colourTable = nullptr;
 	delete [] m_waveTableX;		m_waveTableX = nullptr;
 	delete [] m_waveTableZ;		m_waveTableZ = nullptr;
-#ifdef USE_DIRECT3D
-	ReleaseD3DResources();
-#endif
 }
 
 void Water::GenerateLightMap()
@@ -314,9 +287,6 @@ void Water::GenerateLightMap()
 
 void Water::BuildOpenGlState()
 {
-#ifdef USE_DIRECT3D
-	SAFE_RELEASE(m_vertexBuffer);
-#endif
 }
 
 
@@ -340,8 +310,8 @@ bool Water::IsVertNeeded(float x, float z)
 
 void Water::BuildTriangleStrips()
 {
-	m_renderVerts.SetStepDouble();
-	m_strips.SetStepDouble();
+	m_vertsFFP.clear();
+	m_strips.clear();
 
 	float const landSizeX = g_app->m_location->m_landscape.GetWorldSizeX();
 	float const landSizeZ = g_app->m_location->m_landscape.GetWorldSizeZ();
@@ -353,10 +323,10 @@ void Water::BuildTriangleStrips()
 	int const maxXb = (highX - lowX) / m_cellSize;
 	int const maxZb = (highZ - lowZ) / m_cellSize;
 
-	WaterTriangleStrip *strip = new WaterTriangleStrip;
-	strip->m_startRenderVertIndex = 0;
+	WaterTriangleStrip strip;
+	strip.m_startRenderVertIndex = 0;
 	int degen = 0;
-	WaterVertex vertex1, vertex2;
+	ffp_emulation::VertexData vertex1, vertex2;
 
 	for (int zb = 0; zb < maxZb; ++zb)
 	{
@@ -375,46 +345,47 @@ void Water::BuildTriangleStrips()
 			if (needed1 || needed2 || needed3 || needed4 || needed5 || needed6)
 			{
 				// Is needed, so add it to the strip
-				vertex1.m_pos.Set(fx, 0.0f, fz);
-				vertex2.m_pos.Set(fx, 0.0f, fz + m_cellSize);
+				vertex1.x = fx;
+				vertex1.y = 0.0f;
+				vertex1.z = fz;
+
+				vertex2.x = fx;
+				vertex2.y = 0.0f;
+				vertex2.z = fz + m_cellSize;
 				if(degen==1)
 				{
-					m_renderVerts.PutData(vertex1);
-					m_renderVerts.PutData(vertex1);
+					m_vertsFFP.push_back(vertex1);
+					m_vertsFFP.push_back(vertex1);
 				}
 				degen = 2;
-				m_renderVerts.PutData(vertex1);
-				m_renderVerts.PutData(vertex2);
+				m_vertsFFP.push_back(vertex1);
+				m_vertsFFP.push_back(vertex2);
 			}
 			else
 			{
 				// Not needed, add degenerated joint.
 				if(degen==2)
 				{
-					m_renderVerts.PutData(vertex2);
-					m_renderVerts.PutData(vertex2);
+					m_vertsFFP.push_back(vertex2);
+					m_vertsFFP.push_back(vertex2);
 					degen = 1;
 				}
 			}
 		}
 	}
 
-	strip->m_numVerts = m_renderVerts.NumUsed();
-	m_strips.PutData(strip);
-
-	// Down-size the finished FastDArrays to fit their data tightly
-	m_renderVerts.SetSize(m_renderVerts.NumUsed());
-	m_strips.SetSize(m_strips.NumUsed());
+	strip.m_numVerts = m_vertsFFP.size();
+	m_strips.push_back(strip);
 
 	// Up-size the empty FastDArrays to be the same size as the vertex array
-	m_waterDepths = new float[m_renderVerts.NumUsed()];
-	m_shoreNoise = new float[m_renderVerts.NumUsed()];
+	m_waterDepths = new float[m_vertsFFP.size()];
+	m_shoreNoise = new float[m_vertsFFP.size()];
 
 	// Create other per-vertex arrays
-	for (int i = 0; i < m_renderVerts.Size(); ++i)
+	for (size_t i = 0; i < m_vertsFFP.size(); ++i)
 	{
-		Vector3 const &pos = m_renderVerts[i].m_pos;
-		float depth = m_waterDepthMap->GetValue(pos.x, pos.z);
+		const auto &vertex = m_vertsFFP[i];
+		float depth = m_waterDepthMap->GetValue(vertex.x, vertex.z);
 		m_waterDepths[i] = depth;
 		float shoreness = 1.0f - depth;
 		float whiteness = shoreness + sfrand(shoreness) * shoreNoiseFactor;
@@ -423,61 +394,8 @@ void Water::BuildTriangleStrips()
 	}
 
 	delete m_waterDepthMap; m_waterDepthMap = nullptr;
-
-#ifdef FFP_ENABLE_EMULATION
-	m_vertsFFP.reserve(m_renderVerts.Size());
-
-	for(int i = 0; i < m_renderVerts.Size(); i++)
-	{
-		if(!m_renderVerts.ValidIndex(i))
-			continue;
-
-		m_vertsFFP.push_back(ffp_emulation::VertexData{
-			.x = m_renderVerts[i].m_pos.x,
-			.y = m_renderVerts[i].m_pos.y,
-			.z = m_renderVerts[i].m_pos.z,
-
-			.r = float(m_renderVerts[i].m_col.r) / 255.f,
-			.g = float(m_renderVerts[i].m_col.g) / 255.f,
-			.b = float(m_renderVerts[i].m_col.b) / 255.f,
-			.a = float(m_renderVerts[i].m_col.a),
-
-			.n_x = m_renderVerts[i].m_normal.x,
-			.n_y = m_renderVerts[i].m_normal.y,
-			.n_z = m_renderVerts[i].m_normal.z,
-		});
-	}
-#endif
 }
 
-
-#ifdef USE_DIRECT3D
-static LPDIRECT3DVERTEXDECLARATION9 GetVertexDeclWater()
-{
-	static D3DVERTEXELEMENT9 s_vertexDesc[] = {
-		{0, 0, D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-		{0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
-		{0, 16, D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
-		{0xFF,0,D3DDECLTYPE_UNUSED, 0,0,0} // D3DDECL_END
-	};
-
-	if (!s_vertexDecl)
-		OpenGLD3D::g_pd3dDevice->CreateVertexDeclaration( s_vertexDesc, &s_vertexDecl );
-
-	return s_vertexDecl;
-};
-
-void Water::ReleaseD3DPoolDefaultResources()
-{
-	SAFE_RELEASE(m_vertexBuffer);
-}
-
-void Water::ReleaseD3DResources()
-{
-	ReleaseD3DPoolDefaultResources();
-	SAFE_RELEASE(s_vertexDecl);
-}
-#endif
 
 void Water::RenderFlatWaterTiles(
 		float posNorth, float posSouth, float posEast, float posWest, float height,
@@ -590,12 +508,6 @@ void Water::RenderFlatWater()
 
 	float const timeFactor = g_gameTime / 30.0f;
 
-#ifdef USE_DIRECT3D
-	// sets default vertex format (somebody changes it and not returns back, where?)
-	extern LPDIRECT3DVERTEXDECLARATION9 s_pCustomVertexDecl;
-	OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( s_pCustomVertexDecl );
-#endif
-
 	RenderFlatWaterTiles(
 		landSizeZ + borderZ, -borderZ, -borderX, landSizeX + borderX, -9.0f,
 		timeFactor, timeFactor + 30.0f, timeFactor, timeFactor + 30.0f,
@@ -655,44 +567,32 @@ void Water::UpdateDynamicWater()
 	//
 	// Go through all the strips, updating vertex heights and poly colours
 
-	for (int i = 0; i < m_strips.Size(); ++i)
+	for (const auto& strip : m_strips)
 	{
-		WaterTriangleStrip *strip = m_strips[i];
-
 		float prevHeight1 = 0.0f;
 		float prevHeight2 = 0.0f;
 
 		//
 		// Set through the triangle strip in pairs of vertices
 
-		int const finalVertIndex = strip->m_startRenderVertIndex + strip->m_numVerts - 1;
-		for (int j = strip->m_startRenderVertIndex; j < finalVertIndex; ++j)
+		int const finalVertIndex = strip.m_startRenderVertIndex + strip.m_numVerts - 1;
+		for (int j = strip.m_startRenderVertIndex; j < finalVertIndex; ++j)
 		{
-			#ifdef FFP_ENABLE_EMULATION
 			ffp_emulation::VertexData& vertex1 = m_vertsFFP[j];
 			ffp_emulation::VertexData& vertex2 = m_vertsFFP[j+1];
-			#else
-			WaterVertex *vertex1 = &m_renderVerts[j];
-			WaterVertex *vertex2 = &m_renderVerts[j+1];
-			#endif
 
 			float const landSizeX = g_app->m_location->m_landscape.GetWorldSizeX();
 			float const landSizeZ = g_app->m_location->m_landscape.GetWorldSizeZ();
 			float const lowX = -landSizeX * 0.5f;
 			float const lowZ = -landSizeZ * 0.5f;
 
-			#ifdef FFP_ENABLE_EMULATION
 			int indexX = int((vertex1.x-lowX)/m_cellSize+0.1f);
 			int indexZ = int((vertex1.z-lowZ)/m_cellSize+0.1f);
-			#else
-			int indexX = int((vertex1->m_pos.x-lowX)/m_cellSize+0.1f);
-			int indexZ = int((vertex1->m_pos.z-lowZ)/m_cellSize+0.1f);
-			#endif
+			
 			DarwiniaDebugAssert(indexX < m_waveTableSizeX);
 			DarwiniaDebugAssert(indexZ + 1 < m_waveTableSizeZ);
 
 			// Update the height and calc brightness for FIRST vertex of the pair
-			#ifdef FFP_ENABLE_EMULATION
 			vertex1.y = m_waveTableX[indexX] + m_waveTableZ[indexZ];
 			vertex1.y *= m_waterDepths[j];
 			if(j>=2 && isPositionsIdentical(m_vertsFFP[j-2], m_vertsFFP[j-1], vertex1))
@@ -701,56 +601,29 @@ void Water::UpdateDynamicWater()
 				m_vertsFFP[j-2].y = vertex1.y;
 				m_vertsFFP[j-1].y = vertex1.y;
 			}
-			#else
-			vertex1->m_pos.y = m_waveTableX[indexX] + m_waveTableZ[indexZ];
-			vertex1->m_pos.y *= m_waterDepths[j];
-			if(j>=2 && isIdentical(m_renderVerts[j-2].m_pos,m_renderVerts[j-1].m_pos,vertex1->m_pos))
-			{
-				// end of degenerated joint
-				m_renderVerts[j-2].m_pos.y = vertex1->m_pos.y;
-				m_renderVerts[j-1].m_pos.y = vertex1->m_pos.y;
-			}
-			#endif
-			#ifdef FFP_ENABLE_EMULATION
 			float brightness = (prevHeight1 + prevHeight2 + vertex1.y) * waveBrightnessScale;
-			#else
-			float brightness = (prevHeight1 + prevHeight2 + vertex1->m_pos.y) * waveBrightnessScale;
-			#endif
 
 			float shoreness = 1.0f - m_waterDepths[j];
 			brightness *= shoreness;
 			brightness += m_shoreNoise[j];
-			#ifdef FFP_ENABLE_EMULATION
 			prevHeight1 = vertex1.y;
-			#else
-			prevHeight1 = vertex1->m_pos.y;
-			#endif
 
 			// Update the height and calc brightness for SECOND vertex of the pair
 			++j;
-			#ifdef FFP_ENABLE_EMULATION
+
 			vertex2.y = m_waveTableX[indexX] + m_waveTableZ[indexZ + 1];
 			vertex2.y *= m_waterDepths[j];
 			float brightness2 = (prevHeight2 + prevHeight1 + vertex2.y) * waveBrightnessScale;
-			#else
-			vertex2->m_pos.y = m_waveTableX[indexX] + m_waveTableZ[indexZ + 1];
-			vertex2->m_pos.y *= m_waterDepths[j];
-			float brightness2 = (prevHeight2 + prevHeight1 + vertex2->m_pos.y) * waveBrightnessScale;
-			#endif
+
 			shoreness = 1.0f - m_waterDepths[j];
 			brightness2 *= shoreness;
 			brightness2 += m_shoreNoise[j];
 
-			#ifdef FFP_ENABLE_EMULATION
 			prevHeight2 = vertex2.y;
-			#else
-			prevHeight2 = vertex2->m_pos.y;
-			#endif
 
 			// Now update the colours for the two vertices (and hence triangles), but
 			// mix their colours together to reduce the sawtooth effect caused by too
 			// much contrast between two triangles in the same quad.
-			#ifdef FFP_ENABLE_EMULATION
 			{
 				auto colour1 = GetColour(Round(brightness2 * 0.7f + brightness * 0.3f));
 				auto colour2 = GetColour(Round(brightness * 0.7f + brightness2 * 0.3f));
@@ -765,10 +638,6 @@ void Water::UpdateDynamicWater()
 				vertex2.b = colour2.b / 255.f;
 				vertex2.a = colour2.a;
 			}
-			#else
-			vertex1->m_col = GetColour(Round(brightness2 * 0.7f + brightness * 0.3f));
-			vertex2->m_col = GetColour(Round(brightness * 0.7f + brightness2 * 0.3f));
-			#endif
 
 			// Update vertex normals
 			float dx1 = -(m_waveTableX[indexX+1] - m_waveTableX[indexX-1])*m_waterDepths[j-1];
@@ -776,7 +645,6 @@ void Water::UpdateDynamicWater()
 			float dz1 = -(m_waveTableZ[indexZ+1] - m_waveTableZ[indexZ  ])*m_waterDepths[j-1];
 			float dz2 = -(m_waveTableZ[indexZ+2] - m_waveTableZ[indexZ+1])*m_waterDepths[j  ];
 			// realistic, but with artifacts around islands in wild water
-			#ifdef FFP_ENABLE_EMULATION
 			{
 				auto normal1 = Vector3(dx1,vertex1.y,dz1);
 				auto normal2 = Vector3(dx2,vertex2.y,dz2);
@@ -789,121 +657,49 @@ void Water::UpdateDynamicWater()
 				vertex2.n_y = normal2.y;
 				vertex2.n_z = normal2.z;
 			}
-			#else
-			vertex1->m_normal = Vector3(dx1,vertex1->m_pos.y,dz1);
-			vertex2->m_normal = Vector3(dx2,vertex2->m_pos.y,dz2);
-			#endif
+			
 			// no artifacts around islands in wild water, but much less realistic
 			//vertex1->m_normal = Vector3(0,-vertex1->m_pos.y,0);
 			//vertex2->m_normal = Vector3(0,-vertex2->m_pos.y,0);
 
-			#ifdef FFP_ENABLE_EMULATION
 			if(j>=2 && isPositionsIdentical(vertex1, vertex2, m_vertsFFP[j-2]))
 			{
 				// start of degenerated joint
 				vertex1.y = m_vertsFFP[j-2].y;
 				vertex2.y = m_vertsFFP[j-2].y;
 			}
-			#else
-			if(j>=2 && isIdentical(vertex1->m_pos,vertex2->m_pos,m_renderVerts[j-2].m_pos))
-			{
-				// start of degenerated joint
-				vertex1->m_pos.y = m_renderVerts[j-2].m_pos.y;
-				vertex2->m_pos.y = m_renderVerts[j-2].m_pos.y;
-			}
-			#endif
 		}
 	}
 
-#ifdef USE_DIRECT3D
-
-	if (m_renderVerts.Size() > 0) {
-		// Update the vertex buffer
-
-		unsigned bufferSize = m_renderVerts.Size() * sizeof(WaterVertex);
-
-		if (m_vertexBuffer == nullptr) {
-			HRESULT hr = OpenGLD3D::g_pd3dDevice->CreateVertexBuffer(
-				bufferSize,
-				D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY|(OpenGLD3D::g_supportsHwVertexProcessing?0:D3DUSAGE_SOFTWAREPROCESSING),
-				0,
-				D3DPOOL_DEFAULT,
-				&m_vertexBuffer,
-				nullptr);
-
-			DarwiniaDebugAssert( hr != D3DERR_INVALIDCALL );
-			DarwiniaDebugAssert( hr != D3DERR_OUTOFVIDEOMEMORY );
-			DarwiniaDebugAssert( hr != E_OUTOFMEMORY );
-			DarwiniaDebugAssert( hr == D3D_OK );
-			DarwiniaDebugAssert( m_vertexBuffer != nullptr );
-		}
-
-		void *data;
-
-		m_vertexBuffer->Lock(0, bufferSize, &data, D3DLOCK_DISCARD);
-		memcpy(data, &m_renderVerts[0], bufferSize);
-		m_vertexBuffer->Unlock();
-	}
-
-#endif
-
-#ifdef FFP_ENABLE_EMULATION
 	m_vertex_buffer.update(m_vertsFFP);
-#endif
 
 }
 
 
 void Water::RenderDynamicWater()
 {
-#ifdef USE_DIRECT3D
-	if (m_vertexBuffer == nullptr)
-		return;
-#endif
-
 	glEnable		    (GL_BLEND);
     glBlendFunc         (GL_SRC_ALPHA, GL_ONE);
     glEnable            (GL_FOG);
 	glEnable			(GL_CULL_FACE);
-
-#ifdef USE_DIRECT3D
-	IDirect3DVertexDeclaration9*	savedDecl;
-
-	OpenGLD3D::g_pd3dDevice->GetVertexDeclaration( &savedDecl );
-	OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( GetVertexDeclWater() );
-	OpenGLD3D::g_pd3dDevice->SetStreamSource( 0, m_vertexBuffer, 0, sizeof(WaterVertex) );
-#endif
 
 	if (m_renderWaterEffect && g_waterReflectionEffect)
 	{
 		g_waterReflectionEffect->Start();
 	}
 
-	int numStrips = m_strips.Size();
-	for (int i = 0; i < numStrips; ++i)
+	for (const auto& strip : m_strips)
 	{
-		WaterTriangleStrip *strip = m_strips[i];
-
-//#ifdef USE_DIRECT3D
-//		OpenGLD3D::g_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, strip->m_startRenderVertIndex, strip->m_numVerts-2);
-//#else
-//#endif
-
 		if (m_renderWaterEffect && g_waterReflectionEffect)
-			m_vertex_buffer.draw(GL_TRIANGLE_STRIP, strip->m_startRenderVertIndex, strip->m_numVerts, g_waterReflectionEffect->GetProgram());
+			m_vertex_buffer.draw(GL_TRIANGLE_STRIP, strip.m_startRenderVertIndex, strip.m_numVerts, g_waterReflectionEffect->GetProgram());
 		else
-			m_vertex_buffer.draw(GL_TRIANGLE_STRIP, strip->m_startRenderVertIndex, strip->m_numVerts);
-
+			m_vertex_buffer.draw(GL_TRIANGLE_STRIP, strip.m_startRenderVertIndex, strip.m_numVerts);
 	}
 
 	if (m_renderWaterEffect && g_waterReflectionEffect)
 	{
 		g_waterReflectionEffect->Stop();
 	}
-
-#ifdef USE_DIRECT3D
-	OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( savedDecl );
-#endif
 
     glDisable           (GL_FOG);
     glBlendFunc         (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -954,10 +750,8 @@ void Water::Render()
 			//Advance();
 			START_PROFILE(g_app->m_profiler,  "Render Water" );
 			RenderFlatWater();
-#ifdef USE_DIRECT3D
-			if(OpenGLD3D::g_supportsHwVertexProcessing)
-#endif
-				RenderDynamicWater();
+
+			RenderDynamicWater();
             END_PROFILE(g_app->m_profiler,  "Render Water" );
         }
 		else
@@ -974,11 +768,7 @@ void Water::Render()
 
 void Water::Advance()
 {
-	if( !g_app->m_editing && g_prefsManager->GetInt( "RenderWaterDetail" ) > 0
-#ifdef USE_DIRECT3D
-		&& OpenGLD3D::g_supportsHwVertexProcessing
-#endif
-		)
+	if( !g_app->m_editing && g_prefsManager->GetInt( "RenderWaterDetail" ) > 0)
 	{
 		START_PROFILE(g_app->m_profiler,  "Advance Water" );
 		UpdateDynamicWater();

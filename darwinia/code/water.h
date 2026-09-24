@@ -55,12 +55,7 @@ class Water
 {
 protected:
 	// Render data - referenced directly by OpenGL
-	FastDArray		<WaterVertex> m_renderVerts;
-	FastDArray		<WaterTriangleStrip *> m_strips;
-
-#ifdef USE_DIRECT3D
-	IDirect3DVertexBuffer9	*m_vertexBuffer;
-#endif
+	std::vector<WaterTriangleStrip> m_strips;
 
 	// Extra
 	float			*m_waterDepths;			// 1-to-1 mapping with verts. 1.0 is deepest, 0.0 is shallowest
@@ -100,10 +95,6 @@ protected:
 public:
     Water();
 	~Water();
-#ifdef USE_DIRECT3D
-	void            ReleaseD3DPoolDefaultResources();
-	void            ReleaseD3DResources     ();
-#endif
 
 	void            GenerateLightMap		();
 	inline RGBAColour const &GetColour(int _brightness);
