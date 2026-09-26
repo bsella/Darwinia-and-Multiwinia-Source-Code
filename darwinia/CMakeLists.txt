@@ -139,6 +139,7 @@ add_executable(darwinia
 	code/unit.cpp
 	code/gesture.cpp
 	code/gamecursor.cpp
+	code/tutorial_demo1.cpp
 	code/tutorial_demo2.cpp
 	code/clouds.cpp
 	code/gesture_demo.cpp

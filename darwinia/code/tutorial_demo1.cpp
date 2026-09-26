@@ -1,8 +1,6 @@
-#include "lib/universal_include.h"
 #include "lib/hi_res_time.h"
 #include "lib/text_renderer.h"
 
-#include "main.h"
 #include "tutorial.h"
 #include "sepulveda.h"
 #include "app.h"
@@ -51,7 +49,7 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
             break;
         }
 
-        case 4:	        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 4:	        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_4" );
                         g_app->m_sepulveda->Say( "tutorial_4b" );
                         RepeatMessage( "tutorial_4b" );
@@ -64,10 +62,10 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
 
         case 6:         g_app->m_camera->SetTarget("tutorial1");
 		                g_app->m_camera->SetMoveDuration(3);
-                        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+                        g_app->m_camera->RequestMoveToTargetMode();
             	        break;
 
-        case 7:         g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 7:         g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_7" );
                         RepeatMessage( "tutorial_7" );
                         break;
@@ -104,7 +102,7 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
             break;
         }
 
-        case 21:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 21:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_21" );
                         g_app->m_sepulveda->DemoGesture( "engineer.txt", 2.0f );
                         RepeatMessage( "tutorial_21", 30.0f, "engineer.txt" );
@@ -122,7 +120,7 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
             break;
         }
 
-        case 24:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 24:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_24" );
                         g_app->m_sepulveda->Say( "tutorial_24b" );
                         g_app->m_sepulveda->Say( "tutorial_24c" );
@@ -130,41 +128,41 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
 
         case 25:        g_app->m_camera->SetTarget("tutorial2");
 		                g_app->m_camera->SetMoveDuration(3);
-                        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "tutorial_25" );
                         break;
 
         case 26:        g_app->m_camera->SetTarget("tutorial3");
 		                g_app->m_camera->SetMoveDuration(15);
-                        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "tutorial_26" );
                         break;
 
-        case 27:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 27:        g_app->m_camera->RequestFreeMovementMode();
                         break;
 
         case 28:        g_app->m_camera->SetTarget("tutorial6");
 		                g_app->m_camera->SetMoveDuration(3);
-                        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "tutorial_28" );
                         g_app->m_sepulveda->DemoGesture( "squad.txt", 2 );
                         RepeatMessage( "tutorial_28", 30, "squad.txt" );
                         break;
 
-        case 29:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 29:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_29" );
                         RepeatMessage( "tutorial_29" );
                         break;
 
         case 30:        g_app->m_camera->SetTarget("tutorial4");
 		                g_app->m_camera->SetMoveDuration(3);
-                        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "tutorial_30" );
                         break;
 
         case 31:        g_app->m_camera->SetTarget("tutorial5");
 		                g_app->m_camera->SetMoveDuration(15);
-                        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "tutorial_31" );
                         g_app->m_sepulveda->Say( "tutorial_31b" );
                         break;
@@ -174,31 +172,31 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
 
         case 33:        g_app->m_camera->SetTarget("tutorial7");
 		                g_app->m_camera->SetMoveDuration(4);
-                        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "tutorial_33" );
                         g_app->m_sepulveda->Say( "tutorial_33b" );
                         break;
 
-        case 34:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 34:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_34" );
                         RepeatMessage( "tutorial_34", 40 );
                         break;
 
         case 35:        g_app->m_camera->SetTarget("tutorial2");
 		                g_app->m_camera->SetMoveDuration(30);
-                        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "tutorial_35" );
                         g_app->m_sepulveda->Say( "tutorial_35b" );
                         g_app->m_sepulveda->Say( "tutorial_35c" );
                         break;
 
-        case 351:       g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 351:       g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_351" );
                         g_app->m_sepulveda->DemoGesture( "officer.txt", 2 );
                         RepeatMessage( "tutorial_351", 30, "officer.txt" );
                         break;
 
-        case 36:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 36:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_36" );
                         RepeatMessage( "tutorial_36" );
                         break;
@@ -220,11 +218,11 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
             break;
         }
 
-        case 39:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 39:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_39" );
                         break;
 
-        case 40:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 40:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "tutorial_40" );
                         g_app->m_sepulveda->Say( "tutorial_40b" );
                         RepeatMessage( "tutorial_40b" );
