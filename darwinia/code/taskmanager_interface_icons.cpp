@@ -175,14 +175,14 @@ void TaskManagerInterfaceIcons::Advance()
         // We were running a default objective description (trunk port, research item)
         // So shut it down now
         g_app->m_sepulveda->ClearHighlights( "RunDefaultObjective" );
-        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        g_app->m_camera->RequestFreeMovementMode();
         m_viewingDefaultObjective = false;
     }
 
 	bool inCutscene = false;
 	if( g_app->m_script->IsRunningScript() &&
 		g_app->m_script->m_permitEscape ) inCutscene = true;
-	if( g_app->m_camera->IsInMode( Camera::ModeBuildingFocus ) ) inCutscene = true;
+	if( g_app->m_camera->IsInModeBuildingFocus() ) inCutscene = true;
 
 	if( inCutscene )
 	{

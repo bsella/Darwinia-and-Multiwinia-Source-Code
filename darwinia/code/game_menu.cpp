@@ -277,7 +277,7 @@ void GameMenu::CreateMenu()
     EclRegisterWindow( new GameMenuWindow() );
 
     // set the camera to a position with a good view of the internet
-    g_app->m_camera->RequestMode(Camera::ModeMainMenu);
+    g_app->m_camera->RequestMainMenuMode();
     g_app->m_camera->SetDebugMode(Camera::DebugModeNever);
     g_app->m_camera->SetTarget(Vector3(-900000, 3000000, 397000), Vector3(0,0.5f,-1));
     g_app->m_camera->CutToTarget();

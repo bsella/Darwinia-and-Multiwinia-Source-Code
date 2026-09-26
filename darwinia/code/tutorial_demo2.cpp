@@ -60,11 +60,11 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
                         DarwiniaReleaseAssert(building, "Tutorial building not found" );
                         g_app->m_camera->SetTarget( building->m_pos, 400, 300 );
 		                g_app->m_camera->SetMoveDuration(2);
-                        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+                        g_app->m_camera->RequestMoveToTargetMode();
                         break;
         }
 
-        case 6:         g_app->m_camera->RequestMode(Camera::ModeFreeMovement);
+        case 6:         g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "launchpad_tutorial_6" );
                         RepeatMessage( "launchpad_tutorial_6" );
                         break;
@@ -109,12 +109,12 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
 
         case 141:
         {
-                        g_app->m_camera->RequestMode(Camera::ModeFreeMovement);
+                        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "launchpad_tutorial_12e" );
                         break;
         }
 
-        case 15:        g_app->m_camera->RequestMode(Camera::ModeFreeMovement);
+        case 15:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "launchpad_tutorial_13" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_13b" );
                         RepeatMessage( "launchpad_tutorial_13b" );
@@ -146,7 +146,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         case 191:       //g_app->m_camera->RestoreCameraPosition();
                         break;
 
-        case 20:        g_app->m_camera->RequestMode(Camera::ModeFreeMovement);
+        case 20:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "launchpad_tutorial_21" );
                         RepeatMessage( "launchpad_tutorial_21", 60 );
                         break;
@@ -185,7 +185,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
                         break;
         }
 
-        case 41:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 41:        g_app->m_camera->RequestFreeMovementMode();
                         g_app->m_sepulveda->Say( "launchpad_tutorial_43" );
                         RepeatMessage( "launchpad_tutorial_43", 60 );
                         break;
@@ -204,7 +204,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
                         g_app->m_camera->CutToTarget();
                         g_app->m_camera->SetTarget( "incubator2" );
                         g_app->m_camera->SetMoveDuration( 30 );
-                        g_app->m_camera->RequestMode( Camera::ModeMoveToTarget );
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_camera->SetFOV( 40 );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_49" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_50" );
@@ -213,13 +213,13 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
 
         case 45:        g_app->m_camera->SetTarget( "incubator3" );
                         g_app->m_camera->SetMoveDuration( 15 );
-                        g_app->m_camera->RequestMode( Camera::ModeMoveToTarget );
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_camera->SetFOV( 40 );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_52" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_53" );
                         break;
 
-        case 46:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 46:        g_app->m_camera->RequestFreeMovementMode();
                         break;
 
         case 461:       BeginPlayerBusyCheck();
@@ -259,13 +259,13 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         {
                         g_app->m_camera->SetTarget( "incubator2" );
                         g_app->m_camera->SetMoveDuration( 5 );
-                        g_app->m_camera->RequestMode( Camera::ModeMoveToTarget );
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "launchpad_tutorial_62" );
                         break;
         }
 
         case 51:        RepeatMessage( "launchpad_tutorial_62" );
-                        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+                        g_app->m_camera->RequestFreeMovementMode();
                         break;
 
         case 52:        g_app->m_sepulveda->Say( "launchpad_tutorial_63" );
@@ -307,19 +307,19 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
 
         case 58:        g_app->m_camera->SetTarget( "attack6" );
                         g_app->m_camera->SetMoveDuration( 10 );
-                        g_app->m_camera->RequestMode( Camera::ModeMoveToTarget );
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "launchpad_tutorial_74" );
                         break;
 
         case 59:        g_app->m_camera->SetTarget( "wherenext1" );
                         g_app->m_camera->SetMoveDuration( 8 );
-                        g_app->m_camera->RequestMode( Camera::ModeMoveToTarget );
+                        g_app->m_camera->RequestMoveToTargetMode();
                         g_app->m_sepulveda->Say( "launchpad_tutorial_75" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_76" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_77" );
                         break;
 
-        case 60:        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        case 60:        g_app->m_camera->RequestFreeMovementMode();
                         break;
 
         default:

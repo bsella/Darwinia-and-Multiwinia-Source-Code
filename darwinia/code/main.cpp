@@ -1246,7 +1246,7 @@ void EnterLocation()
     else
     {
 	    g_app->m_camera->SetDebugMode(Camera::DebugModeAuto);
-	    g_app->m_camera->RequestMode(Camera::ModeFreeMovement);
+	    g_app->m_camera->RequestFreeMovementMode();
 
 	    LocationGameLoop();
 #ifdef DEMOBUILD
@@ -1275,7 +1275,7 @@ void EnterGlobalWorld()
 
     // Put the camera in a sensible place
     g_app->m_camera->SetDebugMode(Camera::DebugModeAuto);
-    g_app->m_camera->RequestMode(Camera::ModeSphereWorld);
+    g_app->m_camera->RequestSphereWorldMode();
     g_app->m_camera->SetHeight( 50.0f );
 
     if (g_app->m_editing)
@@ -1290,7 +1290,7 @@ void EnterGlobalWorld()
 
 void MainMenuLoop()
 {
-    g_app->m_camera->RequestMode( Camera::ModeMainMenu );
+    g_app->m_camera->RequestMainMenuMode();
     while( g_app->m_atMainMenu )
     {
         UpdateAdvanceTime();

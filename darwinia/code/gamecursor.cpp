@@ -380,7 +380,7 @@ void GameCursor::Render()
 
             cursorRendered = true;
         }
-		else if( g_app->m_camera->IsInMode( Camera::ModeEntityTrack ) )
+		else if( g_app->m_camera->IsInModeEntityTrack() )
 		{
             if (false) {
 			    if( task &&

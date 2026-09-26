@@ -1235,8 +1235,8 @@ void SphereWorld::RenderHeaven()
 
 void SphereWorld::RenderIslands()
 {
-    if( g_app->m_camera->IsInMode( Camera::ModeSphereWorldIntro ) ||
-        g_app->m_camera->IsInMode( Camera::ModeSphereWorldOutro ) )
+    if( g_app->m_camera->IsInModeSphereWorldIntro() ||
+        g_app->m_camera->IsInModeSphereWorldOutro() )
     {
         return;
     }

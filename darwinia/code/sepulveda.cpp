@@ -1233,12 +1233,12 @@ void Sepulveda::Render()
 
     if( !g_app->m_taskManagerInterface->m_visible )
     {
-        bool cutsceneModeDesired = g_app->m_camera->IsInMode( Camera::ModeBuildingFocus ) ||
-                                   g_app->m_camera->IsInMode( Camera::ModeMoveToTarget ) ||
-                                   g_app->m_camera->IsInMode( Camera::ModeDoNothing ) ||
-                                   g_app->m_camera->IsInMode( Camera::ModeSphereWorldScripted ) ||
-                                   g_app->m_camera->IsInMode( Camera::ModeSphereWorldOutro ) ||
-                                   g_app->m_camera->IsInMode( Camera::ModeSphereWorldFocus );
+        bool cutsceneModeDesired = g_app->m_camera->IsInModeBuildingFocus() ||
+                                   g_app->m_camera->IsInModeMoveToTarget() ||
+                                   g_app->m_camera->IsInModeDoNothing() ||
+                                   g_app->m_camera->IsInModeSphereWorldScripted() ||
+                                   g_app->m_camera->IsInModeSphereWorldOutro() ||
+                                   g_app->m_camera->IsInModeSphereWorldFocus();
 
                                    /*||g_app->m_tutorial*/
 

@@ -470,7 +470,7 @@ static bool SquaddieSelected()
 	Task *currentTask = nullptr;
 
 	return
-		g_app->m_camera->IsInMode( Camera::ModeEntityTrack ) &&
+		g_app->m_camera->IsInModeEntityTrack() &&
 		(unit = GetSelectedUnit()) &&
 		unit->m_troopType == Entity::TypeInsertionSquadie &&
 		(currentTask = g_app->m_taskManager->GetCurrentTask()) &&
@@ -653,12 +653,12 @@ bool ControlHelpSystem::CheckCondition( int _condition )
 
 		case CondMoveCameraOrUnit:
 			return !g_app->m_taskManagerInterface->m_visible &&
-				   (g_app->m_camera->IsInMode( Camera::ModeFreeMovement ) ||
-				    g_app->m_camera->IsInMode( Camera::ModeEntityTrack ));
+				   (g_app->m_camera->IsInModeFreeMovement() ||
+				    g_app->m_camera->IsInModeEntityTrack());
 
 		case CondCameraAim:
 			return !g_app->m_taskManagerInterface->m_visible &&
-				   g_app->m_camera->IsInMode( Camera::ModeFreeMovement );
+				   g_app->m_camera->IsInModeFreeMovement();
 
 		case CondSquaddieFire:
 			return !g_app->m_taskManagerInterface->m_visible &&
@@ -682,7 +682,7 @@ bool ControlHelpSystem::CheckCondition( int _condition )
 		case CondZoom:
 			return !g_app->m_taskManagerInterface->m_visible &&
 				   // RadarDishSelected() &&
-				   g_app->m_camera->IsInMode( Camera::ModeRadarAim );
+				   g_app->m_camera->IsInModeRadarAim();
 
 		case CondFireGrenades:
 			return !g_app->m_taskManagerInterface->m_visible &&
@@ -738,7 +738,7 @@ bool ControlHelpSystem::CheckCondition( int _condition )
 			bool inCutscene = false;
 			if( g_app->m_script->IsRunningScript() &&
 				g_app->m_script->m_permitEscape ) inCutscene = true;
-			if( g_app->m_camera->IsInMode( Camera::ModeBuildingFocus ) ) inCutscene = true;
+			if( g_app->m_camera->IsInModeBuildingFocus() ) inCutscene = true;
 			return inCutscene;
 		}
 
@@ -808,7 +808,7 @@ void ControlHelpSystem::Render()
 	bool inCutscene = false;
 	if( g_app->m_script->IsRunningScript() &&
 		g_app->m_script->m_permitEscape ) inCutscene = true;
-	if( g_app->m_camera->IsInMode( Camera::ModeBuildingFocus ) ) inCutscene = true;
+	if( g_app->m_camera->IsInModeBuildingFocus() ) inCutscene = true;
 
 	if( inCutscene )
 	{

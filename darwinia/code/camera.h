@@ -6,6 +6,7 @@
 #include "worldobject/entity.h"
 #include "worldobject/worldobject.h"
 
+#include <variant>
 
 class Building;
 class Teleport;
@@ -15,26 +16,49 @@ class CameraAnimation;
 class Camera
 {
 public:
-    enum Mode
-    {
-		ModeReplay = 0,
-		ModeSphereWorld = 1,
-        ModeFreeMovement = 2,		// Remember to update the static string table
-        ModeBuildingFocus = 3,		// at the end of camera.cpp when you update this
-        ModeEntityTrack = 4,
-        ModeRadarAim = 5,
-        ModeFirstPerson = 6,
-		ModeMoveToTarget = 7,
-		ModeDoNothing = 8,
-		ModeEntityFollow = 9,
-        ModeTurretAim = 10,
-        ModeSphereWorldScripted = 11,
-        ModeSphereWorldIntro = 12,
-        ModeSphereWorldOutro = 13,
-        ModeSphereWorldFocus = 14,
-        ModeMainMenu = 15,
-		ModeNumModes
-    };
+	class ObjectTrackMode
+	{
+	};
+
+	class EntityTrackMode
+	{
+	};
+
+	class ModeReplay {};
+	class ModeSphereWorld {};
+	class ModeFreeMovement {};
+	class ModeBuildingFocus {};
+	class ModeEntityTrack {};
+	class ModeRadarAim {};
+	class ModeFirstPerson {};
+	class ModeMoveToTarget {};
+	class ModeDoNothing {};
+	class ModeEntityFollow {};
+	class ModeTurretAim {};
+	class ModeSphereWorldScripted {};
+	class ModeSphereWorldIntro {};
+	class ModeSphereWorldOutro {};
+	class ModeSphereWorldFocus {};
+	class ModeMainMenu {};
+
+	using Mode = std::variant<
+		ModeReplay,
+		ModeSphereWorld,
+		ModeFreeMovement,
+		ModeBuildingFocus,
+		ModeEntityTrack,
+		ModeRadarAim,
+		ModeFirstPerson,
+		ModeMoveToTarget,
+		ModeDoNothing,
+		ModeEntityFollow,
+		ModeTurretAim,
+		ModeSphereWorldScripted,
+		ModeSphereWorldIntro,
+		ModeSphereWorldOutro,
+		ModeSphereWorldFocus,
+		ModeMainMenu
+	>;
 
 	enum
 	{
@@ -113,7 +137,7 @@ private:
     float   m_currentDistance;	// Used in Manual Camera Rotation when tracking entities
 	float	m_heightMultiplier;
 
-    int		m_mode;
+    Mode    m_mode;
 	int		m_debugMode;
 	int		m_framesInThisMode;
 
@@ -126,7 +150,7 @@ private:
 	CameraAnimation *m_anim;
 	int m_animCurrentNode;
 	float m_animNodeStartTime;
-	int m_modeBeforeAnim;
+	Mode m_modeBeforeAnim;
 	Vector3 m_posBeforeAnim;
 	Vector3 m_upBeforeAnim;
 	Vector3 m_frontBeforeAnim;
@@ -162,19 +186,43 @@ public:
 	void SetDebugMode				(int _mode);
 	void SetNextDebugMode			();
 
-	void RequestMode				(int _mode);
-    void RequestBuildingFocusMode   (Building *_building, float _range, float _height);
-    void RequestSphereFocusMode     ();
-    void RequestRadarAimMode        (Building *_building);
-    void RequestEntityTrackMode     (WorldObjectId const &_id);
-    void RequestEntityFollowMode    (WorldObjectId const &_id);
-    void RequestTurretAimMode       (Building *_building);
+	void RequestReplayMode              ();
+	void RequestSphereWorldMode         ();
+	void RequestFreeMovementMode        ();
+	void RequestFirstPersonMode         ();
+	void RequestMoveToTargetMode        ();
+	void RequestDoNothingMode           ();
+	void RequestSphereWorldScriptedMode ();
+	void RequestSphereWorldIntroMode    ();
+	void RequestSphereWorldOutroMode    ();
+	void RequestMainMenuMode            ();
+    void RequestBuildingFocusMode       (Building *_building, float _range, float _height);
+    void RequestSphereFocusMode         ();
+    void RequestRadarAimMode            (Building *_building);
+    void RequestEntityTrackMode         (WorldObjectId const &_id);
+    void RequestEntityFollowMode        (WorldObjectId const &_id);
+    void RequestTurretAimMode           (Building *_building);
 
     void CreateCameraShake          (float _intensity);
 
 	bool IsMoving					();
     bool IsInteractive              ();
-    bool IsInMode                   (int _mode);
+
+	bool IsInModeReplay()const;
+	bool IsInModeSphereWorld()const;
+	bool IsInModeFreeMovement()const;
+	bool IsInModeBuildingFocus()const;
+	bool IsInModeEntityTrack()const;
+	bool IsInModeRadarAim()const;
+	bool IsInModeFirstPerson()const;
+	bool IsInModeMoveToTarget()const;
+	bool IsInModeDoNothing()const;
+	bool IsInModeEntityFollow()const;
+	bool IsInModeTurretAim()const;
+	bool IsInModeSphereWorldScripted()const;
+	bool IsInModeSphereWorldIntro()const;
+	bool IsInModeSphereWorldOutro()const;
+	bool IsInModeSphereWorldFocus()const;
 
     void RecordCameraPosition       ();                 // So you can return easily
     void RestoreCameraPosition      ( bool _cut=false );

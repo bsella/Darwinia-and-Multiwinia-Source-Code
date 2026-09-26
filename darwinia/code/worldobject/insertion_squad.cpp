@@ -757,7 +757,7 @@ void Squadie::ListSoundEvents( LList<const char *> *_list )
 Vector3 Squadie::GetCameraFocusPoint()
 {
 	if( g_inputManager.controlEvent( ControlUnitPrimaryFireDirected /* ControlUnitStartSecondaryFireDirected */ ) &&
-        g_app->m_camera->IsInMode( Camera::ModeEntityTrack ) )
+        g_app->m_camera->IsInModeEntityTrack() )
 	{
 		InputDetails details;
 		g_inputManager.controlEvent( ControlUnitPrimaryFireDirected, details );

@@ -706,7 +706,7 @@ void TeamControls::ClearFlags()
 
 void TeamControls::Advance()
 {
-	if( g_app->m_camera->IsInMode( Camera::ModeBuildingFocus ) ) return;
+	if( g_app->m_camera->IsInModeBuildingFocus() ) return;
 
 	m_mousePos = g_app->m_userInput->GetMousePos3d();
 
@@ -714,7 +714,7 @@ void TeamControls::Advance()
 	m_secondaryFireTarget |= g_inputManager.controlEvent( ControlUnitSecondaryFireTarget );
 	m_primaryFireDirected |= g_inputManager.controlEvent( ControlUnitPrimaryFireDirected ) && !g_inputManager.controlEvent( ControlCameraRotate );
 	m_secondaryFireDirected |= g_inputManager.controlEvent( ControlUnitSecondaryFireDirected ) /* && g_inputManager.controlEvent( ControlUnitStartSecondaryFireDirected ) */;
-	m_cameraEntityTracking |= g_app->m_camera->IsInMode( Camera::ModeEntityTrack );
+	m_cameraEntityTracking |= g_app->m_camera->IsInModeEntityTrack();
 	m_unitMove |= g_inputManager.controlEvent( ControlUnitSetTarget ) && !m_secondaryFireTarget;
 	m_unitSecondaryMode |= g_inputManager.controlEvent( ControlUnitStartSecondaryFireDirected );
 	m_endSetTarget |= g_inputManager.controlEvent( ControlUnitEndSetTarget );

@@ -653,8 +653,8 @@ void Renderer::RenderFrame(bool withFlip)
 	if( !g_app->m_taskManagerInterface->m_visible &&
         !g_app->m_sepulveda->IsVisible() &&
         m_renderingPoster == PosterMakerInactive &&
-        !g_app->m_camera->IsInMode( Camera::ModeSphereWorldIntro ) &&
-        !g_app->m_camera->IsInMode( Camera::ModeSphereWorldOutro ) )
+        !g_app->m_camera->IsInModeSphereWorldIntro() &&
+        !g_app->m_camera->IsInModeSphereWorldOutro() )
     {
 #ifdef PROMOTIONAL_BUILD
         RenderLogo();

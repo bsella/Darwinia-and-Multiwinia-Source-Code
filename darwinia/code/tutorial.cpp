@@ -128,7 +128,7 @@ void Tutorial::Advance()
         g_app->m_sepulveda->Say( "tutorial_skipped" );
         delete g_app->m_tutorial;
         g_app->m_tutorial = nullptr;
-        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        g_app->m_camera->RequestFreeMovementMode();
         return;
     }
 

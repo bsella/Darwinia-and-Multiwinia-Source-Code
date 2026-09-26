@@ -262,8 +262,7 @@ void LevelFile::ParseCameraAnims(TextReader *_in)
 
 			// Read camera mode
 			node->m_transitionMode = CamAnimNode::GetTransitModeId(word);
-			DarwiniaReleaseAssert(node->m_transitionMode >= 0 &&
-						  node->m_transitionMode < Camera::ModeNumModes,
+			DarwiniaReleaseAssert(node->m_transitionMode >= 0,
 						  "Bad camera animation camera mode in level file %s", m_missionFilename);
 
 			// Read mount name

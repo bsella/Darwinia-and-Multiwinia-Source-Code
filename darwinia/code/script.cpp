@@ -114,7 +114,7 @@ void Script::RunCommand_CamMove(char const *_mountName, float _duration)
 	{
 		g_app->m_camera->SetMoveDuration(_duration);
 
-        g_app->m_camera->RequestMode(Camera::ModeMoveToTarget);
+        g_app->m_camera->RequestMoveToTargetMode();
 	}
 }
 
@@ -170,7 +170,7 @@ void Script::RunCommand_CamBuildingApproach (int _buildingId, float _range, floa
     {
         g_app->m_camera->SetTarget( building->m_centrePos, _range, _height );
         g_app->m_camera->SetMoveDuration( _duration );
-        g_app->m_camera->RequestMode( Camera::ModeMoveToTarget );
+        g_app->m_camera->RequestMoveToTargetMode();
     }
     else
     {
@@ -203,9 +203,9 @@ void Script::RunCommand_LocationFocus(char const *_locationName, float _fov)
         targetPos = g_app->m_globalWorld->GetLocationPosition(locationId);
     }
 
-    if( !g_app->m_camera->IsInMode( Camera::ModeSphereWorldScripted ) )
+    if( !g_app->m_camera->IsInModeSphereWorldScripted() )
     {
-        g_app->m_camera->RequestMode( Camera::ModeSphereWorldScripted );
+        g_app->m_camera->RequestSphereWorldScriptedMode();
     }
 
     g_app->m_camera->SetTargetFOV( _fov );
@@ -222,11 +222,11 @@ void Script::RunCommand_CamReset()
 
     if( g_app->m_location )
     {
-        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        g_app->m_camera->RequestFreeMovementMode();
     }
     else
     {
-        g_app->m_camera->RequestMode(Camera::ModeSphereWorld);
+        g_app->m_camera->RequestSphereWorldMode();
     }
 }
 
@@ -412,7 +412,7 @@ void Script::RunCommand_GameOver()
     //
     // Go into the outro camera mode
 
-    g_app->m_camera->RequestMode( Camera::ModeSphereWorldOutro );
+    g_app->m_camera->RequestSphereWorldOutroMode();
 
     //
     // Kill global world ambiences
@@ -614,11 +614,11 @@ bool Script::Skip()
         m_permitEscape = false;
         if( g_app->m_location )
         {
-            g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+            g_app->m_camera->RequestFreeMovementMode();
         }
         else
         {
-            g_app->m_camera->RequestMode(Camera::ModeSphereWorld);
+            g_app->m_camera->RequestSphereWorldMode();
         }
         return true;
     }

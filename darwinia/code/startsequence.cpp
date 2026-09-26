@@ -69,7 +69,7 @@ bool StartSequence::Advance()
         started = true;
         g_app->m_soundSystem->TriggerOtherEvent( nullptr, "StartSequence", SoundSourceBlueprint::TypeMusic );
 	    g_app->m_camera->SetDebugMode(Camera::DebugModeAuto);
-        g_app->m_camera->RequestMode(Camera::ModeSphereWorldIntro);
+        g_app->m_camera->RequestSphereWorldIntroMode();
     }
 
 	g_inputManager.PollForEvents();

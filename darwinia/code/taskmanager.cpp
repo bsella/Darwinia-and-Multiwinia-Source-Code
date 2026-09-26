@@ -313,10 +313,10 @@ bool Task::Advance()
 
 void Task::SwitchTo()
 {
-    if( g_app->m_camera->IsInMode( Camera::ModeRadarAim ) ||
-        g_app->m_camera->IsInMode( Camera::ModeTurretAim ) )
+    if( g_app->m_camera->IsInModeRadarAim() ||
+        g_app->m_camera->IsInModeTurretAim() )
     {
-        g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+        g_app->m_camera->RequestFreeMovementMode();
     }
 
     int teamId = g_app->m_globalWorld->m_myTeamId;

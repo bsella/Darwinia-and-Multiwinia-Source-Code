@@ -290,7 +290,7 @@ bool GunTurret::Advance()
         {
             // Player has lost control of the building
             team->SelectUnit( -1, -1, -1 );
-            g_app->m_camera->RequestMode( Camera::ModeFreeMovement );
+            g_app->m_camera->RequestFreeMovementMode();
             return Building::Advance();
         }
         m_target = g_app->m_userInput->GetMousePos3d();
