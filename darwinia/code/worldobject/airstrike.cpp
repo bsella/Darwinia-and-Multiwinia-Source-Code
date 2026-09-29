@@ -123,7 +123,7 @@ bool AirstrikeUnit::AdvanceToTargetPosition( Vector3 _targetPos )
 }
 
 
-bool AirstrikeUnit::Advance( int _slice )
+bool AirstrikeUnit::Advance()
 {
     //
     // Has our target marker moved?
@@ -154,7 +154,7 @@ bool AirstrikeUnit::Advance( int _slice )
         }
     };
 
-    return Unit::Advance( _slice );
+    return Unit::Advance();
 }
 
 

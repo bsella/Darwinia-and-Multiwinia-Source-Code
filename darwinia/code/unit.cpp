@@ -150,7 +150,7 @@ void Unit::Render( float _predictionTime )
     glEnable        ( GL_CULL_FACE );
 }
 
-bool Unit::Advance( [[maybe_unused]]int _slice )
+bool Unit::Advance( )
 {
     //
     // Maintain our centre and radius values

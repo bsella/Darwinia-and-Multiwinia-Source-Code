@@ -50,7 +50,7 @@ public:
     virtual ~Unit();
 
     virtual void    Begin           ();
-    virtual bool    Advance         ( int _slice );
+    virtual bool    Advance         ( );
     virtual void    Attack          ( Vector3 pos, bool withGrenade );
     virtual void    AdvanceEntities ( int _slice );
     virtual void    Render          ( float _predictionTime );

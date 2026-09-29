@@ -302,7 +302,7 @@ void Team::Advance(int _slice)
                 if( m_units.ValidIndex(unit) )
                 {
                     Unit *theUnit = m_units.GetData(unit);
-                    bool amIDead = theUnit->Advance( unit );
+                    bool amIDead = theUnit->Advance();
                     if( amIDead )
                     {
                         m_units.MarkNotUsed(unit);

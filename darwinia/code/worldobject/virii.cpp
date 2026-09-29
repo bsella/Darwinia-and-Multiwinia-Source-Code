@@ -31,13 +31,13 @@ ViriiUnit::ViriiUnit(int teamId, int unitId, int numEntities, Vector3 const &_po
 }
 
 
-bool ViriiUnit::Advance( int _slice )
+bool ViriiUnit::Advance()
 {
     float searchRadius = m_radius + VIRII_MAXSEARCHRANGE;
 
     m_enemiesFound = g_app->m_location->m_entityGrid->AreEnemiesPresent( m_centrePos.x, m_centrePos.z, searchRadius, m_teamId );
 
-    return Unit::Advance( _slice );
+    return Unit::Advance();
 }
 
 
