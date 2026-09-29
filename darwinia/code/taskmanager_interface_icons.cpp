@@ -2903,7 +2903,7 @@ void TaskManagerInterfaceIcons::CreateQuickUnitInterface()
 	{
 		m_currentQuickUnit = 0;
 	}
-	g_app->m_location->GetMyTeam()->SelectUnit( -1, -1, -1 );
+	g_app->m_location->GetMyTeam()->SelectUnit( nullptr, nullptr, nullptr );
 }
 
 void TaskManagerInterfaceIcons::DestroyQuickUnitInterface()

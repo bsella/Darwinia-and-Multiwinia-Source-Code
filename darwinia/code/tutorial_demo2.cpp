@@ -589,7 +589,7 @@ bool Demo2Tutorial::AdvanceCurrentChapter()
 
         case 22:                        // Radar dish selected
         {
-            Building *building = g_app->m_location->GetBuilding( g_app->m_location->GetMyTeam()->m_currentBuildingId );
+            Building *building = g_app->m_location->GetMyTeam()->m_currentBuilding;
             if( building && building->m_id.GetUniqueId() == 66 )
             {
                 TriggerChapter(m_chapter+1);
@@ -820,13 +820,13 @@ bool Demo2Tutorial::AdvanceCurrentChapter()
 
 void Demo2Tutorial::HandleDishMisalignment()
 {
-    Building *building = g_app->m_location->GetBuilding( g_app->m_location->GetMyTeam()->m_currentBuildingId );
+    Building *building = g_app->m_location->GetMyTeam()->m_currentBuilding;
     if( building && building->m_type == Building::TypeRadarDish )
     {
         RadarDish *dish = (RadarDish *) building;
         if( dish->GetConnectedDishId() != 67 )
         {
-            if( g_app->m_location->GetMyTeam()->m_currentBuildingId != 67 )
+            if( g_app->m_location->GetMyTeam()->m_currentBuilding->m_id.GetUniqueId() != 67 )
             {
                 TriggerChapter( 22 );
             }

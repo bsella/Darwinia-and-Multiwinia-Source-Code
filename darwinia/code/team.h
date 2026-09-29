@@ -5,6 +5,7 @@
 #include "lib/slice_darray.h"
 #include "lib/rgb_colour.h"
 
+#include "worldobject/building.h"
 #include "worldobject/worldobject.h"
 #include "worldobject/entity.h"
 
@@ -36,9 +37,9 @@ public:
 
     RGBAColour               m_colour;
 
-    int             m_currentUnitId;                    //
-    int             m_currentEntityId;                  // Do not set these directly
-    int             m_currentBuildingId;                // They are updated by the network
+    Unit*           m_currentUnit;                    //
+    Entity*         m_currentEntity;                  // Do not set these directly
+    Building*       m_currentBuilding;                // They are updated by the network
                                                         //
     Vector3         m_currentMousePos;                  //
 
@@ -48,7 +49,7 @@ public:
     void Initialise     (int _teamId);                  // Call when this team enters the game
     void SetTeamType    (int _teamType);
 
-    void SelectUnit     (int _unitId, int _entityId, int _buildingId );
+    void SelectUnit     (Unit*, Entity*, Building* );
 
     void RegisterSpecial    ( WorldObjectId _id );
     void UnRegisterSpecial  ( WorldObjectId _id );

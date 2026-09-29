@@ -276,7 +276,7 @@ bool GunTurret::Advance()
 
 
     Team *team = g_app->m_location->GetMyTeam();
-    bool underPlayerControl = ( team && team->m_currentBuildingId == m_id.GetUniqueId() );
+    bool underPlayerControl = ( team && team->m_currentBuilding == this );
 
 
     //
@@ -289,7 +289,7 @@ bool GunTurret::Advance()
         if( m_id.GetTeamId() != 2 )
         {
             // Player has lost control of the building
-            team->SelectUnit( -1, -1, -1 );
+            team->SelectUnit( nullptr, nullptr, nullptr );
             g_app->m_camera->RequestFreeMovementMode();
             return Building::Advance();
         }
@@ -375,7 +375,7 @@ Vector3 GunTurret::GetTarget()
 bool GunTurret::IsInView()
 {
     Team *team = g_app->m_location->GetMyTeam();
-    bool underPlayerControl = ( team && team->m_currentBuildingId == m_id.GetUniqueId() );
+    bool underPlayerControl = ( team && team->m_currentBuilding == this );
 
     if( underPlayerControl )
     {

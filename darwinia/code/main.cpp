@@ -557,8 +557,8 @@ void LocationGameLoop()
 						auto* objectUnderMouse = objectOrUnitUnderMouse.GetWorldObject();
 						auto* unitUnderMouse   = objectOrUnitUnderMouse.GetUnit();
 
-                        bool isCurrentEntity = ( objectUnderMouse && objectUnderMouse->m_id.GetUnitId() == -1 && objectUnderMouse->m_id.GetIndex() == team->m_currentEntityId );
-                        bool isCurrentUnit = ( unitUnderMouse && unitUnderMouse->m_unitId != -1 && unitUnderMouse->m_unitId == team->m_currentUnitId );
+                        bool isCurrentEntity = ( objectUnderMouse && objectUnderMouse->m_id.GetUnitId() == -1 && objectUnderMouse == team->m_currentEntity );
+                        bool isCurrentUnit = ( unitUnderMouse && unitUnderMouse->m_unitId != -1 && unitUnderMouse == team->m_currentUnit );
 
 				        entityUnderMouse = (
                             objectUnderMouse &&

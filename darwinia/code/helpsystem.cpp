@@ -146,9 +146,9 @@ namespace {
 	{
 		bool IsActionAvailable()
 		{
-			bool somethingSelected = g_app->m_location->GetMyTeam()->m_currentUnitId != -1 ||
-									 g_app->m_location->GetMyTeam()->m_currentEntityId != -1 ||
-									 g_app->m_location->GetMyTeam()->m_currentBuildingId != -1;
+			bool somethingSelected = g_app->m_location->GetMyTeam()->m_currentUnit != nullptr ||
+									 g_app->m_location->GetMyTeam()->m_currentEntity != nullptr ||
+									 g_app->m_location->GetMyTeam()->m_currentBuilding != nullptr;
 
 			return( g_app->m_taskManager->m_tasks.Size() > 0 && !somethingSelected );
 		}
@@ -812,7 +812,7 @@ void HelpSystem::RunDefaultHelp()
         //
         // Currently selected building
 
-        Building *building = g_app->m_location->GetBuilding( team->m_currentBuildingId );
+        Building *building = team->m_currentBuilding;
         if( building )
         {
             if( building->m_type == Building::TypeRadarDish )

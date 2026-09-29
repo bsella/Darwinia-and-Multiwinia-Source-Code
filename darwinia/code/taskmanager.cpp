@@ -84,7 +84,7 @@ void Task::TargetSquad( Vector3 const &_pos )
     g_app->m_location->SpawnEntities( _pos, teamId, unitId,
                                       Entity::TypeInsertionSquadie, numEntities, g_zeroVector, 10 );
 
-    g_app->m_location->m_teams[teamId].SelectUnit( unitId, -1, -1 );
+    g_app->m_location->m_teams[teamId].SelectUnit( m_unit, nullptr, nullptr );
 
     g_app->m_helpSystem->PlayerDoneAction( HelpSystem::SquadSummon );
     m_state = StateRunning;
@@ -114,7 +114,7 @@ void Task::TargetEngineer( Vector3 const &_pos )
 	pos.y += 10.0f;
     m_entity = g_app->m_location->SpawnEntities( pos, teamId, -1, Entity::TypeEngineer, 1, g_zeroVector, 0 )[0];
     m_unit = nullptr;
-    g_app->m_location->m_teams[teamId].SelectUnit( -1, m_entity->m_id.GetIndex(), -1 );
+    g_app->m_location->m_teams[teamId].SelectUnit( nullptr, m_entity, nullptr );
 
     m_state = StateRunning;
     g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
@@ -128,7 +128,7 @@ void Task::TargetArmour( Vector3 const &_pos )
 
     m_entity = g_app->m_location->SpawnEntities( _pos, teamId, -1, Entity::TypeArmour, 1, g_zeroVector, 0 )[0];
     m_unit = nullptr;
-    g_app->m_location->m_teams[teamId].SelectUnit( -1, m_entity->m_id.GetIndex(), -1 );
+    g_app->m_location->m_teams[teamId].SelectUnit( nullptr, m_entity, nullptr );
 
     m_state = StateRunning;
 
@@ -234,9 +234,9 @@ void Task::TargetOfficer( Vector3 const &_pos )
     // We will not upgrade people if we're controlling something right now
 
     Team *myTeam = g_app->m_location->GetMyTeam();
-    if( myTeam->m_currentUnitId != -1 ||
-        myTeam->m_currentEntityId != -1 ||
-        myTeam->m_currentBuildingId != -1 )
+    if( myTeam->m_currentUnit != nullptr ||
+        myTeam->m_currentEntity != nullptr ||
+        myTeam->m_currentBuilding != nullptr )
     {
         return;
     }
@@ -252,7 +252,7 @@ void Task::TargetOfficer( Vector3 const &_pos )
     {
         auto& promoted = Promote( *nearest );
         g_app->m_taskManager->TerminateTask( m_id );
-        g_app->m_location->m_teams[ promoted.m_id.GetTeamId() ].SelectUnit( promoted.m_id.GetUnitId(), promoted.m_id.GetIndex(), -1 );
+        g_app->m_location->m_teams[ promoted.m_id.GetTeamId() ].SelectUnit( nullptr, &promoted, nullptr );
         g_app->m_taskManagerInterface->SetCurrentMessage( TaskManagerInterface::MessageSuccess, GlobalResearch::TypeOfficer, 2.5f );
 
         g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
@@ -320,16 +320,16 @@ void Task::SwitchTo()
     {
         case GlobalResearch::TypeSquad:
         {
-            if (m_unit) g_app->m_location->m_teams[teamId].SelectUnit( m_unit->m_unitId, -1, -1 );
-            else        g_app->m_location->m_teams[teamId].SelectUnit( -1, -1, -1 );
+            if (m_unit) g_app->m_location->m_teams[teamId].SelectUnit( m_unit, nullptr, nullptr );
+            else        g_app->m_location->m_teams[teamId].SelectUnit( nullptr, nullptr, nullptr );
             break;
         }
 
         case GlobalResearch::TypeEngineer:
         case GlobalResearch::TypeArmour:
         {
-            if(m_entity) g_app->m_location->m_teams[teamId].SelectUnit( -1, m_entity->m_id.GetIndex(), -1 );
-            else         g_app->m_location->m_teams[teamId].SelectUnit( -1, -1, -1 );
+            if(m_entity) g_app->m_location->m_teams[teamId].SelectUnit( nullptr, m_entity, nullptr );
+            else         g_app->m_location->m_teams[teamId].SelectUnit( nullptr, nullptr, nullptr );
             break;
         }
 
@@ -350,7 +350,7 @@ void Task::SwitchTo()
 
         case GlobalResearch::TypeOfficer:
         {
-            g_app->m_location->m_teams[teamId].SelectUnit( -1, -1, -1 );
+            g_app->m_location->m_teams[teamId].SelectUnit( nullptr, nullptr, nullptr );
             break;
         }
     }
@@ -455,7 +455,7 @@ bool TaskManager::RunTask( int _type )
             if( success )
             {
                 int teamId = g_app->m_globalWorld->m_myTeamId;
-                g_app->m_location->m_teams[teamId].SelectUnit( -1, -1, -1 );
+                g_app->m_location->m_teams[teamId].SelectUnit( nullptr, nullptr, nullptr );
             }
             return success;
         }
@@ -622,7 +622,7 @@ void TaskManager::AdvanceTasks()
             {
                 m_currentTaskId = -1;
                 int teamId = g_app->m_globalWorld->m_myTeamId;
-                g_app->m_location->m_teams[teamId].SelectUnit( -1, -1, -1 );
+                g_app->m_location->m_teams[teamId].SelectUnit( nullptr, nullptr, nullptr );
             }
 
             m_tasks.RemoveData(i);

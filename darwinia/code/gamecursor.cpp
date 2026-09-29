@@ -111,9 +111,9 @@ WorldObjectOrUnit GameCursor::GetSelectedObject(Vector3 &_pos )
             _pos = selectedEnt->m_pos + selectedEnt->m_centrePos + selectedEnt->m_vel * g_predictionTime;
             return selectedEnt;
         }
-        else if( team->m_currentBuildingId != -1 )
+        else if( team->m_currentBuilding != nullptr )
         {
-            Building *building = g_app->m_location->GetBuilding( team->m_currentBuildingId );
+            Building *building = team->m_currentBuilding;
             if( building )
             {
                 _pos = building->m_centrePos;

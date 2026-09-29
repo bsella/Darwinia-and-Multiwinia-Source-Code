@@ -16,6 +16,7 @@
 #include "taskmanager.h"
 #include "team.h"
 
+#include "worldobject/building.h"
 #include "worldobject/factory.h"
 #include "worldobject/radardish.h"
 #include "worldobject/laserfence.h"
@@ -495,8 +496,16 @@ void ClientToServer::ProcessServerUpdates( ServerToClientLetter *letter )
                 break;
 
             case NetworkUpdate::SelectUnit:
-                g_app->m_location->m_teams[ update->m_teamId ].SelectUnit( update->m_unitId, update->m_entityId, update->m_buildingId );
-                g_app->m_taskManager->SelectTask( WorldObjectId( update->m_teamId, update->m_unitId, update->m_entityId, -1 ) );
+            {
+                WorldObjectId entityId( update->m_teamId, update->m_unitId, update->m_entityId, -1 );
+                
+                Entity* entity = g_app->m_location->GetEntity( entityId );
+                Unit* unit = g_app->m_location->GetUnit(entityId);
+                Building* building = g_app->m_location->GetBuilding(update->m_buildingId);
+
+                g_app->m_location->m_teams[ update->m_teamId ].SelectUnit( unit, entity, building );
+                g_app->m_taskManager->SelectTask( entityId );
+            }
                 break;
 
             case NetworkUpdate::CreateUnit:

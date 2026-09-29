@@ -284,9 +284,9 @@ void LocationInput::AdvanceTeamControl()
 	Team *team = g_app->m_location->GetMyTeam();
 
     // Space key should deselect current unit or building
-    bool objectSelected = team->m_currentUnitId != -1 ||
-                          team->m_currentEntityId != -1 ||
-                          team->m_currentBuildingId != -1;
+    bool objectSelected = team->m_currentUnit != nullptr ||
+                          team->m_currentEntity != nullptr ||
+                          team->m_currentBuilding != nullptr;
 
 	if ( g_inputManager.controlEvent( ControlUnitDeselect ) )
     {
@@ -296,11 +296,11 @@ void LocationInput::AdvanceTeamControl()
             g_app->m_camera->RequestFreeMovementMode();
             g_app->m_taskManager->m_currentTaskId = -1;
 
-            if( team->m_currentUnitId != -1 )
+            if( team->m_currentUnit != nullptr )
             {
                 g_app->m_helpSystem->PlayerDoneAction( HelpSystem::SquadDeselect );
             }
-            else if( team->m_currentEntityId != -1 )
+            else if( team->m_currentEntity != nullptr )
             {
                 g_app->m_helpSystem->PlayerDoneAction( HelpSystem::EngineerDeselect );
             }
@@ -319,20 +319,20 @@ void LocationInput::AdvanceTeamControl()
     }
 
 
-	if( team->m_currentUnitId == -1 )
+	if( team->m_currentUnit == nullptr )
     {
-        if( team->m_currentEntityId == -1 )
+        if( team->m_currentEntity == nullptr )
 	    {
-		    if (team->m_currentBuildingId == -1)
+		    if (team->m_currentBuilding == nullptr)
             {
 			    AdvanceNoSelection();
             }
 		    else
 		    {
-			    Building *building = g_app->m_location->GetBuilding(team->m_currentBuildingId);
+			    Building *building = team->m_currentBuilding;
 				if (!building)
                 {
-                    team->m_currentBuildingId = -1;
+                    team->m_currentBuilding = nullptr;
                 }
 				else if (building->m_type == Building::TypeRadarDish)
 			    {
@@ -355,7 +355,7 @@ void LocationInput::AdvanceTeamControl()
             Entity *ent = team->GetMyEntity();
             if( !ent )
             {
-                team->m_currentEntityId = -1;
+                team->m_currentEntity = nullptr;
             }
             else if( ent->m_type == Entity::TypeOfficer )
             {
@@ -391,9 +391,9 @@ void LocationInput::AdvanceTeamControl()
 	else
 	{
 		// Controlling a unit
-        if( team->m_units.ValidIndex(team->m_currentUnitId) )
+        if( team->m_currentUnit )
         {
-		    Unit *unit = team->m_units.GetData(team->m_currentUnitId);
+		    Unit *unit = team->m_currentUnit;
             if( unit->m_troopType == Entity::TypeInsertionSquadie )
             {
                 if( !g_app->m_taskManagerInterface->m_visible )

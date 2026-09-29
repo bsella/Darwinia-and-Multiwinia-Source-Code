@@ -579,10 +579,9 @@ static bool BuildingSelected()
 {
     Team *team = g_app->m_location->GetMyTeam();
 
-    if( team && team->m_currentBuildingId != -1 )
+    if( team && team->m_currentBuilding != nullptr )
     {
-        Building *building = g_app->m_location->GetBuilding( team->m_currentBuildingId );
-        if( building )
+        if( team->m_currentBuilding )
 			return true;
     }
 
@@ -593,9 +592,9 @@ static bool RadarDishSelected()
 {
     Team *team = g_app->m_location->GetMyTeam();
 
-    if( team && team->m_currentBuildingId != -1 )
+    if( team && team->m_currentBuilding != nullptr )
     {
-        Building *building = g_app->m_location->GetBuilding( team->m_currentBuildingId );
+        Building *building = team->m_currentBuilding;
 		if( building && building->m_type == Building::TypeRadarDish)
 			return true;
     }

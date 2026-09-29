@@ -41,9 +41,9 @@ Unit::Unit(int troopType, int teamId, int unitId, int numEntities, Vector3 const
 Unit::~Unit()
 {
 	Team *myTeam = &g_app->m_location->m_teams[m_teamId];
-	if (myTeam->m_currentUnitId == m_unitId)
+	if (myTeam->m_currentUnit == this)
 	{
-		myTeam->m_currentUnitId = -1;
+		myTeam->m_currentUnit = nullptr;
 	}
 }
 

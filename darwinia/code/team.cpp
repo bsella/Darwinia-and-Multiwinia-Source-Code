@@ -25,6 +25,7 @@
 #include "taskmanager.h"
 #include "control_help.h"
 
+#include "worldobject/building.h"
 #include "worldobject/entity.h"
 #include "worldobject/insertion_squad.h"
 #include "worldobject/virii.h"
@@ -43,9 +44,9 @@
 Team::Team()
 :   m_teamId(-1),
 	m_teamType(TeamTypeUnused),
-    m_currentUnitId(-1),
-    m_currentEntityId(-1),
-    m_currentBuildingId(-1)
+    m_currentUnit(nullptr),
+    m_currentEntity(nullptr),
+    m_currentBuilding(nullptr)
 {
     m_others.SetTotalNumSlices( NUM_SLICES_PER_FRAME );
 	m_others.SetStepSize(100);
@@ -121,28 +122,26 @@ void Team::UnRegisterSpecial( WorldObjectId _id )
 }
 
 
-void Team::SelectUnit(int _unitId, int _entityId, int _buildingId )
+void Team::SelectUnit(Unit* unit, Entity* entity, Building* building )
 {
-    m_currentBuildingId = _buildingId;
-    m_currentUnitId = _unitId;
-    m_currentEntityId = _entityId;
+    m_currentBuilding = building;
+    m_currentUnit = unit;
+    m_currentEntity = entity;
 
     if( m_teamId == g_app->m_globalWorld->m_myTeamId )
     {
         g_app->m_gameCursor->BoostSelectionArrows(2.0f);
     }
 
-    if( m_currentUnitId == -1 && m_currentBuildingId == -1 &&
-        m_others.ValidIndex(m_currentEntityId) )
+    if( m_currentUnit == nullptr && m_currentBuilding == nullptr && m_currentEntity )
     {
-        Entity *entity = m_others[m_currentEntityId];
-        if( entity && entity->m_type == Entity::TypeOfficer )
+        if( m_currentEntity && m_currentEntity->m_type == Entity::TypeOfficer )
         {
             g_app->m_taskManager->SelectTask(-1);
         }
     }
 
-    if( _unitId == -1 && _entityId == -1 && _buildingId == -1 )
+    if( unit == nullptr && m_currentEntity == nullptr && building == nullptr )
     {
         g_app->m_soundSystem->TriggerOtherEvent( nullptr, "TaskManagerDeselectTask", SoundSourceBlueprint::TypeInterface );
     }
@@ -150,38 +149,12 @@ void Team::SelectUnit(int _unitId, int _entityId, int _buildingId )
     {
         g_app->m_soundSystem->TriggerOtherEvent( nullptr, "TaskManagerSelectTask", SoundSourceBlueprint::TypeInterface );
     }
-
-//    if( m_teamId == g_app->m_globalWorld->m_myTeamId )
-//    {
-//        Vector3 worldpos;
-//        if( m_units.ValidIndex(_unitId) )
-//        {
-//            Unit *unit = m_units[_unitId];
-//            worldpos = unit->m_centrePos - g_app->m_camera->GetFront() * 200.0f;
-//        }
-//        else if( m_others.ValidIndex(_entityId) )
-//        {
-//            Entity *entity = m_others[_entityId];
-//            worldpos = entity->m_pos - g_app->m_camera->GetFront() * 200.0f;
-//        }
-//    }
 }
 
 
 Unit *Team::GetMyUnit()
 {
-    if( m_currentUnitId == -1 || !m_units.ValidIndex(m_currentUnitId))
-    {
-        return nullptr;
-    }
-    else if( m_units.ValidIndex( m_currentUnitId ) )
-    {
-        return m_units[ m_currentUnitId ];
-    }
-    else
-    {
-        return nullptr;
-    }
+    return m_currentUnit;
 }
 
 
@@ -218,18 +191,7 @@ Entity *Team::RayHitEntity(Vector3 const &_rayStart, Vector3 const &_rayEnd)
 
 Entity *Team::GetMyEntity()
 {
-    if( m_currentEntityId == -1 )
-    {
-        return nullptr;
-    }
-    else if( m_others.ValidIndex( m_currentEntityId ) )
-    {
-        return m_others[ m_currentEntityId ];
-    }
-    else
-    {
-        return nullptr;
-    }
+    return m_currentEntity;
 }
 
 

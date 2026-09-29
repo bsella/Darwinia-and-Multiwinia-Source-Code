@@ -466,7 +466,7 @@ bool Squadie::Advance(Unit *_theUnit)
 		}
 
     	Team *team = &g_app->m_location->m_teams[m_id.GetTeamId()];
-		if (m_id.GetUnitId() == team->m_currentUnitId)
+		if (team->m_currentUnit && m_id.GetUnitId() == team->m_currentUnit->m_unitId)
 		{
 			Vector3 toMouse = team->m_currentMousePos - m_pos;
 			toMouse.HorizontalAndNormalise();
