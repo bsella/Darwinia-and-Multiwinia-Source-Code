@@ -82,11 +82,10 @@ void TaskManagerInterface::RunDefaultObjective ( GlobalEventCondition *_cond )
         case GlobalEventCondition::BuildingOnline:
         case GlobalEventCondition::BuildingOffline:
         {
-            Building *building = g_app->m_location->GetBuilding( _cond->m_id );
-            if( building )
+            if( Building *building = g_app->m_location->GetBuilding( _cond->m_id ) )
             {
                 g_app->m_sepulveda->HighlightBuilding( building->m_id.GetUniqueId(), "RunDefaultObjective" );
-                g_app->m_camera->RequestBuildingFocusMode( building, 250.0f, 75.0f );
+                g_app->m_camera->RequestBuildingFocusMode( *building, 250.0f, 75.0f );
                 g_app->m_sepulveda->Say( "objective_capturetrunk_1" );
                 g_app->m_sepulveda->Say( "objective_capturetrunk_2" );
                 g_app->m_sepulveda->Say( "objective_capturetrunk_3" );
@@ -115,7 +114,7 @@ void TaskManagerInterface::RunDefaultObjective ( GlobalEventCondition *_cond )
             if( building )
             {
                 g_app->m_sepulveda->HighlightBuilding( building->m_id.GetUniqueId(), "RunDefaultObjective" );
-                g_app->m_camera->RequestBuildingFocusMode( building, 100.0f, 75.0f );
+                g_app->m_camera->RequestBuildingFocusMode( *building, 100.0f, 75.0f );
                 g_app->m_sepulveda->Say( "objective_research_1" );
                 g_app->m_sepulveda->Say( "objective_research_2" );
                 m_viewingDefaultObjective = true;
@@ -202,7 +201,7 @@ void TaskManagerInterface::AdvanceTab()
             {
                 if( g_app->m_taskManager->m_tasks[index]->m_type == GlobalResearch::TypeSquad )
                 {
-                    g_app->m_camera->RequestEntityTrackMode( g_app->m_taskManager->m_tasks[index]->m_objId );
+                    g_app->m_camera->RequestEntityTrackMode( *g_app->m_taskManager->m_tasks[index]->m_unit );
                 }
                 else
                 {

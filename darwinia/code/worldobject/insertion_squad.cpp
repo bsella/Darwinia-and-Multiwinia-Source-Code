@@ -754,7 +754,7 @@ void Squadie::ListSoundEvents( LList<const char *> *_list )
     _list->PutData( "WeaponReturns" );
 }
 
-Vector3 Squadie::GetCameraFocusPoint()
+Vector3 Squadie::GetCameraFocusPoint() const
 {
 	if( g_inputManager.controlEvent( ControlUnitPrimaryFireDirected /* ControlUnitStartSecondaryFireDirected */ ) &&
         g_app->m_camera->IsInModeEntityTrack() )
@@ -770,7 +770,7 @@ Vector3 Squadie::GetCameraFocusPoint()
 	return Entity::GetCameraFocusPoint();
 }
 
-Vector3 Squadie::GetSecondaryWeaponTarget()
+Vector3 Squadie::GetSecondaryWeaponTarget() const
 {
 	InputDetails details;
 	g_inputManager.controlEvent( ControlUnitPrimaryFireDirected, details );

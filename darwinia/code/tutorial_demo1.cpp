@@ -43,7 +43,7 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
         case 3:
         {
             Building *building = g_app->m_location->GetBuilding(52);
-            g_app->m_camera->RequestBuildingFocusMode( building, 200, 200 );
+            g_app->m_camera->RequestBuildingFocusMode( *building, 200, 200 );
             g_app->m_sepulveda->Say( "tutorial_3" );
             g_app->m_sepulveda->Say( "tutorial_3b" );
             break;
@@ -95,7 +95,7 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
         case 20:
         {
             Building *building = g_app->m_location->GetBuilding(97);
-            g_app->m_camera->RequestBuildingFocusMode( building, 120, 120 );
+            g_app->m_camera->RequestBuildingFocusMode( *building, 120, 120 );
             g_app->m_sepulveda->Say( "tutorial_20" );
             g_app->m_sepulveda->Say( "tutorial_20b" );
             g_app->m_sepulveda->Say( "tutorial_20c" );
@@ -115,7 +115,7 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
         case 23:
         {
             Building *building = g_app->m_location->GetBuilding(52);
-            g_app->m_camera->RequestBuildingFocusMode( building, 70, 70 );
+            g_app->m_camera->RequestBuildingFocusMode( *building, 70, 70 );
             g_app->m_sepulveda->Say( "tutorial_23" );
             break;
         }
@@ -209,7 +209,7 @@ void Demo1Tutorial::TriggerChapter( int _chapter )
         case 38:
         {
             Building *building = g_app->m_location->GetBuilding(90);
-            g_app->m_camera->RequestBuildingFocusMode( building, 400, 100 );
+            g_app->m_camera->RequestBuildingFocusMode( *building, 400, 100 );
             g_app->m_sepulveda->Say( "tutorial_38" );
             g_app->m_sepulveda->Say( "tutorial_38b" );
             g_app->m_sepulveda->Say( "tutorial_38c" );

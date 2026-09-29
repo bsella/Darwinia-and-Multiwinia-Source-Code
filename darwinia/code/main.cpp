@@ -1,6 +1,9 @@
-﻿#include <memory>
-#include <stdio.h>
+﻿#include "unit.h"
+#include "worldobject/building.h"
+#include <chrono>
+#include <memory>
 #include <math.h>
+#include <thread>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -549,21 +552,23 @@ void LocationGameLoop()
                         // If the user has left-clicked on another of his entities, because that
                         // entity is about to be selected.  We don't want our original entity
                         // walking up to him.
-                        WorldObjectId idUnderMouse;
-                        bool objectUnderMouse = g_app->m_locationInput->GetObjectUnderMouse( idUnderMouse, g_app->m_globalWorld->m_myTeamId );
+                        auto objectOrUnitUnderMouse = g_app->m_locationInput->GetObjectUnderMouse( g_app->m_globalWorld->m_myTeamId );
 
-                        bool isCurrentEntity = ( objectUnderMouse && idUnderMouse.GetUnitId() == -1 && idUnderMouse.GetIndex() == team->m_currentEntityId );
-                        bool isCurrentUnit = ( objectUnderMouse && idUnderMouse.GetUnitId() != -1 && idUnderMouse.GetUnitId() == team->m_currentUnitId );
+						auto* objectUnderMouse = objectOrUnitUnderMouse.GetWorldObject();
+						auto* unitUnderMouse   = objectOrUnitUnderMouse.GetUnit();
+
+                        bool isCurrentEntity = ( objectUnderMouse && objectUnderMouse->m_id.GetUnitId() == -1 && objectUnderMouse->m_id.GetIndex() == team->m_currentEntityId );
+                        bool isCurrentUnit = ( unitUnderMouse && unitUnderMouse->m_unitId != -1 && unitUnderMouse->m_unitId == team->m_currentUnitId );
 
 				        entityUnderMouse = (
                             objectUnderMouse &&
-                            idUnderMouse.GetUnitId() != UNIT_BUILDINGS &&
+                            objectUnderMouse->m_id.GetUnitId() != UNIT_BUILDINGS &&
                             !isCurrentEntity && !isCurrentUnit );
 
-                        if( idUnderMouse.GetUnitId() == UNIT_BUILDINGS )
+                        if( objectUnderMouse && objectUnderMouse->m_id.GetUnitId() == UNIT_BUILDINGS )
                         {
                             // Focus the mouse on a Radar Dish if one exists under the mouse
-                            Building *building = g_app->m_location->GetBuilding( idUnderMouse.GetUniqueId() );
+                            Building *building = static_cast<Building*>(objectUnderMouse);
                             if( building && building->m_type == Building::TypeRadarDish )
                             {
                                 teamControls.m_mousePos = building->m_pos;

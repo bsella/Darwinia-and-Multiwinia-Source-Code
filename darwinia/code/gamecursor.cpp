@@ -24,10 +24,13 @@
 #include "entity_grid.h"
 #include "sepulveda.h"
 
+#include "worldobject/building.h"
+#include "worldobject/entity.h"
 #include "worldobject/radardish.h"
 #include "worldobject/insertion_squad.h"
 
 #include "FFP_emulation.h"
+#include "worldobject/worldobject.h"
 
 GameCursor::GameCursor()
 :	m_selectionArrowBoost(0.0f),
@@ -98,18 +101,15 @@ GameCursor::~GameCursor()
 	SAFE_DELETE(m_cursorMissile);
 }
 
-bool GameCursor::GetSelectedObject( WorldObjectId &_id, Vector3 &_pos )
+WorldObjectOrUnit GameCursor::GetSelectedObject(Vector3 &_pos )
 {
-    Team *team = g_app->m_location->GetMyTeam();
-
-    if( team )
+    if( Team *team = g_app->m_location->GetMyTeam() )
     {
         Entity *selectedEnt = team->GetMyEntity();
         if( selectedEnt )
         {
             _pos = selectedEnt->m_pos + selectedEnt->m_centrePos + selectedEnt->m_vel * g_predictionTime;
-            _id = selectedEnt->m_id;
-            return true;
+            return selectedEnt;
         }
         else if( team->m_currentBuildingId != -1 )
         {
@@ -117,8 +117,7 @@ bool GameCursor::GetSelectedObject( WorldObjectId &_id, Vector3 &_pos )
             if( building )
             {
                 _pos = building->m_centrePos;
-                _id = building->m_id;
-                return true;
+                return building;
             }
         }
         else
@@ -127,7 +126,6 @@ bool GameCursor::GetSelectedObject( WorldObjectId &_id, Vector3 &_pos )
             if( selected )
             {
                 _pos = selected->m_centrePos + selected->m_vel * g_predictionTime;
-                _id.Set( selected->m_teamId, selected->m_unitId, -1, -1 );
 
                 // Add the centre pos
                 for( int i = 0; i < selected->m_entities.Size(); ++i )
@@ -140,93 +138,95 @@ bool GameCursor::GetSelectedObject( WorldObjectId &_id, Vector3 &_pos )
                     }
                 }
 
-                return true;
+                return selected;
             }
         }
     }
 
-    return false;
+    return nullptr;
 }
 
 
-bool GameCursor::GetHighlightedObject( WorldObjectId &_id, Vector3 &_pos, float &_radius )
+WorldObjectOrUnit GameCursor::GetHighlightedObject( Vector3 &_pos, float &_radius )
 {
-    WorldObjectId id;
+    Unit*        unit = nullptr;
+    WorldObject* object = nullptr;
     bool somethingHighlighted = false;
-    bool found = false;
 
     if( !g_app->m_taskManagerInterface->m_visible )
     {
-        somethingHighlighted = g_app->m_locationInput->GetObjectUnderMouse( id, g_app->m_globalWorld->m_myTeamId );
+        auto object_or_unit = g_app->m_locationInput->GetObjectUnderMouse( g_app->m_globalWorld->m_myTeamId );
+        unit   = object_or_unit.GetUnit();
+        object = object_or_unit.GetWorldObject();
+        somethingHighlighted = unit || object;
     }
     else
     {
         Task *task = g_app->m_taskManager->GetTask( g_app->m_taskManagerInterface->m_highlightedTaskId );
-        if( task && task->m_objId.IsValid() )
+        if( task )
         {
-            id = task->m_objId;
-            somethingHighlighted = true;
+            unit = task->m_unit;
+            object = task->m_entity;
+            somethingHighlighted = unit != nullptr || object != nullptr;
         }
     }
-
 
     if( somethingHighlighted )
     {
-        if( id.GetUnitId() == UNIT_BUILDINGS )
+        if( object != nullptr )
         {
-            // Found a building
-            Building *building = g_app->m_location->GetBuilding( id.GetUniqueId() );
-            if( building->m_type == Building::TypeRadarDish ||
-                building->m_type == Building::TypeBridge ||
-                building->m_type == Building::TypeGunTurret ||
-                building->m_type == Building::TypeFenceSwitch )
+            if(object->m_id.GetUnitId() == UNIT_BUILDINGS)
             {
-                _id = id;
-                _pos = building->m_centrePos;
-                _radius = building->m_radius;
-                found = true;
-                if( building->m_type == Building::TypeGunTurret )
+                // Found a building
+                Building *building = static_cast<Building*>(object);
+                if( building->m_type == Building::TypeRadarDish ||
+                    building->m_type == Building::TypeBridge ||
+                    building->m_type == Building::TypeGunTurret ||
+                    building->m_type == Building::TypeFenceSwitch )
                 {
-                    _pos.y += _radius * 0.5f;
+                    _pos = building->m_centrePos;
+                    _radius = building->m_radius;
+                    if( building->m_type == Building::TypeGunTurret )
+                    {
+                        _pos.y += _radius * 0.5f;
+                    }
+                    return building;
                 }
+                else
+                    return nullptr;
+            }
+            else
+            {
+                // Found an entity
+                Entity* entity = static_cast<Entity*>(object);
+                _pos = object->m_pos + entity->m_vel * g_predictionTime + entity->m_centrePos;
+                _radius = entity->m_radius*1.5f;
+                if( entity->m_type == Entity::TypeDarwinian ) _radius = entity->m_radius*2.0f;
+                return entity;
             }
         }
-        else if( id.GetIndex() == -1 )
+        else if( unit != nullptr )
         {
             // Found a unit
-            Unit *unit = g_app->m_location->GetUnit( id );
-            if( unit )
-            {
-                _id = id;
-                _pos = unit->m_centrePos + unit->m_vel * g_predictionTime;
-                _radius = unit->m_radius;
-                found = true;
+            _pos = unit->m_centrePos + unit->m_vel * g_predictionTime;
+            _radius = unit->m_radius;
 
-                // Add the centre pos
-                for( int i = 0; i < unit->m_entities.Size(); ++i )
+            // Add the centre pos
+            for( int i = 0; i < unit->m_entities.Size(); ++i )
+            {
+                if( unit->m_entities.ValidIndex(i) )
                 {
-                    if( unit->m_entities.ValidIndex(i) )
-                    {
-                        Entity *ent = unit->m_entities[i];
-                        _pos += ent->m_centrePos;
-                        break;
-                    }
+                    Entity *ent = unit->m_entities[i];
+                    _pos += ent->m_centrePos;
+                    break;
                 }
             }
-        }
-        else
-        {
-            // Found an entity
-            Entity *entity = g_app->m_location->GetEntity(id);
-            _id = id;
-            _pos = entity->m_pos + entity->m_vel * g_predictionTime + entity->m_centrePos;
-            _radius = entity->m_radius*1.5f;
-            if( entity->m_type == Entity::TypeDarwinian ) _radius = entity->m_radius*2.0f;
-            found = true;
+
+            return unit;
         }
     }
 
-    return found;
+    return nullptr;
 }
 
 
@@ -330,24 +330,22 @@ void GameCursor::Render()
         // We are at a location
 	    Task *task = g_app->m_taskManager->GetCurrentTask();
 
-        WorldObjectId selectedId;
         Vector3 selectedWorldPos;
         Vector3 highlightedWorldPos;
-        WorldObjectId highlightedId;
         float highlightedRadius;
 
-        bool somethingSelected = GetSelectedObject( selectedId, selectedWorldPos );
-        bool somethingHighlighted = GetHighlightedObject( highlightedId, highlightedWorldPos, highlightedRadius );
+        auto selected = GetSelectedObject( selectedWorldPos );
+        auto highlighted = GetHighlightedObject(  highlightedWorldPos, highlightedRadius );
 
 		if( g_app->m_taskManagerInterface->m_visible )
         {
             // Looking at the task manager
-            if( somethingSelected && selectedId.GetUnitId() != UNIT_BUILDINGS )
+            if( selected.HasValue() && selected.id().GetUnitId() != UNIT_BUILDINGS )
             {
-                RenderSelectionArrows( selectedId, selectedWorldPos );
+                RenderSelectionArrows( selected.id(), selectedWorldPos );
             }
 
-            if( somethingHighlighted )
+            if( highlighted.HasValue() )
             {
                 float camDist = ( g_app->m_camera->GetPos() - highlightedWorldPos ).Mag();
                 float posX, posY;
@@ -364,7 +362,7 @@ void GameCursor::Render()
 		else if( task &&
                 task->m_state == Task::StateStarted &&
                 task->m_type != GlobalResearch::TypeOfficer &&
-                !somethingHighlighted )
+                !highlighted.HasValue() )
         {
             // The player is placing a task
             bool validPlacement = g_app->m_taskManager->IsValidTargetArea(task->m_id, mousePos);
@@ -408,11 +406,11 @@ void GameCursor::Render()
 		}
 		else
         {
-            if( somethingHighlighted &&
-                !(somethingSelected && highlightedId.GetUnitId() == UNIT_BUILDINGS) )
+            if( highlighted.HasValue() &&
+                !(selected.HasValue() && highlighted.id().GetUnitId() == UNIT_BUILDINGS) )
             {
                 float camDist = ( g_app->m_camera->GetPos() - highlightedWorldPos ).Mag();
-                if( camDist > 100 || !somethingSelected || selectedId != highlightedId )
+                if( camDist > 100 || !selected.HasValue() || selected.id() != highlighted.id() )
                 {
                     float posX, posY;
                     g_app->m_camera->Get2DScreenPos( highlightedWorldPos, &posX, &posY );
@@ -427,22 +425,24 @@ void GameCursor::Render()
                 }
             }
 
-            if( somethingSelected && selectedId.GetUnitId() != UNIT_BUILDINGS )
+            if( selected.HasValue() && selected.id().GetUnitId() != UNIT_BUILDINGS )
             {
                 int entityType = Entity::TypeInvalid;
-                if( selectedId.GetIndex() == -1 )   entityType = g_app->m_location->GetUnit(selectedId)->m_troopType;
-                else                                entityType = g_app->m_location->GetEntity(selectedId)->m_type;
+                if( auto* unit = selected.GetUnit() )
+                    entityType = unit->m_troopType;
+                else
+                    entityType = selected.GetWorldObject()->m_type;
 
-                RenderSelectionArrows( selectedId, selectedWorldPos );
+                RenderSelectionArrows( selected.id(), selectedWorldPos );
 				m_moveableEntitySelected = true;
 
-                bool highlightedBuilding = ( somethingHighlighted && highlightedId.GetUnitId() == UNIT_BUILDINGS );
+                bool highlightedBuilding = ( highlighted.HasValue() && highlighted.id().GetUnitId() == UNIT_BUILDINGS );
 
                 if( (entityType == Entity::TypeInsertionSquadie ||
                      entityType == Entity::TypeOfficer)
                      && highlightedBuilding )
                 {
-                    Building *building = g_app->m_location->GetBuilding( highlightedId.GetUniqueId() );
+                    Building *building = g_app->m_location->GetBuilding( highlighted.id().GetUniqueId() );
 
                     if( building && building->m_type == Building::TypeRadarDish)
                     {
@@ -464,7 +464,7 @@ void GameCursor::Render()
                 }
 
                 // Selected a unit OR an entity
-                if( !somethingHighlighted || highlightedId.GetUnitId() == UNIT_BUILDINGS )
+                if( !highlighted.HasValue() || highlighted.id().GetUnitId() == UNIT_BUILDINGS )
                 {
                     Vector3 targetFront = (mousePos - selectedWorldPos).Normalise();
                     Vector3 landNormal = g_app->m_location->m_landscape.m_normalMap->GetValue(mousePos.x, mousePos.z);
@@ -476,7 +476,7 @@ void GameCursor::Render()
                 }
             }
 
-            if( somethingSelected && selectedId.GetUnitId() == UNIT_BUILDINGS )
+            if( selected.HasValue() && selected.id().GetUnitId() == UNIT_BUILDINGS )
             {
                 // Selected a building - render a targetting crosshair
                 g_app->m_renderer->SetupMatricesFor2D();
@@ -485,7 +485,7 @@ void GameCursor::Render()
                 g_app->m_renderer->SetupMatricesFor3D();
             }
 
-            if( !somethingSelected && !somethingHighlighted )
+            if( !selected.HasValue() && !highlighted.HasValue() )
             {
                 // Looking at empty landscape
                 Vector3 landNormal = g_app->m_location->m_landscape.m_normalMap->GetValue(mousePos.x, mousePos.z);

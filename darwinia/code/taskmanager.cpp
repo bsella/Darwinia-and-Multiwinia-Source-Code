@@ -26,10 +26,12 @@
 
 #include "interface/prefs_other_window.h"
 
+#include "worldobject/entity.h"
 #include "worldobject/insertion_squad.h"
 #include "worldobject/officer.h"
 #include "worldobject/darwinian.h"
 #include "worldobject/trunkport.h"
+#include "worldobject/worldobject.h"
 
 Task::Task()
 :   m_id(-1),
@@ -77,12 +79,12 @@ void Task::TargetSquad( Vector3 const &_pos )
     int numEntities = 2 + g_app->m_globalWorld->m_research->CurrentLevel( GlobalResearch::TypeSquad );
 
     int unitId;
-    g_app->m_location->m_teams[teamId].NewUnit( Entity::TypeInsertionSquadie, numEntities, &unitId, _pos );
+    m_unit = g_app->m_location->m_teams[teamId].NewUnit( Entity::TypeInsertionSquadie, numEntities, &unitId, _pos );
+    m_entity = nullptr;
     g_app->m_location->SpawnEntities( _pos, teamId, unitId,
                                       Entity::TypeInsertionSquadie, numEntities, g_zeroVector, 10 );
 
     g_app->m_location->m_teams[teamId].SelectUnit( unitId, -1, -1 );
-    m_objId.Set( teamId, unitId, -1, -1 );
 
     g_app->m_helpSystem->PlayerDoneAction( HelpSystem::SquadSummon );
     m_state = StateRunning;
@@ -99,7 +101,7 @@ void Task::TargetSquad( Vector3 const &_pos )
 
     if( trackEntity == 2 )
     {
-        g_app->m_camera->RequestEntityTrackMode( m_objId );
+        g_app->m_camera->RequestEntityTrackMode( *m_unit );
     }
 }
 
@@ -110,8 +112,9 @@ void Task::TargetEngineer( Vector3 const &_pos )
 
 	Vector3 pos = _pos;
 	pos.y += 10.0f;
-    m_objId = g_app->m_location->SpawnEntities( pos, teamId, -1, Entity::TypeEngineer, 1, g_zeroVector, 0 );
-    g_app->m_location->m_teams[teamId].SelectUnit( -1, m_objId.GetIndex(), -1 );
+    m_entity = g_app->m_location->SpawnEntities( pos, teamId, -1, Entity::TypeEngineer, 1, g_zeroVector, 0 )[0];
+    m_unit = nullptr;
+    g_app->m_location->m_teams[teamId].SelectUnit( -1, m_entity->m_id.GetIndex(), -1 );
 
     m_state = StateRunning;
     g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
@@ -123,8 +126,9 @@ void Task::TargetArmour( Vector3 const &_pos )
 #ifndef DEMOBUILD
     int teamId = g_app->m_globalWorld->m_myTeamId;
 
-    m_objId = g_app->m_location->SpawnEntities( _pos, teamId, -1, Entity::TypeArmour, 1, g_zeroVector, 0 );
-    g_app->m_location->m_teams[teamId].SelectUnit( -1, m_objId.GetIndex(), -1 );
+    m_entity = g_app->m_location->SpawnEntities( _pos, teamId, -1, Entity::TypeArmour, 1, g_zeroVector, 0 )[0];
+    m_unit = nullptr;
+    g_app->m_location->m_teams[teamId].SelectUnit( -1, m_entity->m_id.GetIndex(), -1 );
 
     m_state = StateRunning;
 
@@ -133,19 +137,15 @@ void Task::TargetArmour( Vector3 const &_pos )
 }
 
 
-WorldObjectId Task::Promote( WorldObjectId _id )
+Entity& Task::Promote( Entity& entity )
 {
     int teamId = g_app->m_globalWorld->m_myTeamId;
-
-    Entity *entity = g_app->m_location->GetEntity( _id );
-    DarwiniaDebugAssert( entity );
-
 
     //
     // Spawn an Officer
 
-    WorldObjectId spawnedId = g_app->m_location->SpawnEntities( entity->m_pos, teamId, -1, Entity::TypeOfficer, 1, entity->m_vel, 0 );
-    Officer *officer = (Officer *) g_app->m_location->GetEntity( spawnedId );
+    auto spawned = g_app->m_location->SpawnEntities( entity.m_pos, teamId, -1, Entity::TypeOfficer, 1, entity.m_vel, 0 );
+    Officer *officer = static_cast<Officer *>(spawned[0]);
     DarwiniaDebugAssert( officer );
 
 
@@ -156,20 +156,19 @@ WorldObjectId Task::Promote( WorldObjectId _id )
     for( int i = 0; i < numFlashes; ++i )
     {
         Vector3 vel( sfrand(5.0f), frand(15.0f), sfrand(5.0f) );
-        g_app->m_particleSystem->CreateParticle( entity->m_pos, vel, Particle::TypeControlFlash );
+        g_app->m_particleSystem->CreateParticle( entity.m_pos, vel, Particle::TypeControlFlash );
     }
 
 
-    Darwinian *darwinian = (Darwinian *) entity;
-    darwinian->m_promoted = true;
+    static_cast<Darwinian&>(entity).m_promoted = true;
 
     g_app->m_helpSystem->PlayerDoneAction( HelpSystem::OfficerCreate );
 
-    return spawnedId;
+    return *spawned[0];
 }
 
 
-WorldObjectId Task::Demote( WorldObjectId _id )
+Entity& Task::Demote( WorldObjectId _id )
 {
     // Make demoted officers return to green
     //int teamId = g_app->m_globalWorld->m_myTeamId;
@@ -182,7 +181,7 @@ WorldObjectId Task::Demote( WorldObjectId _id )
     //
     // Spawn a Darwinian
 
-    WorldObjectId spawnedId = g_app->m_location->SpawnEntities( entity->m_pos, teamId, -1, Entity::TypeDarwinian, 1, entity->m_vel, 0 );
+    auto spawned = g_app->m_location->SpawnEntities( entity->m_pos, teamId, -1, Entity::TypeDarwinian, 1, entity->m_vel, 0 );
 
 
     //
@@ -196,17 +195,17 @@ WorldObjectId Task::Demote( WorldObjectId _id )
     }
 
 
-    return spawnedId;
+    return *spawned[0];
 }
 
 
-WorldObjectId Task::FindDarwinian( Vector3 const &_pos )
+Darwinian* Task::FindDarwinian( Vector3 const &_pos )
 {
     int teamId = g_app->m_globalWorld->m_myTeamId;
 
     int numFound;
     WorldObjectId *ids = g_app->m_location->m_entityGrid->GetFriends( _pos.x, _pos.z, 10.0f, &numFound, teamId );
-    WorldObjectId nearestId;
+    Darwinian* nearestId = nullptr;
     float nearest = 99999.9f;
 
     for( int i = 0; i < numFound; ++i )
@@ -219,7 +218,7 @@ WorldObjectId Task::FindDarwinian( Vector3 const &_pos )
             float distance = ( entity->m_pos - _pos ).MagSquared();
             if( distance < nearest )
             {
-                nearestId = id;
+                nearestId = static_cast<Darwinian*>(entity);
                 nearest = distance;
             }
         }
@@ -249,13 +248,11 @@ void Task::TargetOfficer( Vector3 const &_pos )
     // Then shutdown this task
     // Then select them
 
-    WorldObjectId nearestId = FindDarwinian( _pos );
-
-    if( nearestId.IsValid() )
+    if( Darwinian* nearest = FindDarwinian( _pos ))
     {
-        WorldObjectId id = Promote( nearestId );
+        auto& promoted = Promote( *nearest );
         g_app->m_taskManager->TerminateTask( m_id );
-        g_app->m_location->m_teams[ id.GetTeamId() ].SelectUnit( id.GetUnitId(), id.GetIndex(), -1 );
+        g_app->m_location->m_teams[ promoted.m_id.GetTeamId() ].SelectUnit( promoted.m_id.GetUnitId(), promoted.m_id.GetIndex(), -1 );
         g_app->m_taskManagerInterface->SetCurrentMessage( TaskManagerInterface::MessageSuccess, GlobalResearch::TypeOfficer, 2.5f );
 
         g_app->m_soundSystem->TriggerOtherEvent( nullptr, "GestureSuccess", SoundSourceBlueprint::TypeGesture );
@@ -272,8 +269,7 @@ bool Task::Advance()
             case GlobalResearch::TypeSquad:
             case GlobalResearch::TypeController:
             {
-                Unit *unit = g_app->m_location->GetUnit( m_objId );
-                if( !unit || unit->NumAliveEntities() == 0 )
+                if( !m_unit || m_unit->NumAliveEntities() == 0 )
                 {
                     if( g_app->m_taskManager->m_currentTaskId == m_id )
                     {
@@ -287,8 +283,7 @@ bool Task::Advance()
             case GlobalResearch::TypeEngineer:
             case GlobalResearch::TypeArmour:
             {
-                Entity *entity = g_app->m_location->GetEntity( m_objId );
-                if( !entity || entity->m_dead )
+                if( !m_entity || m_entity->m_dead )
                 {
                     if( g_app->m_taskManager->m_currentTaskId == m_id )
                     {
@@ -325,14 +320,16 @@ void Task::SwitchTo()
     {
         case GlobalResearch::TypeSquad:
         {
-            g_app->m_location->m_teams[teamId].SelectUnit( m_objId.GetUnitId(), -1, -1 );
+            if (m_unit) g_app->m_location->m_teams[teamId].SelectUnit( m_unit->m_unitId, -1, -1 );
+            else        g_app->m_location->m_teams[teamId].SelectUnit( -1, -1, -1 );
             break;
         }
 
         case GlobalResearch::TypeEngineer:
         case GlobalResearch::TypeArmour:
         {
-            g_app->m_location->m_teams[teamId].SelectUnit( -1, m_objId.GetIndex(), -1 );
+            if(m_entity) g_app->m_location->m_teams[teamId].SelectUnit( -1, m_entity->m_id.GetIndex(), -1 );
+            else         g_app->m_location->m_teams[teamId].SelectUnit( -1, -1, -1 );
             break;
         }
 
@@ -342,7 +339,7 @@ void Task::SwitchTo()
             {
                 Task *task = g_app->m_taskManager->m_tasks.GetData(i);
                 if( task->m_type == GlobalResearch::TypeSquad &&
-                    task->m_objId == m_objId )
+                    task->m_unit == m_unit )
                 {
                     g_app->m_taskManager->SelectTask( task->m_id );
                     break;
@@ -366,14 +363,13 @@ void Task::Stop()
     {
         case GlobalResearch::TypeSquad:
         {
-            Unit *unit = g_app->m_location->GetUnit( m_objId );
-            if( unit )
+            if( m_unit )
             {
-                for( int i = 0; i < unit->m_entities.Size(); ++i )
+                for( int i = 0; i < m_unit->m_entities.Size(); ++i )
                 {
-                    if( unit->m_entities.ValidIndex(i) )
+                    if( m_unit->m_entities.ValidIndex(i) )
                     {
-                        Entity *entity = unit->m_entities[i];
+                        Entity *entity = m_unit->m_entities[i];
                         entity->ChangeHealth( -1000 );
                     }
                 }
@@ -384,10 +380,9 @@ void Task::Stop()
         case GlobalResearch::TypeEngineer:
         case GlobalResearch::TypeArmour:
         {
-            Entity *entity = (Entity *) g_app->m_location->GetEntity( m_objId );
-            if( entity )
+            if( m_entity )
             {
-                entity->ChangeHealth( -1000 );
+                m_entity->ChangeHealth( -1000 );
             }
             break;
         }
@@ -470,7 +465,7 @@ bool TaskManager::RunTask( int _type )
             Task *task = GetCurrentTask();
             if( task && task->m_type == GlobalResearch::TypeSquad )
             {
-                Unit *unit = g_app->m_location->GetUnit( task->m_objId );
+                Unit *unit = task->m_unit;
                 if( unit && unit->m_troopType == Entity::TypeInsertionSquadie )
                 {
                     InsertionSquad *squad = (InsertionSquad *) unit;
@@ -480,7 +475,8 @@ bool TaskManager::RunTask( int _type )
                     {
                         Task *controller = new Task();
                         controller->m_type = _type;
-                        controller->m_objId = WorldObjectId( squad->m_teamId, squad->m_unitId, -1, -1 );
+                        controller->m_unit = squad;
+                        controller->m_entity = nullptr;
                         controller->m_route = new Route(-1);
                         controller->m_route->AddWayPoint( squad->m_centrePos );
                         bool success = RunTask( controller );
@@ -509,7 +505,7 @@ bool TaskManager::RunTask( int _type )
             Task *task = GetCurrentTask();
             if( task && task->m_type == GlobalResearch::TypeSquad )
             {
-                Unit *unit = g_app->m_location->GetUnit( task->m_objId );
+                Unit *unit = task->m_unit;
                 if( unit && unit->m_troopType == Entity::TypeInsertionSquadie )
                 {
                     InsertionSquad *squad = (InsertionSquad *) unit;
@@ -685,9 +681,17 @@ void TaskManager::SelectTask( WorldObjectId _id )
     for( int i = 0; i < m_tasks.Size(); ++i )
     {
         Task *task = m_tasks[i];
-        if( task->m_objId.GetTeamId() == _id.GetTeamId() &&
-            task->m_objId.GetUnitId() == _id.GetUnitId() &&
-            task->m_objId.GetIndex() == _id.GetIndex() )
+        if( (task->m_entity &&
+            task->m_entity->m_id.GetTeamId() == _id.GetTeamId() &&
+            task->m_entity->m_id.GetUnitId() == _id.GetUnitId() &&
+            task->m_entity->m_id.GetIndex() == _id.GetIndex()) ||
+
+            (task->m_unit &&
+            task->m_unit->m_teamId == _id.GetTeamId() &&
+            task->m_unit->m_unitId == _id.GetUnitId() &&
+            _id.GetIndex() -1
+            )
+         )
         {
             SelectTask( task->m_id );
             break;
@@ -722,7 +726,7 @@ Task *TaskManager::GetTask( WorldObjectId _id )
     for( int i = 0; i < m_tasks.Size(); ++i )
     {
         Task *task = m_tasks[i];
-        if( task->m_objId == _id )
+        if( task->m_entity && task->m_entity->m_id == _id )
         {
             return task;
         }

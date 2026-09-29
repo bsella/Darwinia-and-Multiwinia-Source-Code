@@ -33,6 +33,7 @@
 #include "script.h"
 
 #include "FFP_emulation.h"
+#include "worldobject/worldobject.h"
 
 // *** AdvanceTeleportControl
 void LocationInput::AdvanceRadarDishControl(Building *_building)
@@ -44,8 +45,7 @@ void LocationInput::AdvanceRadarDishControl(Building *_building)
         g_app->m_camera->GetClickRay(g_target->X(), g_target->Y(),
 									 &rayStart, &rayDir);
 
-        int buildId = g_app->m_location->GetBuildingId(rayStart, rayDir, 255);
-        Building *building = g_app->m_location->GetBuilding( buildId );
+        auto* building = g_app->m_location->GetBuilding(rayStart, rayDir, 255);
         if( building &&
             building->m_type == Building::TypeRadarDish &&
             building != _building )
@@ -64,9 +64,7 @@ void LocationInput::AdvanceRadarDishControl(Building *_building)
     }
 }
 
-
-// *** GetObjectUnderMouse
-bool LocationInput::GetObjectUnderMouse( WorldObjectId &_id, int _teamId )
+WorldObjectOrUnit LocationInput::GetObjectUnderMouse(int _teamId )
 {
     Vector3 rayStart;
     Vector3 rayDir;
@@ -78,13 +76,13 @@ bool LocationInput::GetObjectUnderMouse( WorldObjectId &_id, int _teamId )
 	float unitDist = FLT_MAX;
 	float entDist = FLT_MAX;
 
-    int buildId = g_app->m_location->GetBuildingId(rayStart, rayDir, _teamId, FLT_MAX, &buildDist );
-	int unitId = g_app->m_location->GetUnitId( rayStart, rayDir, _teamId, &unitDist );
-    WorldObjectId entId = g_app->m_location->GetEntityId( rayStart, rayDir, _teamId, &entDist );
+    auto* building = g_app->m_location->GetBuilding(rayStart, rayDir, _teamId, FLT_MAX, &buildDist );
+	auto* unit = g_app->m_location->GetUnit( rayStart, rayDir, _teamId, &unitDist );
+    auto* entity = g_app->m_location->GetEntity( rayStart, rayDir, _teamId, &entDist );
 
     //
     // Look for Darwinians if we are running an officer program
-    if( !entId.IsValid() )
+    if( !entity )
     {
 	    Task *task = g_app->m_taskManager->GetCurrentTask();
         if( task &&
@@ -92,7 +90,7 @@ bool LocationInput::GetObjectUnderMouse( WorldObjectId &_id, int _teamId )
             task->m_type == GlobalResearch::TypeOfficer )
         {
             Vector3 mousePos = g_app->m_userInput->GetMousePos3d();
-            entId = Task::FindDarwinian( mousePos );
+            entity = Task::FindDarwinian( mousePos );
             entDist = 0.0f;
         }
     }
@@ -100,30 +98,26 @@ bool LocationInput::GetObjectUnderMouse( WorldObjectId &_id, int _teamId )
     //
     // Now find which object is nearest
 
-    if( entId.IsValid() && entDist < unitDist && entDist < buildDist )
+    if( entity && entDist < unitDist && entDist < buildDist )
     {
         // Entity is nearest
-        _id = entId;
-        return true;
+        return entity;
     }
 
-    if( unitId != -1 && unitDist < entDist && unitDist < buildDist )
+    if( unit && unitDist < entDist && unitDist < buildDist )
     {
         // Unit is nearest
-        _id.Set( g_app->m_globalWorld->m_myTeamId, unitId, -1, -1 );
-        return true;
+        return unit;
     }
 
-    if( buildId != -1 && buildDist < entDist && buildDist < unitDist )
+    if( building  && buildDist < entDist && buildDist < unitDist )
     {
         // Building is nearest
-        _id.Set( g_app->m_globalWorld->m_myTeamId, UNIT_BUILDINGS, -1, buildId );
-        return true;
+        return building;
     }
 
-    return false;
+    return nullptr;
 }
-
 
 // *** AdvanceNoSelection
 void LocationInput::AdvanceNoSelection()
@@ -132,7 +126,13 @@ void LocationInput::AdvanceNoSelection()
         !g_app->m_taskManagerInterface->m_visible )
     {
         WorldObjectId id;
-        GetObjectUnderMouse( id, g_app->m_globalWorld->m_myTeamId );
+
+        auto object = GetObjectUnderMouse( g_app->m_globalWorld->m_myTeamId );
+
+        if(auto* world_object = object.GetWorldObject())
+        {
+            id = world_object->m_id;
+        }
 
         if( id.IsValid() )
         {
@@ -147,12 +147,12 @@ void LocationInput::AdvanceNoSelection()
                     if( building->m_type == Building::TypeRadarDish )
                     {
                         g_app->m_clientToServer->RequestSelectUnit( id.GetTeamId(), -1, -1, id.GetUniqueId() );
-                        g_app->m_camera->RequestRadarAimMode( building );
+                        g_app->m_camera->RequestRadarAimMode( *building );
                     }
                     else if( building->m_type == Building::TypeGunTurret )
                     {
                         g_app->m_clientToServer->RequestSelectUnit( id.GetTeamId(), -1, -1, id.GetUniqueId() );
-                        g_app->m_camera->RequestTurretAimMode( building );
+                        g_app->m_camera->RequestTurretAimMode( *building );
                     }
                     else if( building->m_type == Building::TypeFenceSwitch )
                     {
@@ -272,11 +272,10 @@ void LocationInput::AdvanceTeamControl()
         !g_app->m_taskManagerInterface->m_visible &&
 		!taskStarted)
     {
-        WorldObjectId id;
-        GetObjectUnderMouse( id, g_app->m_globalWorld->m_myTeamId );
-        if( id.IsValid() && id.GetUnitId() != 255 && id.GetUnitId() != UNIT_BUILDINGS )
+        auto object_or_unit =  GetObjectUnderMouse(g_app->m_globalWorld->m_myTeamId );
+        if( object_or_unit.HasValue() && object_or_unit.id().GetUnitId() != 255 && object_or_unit.id().GetUnitId() != UNIT_BUILDINGS )
         {
-            g_app->m_clientToServer->RequestSelectUnit( id.GetTeamId(), id.GetUnitId(), id.GetIndex(), -1 );
+            g_app->m_clientToServer->RequestSelectUnit( object_or_unit.id().GetTeamId(), object_or_unit.id().GetUnitId(), object_or_unit.id().GetIndex(), -1 );
             return;
         }
     }

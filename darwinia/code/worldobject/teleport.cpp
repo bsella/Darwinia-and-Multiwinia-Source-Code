@@ -256,8 +256,7 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
                         for( int i = 0; i < g_app->m_taskManager->m_tasks.Size(); ++i )
                         {
                             Task *task = g_app->m_taskManager->m_tasks[i];
-                            if( task->m_type == GlobalResearch::TypeSquad &&
-                                task->m_objId == WorldObjectId( oldUnit->m_teamId, oldUnit->m_unitId, -1, -1 ) )
+                            if( task->m_type == GlobalResearch::TypeSquad && task->m_unit == oldUnit )
                             {
                                 g_app->m_taskManager->m_tasks.RemoveData(i);
                                 delete task;
@@ -268,7 +267,7 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
                         Task *task = new Task();
                         task->m_type = GlobalResearch::TypeSquad;
                         task->m_state = Task::StateRunning;
-                        task->m_objId.Set( newUnit->m_teamId, newUnit->m_unitId, -1, -1 );
+                        task->m_unit = newUnit;
                         bool success = g_app->m_taskManager->RegisterTask( task );
                         if( success ) g_app->m_taskManager->SelectTask( task->m_id );
 
@@ -278,7 +277,8 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
                         Task *controller = g_app->m_taskManager->GetTask( ((InsertionSquad *)newUnit)->m_controllerId );
                         if( controller )
                         {
-                            controller->m_objId = task->m_objId;
+                            controller->m_entity = task->m_entity;
+                            controller->m_unit = task->m_unit;
                             controller->m_route->AddWayPoint( m_id.GetUniqueId() );
                         }
                     }

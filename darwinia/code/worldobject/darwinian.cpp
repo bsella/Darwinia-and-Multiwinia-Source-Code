@@ -791,7 +791,7 @@ bool Darwinian::AdvanceUnderControl()
 
     Task *task = g_app->m_taskManager->GetTask( m_controllerId );
     Unit *controller = nullptr;
-    if( task ) controller = g_app->m_location->GetUnit( task->m_objId );
+    if( task ) controller =  task->m_unit;
 
     if( !task || !controller )
     {

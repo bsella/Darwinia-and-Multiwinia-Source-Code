@@ -1,4 +1,5 @@
-﻿#include <math.h>
+﻿#include <cassert>
+#include <math.h>
 #include <string.h>
 #include <float.h>
 
@@ -36,13 +37,14 @@
 
 #include "loaders/loader.h"
 
+#include "worldobject/entity.h"
 #include "worldobject/teleport.h"
 #include "worldobject/insertion_squad.h"
 
 #include "FFP_emulation.h"
+#include "worldobject/worldobject.h"
 
 #include <algorithm>
-#include <type_traits>
 #include <variant>
 
 #define MIN_GROUND_CLEARANCE	10.0f	// Minimum height relative to land
@@ -587,6 +589,8 @@ float Camera::DistanceToBlockage(Vector3 const &_dir, float const _maxDist)
 
 void Camera::AdvanceFreeMovementMode()
 {
+	assert(IsInModeFreeMovement());
+
 	if (g_app->m_renderer->m_renderingPoster)
 	{
 		return;
@@ -596,18 +600,16 @@ void Camera::AdvanceFreeMovementMode()
 
 	// Check to see whether we should switch to entity tracking mode
 	WorldObjectId selection;
-	if (m_entityTrack && GetEntityToTrack(selection))
+	if (m_entityTrack)
 	{
-        Entity *entity = g_app->m_location->GetEntity( selection );
-		if( entity->m_type == Entity::TypeInsertionSquadie )
-        {
-		    RequestEntityTrackMode( selection );
-		    return;
-        }
-		else
-        {
-            m_objectId = WorldObjectId();
-        }
+		if(auto* selection = GetEntityToTrack())
+		{
+			if( selection->m_type == Entity::TypeInsertionSquadie )
+			{
+				RequestEntityTrackMode( *selection );
+				return;
+			}
+		}
 	}
 
 
@@ -849,43 +851,41 @@ void Camera::AdvanceBuildingFocusMode()
 
 // Determine whether there is an entity or unit that has been selected
 // by the player, and if so, return true and fill in the object id.
-bool Camera::GetEntityToTrack( WorldObjectId &selection )
+const Entity* Camera::GetEntityToTrack() const
 {
 	if( !g_app->m_location )
-		return false;
+		return nullptr;
 
     Team *team = g_app->m_location->GetMyTeam();
 
 	if( !team )
-		return false;
+		return nullptr;
 
-    if( team->GetMyEntity() )
+    if( auto* entity = team->GetMyEntity() )
     {
-        selection = team->GetMyEntity()->m_id;
-		return true;
+        return entity;
     }
 
     Task *currentTask = g_app->m_taskManager->GetCurrentTask();
     // if the task has just been ended or killed, it isnt valid
-	if (currentTask && currentTask->m_state == Task::StateStopping ) return false;
+	if (currentTask && currentTask->m_state == Task::StateStopping ) return nullptr;
 
-	if( !currentTask ) return false;
+	if( !currentTask ) return nullptr;
 
 	Unit *unit = team->GetMyUnit();
     if( !unit )
-		return false;
+		return nullptr;
 
 	if( unit->m_troopType == Entity::TypeInsertionSquadie )
 	{
 		InsertionSquad *squad = (InsertionSquad *) unit;
 		Entity *pointMan = squad->GetPointMan();
 		if (pointMan) {
-			selection = pointMan->m_id;
-			return true;
+			return pointMan;
 		}
 	}
 
-	return false;
+	return nullptr;
 }
 
 void Camera::AdvanceAutomaticTracking()
@@ -938,7 +938,7 @@ void Camera::AdvanceAutomaticTracking()
 	m_pos = factor2 * m_pos + factor1 * m_cameraTarget;
 
 	// Finally face the unit
-    RotateTowardsEntity( m_trackingEntity );
+    RotateTowardsEntity( *m_trackingEntity );
 	UpdateControlVector();
 }
 void Camera::UpdateControlVector()
@@ -1149,14 +1149,14 @@ bool Camera::AdvanceNotTooFarAway( Vector3 &targetCamera )
 	return false;
 }
 
-void Camera::RotateTowardsEntity( Entity *entity )
+void Camera::RotateTowardsEntity( const Entity& entity )
 {
     float factor1 = g_advanceTime * 2.0f;
     float factor2 = 1.0f - factor1;
 
 	// We deliberately overshoot the target pos?
 
-	Vector3 newTargetPos = entity->GetCameraFocusPoint();
+	Vector3 newTargetPos = entity.GetCameraFocusPoint();
     m_targetPos = factor1 * newTargetPos + factor2 * m_targetPos;
 
     Vector3 targetFront = ( m_targetPos - m_pos ).Normalise();
@@ -1168,38 +1168,37 @@ void Camera::RotateTowardsEntity( Entity *entity )
 
 void Camera::AdvanceEntityTrackMode()
 {
+	assert(IsInModeEntityTrack());
+
+	auto& entity_track = std::get<ModeEntityTrack>(m_mode);;
+
     if( g_app->m_taskManagerInterface->m_visible)
 		return;
 
 	UpdateEntityTrackingMode();
 
 	if (g_app->m_location && m_entityTrack){
-
-		Entity *entity = g_app->m_location->GetEntity( m_objectId );
-		if (!entity || entity->m_dead)
+		if (!entity_track.m_entity || entity_track.m_entity->m_dead)
 		{
-			WorldObjectId id;
-			GetEntityToTrack(id);
-			m_objectId = id;
+			entity_track.m_entity = GetEntityToTrack();
 		}
 
-		entity = g_app->m_location->GetEntity( m_objectId );
-		if (entity && entity->m_dead){
+		if (entity_track.m_entity && entity_track.m_entity->m_dead){
 
 			Task *currentTask = g_app->m_taskManager->GetCurrentTask();
 			if (!currentTask || currentTask->m_state == Task::StateRunning )
 				goto finishMode;
 
-			if( !currentTask && entity->m_type != Entity::TypeOfficer )
+			if( !currentTask && entity_track.m_entity->m_type != Entity::TypeOfficer )
 				goto finishMode;
 
-			if( !m_objectId.IsValid() )
+			if( entity_track.m_entity == nullptr )
 				goto finishMode;
 
 			// Calculate the predicated position of the entity (where it should be at
 			// the next frame). This is used by the auxiliary functions.
-			m_predictedEntityPos = entity->m_pos + g_advanceTime * entity->m_vel;
-			m_trackingEntity = entity;
+			m_predictedEntityPos = entity_track.m_entity->m_pos + g_advanceTime * entity_track.m_entity->m_vel;
+			m_trackingEntity = entity_track.m_entity;
 
 			AdvanceAutomaticTracking();
 
@@ -1608,8 +1607,11 @@ void Camera::AdvanceMoveToTargetMode()
 
 void Camera::AdvanceEntityFollowMode()
 {
-    Entity *obj = (Entity*)g_app->m_location->GetEntity( m_objectId );
-    if( !obj )
+	assert(IsInModeEntityFollow());
+
+	auto& entity_follow = std::get<ModeEntityFollow>(m_mode);
+
+    if( !entity_follow.m_entity )
     {
         RequestFreeMovementMode();
         return;
@@ -1663,7 +1665,7 @@ void Camera::AdvanceEntityFollowMode()
 
 	float factor1 = g_advanceTime * 5.0f;
 	float factor2 = 1.0f - factor1;
-    Vector3 newTargetPos = obj->m_pos + g_predictionTime * obj->m_vel;
+    Vector3 newTargetPos = entity_follow.m_entity->m_pos + g_predictionTime * entity_follow.m_entity->m_vel;
 	m_targetPos = factor1 * newTargetPos + factor2 * m_targetPos;
 	m_pos = m_targetPos - m_front * m_distFromEntity;
 }
@@ -1687,7 +1689,6 @@ Camera::Camera()
     m_mode(ModeDoNothing()),
 	m_debugMode(DebugModeAuto),
 	m_framesInThisMode(0),
-    m_objectId(),
 	m_anim(nullptr),
     m_cameraShake(0.0f),
     m_entityTrack(false),
@@ -2146,6 +2147,14 @@ void Camera::SetNextDebugMode()
 	}
 }
 
+Camera::ModeEntityTrack::ModeEntityTrack(const Entity& entity) : m_unit(nullptr), m_entity(&entity)
+{
+}
+
+Camera::ModeEntityTrack::ModeEntityTrack(const Unit& unit) : m_unit(&unit), m_entity(nullptr)
+{
+}
+
 void Camera::RequestReplayMode()
 {
 	m_framesInThisMode = 0;
@@ -2235,16 +2244,16 @@ void Camera::RequestMainMenuMode()
 	m_mode = Camera::ModeMainMenu();
 }
 
-void Camera::RequestBuildingFocusMode( Building *_building, float _range, float _height )
+void Camera::RequestBuildingFocusMode( const Building& building, float range, float height )
 {
 	m_framesInThisMode = 0;
-    m_mode = ModeBuildingFocus();
-    m_targetPos = _building->m_centrePos;
-    m_trackRange = _range;
-    m_trackHeight = _height;
+    m_mode = ModeBuildingFocus(&building, range, height);
+    m_targetPos = building.m_centrePos;
+    m_trackRange = range;
+    m_trackHeight = height;
     m_trackTimer = GetHighResTime();
 
-    m_trackVector = ( m_pos - _building->m_pos );
+    m_trackVector = ( m_pos - building.m_pos );
     m_trackVector.y = 0.0f;
     m_trackVector.Normalise();
 
@@ -2252,48 +2261,51 @@ void Camera::RequestBuildingFocusMode( Building *_building, float _range, float 
 }
 
 
-void Camera::RequestRadarAimMode( Building *_building )
+void Camera::RequestRadarAimMode( const Building& radar )
 {
 	m_framesInThisMode = 0;
-    m_mode = ModeRadarAim();
-    m_targetPos = _building->m_pos;
+    m_mode = ModeRadarAim(&radar);
+    m_targetPos = radar.m_pos;
 
     g_app->m_helpSystem->PlayerDoneAction( HelpSystem::UseRadarDish );
 }
 
 
-void Camera::RequestTurretAimMode(Building *_building)
+void Camera::RequestTurretAimMode(const Building& turret)
 {
     m_framesInThisMode = 0;
-    m_mode = ModeTurretAim();
-    m_objectId = _building->m_id;
-    m_targetPos = _building->m_pos;
+    m_mode = ModeTurretAim(&turret);
+    m_targetPos = turret.m_pos;
 }
 
 
-void Camera::RequestEntityTrackMode( WorldObjectId const &_id )
+void Camera::RequestEntityTrackMode( const Entity& entity )
 {
 	m_framesInThisMode = 0;
-    m_mode = ModeEntityTrack();
+    m_mode = ModeEntityTrack(entity);
 
     m_distFromEntity = 200.0f;
-    m_objectId = _id;
     m_trackHeight = 0.0f;
     m_cameraTarget = m_pos;
 
 	// Snap the camera to the look at the unit
-    Entity *entity = g_app->m_location->GetEntity( _id );
-    if( entity )
-    {
-        m_targetPos = entity->m_pos;
-    }
+    m_targetPos = entity.m_pos;
 }
 
-void Camera::RequestEntityFollowMode( WorldObjectId const &_id )
+void Camera::RequestEntityTrackMode(const Unit& unit)
 {
 	m_framesInThisMode = 0;
-    m_mode = ModeEntityFollow();
-    m_objectId = _id;
+    m_mode = ModeEntityTrack(unit);
+
+    m_distFromEntity = 200.0f;
+    m_trackHeight = 0.0f;
+    m_cameraTarget = m_pos;
+}
+
+void Camera::RequestEntityFollowMode( const Entity& entity )
+{
+	m_framesInThisMode = 0;
+    m_mode = ModeEntityFollow(&entity);
 }
 
 

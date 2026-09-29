@@ -41,8 +41,8 @@ protected:
 	bool		m_validPlacementOpportunity;
 	bool		m_moveableEntitySelected;
 
-    bool GetSelectedObject      ( WorldObjectId &_id, Vector3 &_pos );
-    bool GetHighlightedObject   ( WorldObjectId &_id, Vector3 &_pos, float &_radius );
+    WorldObjectOrUnit GetSelectedObject    ( Vector3 &_pos );
+    WorldObjectOrUnit GetHighlightedObject ( Vector3 &_pos, float &_radius );
 
     void RenderSelectionArrows  ( WorldObjectId _id, Vector3 const &_pos );
     void RenderSelectionArrow   ( float _screenX, float _screenY, float _screenDX, float _screenDY, float _size, float _alpha );

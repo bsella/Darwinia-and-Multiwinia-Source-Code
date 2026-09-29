@@ -317,7 +317,7 @@ bool ControllerGrenade::Advance()
         Task *currentTask = g_app->m_taskManager->GetCurrentTask();
         if( currentTask && currentTask->m_type == GlobalResearch::TypeSquad )
         {
-            Unit *owner = g_app->m_location->GetUnit( currentTask->m_objId );
+            Unit *owner = currentTask->m_unit;
             if( owner && owner->m_troopType == Entity::TypeInsertionSquadie )
             {
                 InsertionSquad *squad = (InsertionSquad *) owner;

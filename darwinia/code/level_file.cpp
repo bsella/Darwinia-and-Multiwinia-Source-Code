@@ -1433,7 +1433,7 @@ void LevelFile::GenerateInstantUnits()
                         {
                             Task *task = g_app->m_taskManager->m_tasks[i];
                             if( task->m_type == GlobalResearch::TypeArmour &&
-                                task->m_objId == entity->m_id )
+                                task->m_entity == entity )
                             {
                                 taskControlled = true;
                                 break;
@@ -1661,7 +1661,7 @@ void LevelFile::WriteRunningPrograms(FileWriter *_out)
             {
                 if( task->m_type == GlobalResearch::TypeEngineer )
                 {
-                    Engineer *engineer = (Engineer *) g_app->m_location->GetEntitySafe( task->m_objId, Entity::TypeEngineer );
+                    Engineer *engineer = static_cast<Engineer*>( task->m_entity);
                     if( engineer )
                     {
                         _out->printf( "\t%-15s %6d %6d %6d %8.2f %8.2f %8.2f %8.2f %d\n",
@@ -1677,7 +1677,7 @@ void LevelFile::WriteRunningPrograms(FileWriter *_out)
 
                 if( task->m_type == GlobalResearch::TypeSquad )
                 {
-                    InsertionSquad *squad = (InsertionSquad *) g_app->m_location->GetUnit( task->m_objId );
+                    InsertionSquad *squad = static_cast<InsertionSquad*>(task->m_unit);
                     if( squad && squad->m_troopType == Entity::TypeInsertionSquadie )
                     {
                         _out->printf( "\t%-15s %6d %6d %6d %8.2f %8.2f",

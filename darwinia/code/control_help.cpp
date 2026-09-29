@@ -708,11 +708,10 @@ bool ControlHelpSystem::CheckCondition( int _condition )
 
 		case CondOfficerSetFollow:
 		{
-			WorldObjectId idUnderMouse;
 			bool officerHighlighted = false;
-            if( g_app->m_locationInput->GetObjectUnderMouse( idUnderMouse, g_app->m_globalWorld->m_myTeamId ) )
+			auto object = g_app->m_locationInput->GetObjectUnderMouse( g_app->m_globalWorld->m_myTeamId );
+            if( auto* e = object.GetWorldObject() )
 			{
-				Entity *e = g_app->m_location->GetEntity( idUnderMouse );
 				if( e && e->m_type == Entity::TypeOfficer ) officerHighlighted = true;
 			}
 			return !g_app->m_taskManagerInterface->m_visible &&

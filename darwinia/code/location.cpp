@@ -1,8 +1,10 @@
-﻿#include <stdlib.h>
-#include <stdio.h>
+﻿#include "worldobject/building.h"
+#include "worldobject/entity.h"
+#include <stdlib.h>
 #include <math.h>
 #include <time.h>
 #include <float.h>
+#include <vector>
 
 #ifdef USE_DIRECT3D
 #include "lib/opengl_directx_internals.h"
@@ -235,7 +237,7 @@ void Location::InitTeams()
 // *** SpawnEntities
 // Returns id of last entity spawned
 // Only useful if we've only spawned one entity, eg an engineer
-WorldObjectId Location::SpawnEntities( Vector3 const &_pos, unsigned char _teamId, int _unitId,
+std::vector<Entity*> Location::SpawnEntities( Vector3 const &_pos, unsigned char _teamId, int _unitId,
                                        unsigned char _type, int _numEntities, Vector3 const &_vel,
                                        float _spread, float _range, int _routeId, int _routeWaypointId )
 {
@@ -243,7 +245,7 @@ WorldObjectId Location::SpawnEntities( Vector3 const &_pos, unsigned char _teamI
                 m_teams[_teamId].m_teamType > Team::TeamTypeUnused );
 
     Team *team = &m_teams[_teamId];
-    WorldObjectId entityId;
+    std::vector<Entity*> new_entities;
 
     for (int i = 0; i < _numEntities; i++)
     {
@@ -276,7 +278,7 @@ WorldObjectId Location::SpawnEntities( Vector3 const &_pos, unsigned char _teamI
 
         m_entityGrid->AddObject( s->m_id, s->m_pos.x, s->m_pos.z, s->m_radius );
 
-        entityId = s->m_id;
+        new_entities.push_back(s);
     }
 
     if( _unitId != -1 )
@@ -285,7 +287,7 @@ WorldObjectId Location::SpawnEntities( Vector3 const &_pos, unsigned char _teamI
         unit->RecalculateOffsets();
     }
 
-    return entityId;
+    return new_entities;
 }
 
 
@@ -1361,7 +1363,7 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
 			iu->m_routeId = -1;
         }
 
-        WorldObjectId spawnedId = SpawnEntities(pos, iu->m_teamId, unitId, iu->m_type, iu->m_number, g_zeroVector, iu->m_spread, -1.0f, iu->m_routeId, iu->m_routeWaypointId );
+        auto spawned = SpawnEntities(pos, iu->m_teamId, unitId, iu->m_type, iu->m_number, g_zeroVector, iu->m_spread, -1.0f, iu->m_routeId, iu->m_routeWaypointId );
 
         //
         // Is the waypoint in a Radar Dish?
@@ -1385,12 +1387,12 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
 
         if( iu->m_type == Entity::TypeDarwinian && iu->m_number == 1 && iu->m_state == Darwinian::StateFollowingOrders )
         {
-            Darwinian *darwinian = (Darwinian *) g_app->m_location->GetEntitySafe( spawnedId, Entity::TypeDarwinian );
+            Darwinian *darwinian = static_cast<Darwinian *>(spawned[0]);
             if( darwinian ) darwinian->GiveOrders( targetPos );
         }
         if( iu->m_type == Entity::TypeOfficer )
         {
-            Officer *officer = (Officer *) g_app->m_location->GetEntitySafe( spawnedId, Entity::TypeOfficer );
+            Officer *officer = static_cast<Officer *>(spawned[0]);
             if( iu->m_state == Officer::OrderGoto )
             {
                 officer->SetOrders( targetPos );
@@ -1402,7 +1404,7 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
         }
         if( iu->m_type == Entity::TypeArmour )
         {
-            Armour *armour = (Armour *) g_app->m_location->GetEntitySafe( spawnedId, Entity::TypeArmour );
+            Armour *armour = static_cast<Armour *>(spawned[0]);
             armour->SetWayPoint( targetPos );
             armour->m_state = iu->m_state;
         }
@@ -1422,8 +1424,8 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
             {
                 Vector3 pos( program->m_positionX[0], 0, program->m_positionZ[0] );
                 pos.y = m_landscape.m_heightMap->GetValue( pos.x, pos.z );
-                WorldObjectId objId = SpawnEntities( pos, _teamId, -1, Entity::TypeEngineer, 1, g_zeroVector, 0.0f );
-                Engineer *engineer = (Engineer *) GetEntitySafe( objId, Entity::TypeEngineer );
+                auto entities = SpawnEntities( pos, _teamId, -1, Entity::TypeEngineer, 1, g_zeroVector, 0.0f );
+                Engineer *engineer = static_cast<Engineer *>(entities[0]);
                 engineer->m_state = program->m_state;
                 engineer->m_wayPoint.Set( program->m_waypointX, 0, program->m_waypointZ );
                 engineer->m_wayPoint.y = m_landscape.m_heightMap->GetValue( program->m_waypointX, program->m_waypointZ );
@@ -1438,7 +1440,7 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
 
                 Task *task = new Task();
                 task->m_type = GlobalResearch::TypeEngineer;
-                task->m_objId = objId;
+                task->m_entity = entities[0];
                 task->m_state = Task::StateRunning;
                 g_app->m_taskManager->RegisterTask( task );
             }
@@ -1467,7 +1469,7 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
 
                 Task *task = new Task();
                 task->m_type = GlobalResearch::TypeSquad;
-                task->m_objId.Set( _teamId, unitId, -1, -1 );
+                task->m_unit = squad;
                 task->m_state = Task::StateRunning;
                 g_app->m_taskManager->RegisterTask( task );
             }
@@ -1586,12 +1588,12 @@ void Location::UpdateTeam( unsigned char teamId, TeamControls const& teamControl
 }
 
 
-int Location::GetUnitId( Vector3 const &startRay, Vector3 const &direction, unsigned char team, float *_range )
+Unit* Location::GetUnit( Vector3 const &startRay, Vector3 const &direction, unsigned char team, float *_range ) const
 {
-    if( team == 255 ) return -1;
+    if( team == 255 ) return nullptr;
 
     float closestRangeSqd = FLT_MAX;
-    int unitId = -1;
+    Unit* unit = nullptr;
 
     //
     // Perform quick preselection by doing ray-sphere intersection tests
@@ -1599,11 +1601,11 @@ int Location::GetUnitId( Vector3 const &startRay, Vector3 const &direction, unsi
     // zoom in and perform ray-sphere checks against each entity, because a unit
     // can become seperated so its bounding sphere covers a very large area.
 
-    for( int unit = 0; unit < m_teams[team].m_units.Size(); ++unit )
+    for( int unit_index = 0; unit_index < m_teams[team].m_units.Size(); ++unit_index )
     {
-        if( m_teams[team].m_units.ValidIndex(unit) )
+        if( m_teams[team].m_units.ValidIndex(unit_index) )
         {
-            Unit *theUnit = m_teams[team].m_units.GetData( unit );
+            Unit *theUnit = m_teams[team].m_units.GetData( unit_index );
             bool rayHit = RaySphereIntersection( startRay, direction, theUnit->m_centrePos, theUnit->m_radius*1.5f );
             if( rayHit && theUnit->NumAliveEntities() > 0 )
             {
@@ -1627,7 +1629,7 @@ int Location::GetUnitId( Vector3 const &startRay, Vector3 const &direction, unsi
                             if( rangeSqd < closestRangeSqd )
                             {
                                 closestRangeSqd = rangeSqd;
-                                unitId = unit;
+                                unit = theUnit;
                             }
                         }
                     }
@@ -1636,21 +1638,21 @@ int Location::GetUnitId( Vector3 const &startRay, Vector3 const &direction, unsi
         }
     }
 
-    if( _range && unitId != -1 )
+    if( _range && unit != nullptr )
     {
         *_range = sqrtf( closestRangeSqd );
     }
 
-    return unitId;
+    return unit;
 }
 
 
-WorldObjectId Location::GetEntityId( Vector3 const &startRay, Vector3 const &direction, unsigned char teamId, float *_range )
+Entity* Location::GetEntity( Vector3 const &startRay, Vector3 const &direction, unsigned char teamId, float *_range ) const
 {
-    if( teamId == 255 ) return WorldObjectId();
+    if( teamId == 255 ) return nullptr;
 
     float closestRangeSqd = FLT_MAX;
-    WorldObjectId entId;
+    Entity* entity = nullptr;
 
 	int numEntities = m_teams[teamId].m_others.Size();
     for( int i = 0; i < numEntities; ++i )
@@ -1674,26 +1676,26 @@ WorldObjectId Location::GetEntityId( Vector3 const &startRay, Vector3 const &dir
                     if( rangeSqd < closestRangeSqd )
                     {
                         closestRangeSqd = rangeSqd;
-                        entId = ent->m_id;
+                        entity = ent;
                     }
                 }
             }
         }
     }
 
-    if( _range && entId.IsValid() )
+    if( _range && entity != nullptr )
     {
         *_range = sqrtf(closestRangeSqd);
     }
 
-    return entId;
+    return entity;
 }
 
 
-int Location::GetBuildingId(Vector3 const &rayStart, Vector3 const &rayDir, unsigned char teamId, float _maxDistance, float *_range )
+Building* Location::GetBuilding(Vector3 const &rayStart, Vector3 const &rayDir, unsigned char teamId, float _maxDistance, float *_range ) const
 {
     float closestRangeSqd = FLT_MAX;
-    int buildingId = -1;
+    Building* buildingId = nullptr;
 
     for (int i = 0; i < m_buildings.Size(); i++)
     {
@@ -1729,7 +1731,7 @@ int Location::GetBuildingId(Vector3 const &rayStart, Vector3 const &rayDir, unsi
                     float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
                     if( rangeSqd < closestRangeSqd )
                     {
-				        buildingId = building->m_id.GetUniqueId();
+				        buildingId = building;
                         closestRangeSqd = rangeSqd;
                     }
                 }

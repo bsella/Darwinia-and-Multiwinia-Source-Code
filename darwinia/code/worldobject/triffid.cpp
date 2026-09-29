@@ -308,8 +308,8 @@ void Triffid::Launch()
     Vector3 velocity = launchMat.f;
     velocity.SetLength( m_force * m_size * ( 1.0f + syncsfrand(0.2f) ) );
 
-    WorldObjectId wobjId = g_app->m_location->SpawnEntities( launchMat.pos, m_id.GetTeamId(), -1, Entity::TypeTriffidEgg, 1, velocity, 0.0f );
-    TriffidEgg *triffidEgg = (TriffidEgg *) g_app->m_location->GetEntitySafe( wobjId, Entity::TypeTriffidEgg );
+    auto entities = g_app->m_location->SpawnEntities( launchMat.pos, m_id.GetTeamId(), -1, Entity::TypeTriffidEgg, 1, velocity, 0.0f );
+    TriffidEgg *triffidEgg = static_cast<TriffidEgg *>(entities[0]);
     if( triffidEgg )
     {
         triffidEgg->m_spawnType = spawnType;
@@ -613,8 +613,8 @@ void TriffidEgg::Spawn()
             {
                 Vector3 vel(syncsfrand(), 0.5f + syncfrand(), syncsfrand() );
                 vel.SetLength( 75.0f + syncfrand(50.0f) );
-                WorldObjectId id = g_app->m_location->SpawnEntities( m_pos, teamId, -1, TypeTriffidEgg, 1, vel, 0.0f, 0.0f );
-                TriffidEgg *egg = (TriffidEgg *) g_app->m_location->GetEntitySafe( id, TypeTriffidEgg );
+                auto entities = g_app->m_location->SpawnEntities( m_pos, teamId, -1, TypeTriffidEgg, 1, vel, 0.0f, 0.0f );
+                TriffidEgg *egg = static_cast<TriffidEgg *>(entities[0]);
                 if( egg ) egg->m_spawnType = syncrand() % (Triffid::NumSpawnTypes-1);
                 // The NumSpawnTypes-1 prevents Darwinians from coming out
             }
@@ -628,8 +628,7 @@ void TriffidEgg::Spawn()
             {
                 Vector3 vel = g_upVector + Vector3(syncsfrand(), 0.0f, syncsfrand() );
                 vel.SetLength( 10.0f + syncfrand(20.0f) );
-                WorldObjectId id = g_app->m_location->SpawnEntities( m_pos, teamId, -1, TypeDarwinian, 1, vel, 0.0f, 0.0f );
-                Entity *entity = g_app->m_location->GetEntity( id );
+                Entity* entity = g_app->m_location->SpawnEntities( m_pos, teamId, -1, TypeDarwinian, 1, vel, 0.0f, 0.0f )[0];
                 entity->m_front.y = 0.0f;
                 entity->m_front.Normalise();
                 entity->m_onGround = false;

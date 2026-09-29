@@ -151,7 +151,7 @@ void Script::RunCommand_CamBuildingFocus(int _buildingId, float _range, float _h
 
     if( building )
     {
-        g_app->m_camera->RequestBuildingFocusMode( building, _range, _height );
+        g_app->m_camera->RequestBuildingFocusMode( *building, _range, _height );
     }
     else
     {

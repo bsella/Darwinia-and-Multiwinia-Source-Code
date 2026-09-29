@@ -95,9 +95,9 @@ public:
 
 	void ListSoundEvents	    ( LList<const char *> *_list );
 
-	Vector3 GetCameraFocusPoint	();
+	Vector3 GetCameraFocusPoint	() const override;
 
-	Vector3 GetSecondaryWeaponTarget();
+	Vector3 GetSecondaryWeaponTarget() const;
 };
 
 

@@ -2,6 +2,8 @@
 #define _included_taskmanager_h
 
 #include "lib/llist.h"
+#include "worldobject/darwinian.h"
+#include "worldobject/entity.h"
 #include "worldobject/worldobject.h"
 
 class Route;
@@ -25,7 +27,10 @@ public:
     int             m_id;
     int             m_type;
     int             m_state;
-    WorldObjectId   m_objId;
+
+public:
+    Unit*            m_unit   = nullptr;
+    Entity*          m_entity = nullptr;
 
     Route           *m_route;                   // Only used when this is a Controller task
 
@@ -44,9 +49,9 @@ public:
     void    TargetOfficer       ( Vector3 const &_pos );
     void    TargetArmour        ( Vector3 const &_pos );
 
-    WorldObjectId        Promote         ( WorldObjectId _id );
-    static WorldObjectId Demote          ( WorldObjectId _id );
-    static WorldObjectId FindDarwinian   ( Vector3 const &_pos );
+    Entity&        Promote         ( Entity& );
+    static Entity& Demote          ( WorldObjectId _id );
+    static Darwinian* FindDarwinian( Vector3 const &_pos );
 
 	static const char *GetTaskName            ( int _type );
 	static const char *GetTaskNameTranslated  ( int _type );

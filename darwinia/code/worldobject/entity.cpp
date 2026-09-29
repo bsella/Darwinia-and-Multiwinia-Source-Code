@@ -754,7 +754,7 @@ void Entity::DirectControl( TeamControls const&  )
 {
 }
 
-Vector3 Entity::GetCameraFocusPoint()
+Vector3 Entity::GetCameraFocusPoint() const
 {
 	return m_pos + m_vel;
 }

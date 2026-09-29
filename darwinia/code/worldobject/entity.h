@@ -117,7 +117,7 @@ public:
 
 	bool RayHit(Vector3 const &_rayStart, Vector3 const &_rayDir);
 
-	virtual Vector3 GetCameraFocusPoint();	// used in unit tracking to determine the position the camera should look at
+	virtual Vector3 GetCameraFocusPoint() const;	// used in unit tracking to determine the position the camera should look at
 	void FollowRoute();
 };
 

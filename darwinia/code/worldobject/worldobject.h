@@ -3,6 +3,8 @@
 
 #include "lib/rgb_colour.h"
 #include "lib/vector3.h"
+#include <cstddef>
+#include <variant>
 
 
 // ****************************************************************************
@@ -123,5 +125,22 @@ public:
 	void Normalise();
 };
 
+
+class WorldObjectOrUnit
+{
+public:
+    WorldObjectOrUnit(std::nullptr_t);
+    WorldObjectOrUnit(WorldObject*);
+    WorldObjectOrUnit(Unit*);
+
+    WorldObject* GetWorldObject() const;
+    Unit*        GetUnit() const;
+    bool         HasValue() const;
+
+    WorldObjectId id() const;
+
+private:
+    std::variant<std::monostate, WorldObject*, Unit*> m_ptr;
+};
 
 #endif

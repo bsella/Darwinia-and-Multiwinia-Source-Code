@@ -99,7 +99,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         {
                         g_app->m_camera->RecordCameraPosition();
                         Building *research = g_app->m_location->GetBuilding(129);
-                        g_app->m_camera->RequestBuildingFocusMode(research, 150, 20);
+                        g_app->m_camera->RequestBuildingFocusMode(*research, 150, 20);
                         g_app->m_camera->SetTargetFOV( 30 );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_12b" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_12c" );
@@ -134,7 +134,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         {
                         g_app->m_camera->RecordCameraPosition();
                         Building *building = g_app->m_location->GetBuilding(66);
-                        g_app->m_camera->RequestBuildingFocusMode( building, 150, 50 );
+                        g_app->m_camera->RequestBuildingFocusMode( *building, 150, 50 );
                         DarwiniaReleaseAssert( building, "Tutorial building not found" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_17" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_18" );
@@ -178,7 +178,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         {
                         Building *building = g_app->m_location->GetBuilding(86);
                         DarwiniaReleaseAssert( building, "Tutorial building not found" );
-                        g_app->m_camera->RequestBuildingFocusMode( building, 200, 150 );
+                        g_app->m_camera->RequestBuildingFocusMode( *building, 200, 150 );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_40" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_41" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_42" );
@@ -228,7 +228,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         case 47:
         {
                         Building *building = g_app->m_location->GetBuilding( 0 );
-                        g_app->m_camera->RequestBuildingFocusMode( building, 600, 100 );
+                        g_app->m_camera->RequestBuildingFocusMode( *building, 600, 100 );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_54" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_54b" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_55" );
@@ -238,7 +238,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         case 48:
         {
                         Building *building = g_app->m_location->GetBuilding( 1 );
-                        g_app->m_camera->RequestBuildingFocusMode( building, 400, 300 );
+                        g_app->m_camera->RequestBuildingFocusMode( *building, 400, 300 );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_56" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_57" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_58" );
@@ -248,7 +248,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         case 49:
         {
                         Building *building = g_app->m_location->GetBuilding( 25 );
-                        g_app->m_camera->RequestBuildingFocusMode( building, 400, 200 );
+                        g_app->m_camera->RequestBuildingFocusMode( *building, 400, 200 );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_59" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_60" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_61" );
@@ -289,7 +289,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         case 56:
         {
                         Building *building = g_app->m_location->GetBuilding( 25 );
-                        g_app->m_camera->RequestBuildingFocusMode( building, 400, 250 );
+                        g_app->m_camera->RequestBuildingFocusMode( *building, 400, 250 );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_69" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_70" );
                         break;
@@ -298,7 +298,7 @@ void Demo2Tutorial::TriggerChapter( int _chapter )
         case 57:
         {
                         Building *building = g_app->m_location->GetBuilding( 1 );
-                        g_app->m_camera->RequestBuildingFocusMode( building, 400, 300 );
+                        g_app->m_camera->RequestBuildingFocusMode( *building, 400, 300 );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_71" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_72" );
                         g_app->m_sepulveda->Say( "launchpad_tutorial_73" );

@@ -94,8 +94,7 @@ bool ConstructionYard::Advance()
 
                 Matrix34 mat( m_front, g_upVector, m_pos );
                 Matrix34 prim = m_primitives[5]->GetWorldMatrix( mat );
-                WorldObjectId objId = g_app->m_location->SpawnEntities( prim.pos, 2, -1, Entity::TypeArmour, 1, g_zeroVector, 0.0f );
-                Entity *entity = g_app->m_location->GetEntity( objId );
+                Entity *entity = g_app->m_location->SpawnEntities( prim.pos, 2, -1, Entity::TypeArmour, 1, g_zeroVector, 0.0f )[0];
                 Armour *armour = (Armour *) entity;
                 armour->m_front.Set( 0, 0, 1 );
                 armour->m_vel.Zero();

@@ -329,8 +329,8 @@ bool AntHill::Advance()
         Vector3 spawnPos = m_pos;
         spawnPos.y = g_app->m_location->m_landscape.m_heightMap->GetValue( spawnPos.x, spawnPos.z );
 
-        WorldObjectId spawnedId = g_app->m_location->SpawnEntities( spawnPos, m_id.GetTeamId(), m_unitId, Entity::TypeArmyAnt, 1, g_zeroVector, 10.0f );
-        ArmyAnt *ant = (ArmyAnt *) g_app->m_location->GetEntity( spawnedId );
+        auto spawned = g_app->m_location->SpawnEntities( spawnPos, m_id.GetTeamId(), m_unitId, Entity::TypeArmyAnt, 1, g_zeroVector, 10.0f );
+        ArmyAnt *ant = static_cast<ArmyAnt *>(spawned[0]);
 
         ant->m_buildingId = m_id.GetUniqueId();
         ant->m_front = ( ant->m_pos - m_pos ).Normalise();

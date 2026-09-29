@@ -2,6 +2,8 @@
 #define INCLUDED_LOCATION_INPUT
 
 
+#include "worldobject/worldobject.h"
+
 class Building;
 class Engineer;
 
@@ -15,7 +17,7 @@ private:
 
 public:
 
-    bool    GetObjectUnderMouse( WorldObjectId &_id, int _teamId );
+	WorldObjectOrUnit GetObjectUnderMouse( int _teamId );
 
 	void	Advance();
 	void	Render();

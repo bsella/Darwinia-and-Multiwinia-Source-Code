@@ -40,6 +40,7 @@
 
 #include "sound/soundsystem.h"
 
+#include "worldobject/entity.h"
 #include "worldobject/insertion_squad.h"
 #include "worldobject/engineer.h"
 
@@ -650,14 +651,14 @@ void TaskManagerInterfaceIcons::AdvanceScreenZones()
     if( !m_visible )
     {
         m_currentScreenZone = -1;
-        WorldObjectId id;
-        bool somethingHighlighted = g_app->m_locationInput->GetObjectUnderMouse( id, g_app->m_globalWorld->m_myTeamId );
-        if( somethingHighlighted )
+        auto highlighted = g_app->m_locationInput->GetObjectUnderMouse( g_app->m_globalWorld->m_myTeamId );
+        if( highlighted.HasValue() )
         {
             int taskIndex = -1;
             for( int i = 0; i < g_app->m_taskManager->m_tasks.Size(); ++i )
             {
-                if( g_app->m_taskManager->m_tasks[i]->m_objId == id )
+                if((highlighted.GetUnit() && g_app->m_taskManager->m_tasks[i]->m_unit == highlighted.GetUnit()) ||
+                   (highlighted.GetWorldObject() && g_app->m_taskManager->m_tasks[i]->m_entity == highlighted.GetWorldObject()))
                 {
                     taskIndex = i;
                     break;
@@ -1636,7 +1637,7 @@ void TaskManagerInterfaceIcons::RenderRunningTasks()
 
             if( task->m_type == GlobalResearch::TypeEngineer )
             {
-                Engineer *engineer = (Engineer *) g_app->m_location->GetEntitySafe( task->m_objId, Entity::TypeEngineer );
+                Engineer *engineer = static_cast<Engineer *>(task->m_entity);
                 if( engineer )
                 {
 					const char *state = engineer->GetCurrentAction();
@@ -1655,7 +1656,7 @@ void TaskManagerInterfaceIcons::RenderRunningTasks()
             }
             else if( task->m_type == GlobalResearch::TypeSquad )
             {
-                InsertionSquad *squad = (InsertionSquad *) g_app->m_location->GetUnit( task->m_objId );
+                InsertionSquad *squad = static_cast<InsertionSquad *>(task->m_unit);
                 if( squad )
                 {
                     int numSquaddies = squad->NumAliveEntities();
@@ -1677,10 +1678,9 @@ void TaskManagerInterfaceIcons::RenderRunningTasks()
             // Render compass if we are an object
 
             Vector3 taskWorldPos;
-            Unit *unit = g_app->m_location->GetUnit(task->m_objId);
-            Entity *entity = g_app->m_location->GetEntity(task->m_objId);
+            Unit *unit = task->m_unit;
             if( unit ) taskWorldPos = unit->m_centrePos;
-            if( entity ) taskWorldPos = entity->m_pos;
+            if( task->m_entity ) taskWorldPos = task->m_entity->m_pos;
             float compassSize = iconSize * 0.75f;
 
             if( taskWorldPos != g_zeroVector ) RenderCompass( iconCentre.x, iconCentre.y,

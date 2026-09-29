@@ -16,25 +16,44 @@ class CameraAnimation;
 class Camera
 {
 public:
-	class ObjectTrackMode
-	{
-	};
-
-	class EntityTrackMode
-	{
-	};
-
 	class ModeReplay {};
 	class ModeSphereWorld {};
 	class ModeFreeMovement {};
-	class ModeBuildingFocus {};
-	class ModeEntityTrack {};
-	class ModeRadarAim {};
+	class ModeBuildingFocus
+	{
+	public:
+		const Building* m_building;
+		float           m_range;
+		float           m_height;
+	};
+
+	class ModeEntityTrack
+	{
+	public:
+		ModeEntityTrack(const Entity&);
+		ModeEntityTrack(const Unit&);
+
+		const Unit*   m_unit;
+		const Entity* m_entity;
+	};
+	class ModeRadarAim
+	{
+	public:
+		const Building* m_radar;
+	};
 	class ModeFirstPerson {};
 	class ModeMoveToTarget {};
 	class ModeDoNothing {};
-	class ModeEntityFollow {};
-	class ModeTurretAim {};
+	class ModeEntityFollow
+	{
+	public:
+		const Entity* m_entity;
+	};
+	class ModeTurretAim
+	{
+	public:
+		const Building* m_turret;
+	};
 	class ModeSphereWorldScripted {};
 	class ModeSphereWorldIntro {};
 	class ModeSphereWorldOutro {};
@@ -94,9 +113,9 @@ protected:
     void GetHighestPoint( Vector3 const &_from, Vector3 const &_to, float _maxDist, Vector3 &location );
 	void GetHighestTangentPoint( Vector3 const &_from, Vector3 const &_to, float _maxDist, Vector3 &location );
 
-	bool GetEntityToTrack( WorldObjectId &selection );
+	const Entity* GetEntityToTrack() const;
 	void AdvanceAutomaticTracking();
-    void RotateTowardsEntity( Entity *entity );
+    void RotateTowardsEntity( const Entity& );
 
 	bool AdvanceNotTooLow( Vector3 &targetCamera );
 	bool AdvanceCanSeeUnits( Vector3 &targetCamera );
@@ -125,7 +144,7 @@ private:
     float   m_targetFov;
 	Vector3 m_cameraTarget;		// Target Position of camera for automatic entity tracking
 	Vector3 m_predictedEntityPos;	// Predicted Position of entity for automatic entity tracking
-	Entity *m_trackingEntity;	// The entity we are tracking
+	const Entity* m_trackingEntity;	// The entity we are tracking
 
 	Vector3 m_startPos;			// Camera pos and orientation at the start of a "MoveToTarget"
 	Vector3 m_startFront;
@@ -141,7 +160,6 @@ private:
 	int		m_debugMode;
 	int		m_framesInThisMode;
 
-    WorldObjectId m_objectId;		// WorldObjectId of creature to track
     float m_trackRange;
     float m_trackHeight;
     float m_trackTimer;
@@ -196,12 +214,13 @@ public:
 	void RequestSphereWorldIntroMode    ();
 	void RequestSphereWorldOutroMode    ();
 	void RequestMainMenuMode            ();
-    void RequestBuildingFocusMode       (Building *_building, float _range, float _height);
+    void RequestBuildingFocusMode       (const Building&, float range, float height);
     void RequestSphereFocusMode         ();
-    void RequestRadarAimMode            (Building *_building);
-    void RequestEntityTrackMode         (WorldObjectId const &_id);
-    void RequestEntityFollowMode        (WorldObjectId const &_id);
-    void RequestTurretAimMode           (Building *_building);
+    void RequestRadarAimMode            (const Building& radar);
+    void RequestEntityTrackMode         (const Entity&);
+    void RequestEntityTrackMode         (const Unit&);
+    void RequestEntityFollowMode        (const Entity&);
+    void RequestTurretAimMode           (const Building& turret);
 
     void CreateCameraShake          (float _intensity);
 

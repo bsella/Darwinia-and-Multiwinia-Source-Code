@@ -1,4 +1,5 @@
 ﻿#include <math.h>
+#include <variant>
 
 #include "lib/debug_utils.h"
 #include "lib/math_utils.h"
@@ -200,4 +201,41 @@ void Light::Normalise()
 	m_front[0] /= mag;
 	m_front[1] /= mag;
 	m_front[2] /= mag;
+}
+
+
+WorldObjectOrUnit::WorldObjectOrUnit(std::nullptr_t) : m_ptr(){}
+WorldObjectOrUnit::WorldObjectOrUnit(WorldObject* object) : m_ptr(object){}
+WorldObjectOrUnit::WorldObjectOrUnit(Unit* unit) : m_ptr(unit){}
+
+WorldObject* WorldObjectOrUnit::GetWorldObject() const
+{
+    if(std::holds_alternative<WorldObject*>(m_ptr))
+        return std::get<WorldObject*>(m_ptr);
+
+    return nullptr;
+}
+
+Unit* WorldObjectOrUnit::GetUnit() const
+{
+    if(std::holds_alternative<Unit*>(m_ptr))
+        return std::get<Unit*>(m_ptr);
+
+    return nullptr;
+}
+
+bool WorldObjectOrUnit::HasValue() const
+{
+    return m_ptr.index() > 0;
+}
+
+WorldObjectId WorldObjectOrUnit::id() const
+{
+    if(auto* object = GetWorldObject())
+        return object->m_id;
+
+    if(auto* unit = GetUnit())
+        return WorldObjectId(unit->m_teamId, unit->m_unitId, -1, -1);
+
+    return {};
 }

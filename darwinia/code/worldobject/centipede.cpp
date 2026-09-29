@@ -626,8 +626,7 @@ bool Centipede::AdvanceToTargetPosition()
         return true;
     }
 
-    int nearestBuildingId = g_app->m_location->GetBuildingId( m_pos, m_front, 255, 150.0f );
-    if( nearestBuildingId != -1 )
+    if( g_app->m_location->GetBuilding( m_pos, m_front, 255, 150.0f ) != nullptr )
     {
         // We're on track to run into a building
         return true;

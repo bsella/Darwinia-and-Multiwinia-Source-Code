@@ -2,6 +2,7 @@
 #define INCLUDED_LOCATION_H
 
 #include <float.h>
+#include <vector>
 
 #include "lib/fast_darray.h"
 #include "lib/slice_darray.h"
@@ -106,9 +107,9 @@ public:
 
     void RemoveTeam         ( unsigned char _teamId );
 
-    int GetBuildingId           ( Vector3 const &startRay, Vector3 const &direction, unsigned char teamId, float _maxDistance=FLT_MAX, float *_range=nullptr );
-    int GetUnitId               ( Vector3 const &startRay, Vector3 const &direction, unsigned char teamId, float *_range=nullptr );
-    WorldObjectId GetEntityId   ( Vector3 const &startRay, Vector3 const &direction, unsigned char teamId, float *_range=nullptr );
+    Building* GetBuilding   ( Vector3 const &startRay, Vector3 const &direction, unsigned char teamId, float _maxDistance=FLT_MAX, float *_range=nullptr ) const;
+    Unit*     GetUnit       ( Vector3 const &startRay, Vector3 const &direction, unsigned char teamId, float *_range=nullptr ) const;
+    Entity*   GetEntity     ( Vector3 const &startRay, Vector3 const &direction, unsigned char teamId, float *_range=nullptr ) const;
 
     bool IsWalkable         ( Vector3 const &_from, Vector3 const &_to, bool _evaluateCliffs=false );
     bool IsVisible          ( Vector3 const &_from, Vector3 const &_to );
@@ -128,7 +129,7 @@ public:
     void AdvanceChristmas();
     static int ChristmasModEnabled();           // 0 = unavailable, 1 = enabled, 2 = disabled
 
-    WorldObjectId SpawnEntities  ( Vector3 const &_pos, unsigned char _teamId, int _unitId,
+    std::vector<Entity*> SpawnEntities  ( Vector3 const &_pos, unsigned char _teamId, int _unitId,
                               unsigned char _type, int _numEntities, Vector3 const &_vel,
                               float _spread, float _range=-1.0f, int _routeId = -1, int _routeWaypointId = -1 );
 

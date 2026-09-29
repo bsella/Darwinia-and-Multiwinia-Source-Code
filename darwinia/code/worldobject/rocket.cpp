@@ -1104,8 +1104,8 @@ void EscapeRocket::AdvanceExploding()
         vel.RotateAround( windowMat.u * angle );
         vel.SetLength( 10.0f + syncfrand(30.0f) );
 
-        WorldObjectId id = g_app->m_location->SpawnEntities( windowMat.pos, 0, -1, Entity::TypeDarwinian, 1, vel, 0.0f );
-        Darwinian *darwinian = (Darwinian *) g_app->m_location->GetEntity( id );
+        auto entities = g_app->m_location->SpawnEntities( windowMat.pos, 0, -1, Entity::TypeDarwinian, 1, vel, 0.0f );
+        Darwinian *darwinian = static_cast<Darwinian *> (entities[0]);
         darwinian->m_onGround = false;
         darwinian->SetFire();
     }
