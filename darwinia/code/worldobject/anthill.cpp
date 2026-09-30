@@ -321,7 +321,7 @@ bool AntHill::Advance()
         Unit *unit = g_app->m_location->GetUnit( WorldObjectId( m_id.GetTeamId(), m_unitId, -1, -1 ) );
         if( !unit )
         {
-            unit = g_app->m_location->m_teams[m_id.GetTeamId()].NewUnit( Entity::TypeArmyAnt, m_numAntsInside, &m_unitId, m_pos );
+            unit = &g_app->m_location->m_teams[m_id.GetTeamId()].NewUnit( Entity::TypeArmyAnt, m_numAntsInside, &m_unitId, m_pos );
         }
 
         int chosenIndex = syncrand() % m_objectives.Size();

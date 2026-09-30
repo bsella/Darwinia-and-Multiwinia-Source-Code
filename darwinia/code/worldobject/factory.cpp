@@ -102,7 +102,7 @@ void Factory::RequestUnit( unsigned char _troopType, int _numToCreate )
         _troopType == Entity::TypeInsertionSquadie)
     {
         Team *team          = &g_app->m_location->m_teams[m_id.GetTeamId()];
-        Unit *unit          = team->NewUnit( _troopType, _numToCreate, &m_unitId, m_pos );
+        Unit *unit          = &team->NewUnit( _troopType, _numToCreate, &m_unitId, m_pos );
         unit->SetWayPoint(m_pos + m_front * 30.0f);
     }
     else

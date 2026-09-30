@@ -283,8 +283,7 @@ std::vector<Entity*> Location::SpawnEntities( Vector3 const &_pos, unsigned char
 
     if( _unitId != -1 )
     {
-        Unit *unit = team->m_units[ _unitId ];
-        unit->RecalculateOffsets();
+        team->m_units[ _unitId ]->RecalculateOffsets();
     }
 
     return new_entities;
@@ -426,9 +425,9 @@ Entity *Location::GetEntity( WorldObjectId _id )
         return nullptr;
     }
 
-    if( m_teams[teamId].m_units.ValidIndex(unitId) )
+    if( m_teams[teamId].m_units.size() > unitId )
     {
-        Unit *unit = m_teams[teamId].m_units[unitId];
+        Unit *unit = m_teams[teamId].m_units[unitId].get();
         if( unit->m_entities.ValidIndex( index ) )
         {
             Entity *entity = unit->m_entities[index];
@@ -495,10 +494,9 @@ Unit *Location::GetUnit( WorldObjectId _id )
         return nullptr;
     }
 
-    if( m_teams[teamId].m_units.ValidIndex(unitId) )
+    if( m_teams[teamId].m_units.size() > unitId )
     {
-        Unit *unit = m_teams[teamId].m_units[unitId];
-        return unit;
+        return m_teams[teamId].m_units[unitId].get();
     }
 
     return nullptr;
@@ -1357,7 +1355,7 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
         Unit *newUnit = nullptr;
         if( iu->m_inAUnit )
         {
-            newUnit = team->NewUnit(iu->m_type, iu->m_number, &unitId, pos);
+            newUnit = &team->NewUnit(iu->m_type, iu->m_number, &unitId, pos);
 		    newUnit->SetWayPoint(pos);
 			newUnit->m_routeId = iu->m_routeId;
 			iu->m_routeId = -1;
@@ -1451,7 +1449,7 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
                 pos.y = m_landscape.m_heightMap->GetValue( pos.x, pos.z );
 
                 int unitId;
-                InsertionSquad *squad = (InsertionSquad *) GetMyTeam()->NewUnit( Entity::TypeInsertionSquadie, program->m_count, &unitId, pos );
+                InsertionSquad *squad = (InsertionSquad *) &GetMyTeam()->NewUnit( Entity::TypeInsertionSquadie, program->m_count, &unitId, pos );
 
                 Vector3 waypoint( program->m_waypointX, 0, program->m_waypointZ );
                 waypoint.y = m_landscape.m_heightMap->GetValue( program->m_waypointX, program->m_waypointZ );
@@ -1601,36 +1599,32 @@ Unit* Location::GetUnit( Vector3 const &startRay, Vector3 const &direction, unsi
     // zoom in and perform ray-sphere checks against each entity, because a unit
     // can become seperated so its bounding sphere covers a very large area.
 
-    for( int unit_index = 0; unit_index < m_teams[team].m_units.Size(); ++unit_index )
+    for( const auto& theUnit : m_teams[team].m_units)
     {
-        if( m_teams[team].m_units.ValidIndex(unit_index) )
+        bool rayHit = RaySphereIntersection( startRay, direction, theUnit->m_centrePos, theUnit->m_radius*1.5f );
+        if( rayHit && theUnit->NumAliveEntities() > 0 )
         {
-            Unit *theUnit = m_teams[team].m_units.GetData( unit_index );
-            bool rayHit = RaySphereIntersection( startRay, direction, theUnit->m_centrePos, theUnit->m_radius*1.5f );
-            if( rayHit && theUnit->NumAliveEntities() > 0 )
+            for( int i = 0; i < theUnit->m_entities.Size(); ++i )
             {
-                for( int i = 0; i < theUnit->m_entities.Size(); ++i )
+                if( theUnit->m_entities.ValidIndex(i) )
                 {
-                    if( theUnit->m_entities.ValidIndex(i) )
+                    Entity *entity = theUnit->m_entities[i];
+                    Vector3 spherePos = entity->m_pos+entity->m_centrePos;
+                    float sphereRadius = entity->m_radius * 1.5f;
+                    Vector3 hitPos;
+
+                    bool entityHit = RaySphereIntersection( startRay, direction, spherePos, sphereRadius, 1e10, &hitPos );
+                    if( entityHit && !entity->m_dead )
                     {
-                        Entity *entity = theUnit->m_entities[i];
-                        Vector3 spherePos = entity->m_pos+entity->m_centrePos;
-                        float sphereRadius = entity->m_radius * 1.5f;
-                        Vector3 hitPos;
+                        float centrePosX, centrePosY, rayHitX, rayHitY;
+                        g_app->m_camera->Get2DScreenPos( spherePos, &centrePosX, &centrePosY );
+                        g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
 
-                        bool entityHit = RaySphereIntersection( startRay, direction, spherePos, sphereRadius, 1e10, &hitPos );
-                        if( entityHit && !entity->m_dead )
+                        float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
+                        if( rangeSqd < closestRangeSqd )
                         {
-                            float centrePosX, centrePosY, rayHitX, rayHitY;
-                            g_app->m_camera->Get2DScreenPos( spherePos, &centrePosX, &centrePosY );
-                            g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
-
-                            float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
-                            if( rangeSqd < closestRangeSqd )
-                            {
-                                closestRangeSqd = rangeSqd;
-                                unit = theUnit;
-                            }
+                            closestRangeSqd = rangeSqd;
+                            unit = theUnit.get();
                         }
                     }
                 }

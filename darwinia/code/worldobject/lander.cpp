@@ -87,7 +87,7 @@ bool Lander::AdvanceLanded()
     {
         int unitId;
         int numToSpawn = syncfrand(2.0f) + 2.0f;
-        Unit *unit = g_app->m_location->m_teams[0].NewUnit( Entity::TypeLaserTroop, numToSpawn, &unitId, m_pos );
+        Unit *unit = &g_app->m_location->m_teams[0].NewUnit( Entity::TypeLaserTroop, numToSpawn, &unitId, m_pos );
         g_app->m_location->SpawnEntities( m_pos, m_id.GetTeamId(), unitId, Entity::TypeLaserTroop, numToSpawn, g_zeroVector, 0 );
 
         Vector3 offset( 0.0f, 0.0f, syncsfrand(200.0f) );

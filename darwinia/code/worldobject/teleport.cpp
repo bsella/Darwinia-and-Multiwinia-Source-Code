@@ -226,9 +226,9 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
 
                 if( newUnitId != -1 )
                 {
-                    if( g_app->m_location->m_teams[ _id.GetTeamId() ].m_units.ValidIndex( newUnitId ) )
+                    if( g_app->m_location->m_teams[ _id.GetTeamId() ].m_units.size() > newUnitId )
                     {
-                        newUnit = g_app->m_location->m_teams[ _id.GetTeamId() ].m_units[ newUnitId ];
+                        newUnit = g_app->m_location->m_teams[ _id.GetTeamId() ].m_units[ newUnitId ].get();
                     }
                     else
                     {
@@ -240,7 +240,7 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
                 {
                     //
                     // Oh well, i'm the first, so create a new unit
-                    newUnit = g_app->m_location->m_teams[ _id.GetTeamId() ].NewUnit( oldUnit->m_troopType,
+                    newUnit = &g_app->m_location->m_teams[ _id.GetTeamId() ].NewUnit( oldUnit->m_troopType,
                                                                                   oldUnit->m_entities.NumUsed(),
                                                                                   &newUnitId,
 																			      m_pos);

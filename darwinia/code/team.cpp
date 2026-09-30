@@ -1,4 +1,6 @@
 ﻿#include <math.h>
+#include <memory>
+#include <utility>
 
 #include "lib/math_utils.h"
 #include "lib/profiler.h"
@@ -50,7 +52,6 @@ Team::Team()
 {
     m_others.SetTotalNumSlices( NUM_SLICES_PER_FRAME );
 	m_others.SetStepSize(100);
-	m_units.SetStepSize(5);
 }
 
 
@@ -161,16 +162,14 @@ Unit *Team::GetMyUnit()
 Entity *Team::RayHitEntity(Vector3 const &_rayStart, Vector3 const &_rayEnd)
 {
 	// Hit against Units
-	for (int i = 0; i < m_units.Size(); ++i)
+	for (const auto& unit : m_units)
 	{
-		if (m_units.ValidIndex(i))
-		{
-			Entity *result = m_units[i]->RayHit(_rayStart, _rayEnd);
-			if (result)
-			{
-				return result;
-			}
-		}
+        Entity *result = unit->RayHit(_rayStart, _rayEnd);
+        if (result)
+        {
+            return result;
+        }
+		
 	}
 
 	// Hit against Others
@@ -195,31 +194,31 @@ Entity *Team::GetMyEntity()
 }
 
 
-Unit *Team::NewUnit(int _troopType, int _numEntities, int *_unitId, Vector3 const &_pos)
+Unit& Team::NewUnit(int _troopType, int _numEntities, int *_unitId, Vector3 const &_pos)
 {
-    *_unitId = m_units.GetNextFree();
-    Unit *unit = nullptr;
+    *_unitId = m_units.size();
+    std::unique_ptr<Unit> unit;
 
 	if (_troopType == Entity::TypeInsertionSquadie)
 	{
-		unit = new InsertionSquad( m_teamId, *_unitId, _numEntities, _pos );
+		unit = std::make_unique<InsertionSquad>( m_teamId, *_unitId, _numEntities, _pos );
 	}
 	else if(_troopType == Entity::TypeSpaceInvader)
     {
-        unit = new AirstrikeUnit( m_teamId, *_unitId, _numEntities, _pos );
+        unit = std::make_unique<AirstrikeUnit>( m_teamId, *_unitId, _numEntities, _pos );
     }
 	else if(_troopType == Entity::TypeVirii)
     {
-        unit = new ViriiUnit( m_teamId, *_unitId, _numEntities, _pos );
+        unit =  std::make_unique<ViriiUnit>( m_teamId, *_unitId, _numEntities, _pos );
     }
 	else
 	{
-		unit = new Unit( _troopType, m_teamId, *_unitId, _numEntities, _pos );
+		unit = std::make_unique<Unit>( _troopType, m_teamId, *_unitId, _numEntities, _pos );
 	}
 
-    m_units.PutData( unit, *_unitId );
-    unit->Begin();
-    return unit;
+    auto& new_unit = m_units.emplace_back(std::move(unit));
+    new_unit->Begin();
+    return *new_unit.get();
 }
 
 Entity *Team::NewEntity(int _troopType, int _unitId, int *_index)
@@ -233,10 +232,9 @@ Entity *Team::NewEntity(int _troopType, int _unitId, int *_index)
     }
 	else
     {
-        if( m_units.ValidIndex(_unitId) )
+        if( m_units.size() > _unitId )
         {
-            Unit *unit = m_units.GetData(_unitId);
-            return unit->NewEntity( _index );
+            return m_units[_unitId]->NewEntity( _index );
         }
     }
 
@@ -246,21 +244,16 @@ Entity *Team::NewEntity(int _troopType, int _unitId, int *_index)
 int Team::NumEntities( int _troopType)
 {
     int result = 0;
-    int i;
 
-    for( i = 0; i < m_units.Size(); ++i )
+    for( const auto& unit : m_units )
     {
-        if( m_units.ValidIndex(i) )
-        {
-            Unit *unit = m_units[i];
-            if( unit->m_troopType == _troopType )
-            {
-                result += unit->NumEntities();
-            }
-        }
+		if( unit->m_troopType == _troopType )
+		{
+			result += unit->NumEntities();
+		}
     }
 
-    for( i = 0; i < m_others.Size(); ++i )
+    for( int i = 0; i < m_others.Size(); ++i )
     {
         if( m_others.ValidIndex(i) )
         {
@@ -284,31 +277,29 @@ void Team::Advance(int _slice)
     if( m_teamType > TeamTypeUnused )
     {
         START_PROFILE(g_app->m_profiler, "Advance Unit Entities");
-        for( int unit = 0; unit < m_units.Size(); ++unit )
+        for( const auto& unit : m_units )
         {
-            if( m_units.ValidIndex(unit) )
-            {
-                Unit *theUnit = m_units.GetData(unit);
-                theUnit->AdvanceEntities(_slice);
-            }
+			unit->AdvanceEntities(_slice);
         }
         END_PROFILE(g_app->m_profiler, "Advance Unit Entities");
 
         if( _slice == 0 )
         {
             START_PROFILE(g_app->m_profiler, "Advance Units");
-            for( int unit = 0; unit < m_units.Size(); ++unit )
+            for( auto unit_itr = m_units.begin(); unit_itr != m_units.end(); )
             {
-                if( m_units.ValidIndex(unit) )
-                {
-                    Unit *theUnit = m_units.GetData(unit);
-                    bool amIDead = theUnit->Advance();
-                    if( amIDead )
-                    {
-                        m_units.MarkNotUsed(unit);
-                        delete theUnit;
-                    }
-                }
+				bool amIDead = (*unit_itr)->Advance();
+				if(amIDead)
+				{
+					if(unit_itr->get() == m_currentUnit)
+						m_currentUnit = nullptr;
+					
+					m_units.erase(unit_itr);
+				}
+				else
+				{
+					++unit_itr;
+				}
             }
             END_PROFILE(g_app->m_profiler, "Advance Units");
         }
@@ -385,18 +376,14 @@ void Team::Render()
 	glEnable        ( GL_ALPHA_TEST );
     glAlphaFunc     ( GL_GREATER, 0.02f );
 
-    for(int i = 0; i < m_units.Size(); ++i )
+    for(const auto& unit : m_units)
     {
-        if( m_units.ValidIndex(i) )
-        {
-            Unit *unit = m_units[i];
-            if( unit->IsInView() )
-            {
-                START_PROFILE( g_app->m_profiler, Entity::GetTypeName( unit->m_troopType ) );
-                unit->Render(timeSinceAdvance);
-                END_PROFILE( g_app->m_profiler, Entity::GetTypeName( unit->m_troopType ) );
-            }
-        }
+		if( unit->IsInView() )
+		{
+			START_PROFILE( g_app->m_profiler, Entity::GetTypeName( unit->m_troopType ) );
+			unit->Render(timeSinceAdvance);
+			END_PROFILE( g_app->m_profiler, Entity::GetTypeName( unit->m_troopType ) );
+		}
     }
 
 	glDisable		( GL_TEXTURE_2D );

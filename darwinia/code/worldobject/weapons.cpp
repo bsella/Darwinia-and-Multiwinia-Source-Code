@@ -278,7 +278,7 @@ bool AirStrikeMarker::Advance()
             Team *team = g_app->m_location->GetMyTeam();
 
             int airStikeResearch = g_app->m_globalWorld->m_research->CurrentLevel( GlobalResearch::TypeAirStrike );
-            AirstrikeUnit *unit = (AirstrikeUnit *) team->NewUnit( Entity::TypeSpaceInvader, airStikeResearch, &unitId, m_pos );
+            AirstrikeUnit *unit = (AirstrikeUnit *) &team->NewUnit( Entity::TypeSpaceInvader, airStikeResearch, &unitId, m_pos );
             unit->m_effectId = m_id.GetIndex();
             m_airstrikeUnit.Set( teamId, unitId, -1, -1 );
         }

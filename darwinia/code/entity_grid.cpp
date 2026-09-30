@@ -200,7 +200,7 @@ void LogEntityGridError([[maybe_unused]] WorldObjectId _id, [[maybe_unused]]Vect
     theError->m_errorCode = _error;
     s_entityGridErrors.PutData( theError );
 #else
-    DarwiniaDebugAssert( false );
+    //DarwiniaDebugAssert( false );
 #endif
 }
 

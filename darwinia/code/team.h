@@ -8,6 +8,8 @@
 #include "worldobject/building.h"
 #include "worldobject/worldobject.h"
 #include "worldobject/entity.h"
+#include <memory>
+#include <vector>
 
 class Unit;
 class InsertionSquad;
@@ -31,7 +33,7 @@ public:
     int                         m_teamId;
     int                         m_teamType;
 
-    FastDArray  <Unit *>        m_units;
+    std::vector<std::unique_ptr<Unit>> m_units;
     SliceDArray <Entity *>      m_others;
     LList       <WorldObjectId> m_specials;             // Officers and tanks for quick lookup
 
@@ -57,7 +59,7 @@ public:
 	Entity *RayHitEntity(Vector3 const &_rayStart, Vector3 const &_rayEnd);
     Unit   *GetMyUnit   ();
     Entity *GetMyEntity ();
-    Unit   *NewUnit     (int _troopType, int _numEntities, int *_unitId, Vector3 const &_pos);
+    Unit&   NewUnit     (int _troopType, int _numEntities, int *_unitId, Vector3 const &_pos);
     Entity *NewEntity   (int _troopType, int _unitId, int *_index);
 
     int  NumEntities    (int _troopType);               // Counts the total number

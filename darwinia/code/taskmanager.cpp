@@ -79,7 +79,7 @@ void Task::TargetSquad( Vector3 const &_pos )
     int numEntities = 2 + g_app->m_globalWorld->m_research->CurrentLevel( GlobalResearch::TypeSquad );
 
     int unitId;
-    m_unit = g_app->m_location->m_teams[teamId].NewUnit( Entity::TypeInsertionSquadie, numEntities, &unitId, _pos );
+    m_unit = &g_app->m_location->m_teams[teamId].NewUnit( Entity::TypeInsertionSquadie, numEntities, &unitId, _pos );
     m_entity = nullptr;
     g_app->m_location->SpawnEntities( _pos, teamId, unitId,
                                       Entity::TypeInsertionSquadie, numEntities, g_zeroVector, 10 );
@@ -837,19 +837,15 @@ LList <TaskTargetArea> *TaskManager::GetTargetArea( int _id )
             case GlobalResearch::TypeEngineer:
             {
                 Team *team = g_app->m_location->GetMyTeam();
-                for( int i = 0; i < team->m_units.Size(); ++i )
+                for( const auto& unit :  team->m_units )
                 {
-                    if( team->m_units.ValidIndex(i) )
+                    if( unit->m_troopType == Entity::TypeInsertionSquadie )
                     {
-                        Unit *unit = team->m_units[i];
-                        if( unit->m_troopType == Entity::TypeInsertionSquadie )
-                        {
-                            TaskTargetArea tta;
-                            tta.m_centre = unit->m_centrePos;
-                            tta.m_radius = 100.0f;
-                            tta.m_stationary = false;
-                            result->PutData( tta );
-                        }
+                        TaskTargetArea tta;
+                        tta.m_centre = unit->m_centrePos;
+                        tta.m_radius = 100.0f;
+                        tta.m_stationary = false;
+                        result->PutData( tta );
                     }
                 }
                 //break;                // DELIBERATE FALL THROUGH

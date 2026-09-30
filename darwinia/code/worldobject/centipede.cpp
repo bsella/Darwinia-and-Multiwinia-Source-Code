@@ -56,9 +56,9 @@ void Centipede::Begin()
 
         Team *myTeam = &g_app->m_location->m_teams[ m_id.GetTeamId() ];
         Unit *myUnit = nullptr;
-        if( myTeam->m_units.ValidIndex(m_id.GetUnitId()) )
+        if( myTeam->m_units.size() > m_id.GetUnitId() )
         {
-            myUnit = myTeam->m_units[ m_id.GetUnitId() ];
+            myUnit = myTeam->m_units[ m_id.GetUnitId() ].get();
         }
 
         if( myUnit )
@@ -391,7 +391,7 @@ void Centipede::EatSpirits()
         // Add one segment for every 3 spirits
 
         Team *myTeam = &g_app->m_location->m_teams[ m_id.GetTeamId() ];
-        Unit *myUnit = myTeam->m_units[ m_id.GetUnitId() ];
+        Unit *myUnit = myTeam->m_units[ m_id.GetUnitId() ].get();
 
         while( m_numSpiritsEaten >= CENTIPEDE_NUMSPIRITSTOREGROW )
         {
