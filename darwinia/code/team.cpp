@@ -347,6 +347,10 @@ void Team::Advance(int _slice)
                     {
                         g_app->m_location->m_entityGrid->RemoveObject( myId, oldPos.x, oldPos.z, ent->m_radius );
                         m_others.MarkNotUsed(i);
+
+                        if(ent == m_currentEntity)
+                            m_currentEntity = nullptr;
+                        
                         delete ent;
                     }
                     else if( !ent->m_enabled )
