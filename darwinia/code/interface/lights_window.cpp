@@ -1,4 +1,5 @@
-﻿#include <stdio.h>
+﻿#include <ranges>
+#include <stdio.h>
 
 #include "lib/language_table.h"
 
@@ -61,10 +62,10 @@ public:
 
     void MouseUp()
     {
-        Light *light = g_app->m_location->m_lights[m_lightNum];
-        light->m_colour[0] *= m_change;
-        light->m_colour[1] *= m_change;
-        light->m_colour[2] *= m_change;
+        Light& light = g_app->m_location->m_lights[m_lightNum];
+        light.m_colour[0] *= m_change;
+        light.m_colour[1] *= m_change;
+        light.m_colour[2] *= m_change;
     }
 };
 
@@ -73,8 +74,7 @@ class NewLightButton : public DarwiniaButton
 {
     void MouseUp()
     {
-        Light *light = new Light();
-        g_app->m_location->m_lights.PutData( light );
+        g_app->m_location->m_lights.emplace_back();
 
         EclWindow *parent = m_parent;
         parent->Remove();
@@ -118,12 +118,11 @@ void LightsEditWindow::Create()
 
     height += 6;
 
-    for (int i = 0; i < g_app->m_location->m_lights.Size(); i++)
+    for (const auto& [i, light] : std::views::enumerate(g_app->m_location->m_lights))
 	{
 		button = new LightButton(i);
 
-        Light *light = g_app->m_location->m_lights.GetData(i);
-		sprintf(buttonName, "%s %d", LANGUAGEPHRASE("editor_selectlight"), i);
+		sprintf(buttonName, "%s %ld", LANGUAGEPHRASE("editor_selectlight"), i);
 		button->SetShortProperties(buttonName, 10, height += pitch, m_w - 20);
 		RegisterButton(button);
 
@@ -134,28 +133,28 @@ void LightsEditWindow::Create()
         RegisterButton( label );
 
         LightGammaButton *gammaDown = new LightGammaButton(i);
-        sprintf(buttonName, "down %d", i);
+        sprintf(buttonName, "down %ld", i);
         gammaDown->SetShortProperties( buttonName, m_w - 42, height, 15 );
         gammaDown->SetCaption( "<" );
         gammaDown->m_change = 0.9f;
         RegisterButton( gammaDown );
 
         LightGammaButton *gammaUp = new LightGammaButton(i);
-        sprintf(buttonName, "up %d", i );
+        sprintf(buttonName, "up %ld", i );
         gammaUp->SetShortProperties( buttonName, m_w - 25, height, 15 );
         gammaUp->SetCaption( ">" );
         gammaUp->m_change = 1.1f;
         RegisterButton( gammaUp );
 
- 		sprintf(buttonName, "Y%d", i);
-		CreateValueControl(buttonName, InputField::TypeFloat, &(light->m_front[1]), height += pitch, 0.01f, -20, 20, nullptr );
+ 		sprintf(buttonName, "Y%ld", i);
+		CreateValueControl(buttonName, InputField::TypeFloat, &(light.m_front[1]), height += pitch, 0.01f, -20, 20, nullptr );
 
-		sprintf(buttonName, "R%d", i);
-		CreateValueControl(buttonName, InputField::TypeFloat, &(light->m_colour[0]), height += pitch, 0.02f, 0, 5, nullptr );
- 		sprintf(buttonName, "G%d", i);
-		CreateValueControl(buttonName, InputField::TypeFloat, &(light->m_colour[1]), height += pitch, 0.02f, 0, 5, nullptr );
- 		sprintf(buttonName, "B%d", i);
-		CreateValueControl(buttonName, InputField::TypeFloat, &(light->m_colour[2]), height += pitch, 0.02f, 0, 5, nullptr );
+		sprintf(buttonName, "R%ld", i);
+		CreateValueControl(buttonName, InputField::TypeFloat, &(light.m_colour[0]), height += pitch, 0.02f, 0, 5, nullptr );
+ 		sprintf(buttonName, "G%ld", i);
+		CreateValueControl(buttonName, InputField::TypeFloat, &(light.m_colour[1]), height += pitch, 0.02f, 0, 5, nullptr );
+ 		sprintf(buttonName, "B%ld", i);
+		CreateValueControl(buttonName, InputField::TypeFloat, &(light.m_colour[2]), height += pitch, 0.02f, 0, 5, nullptr );
 
 		height += 6;
 	}

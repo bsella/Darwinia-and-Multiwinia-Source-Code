@@ -1,5 +1,6 @@
 ﻿
 #include <math.h>
+#include <ranges>
 
 #include "lib/input/input.h"
 
@@ -933,13 +934,8 @@ void Renderer::CheckOpenGLState() const
 
 	if (g_app->m_location)
 	{
-		for (int i = 0; i < g_app->m_location->m_lights.Size(); i++)
+		for (const auto& [i, light] : std::views::enumerate(g_app->m_location->m_lights))
 		{
-			//Light *light = g_app->m_location->m_lights.GetData(i);
-
-			//float amb = 0.0f;
-			//GLfloat ambCol1[] = { amb, amb, amb, 1.0f };
-
 			GLfloat pos1_actual[4];
 			GLfloat ambient1_actual[4];
 			GLfloat diffuse1_actual[4];
@@ -949,14 +945,6 @@ void Renderer::CheckOpenGLState() const
 			glGetLightfv(GL_LIGHT0 + i, GL_DIFFUSE, diffuse1_actual);
 			glGetLightfv(GL_LIGHT0 + i, GL_SPECULAR, specular1_actual);
 			glGetLightfv(GL_LIGHT0 + i, GL_AMBIENT, ambient1_actual);
-
-			for (int i = 0; i < 4; i++)
-			{
-	//			DarwiniaDebugAssert(fabsf(lightPos1[i] - pos1_actual[i]) < 0.001f);
-	//			DarwiniaDebugAssert(fabsf(light->m_colour[i] - diffuse1_actual[i]) < 0.001f);
-	//			DarwiniaDebugAssert(fabsf(light->m_colour[i] - specular1_actual[i]) < 0.0001f);
-	//			DarwiniaDebugAssert(fabsf(ambCol1[i] - ambient1_actual[i]) < 0.001f);
-			}
 		}
 	}
 

@@ -545,12 +545,12 @@ void LocationEditor::AdvanceModeLight()
 {
 	Location *location = g_app->m_location;
 
-	if (location->m_lights.ValidIndex(m_selectionId) &&  g_inputManager.controlEvent( ControlTileDrag ) )
+	if (m_selectionId != -1 && location->m_lights.size() > m_selectionId && g_inputManager.controlEvent( ControlTileDrag ) )
 	{
-		Light *worldLight = location->m_lights.GetData(m_selectionId);
-		Vector3 front(worldLight->m_front[0], worldLight->m_front[1], worldLight->m_front[2]);
+		Light& worldLight = location->m_lights[m_selectionId];
+		Vector3 front(worldLight.m_front[0], worldLight.m_front[1], worldLight.m_front[2]);
 		front.RotateAroundY((float)g_target->dX() * 0.05f);
-		worldLight->SetFront(front);
+		worldLight.SetFront(front);
 	}
 }
 

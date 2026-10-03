@@ -893,12 +893,11 @@ void LevelFile::WriteLights(FileWriter *_out)
 
     if( g_app->m_location )
     {
-	    for (int i = 0; i < g_app->m_location->m_lights.Size(); ++i)
+	    for (const auto& light : g_app->m_location->m_lights)
 	    {
-		    Light *light = g_app->m_location->m_lights.GetData(i);
 		    _out->printf( "\t%6.2f %6.2f %6.2f   %6.2f %6.2f %6.2f\n",
-				    light->m_front[0], light->m_front[1], light->m_front[2],
-				    light->m_colour[0], light->m_colour[1], light->m_colour[2]);
+				    light.m_front[0], light.m_front[1], light.m_front[2],
+				    light.m_colour[0], light.m_colour[1], light.m_colour[2]);
         }
     }
 

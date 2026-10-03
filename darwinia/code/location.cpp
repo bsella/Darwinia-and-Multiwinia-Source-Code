@@ -81,7 +81,6 @@ Location::Location()
     m_effects.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
     m_buildings.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
 
-	m_lights.SetStepSize(1);
 	m_buildings.SetStepSize(10);
 	m_lasers.SetStepSize(100);
 	m_effects.SetSize(100);
@@ -141,7 +140,7 @@ void Location::Empty()
 {
 	m_landscape.Empty();
 
-	m_lights.Empty();			// LList <Light *>
+	m_lights.clear();
 	m_buildings.Empty();		// LList <Building *>
 	m_spirits.clear();
     m_lasers.Empty();
@@ -187,10 +186,9 @@ void Location::InitLights()
 	for (int i = 0; i < m_levelFile->m_lights.Size(); i++)
 	{
 		Light *levelLight = m_levelFile->m_lights.GetData(i);
-		Light *light = new Light();
-		light->SetColour(levelLight->m_colour);
-		light->SetFront(levelLight->m_front);
-		m_lights.PutData(light);
+		Light& light = m_lights.emplace_back();
+		light.SetColour(levelLight->m_colour);
+		light.SetFront(levelLight->m_front);
 	}
 }
 
@@ -2037,13 +2035,12 @@ void Location::SetupFog()
 
 void Location::WaterReflect()
 {
-	for (int i = 0; i < m_lights.Size(); i++)
+	for (auto& light : m_lights)
 	{
-		//Light *light = m_lights.GetData(i);
-		//light->m_front[0] = -light->m_front[0];
-		//light->m_front[1] = -light->m_front[1];
-		//light->m_front[2] = -light->m_front[2];
-		//light->m_front[3] = -light->m_front[3];
+		//light.m_front[0] = -light.m_front[0];
+		//light.m_front[1] = -light.m_front[1];
+		//light.m_front[2] = -light.m_front[2];
+		//light.m_front[3] = -light.m_front[3];
 	}
 }
 
@@ -2056,16 +2053,14 @@ void Location::SetupLights()
 	glLightfv(GL_LIGHT1, GL_SPECULAR, black);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, black);
 
-	for (int i = 0; i < m_lights.Size(); i++)
+	for (const auto& [i, light] : std::views::enumerate(m_lights))
 	{
-		Light *light = m_lights.GetData(i);
-
 		GLfloat ambCol[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-		Vector3 front(light->m_front[0], light->m_front[1], light->m_front[2]);
+		Vector3 front(light.m_front[0], light.m_front[1], light.m_front[2]);
         front.Normalise();
 		GLfloat frontAsFourFloats[] = { front.x, front.y, front.z, 0.0f };
-        GLfloat colourAsFourFloats[] = { light->m_colour[0], light->m_colour[1], light->m_colour[2], light->m_colour[3] };
+        GLfloat colourAsFourFloats[] = { light.m_colour[0], light.m_colour[1], light.m_colour[2], light.m_colour[3] };
 
         if( ChristmasModEnabled() == 1 )
         {
@@ -2073,7 +2068,6 @@ void Location::SetupLights()
             colourAsFourFloats[1] = 1.2f;
             colourAsFourFloats[2] = 1.2f;
         }
-
 
 		glLightfv(GL_LIGHT0 + i, GL_POSITION, frontAsFourFloats);
 		glLightfv(GL_LIGHT0 + i, GL_DIFFUSE, colourAsFourFloats);

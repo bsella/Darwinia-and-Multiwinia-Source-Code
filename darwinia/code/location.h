@@ -87,7 +87,7 @@ public:
 
     float           m_christmasTimer;
 
-	FastDArray		<Light *>		m_lights;
+	std::vector<Light> m_lights;
     SliceDArray     <Building *>    m_buildings;
     SliceDArray     <Laser>         m_lasers;
     SliceDArray     <WorldObject *> m_effects;
