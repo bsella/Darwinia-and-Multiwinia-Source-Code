@@ -571,7 +571,7 @@ void Building::Destroy( float _intensity )
 }
 
 bool Building::DoesRayHit(Vector3 const &_rayStart, Vector3 const &_rayDir,
-                          float _rayLen, [[maybe_unused]]Vector3 *_pos, [[maybe_unused]]Vector3 *norm )
+                          float _rayLen, [[maybe_unused]]Vector3 *_pos, [[maybe_unused]]Vector3 *norm ) const
 {
 	if (m_shape)
 	{

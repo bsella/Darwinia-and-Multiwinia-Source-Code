@@ -139,7 +139,7 @@ void Location::Empty()
 	m_landscape.Empty();
 
 	m_lights.clear();
-	m_buildings.clear();		// LList <Building *>
+	m_buildings.clear();
 	m_spirits.clear();
     m_lasers.Empty();
     m_effects.Empty();
@@ -208,7 +208,7 @@ void Location::InitBuildings()
                            Building::GetTypeName(existing->m_type),
                            Building::GetTypeName(building->m_type) );
         }
-        auto& newBuilding = m_buildings.emplace_back(Building::CreateBuilding( building->m_type ));
+        auto& newBuilding = AddBuilding(Building::CreateBuilding( building->m_type ));
         newBuilding->Initialise( building.get() );
         newBuilding->SetDetail( g_prefsManager->GetInt( "RenderBuildingDetail", 1 ) );
 	}
@@ -334,34 +334,14 @@ int Location::SpawnSpirit( Vector3 const &_pos, Vector3 const &_vel, unsigned ch
 {
     DarwiniaDebugAssert( _teamId < NUM_TEAMS );
 
-    auto found_itr = std::find_if(m_spirits.begin(), m_spirits.end(), [] (std::unique_ptr<Spirit>& ptr) {return !ptr;} );
+    auto [index, spirit] = m_spirits.AddOrReplaceFirstNull(std::make_unique<Spirit>());
 
-    int index;
-
-    if(found_itr != m_spirits.end())
-    {
-        assert(!*found_itr);
-
-        *found_itr = std::make_unique<Spirit>();
-
-        index = found_itr - m_spirits.begin();
-    }
-    else
-    {
-        m_spirits.emplace_back(std::make_unique<Spirit>());
-
-        found_itr = std::prev(m_spirits.end());
-
-        index = m_spirits.size() - 1;
-    }
-
-    auto& s = *found_itr;
-    s->m_pos = _pos + g_upVector;
-    s->m_vel = _vel;
-    s->m_teamId = _teamId;
-    s->m_worldObjectId = _id;
-    s->m_id.Set( _teamId, UNIT_SPIRITS, index, -1 );
-    s->Begin();
+    spirit->m_pos = _pos + g_upVector;
+    spirit->m_vel = _vel;
+    spirit->m_teamId = _teamId;
+    spirit->m_worldObjectId = _id;
+    spirit->m_id.Set( _teamId, UNIT_SPIRITS, index, -1 );
+    spirit->Begin();
 
     return index;
 }
@@ -376,11 +356,9 @@ int Location::GetSpirit( WorldObjectId _id )
     }
 
     int index = 0;
-    for( const auto& spirit : m_spirits )
+    for( const auto& [_, spirit] : m_spirits.EnumerateValues() )
     {
-        if(!spirit) continue;
-
-        if( spirit->m_worldObjectId == _id )
+        if( spirit.m_worldObjectId == _id )
         {
             return index;
         }
@@ -411,9 +389,9 @@ std::unique_ptr<Spirit>& Location::GetSpirit( int _index )
     if(_index == -1)
         return null_spirit;
 
-    if( m_spirits.size() > _index )
+    if( m_spirits.Optionals().size() > _index )
     {
-        return m_spirits[_index];
+        return m_spirits.Optionals()[_index];
     }
 
     return null_spirit;
@@ -755,7 +733,7 @@ void Location::AdvanceSpirits( )
 {
     START_PROFILE(g_app->m_profiler, "Advance Spirits");
 
-    for( auto& spirit : m_spirits )
+    for( auto& spirit : m_spirits.Optionals() )
     {
         if(!spirit) continue;
 
@@ -928,10 +906,9 @@ void Location::RenderSpirits()
 
     float timeSinceAdvance = g_predictionTime;
 
-    for( const auto& spirit : m_spirits )
+    for( const auto& [_, spirit] : m_spirits.EnumerateValues() )
     {
-        if(spirit)
-            spirit->Render( timeSinceAdvance);
+        spirit.Render( timeSinceAdvance);
     }
 
     glDepthMask     ( true );
@@ -1161,7 +1138,7 @@ void Location::RenderBuildingAlphas()
 
     for( int i = s_nextSortedBuilding-1; i >= 0; i-- )
     {
-        auto& building = m_buildings[s_sortedBuildings[i].m_buildingIndex];
+        auto& building = m_buildings.Optionals()[s_sortedBuildings[i].m_buildingIndex];
 
         if(!building) continue;
 
@@ -1647,42 +1624,40 @@ Entity* Location::GetEntity( Vector3 const &startRay, Vector3 const &direction, 
 Building* Location::GetBuilding(Vector3 const &rayStart, Vector3 const &rayDir, unsigned char teamId, float _maxDistance, float *_range ) const
 {
     float closestRangeSqd = FLT_MAX;
-    Building* buildingId = nullptr;
+    const Building* buildingId = nullptr;
 
-    for (const auto& building : m_buildings)
+    for (const auto& [_, building] : m_buildings.EnumerateValues())
     {
-        if(!building) continue;
-
         bool teamMatch = ( teamId == 255 ||
-                            building->m_id.GetTeamId() == 255 ||
-                            teamId == building->m_id.GetTeamId() );
+                            building.m_id.GetTeamId() == 255 ||
+                            teamId == building.m_id.GetTeamId() );
 
-        if( building->m_type != Building::TypeControlTower && teamMatch )
+        if( building.m_type != Building::TypeControlTower && teamMatch )
         {
             Vector3 hitPos;
             bool rayHit = false;
 
-            if( building->m_type == Building::TypeRadarDish )
+            if( building.m_type == Building::TypeRadarDish )
             {
-                rayHit = building->DoesRayHit( rayStart, rayDir, 1e10 );
-                if( rayHit ) RaySphereIntersection( rayStart, rayDir, building->m_centrePos, building->m_radius, _maxDistance, &hitPos );
+                rayHit = building.DoesRayHit( rayStart, rayDir, 1e10 );
+                if( rayHit ) RaySphereIntersection( rayStart, rayDir, building.m_centrePos, building.m_radius, _maxDistance, &hitPos );
                 // Have to do the raySphereIntersection in order to calculate the hitPos
             }
             else
             {
-                rayHit = RaySphereIntersection( rayStart, rayDir, building->m_centrePos, building->m_radius, _maxDistance, &hitPos );
+                rayHit = RaySphereIntersection( rayStart, rayDir, building.m_centrePos, building.m_radius, _maxDistance, &hitPos );
             }
 
             if( rayHit )
             {
                 float centrePosX, centrePosY, rayHitX, rayHitY;
-                g_app->m_camera->Get2DScreenPos( building->m_centrePos, &centrePosX, &centrePosY );
+                g_app->m_camera->Get2DScreenPos( building.m_centrePos, &centrePosX, &centrePosY );
                 g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
 
                 float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
                 if( rangeSqd < closestRangeSqd )
                 {
-                    buildingId = building.get();
+                    buildingId = &building;
                     closestRangeSqd = rangeSqd;
                 }
             }
@@ -1694,7 +1669,8 @@ Building* Location::GetBuilding(Vector3 const &rayStart, Vector3 const &rayDir, 
         *_range = sqrtf( closestRangeSqd );
     }
 
-	return buildingId;
+    // TODO
+	return const_cast<Building*>(buildingId);
 }
 
 
@@ -1932,11 +1908,9 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
 	// Wow, that was a big bang. Maybe we killed a building
 
     float maxBuildingRange = _range * 3.0f;
-    for( const auto& building : m_buildings )
+    for( const auto& [_, building] : m_buildings.EnumerateValues() )
     {
-        if(!building) continue;
-
-        float dist = (_pos - building->m_pos).Mag();
+        float dist = (_pos - building.m_pos).Mag();
 
         if( dist < maxBuildingRange )
         {
@@ -1944,7 +1918,7 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
             float fraction = 1.0f - dist / maxBuildingRange;
             fraction = std::max( 0.0f, fraction );
             fraction = std::min( 1.0f, fraction );
-            building->Damage( _damage * fraction * -1.0f );
+            building.Damage( _damage * fraction * -1.0f );
         }
     }
 }
@@ -2103,34 +2077,22 @@ void Location::RegenerateOpenGlState()
 	g_app->m_location->m_water->BuildOpenGlState();
 }
 
-decltype(std::views::enumerate(Location::m_spirits)) Location::EnumerateSpirits()
+decltype(Location::m_spirits)::EnumerateOptionalsView Location::EnumerateSpirits()
 {
-    return std::views::enumerate(m_spirits);
+    return m_spirits.EnumerateOptionals();
 }
 
-bool Location::IsNonNullPtr::operator()(const std::tuple<long, std::unique_ptr<Building>&>& index_value) const
+decltype(Location::m_buildings)::EnumerateOptionalsView Location::EnumerateBuildings()
 {
-    auto& [index, ptr] = index_value;
-    return ptr != nullptr;
+    return m_buildings.EnumerateOptionals();
 }
 
-std::tuple<long, Building&> Location::UniquePtrToRef::operator()(const std::tuple<long, std::unique_ptr<Building>&>& index_value) const
+decltype(Location::m_buildings)::EnumerateValuesView Location::EnumerateValidBuildings()
 {
-    auto& [index, ptr] = index_value;
-    return std::tuple<long, Building&>{index, *ptr};
-}
-
-Location::EnumerateBuildingPointersView Location::EnumerateBuildings()
-{
-    return std::views::enumerate(m_buildings);
-}
-
-Location::EnumerateValidBuildingsView Location::EnumerateValidBuildings()
-{
-    return std::views::enumerate(m_buildings) | std::views::filter(IsNonNullPtr{}) | std::views::transform(UniquePtrToRef{});
+    return m_buildings.EnumerateValues();
 }
 
 std::unique_ptr<Building>& Location::AddBuilding(std::unique_ptr<Building>&& building)
 {
-    return m_buildings.emplace_back(std::move(building));
+    return m_buildings.AddOptional(std::move(building));
 }

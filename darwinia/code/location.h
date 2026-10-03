@@ -9,6 +9,7 @@
 #include "lib/fast_darray.h"
 #include "lib/slice_darray.h"
 #include "lib/vector3.h"
+#include "lib/vector_with_options.hpp"
 
 #include "network/server.h"
 
@@ -18,6 +19,7 @@
 #include "worldobject/worldobject.h"
 #include "worldobject/weapons.h"
 #include "worldobject/spirit.h"
+
 
 #include <ranges>
 
@@ -93,8 +95,8 @@ public:
     SliceDArray     <WorldObject *> m_effects;
 
 private:
-    std::vector<std::unique_ptr<Building>> m_buildings; // Every instance is nullable
-    std::vector<std::unique_ptr<Spirit>>   m_spirits; // Every instance is nullable
+    VectorWithOptionals<Building> m_buildings;
+    VectorWithOptionals<Spirit>   m_spirits;
 
 public:
     Location();
@@ -163,31 +165,11 @@ public:
 	void FlushOpenGlState	();
 	void RegenerateOpenGlState();
 
-    decltype(std::views::enumerate(m_spirits)) EnumerateSpirits();
-    
-    using BuildingPointers = std::views::all_t<decltype(m_buildings)&>;
-    using EnumerateBuildingPointersView = std::ranges::enumerate_view<BuildingPointers>;
+    decltype(m_spirits)::EnumerateOptionalsView EnumerateSpirits();
 
-    EnumerateBuildingPointersView EnumerateBuildings();
+    decltype(m_buildings)::EnumerateOptionalsView EnumerateBuildings();
 
-private:
-    struct IsNonNullPtr
-    {
-        bool operator()(const std::tuple<long, std::unique_ptr<Building>&>&) const;
-    };
-
-    using FilterValidEnumerateBuildingsView = std::ranges::filter_view<EnumerateBuildingPointersView, IsNonNullPtr>;
-
-    struct UniquePtrToRef
-    {
-        std::tuple<long, Building&> operator()(const std::tuple<long, std::unique_ptr<Building>&>&) const;
-    };
-
-public:
-
-    using EnumerateValidBuildingsView = std::ranges::transform_view<FilterValidEnumerateBuildingsView, UniquePtrToRef>;
-
-    EnumerateValidBuildingsView EnumerateValidBuildings();
+    decltype(m_buildings)::EnumerateValuesView EnumerateValidBuildings();
 
     std::unique_ptr<Building>& AddBuilding(std::unique_ptr<Building>&&);
 };
