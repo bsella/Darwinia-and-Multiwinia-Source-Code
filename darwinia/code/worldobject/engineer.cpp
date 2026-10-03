@@ -32,6 +32,8 @@
 
 #include "FFP_emulation.h"
 
+#include <ranges>
+
 Engineer::Engineer()
 :   Entity(),
     m_state(StateIdle),
@@ -97,22 +99,19 @@ bool Engineer::SearchForSpirits()
         int spiritId = -1;
         float closest = 999999.9f;
 
-        for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+        for( const auto& [index, spirit] : g_app->m_location->EnumerateSpirits() )
         {
-            if( g_app->m_location->m_spirits.ValidIndex(i) )
-            {
-                Spirit *s = g_app->m_location->m_spirits.GetPointer(i);
-                float theDist = ( s->m_pos - m_pos ).Mag();
+            if(!spirit) continue;
+            
+            float theDist = ( spirit->m_pos - m_pos ).Mag();
 
-                if( theDist <= ENGINEER_SEARCHRANGE &&
-                    theDist < closest &&
-                    ( s->m_state == Spirit::StateBirth ||
-                      s->m_state == Spirit::StateFloating ) )
-                {
-                    found = s;
-                    spiritId = i;
-                    closest = theDist;
-                }
+            if( theDist <= ENGINEER_SEARCHRANGE &&
+                theDist < closest &&
+                ( spirit->m_state == Spirit::StateBirth || spirit->m_state == Spirit::StateFloating ) )
+            {
+                found = spirit.get();
+                spiritId = index;
+                closest = theDist;
             }
         }
 
@@ -319,10 +318,9 @@ bool Engineer::Advance( Unit *_unit )
         while( m_spirits.Size() > 0 )
         {
             int spiritId = m_spirits[0];
-            if( g_app->m_location->m_spirits.ValidIndex(spiritId) )
+            if( auto& spirit = g_app->m_location->GetSpirit(spiritId) )
             {
-                Spirit *s = g_app->m_location->m_spirits.GetPointer(spiritId);
-                s->CollectorDrops();
+                spirit->CollectorDrops();
                 m_spirits.RemoveData(0);
             }
         }
@@ -378,15 +376,14 @@ bool Engineer::Advance( Unit *_unit )
     for( int i = 0; i < m_spirits.Size(); ++i )
     {
         int spiritId = m_spirits[i];
-        if( g_app->m_location->m_spirits.ValidIndex(spiritId) )
+        if( auto& spirit = g_app->m_location->GetSpirit(spiritId) )
         {
-            Spirit *s = g_app->m_location->m_spirits.GetPointer(spiritId);
-            if( s && s->m_state == Spirit::StateAttached )
+            if( spirit->m_state == Spirit::StateAttached )
             {
                 if( m_positionHistory.ValidIndex(i+1) )
                 {
-                    s->m_pos = *m_positionHistory[i+1];
-                    s->m_vel = (*m_positionHistory[i] - *m_positionHistory[i+1]) / SERVER_ADVANCE_PERIOD;
+                    spirit->m_pos = *m_positionHistory[i+1];
+                    spirit->m_vel = (*m_positionHistory[i] - *m_positionHistory[i+1]) / SERVER_ADVANCE_PERIOD;
                 }
             }
         }
@@ -557,15 +554,11 @@ bool Engineer::AdvanceToWaypoint()
 
 bool Engineer::AdvanceToSpirit()
 {
-    Spirit *s = nullptr;
-    if( g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
-    {
-        s = g_app->m_location->m_spirits.GetPointer(m_spiritId);
-    }
+    auto& spirit = g_app->m_location->GetSpirit(m_spiritId);
 
-    if( !s ||
-         s->m_state == Spirit::StateDeath ||
-         s->m_state == Spirit::StateAttached )
+    if( !spirit ||
+         spirit->m_state == Spirit::StateDeath ||
+         spirit->m_state == Spirit::StateAttached )
     {
         // Our spirit died while we were going for it, return to waypoint and continue looking
         m_spiritId = -1;
@@ -573,7 +566,7 @@ bool Engineer::AdvanceToSpirit()
         return false;
     }
 
-    m_targetPos = s->m_pos;
+    m_targetPos = spirit->m_pos;
     m_targetFront.Zero();
     bool arrived = AdvanceToTargetPos();
     if( arrived )
@@ -589,10 +582,8 @@ bool Engineer::AdvanceToSpirit()
 
 void Engineer::CollectSpirit( int _spiritId )
 {
-    if( g_app->m_location->m_spirits.ValidIndex(_spiritId) )
+    if( auto& spirit = g_app->m_location->GetSpirit(_spiritId) )
     {
-        Spirit *spirit = g_app->m_location->m_spirits.GetPointer(_spiritId);
-
         spirit->CollectorArrives();
         m_spirits.PutData( _spiritId );
     }
@@ -658,11 +649,10 @@ bool Engineer::AdvanceToIncubator()
 
         // Arrived at our incubator, drop spirit off here one at a time
         int spiritId = m_spirits[0];
-        if( g_app->m_location->m_spirits.ValidIndex(spiritId) )
+        if( auto& spirit = g_app->m_location->GetSpirit(spiritId) )
         {
-            Spirit *s = g_app->m_location->m_spirits.GetPointer( spiritId );
-            incubator->AddSpirit( s );
-            g_app->m_location->m_spirits.MarkNotUsed( spiritId );
+            incubator->AddSpirit( spirit.get() );
+            spirit.reset();
             m_spirits.RemoveData(0);
         }
 

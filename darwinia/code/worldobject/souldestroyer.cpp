@@ -197,7 +197,7 @@ void SoulDestroyer::Attack( Vector3 const &_pos )
             int spiritIndex = g_app->m_location->GetSpirit( id );
             if( spiritIndex != -1 )
             {
-                g_app->m_location->m_spirits.MarkNotUsed( spiritIndex );
+                g_app->m_location->GetSpirit(spiritIndex).reset();
                 if( m_spirits.NumUsed() < SOULDESTROYER_MAXSPIRITS )
                 {
                     m_spirits.PutData( (float) GetHighResTime() );

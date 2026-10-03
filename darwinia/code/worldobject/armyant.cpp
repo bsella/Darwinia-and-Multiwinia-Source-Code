@@ -18,7 +18,6 @@
 #include "worldobject/anthill.h"
 #include "worldobject/darwinian.h"
 
-
 ArmyAnt::ArmyAnt()
 :   Entity(),
     m_orders(NoOrders),
@@ -75,10 +74,9 @@ void ArmyAnt::ChangeHealth( int _amount )
 
         if( m_spiritId != -1 )
         {
-            if( g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
+            if( auto& spirit =  g_app->m_location->GetSpirit(m_spiritId) )
             {
-                Spirit *spirit = g_app->m_location->m_spirits.GetPointer( m_spiritId );
-                if( spirit && spirit->m_state == Spirit::StateAttached )
+                if( spirit->m_state == Spirit::StateAttached )
                 {
                     spirit->CollectorDrops();
                     spirit->m_vel = m_vel;
@@ -114,10 +112,9 @@ bool ArmyAnt::Advance( Unit *_unit )
         //
         // Keep attached spirits attached to us
 
-        if( g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
+        if( auto& spirit = g_app->m_location->GetSpirit(m_spiritId) )
         {
-            Spirit *spirit = g_app->m_location->m_spirits.GetPointer( m_spiritId );
-            if( spirit && spirit->m_state == Spirit::StateAttached )
+            if( spirit->m_state == Spirit::StateAttached )
             {
                 Vector3 carryPos, carryVel;
                 GetCarryMarker( carryPos, carryVel );
@@ -182,11 +179,7 @@ bool ArmyAnt::AdvanceScoutArea()
 
 bool ArmyAnt::AdvanceCollectSpirit()
 {
-    Spirit *s = nullptr;
-    if( g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
-    {
-        s = g_app->m_location->m_spirits.GetPointer(m_spiritId);
-    }
+    auto& s = g_app->m_location->GetSpirit(m_spiritId);
 
     if( !s ||
          s->m_state == Spirit::StateDeath ||
@@ -322,13 +315,12 @@ bool ArmyAnt::AdvanceReturnToBase()
             antHill->m_numAntsInside++;
 
             // Drop off any spirits we are carrying
-            if( g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
+            if( auto& spirit = g_app->m_location->GetSpirit(m_spiritId) )
             {
-                Spirit *spirit = g_app->m_location->m_spirits.GetPointer( m_spiritId );
                 if( spirit && spirit->m_state == Spirit::StateAttached )
                 {
                     antHill->m_numSpiritsInside++;
-                    g_app->m_location->m_spirits.MarkNotUsed( m_spiritId );
+                    spirit.reset();
                 }
             }
 
@@ -401,22 +393,20 @@ bool ArmyAnt::SearchForSpirits()
     int spiritId = -1;
     float closest = 999999.9f;
 
-    for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+    for( auto [index, spirit] : g_app->m_location->EnumerateSpirits() )
     {
-        if( g_app->m_location->m_spirits.ValidIndex(i) )
-        {
-            Spirit *s = g_app->m_location->m_spirits.GetPointer(i);
-            float theDist = ( s->m_pos - m_pos ).Mag();
+        if( !spirit ) continue;
 
-            if( theDist <= ARMYANT_SEARCHRANGE &&
-                theDist < closest &&
-                ( s->m_state == Spirit::StateBirth ||
-                  s->m_state == Spirit::StateFloating ) )
-            {
-                found = s;
-                spiritId = i;
-                closest = theDist;
-            }
+        float theDist = ( spirit->m_pos - m_pos ).Mag();
+
+        if( theDist <= ARMYANT_SEARCHRANGE &&
+            theDist < closest &&
+            ( spirit->m_state == Spirit::StateBirth ||
+                spirit->m_state == Spirit::StateFloating ) )
+        {
+            found = spirit.get();
+            spiritId = index;
+            closest = theDist;
         }
     }
 

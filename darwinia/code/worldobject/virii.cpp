@@ -22,6 +22,7 @@
 #include "worldobject/egg.h"
 
 #include "FFP_emulation.h"
+#include "worldobject/spirit.h"
 
 ViriiUnit::ViriiUnit(int teamId, int unitId, int numEntities, Vector3 const &_pos)
 :   Unit(Entity::TypeVirii, teamId, unitId, numEntities, _pos),
@@ -164,10 +165,9 @@ bool Virii::Advance( Unit *_unit )
 
         if( m_spiritId != -1 )
         {
-            if( g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
+            if( auto& spirit = g_app->m_location->GetSpirit(m_spiritId) )
             {
-                Spirit *spirit = g_app->m_location->m_spirits.GetPointer( m_spiritId );
-                if( spirit && spirit->m_state == Spirit::StateAttached )
+                if( spirit->m_state == Spirit::StateAttached )
                 {
                     spirit->CollectorDrops();
                 }
@@ -199,10 +199,9 @@ bool Virii::Advance( Unit *_unit )
             case StateToEgg:            amIDead = AdvanceToEgg();               break;
         }
 
-        if( g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
+        if( auto& spirit = g_app->m_location->GetSpirit(m_spiritId) )
         {
-            Spirit *spirit = g_app->m_location->m_spirits.GetPointer( m_spiritId );
-            if( spirit && spirit->m_state == Spirit::StateAttached )
+            if( spirit->m_state == Spirit::StateAttached )
             {
                 spirit->m_pos = m_pos;
 				spirit->m_pos.y += 2.0f;
@@ -374,7 +373,7 @@ bool Virii::AdvanceIdle()
     {
         m_retargetTimer = 1.0f;
 
-        if( g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
+        if( g_app->m_location->GetSpirit(m_spiritId) )
         {
             foundTarget = SearchForEggs();
         }
@@ -408,20 +407,6 @@ bool Virii::AdvanceAttacking()
         return false;
     }
 
-//    int enemySpiritId = g_app->m_location->GetSpirit( m_enemyId );
-//    if( enemySpiritId != -1 && entity->m_dead )
-//    {
-//        // Our enemy has died and dropped a spirit
-//        // If we can see an egg, then go for it
-//        if( FindNearbyEgg( enemySpiritId, VIRII_MAXSEARCHRANGE ).IsValid() )
-//        {
-//            m_enemyId.SetInvalid();
-//            m_spiritId = enemySpiritId;
-//            m_state = StateToSpirit;
-//        }
-//        return false;
-//    }
-
     bool arrived = AdvanceToTargetPos( entity->m_pos );
     if( arrived )
     {
@@ -447,16 +432,12 @@ bool Virii::AdvanceToSpirit()
 {
 	START_PROFILE(g_app->m_profiler, "AdvanceToSpirit");
 
-    Spirit *s = nullptr;
-    if( g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
-    {
-        s = g_app->m_location->m_spirits.GetPointer(m_spiritId);
-    }
+    auto& spirit = g_app->m_location->GetSpirit(m_spiritId);
 
-    if( !s ||
-         s->m_state == Spirit::StateDeath ||
-         s->m_state == Spirit::StateAttached ||
-         s->m_state == Spirit::StateInEgg )
+    if( !spirit ||
+         spirit->m_state == Spirit::StateDeath ||
+         spirit->m_state == Spirit::StateAttached ||
+         spirit->m_state == Spirit::StateInEgg )
     {
         m_spiritId = -1;
         m_state = StateIdle;
@@ -464,7 +445,6 @@ bool Virii::AdvanceToSpirit()
         return false;
     }
 
-    Spirit *spirit = g_app->m_location->m_spirits.GetPointer(m_spiritId);
     Vector3 targetPos = spirit->m_pos;
     targetPos.y = g_app->m_location->m_landscape.m_heightMap->GetValue( targetPos.x, targetPos.z );
     bool arrived = AdvanceToTargetPos( targetPos );
@@ -490,9 +470,8 @@ bool Virii::AdvanceToEgg()
         if( !found )
         {
             // We can't find any eggs, so go into holding pattern
-            if( g_app->m_location->m_spirits.ValidIndex( m_spiritId ) )
+            if( auto& spirit = g_app->m_location->GetSpirit(m_spiritId ) )
             {
-                Spirit *spirit = g_app->m_location->m_spirits.GetPointer( m_spiritId );
                 if( spirit->m_state == Spirit::StateAttached )
                 {
                     spirit->CollectorDrops();
@@ -505,7 +484,7 @@ bool Virii::AdvanceToEgg()
         }
     }
 
-    if( !g_app->m_location->m_spirits.ValidIndex( m_spiritId ) )
+    if( !g_app->m_location->GetSpirit( m_spiritId ) )
     {
         m_spiritId = -1;
         m_state = StateIdle;
@@ -571,23 +550,20 @@ bool Virii::SearchForSpirits()
     int spiritId = -1;
     float closest = 999999.9f;
 
-    for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+    for( const auto& [index, spirit] : g_app->m_location->EnumerateSpirits() )
     {
-        if( g_app->m_location->m_spirits.ValidIndex(i) )
-        {
-            Spirit *s = g_app->m_location->m_spirits.GetPointer(i);
-            float theDist = ( s->m_pos - m_pos ).Mag();
+        if(!spirit) continue;
 
-            if( theDist <= VIRII_MAXSEARCHRANGE &&
-                theDist < closest &&
-                s->NumNearbyEggs() > 0 &&
-                ( s->m_state == Spirit::StateBirth ||
-                  s->m_state == Spirit::StateFloating ) )
-            {
-                found = s;
-                spiritId = i;
-                closest = theDist;
-            }
+        float theDist = ( spirit->m_pos - m_pos ).Mag();
+
+        if( theDist <= VIRII_MAXSEARCHRANGE &&
+            theDist < closest &&
+            spirit->NumNearbyEggs() > 0 &&
+            ( spirit->m_state == Spirit::StateBirth || spirit->m_state == Spirit::StateFloating ) )
+        {
+            found = spirit.get();
+            spiritId = index;
+            closest = theDist;
         }
     }
 
@@ -602,47 +578,6 @@ bool Virii::SearchForSpirits()
 	END_PROFILE(g_app->m_profiler, "SearchForSpirits");
     return false;
 }
-
-
-WorldObjectId Virii::FindNearbyEgg( int _spiritId, float _autoAccept )
-{
-    if( !g_app->m_location->m_spirits.ValidIndex(_spiritId) )
-    {
-        return WorldObjectId();
-    }
-
-    Spirit *spirit = g_app->m_location->m_spirits.GetPointer( _spiritId );
-    if( !spirit ) return WorldObjectId();
-
-    WorldObjectId *m_nearbyEggs = spirit->GetNearbyEggs();
-    int numNearbyEggs = spirit->NumNearbyEggs();
-
-    WorldObjectId eggId;
-    float closest = 999999.9f;
-
-    for( int i = 0; i < numNearbyEggs; ++i )
-    {
-        WorldObjectId thisEggId = m_nearbyEggs[i];
-        Egg *egg = (Egg *) g_app->m_location->GetEntitySafe( thisEggId, Entity::TypeEgg );
-
-        if( egg && egg->m_state == Egg::StateDormant )
-        {
-            float theDist = ( egg->m_pos - spirit->m_pos ).Mag();
-            if( theDist <= _autoAccept )
-            {
-                return thisEggId;
-            }
-            else if( theDist < closest )
-            {
-                eggId = thisEggId;
-                closest = theDist;
-            }
-        }
-    }
-
-    return eggId;
-}
-
 
 WorldObjectId Virii::FindNearbyEgg( Vector3 const &_pos )
 {

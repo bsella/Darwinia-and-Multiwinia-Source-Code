@@ -1,5 +1,11 @@
 ﻿#include "worldobject/building.h"
 #include "worldobject/entity.h"
+#include "worldobject/spirit.h"
+#include <algorithm>
+#include <cassert>
+#include <iterator>
+#include <memory>
+#include <ranges>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
@@ -71,16 +77,12 @@ Location::Location()
 	m_teams(nullptr),
     m_christmasTimer(-99.9f)
 {
-    m_spirits.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
     m_lasers.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
     m_effects.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
     m_buildings.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
 
-    m_spirits.SetSize( 100 );
-
 	m_lights.SetStepSize(1);
 	m_buildings.SetStepSize(10);
-    m_spirits.SetStepSize( 100 );
 	m_lasers.SetStepSize(100);
 	m_effects.SetSize(100);
 }
@@ -141,7 +143,7 @@ void Location::Empty()
 
 	m_lights.Empty();			// LList <Light *>
 	m_buildings.Empty();		// LList <Building *>
-	m_spirits.Empty();			// FastDArray <Spirit>
+	m_spirits.clear();
     m_lasers.Empty();
     m_effects.Empty();
 
@@ -337,8 +339,28 @@ int Location::SpawnSpirit( Vector3 const &_pos, Vector3 const &_vel, unsigned ch
 {
     DarwiniaDebugAssert( _teamId < NUM_TEAMS );
 
-    int index = m_spirits.GetNextFree();
-    Spirit *s = m_spirits.GetPointer( index );
+    auto found_itr = std::find_if(m_spirits.begin(), m_spirits.end(), [] (std::unique_ptr<Spirit>& ptr) {return !ptr;} );
+
+    int index;
+
+    if(found_itr != m_spirits.end())
+    {
+        assert(!*found_itr);
+
+        *found_itr = std::make_unique<Spirit>();
+
+        index = found_itr - m_spirits.begin();
+    }
+    else
+    {
+        m_spirits.emplace_back(std::make_unique<Spirit>());
+
+        found_itr = std::prev(m_spirits.end());
+
+        index = m_spirits.size() - 1;
+    }
+
+    auto& s = *found_itr;
     s->m_pos = _pos + g_upVector;
     s->m_vel = _vel;
     s->m_teamId = _teamId;
@@ -358,16 +380,16 @@ int Location::GetSpirit( WorldObjectId _id )
         return -1;
     }
 
-    for( int i = 0; i < m_spirits.Size(); ++i )
+    int index = 0;
+    for( const auto& spirit : m_spirits )
     {
-        if( m_spirits.ValidIndex(i) )
+        if(!spirit) continue;
+
+        if( spirit->m_worldObjectId == _id )
         {
-            Spirit *spirit = m_spirits.GetPointer(i);
-            if( spirit->m_worldObjectId == _id )
-            {
-                return i;
-            }
+            return index;
         }
+        index++;
     }
 
     return -1;
@@ -380,20 +402,26 @@ WorldObject *Location::GetWorldObject( WorldObjectId _id )
     {
         case UNIT_BUILDINGS:            return GetBuilding( _id.GetUniqueId() );
         case UNIT_EFFECTS:              return GetEffect( _id );
-        case UNIT_SPIRITS:              return GetSpirit( _id.GetIndex() );
+        case UNIT_SPIRITS:              return GetSpirit( _id.GetIndex() ).get();
         default:                        return GetEntity( _id );
     }
 }
 
 
-Spirit *Location::GetSpirit( int _index )
+std::unique_ptr<Spirit>& Location::GetSpirit( int _index )
 {
-    if( m_spirits.ValidIndex( _index ) )
+    // HACK
+    static std::unique_ptr<Spirit> null_spirit;
+
+    if(_index == -1)
+        return null_spirit;
+
+    if( m_spirits.size() > _index )
     {
-        return &m_spirits[_index];
+        return m_spirits[_index];
     }
 
-    return nullptr;
+    return null_spirit;
 }
 
 
@@ -741,22 +769,18 @@ void Location::AdvanceTeams( int _slice )
 
 
 // *** AdvanceSpirits
-void Location::AdvanceSpirits( int _slice )
+void Location::AdvanceSpirits( )
 {
     START_PROFILE(g_app->m_profiler, "Advance Spirits");
 
-    int startIndex, endIndex;
-    m_spirits.GetNextSliceBounds(_slice, &startIndex, &endIndex);
-    for( int i = startIndex; i <= endIndex; ++i )
+    for( auto& spirit : m_spirits )
     {
-        if( m_spirits.ValidIndex(i) )
+        if(!spirit) continue;
+
+        bool removeSpirit = spirit->Advance();
+        if( removeSpirit )
         {
-            Spirit *s = m_spirits.GetPointer(i);
-            bool removeSpirit = s->Advance();
-            if( removeSpirit )
-            {
-                m_spirits.MarkNotUsed(i);
-            }
+            spirit.reset();
         }
     }
 
@@ -839,7 +863,7 @@ void Location::Advance( int _slice )
 			case 0: AdvanceTeams        ( _slice ); break;
 			case 1: AdvanceWeapons      ( _slice ); break;
 			case 2: AdvanceBuildings    ( _slice ); break;
-			case 3: AdvanceSpirits      ( _slice ); break;
+			case 3: if(_slice == 0) AdvanceSpirits      (); break; // TODO
 			case 4: AdvanceClouds       ( _slice ); break;
 		}
 	}
@@ -931,21 +955,10 @@ void Location::RenderSpirits()
 
     float timeSinceAdvance = g_predictionTime;
 
-    for( int i = 0; i < m_spirits.Size(); ++i )
+    for( const auto& spirit : m_spirits )
     {
-        if( m_spirits.ValidIndex(i) )
-        {
-            Spirit *r = m_spirits.GetPointer(i);
-
-            if( i > m_spirits.GetLastUpdated() )
-            {
-                r->Render( timeSinceAdvance + 0.1f );
-            }
-            else
-            {
-                r->Render( timeSinceAdvance );
-            }
-        }
+        if(spirit)
+            spirit->Render( timeSinceAdvance);
     }
 
     glDepthMask     ( true );
@@ -2156,4 +2169,9 @@ void Location::RegenerateOpenGlState()
 
 	// Tell the water
 	g_app->m_location->m_water->BuildOpenGlState();
+}
+
+decltype(std::views::enumerate(Location::m_spirits)) Location::EnumerateSpirits()
+{
+    return std::views::enumerate(m_spirits);
 }

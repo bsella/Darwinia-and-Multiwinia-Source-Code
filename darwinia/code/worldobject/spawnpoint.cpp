@@ -419,15 +419,13 @@ bool MasterSpawnPoint::Advance()
 
     if( m_isGlobal )
     {
-        for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+        for( const auto& [_, spirit] : g_app->m_location->EnumerateSpirits() )
         {
-            if( g_app->m_location->m_spirits.ValidIndex(i) )
+            if(!spirit) continue;
+            
+            if( spirit->m_state == Spirit::StateBirth || spirit->m_state == Spirit::StateFloating )
             {
-                Spirit *s = g_app->m_location->m_spirits.GetPointer(i);
-                if( s->m_state == Spirit::StateBirth || s->m_state == Spirit::StateFloating )
-                {
-                    s->SkipStage();
-                }
+                spirit->SkipStage();
             }
         }
     }

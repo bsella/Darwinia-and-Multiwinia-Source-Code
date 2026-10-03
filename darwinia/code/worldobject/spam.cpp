@@ -405,22 +405,20 @@ bool SpamInfection::SearchForSpirits()
     int index = -1;
     float nearest = 9999.9f;
 
-    for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+    for( const auto& [i, spirit] : g_app->m_location->EnumerateSpirits() )
     {
-        if( g_app->m_location->m_spirits.ValidIndex(i) )
-        {
-            Spirit *s = g_app->m_location->m_spirits.GetPointer(i);
-            float theDist = ( s->m_pos - m_pos ).Mag();
+        if(!spirit) continue;
 
-            if( theDist <= SPAMINFECTION_MAXSEARCHRANGE &&
-                theDist >= SPAMINFECTION_MINSEARCHRANGE &&
-                theDist < nearest &&
-                s->m_state == Spirit::StateFloating &&
-                s->m_pos.y > 10.0f )
-            {
-                index = i;
-                nearest = theDist;
-            }
+        float theDist = ( spirit->m_pos - m_pos ).Mag();
+
+        if( theDist <= SPAMINFECTION_MAXSEARCHRANGE &&
+            theDist >= SPAMINFECTION_MINSEARCHRANGE &&
+            theDist < nearest &&
+            spirit->m_state == Spirit::StateFloating &&
+            spirit->m_pos.y > 10.0f )
+        {
+            index = i;
+            nearest = theDist;
         }
     }
 
@@ -518,14 +516,13 @@ void SpamInfection::AdvanceAttackingSpirit()
     //
     // Is our spirit still alive and well?
 
-    if( !g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
+    auto& spirit = g_app->m_location->GetSpirit(m_spiritId);
+
+    if( !spirit )
     {
         m_state = StateIdle;
         return;
     }
-
-
-    Spirit *spirit = g_app->m_location->m_spirits.GetPointer(m_spiritId);
 
     if( spirit->m_state != Spirit::StateFloating )
     {
@@ -541,7 +538,7 @@ void SpamInfection::AdvanceAttackingSpirit()
         int entityType = Entity::TypeVirii;
         if( syncfrand(20.0f) < 1.0f ) entityType = Entity::TypeSpider;
         g_app->m_location->SpawnEntities( spirit->m_pos, 1, -1, entityType, 1, g_zeroVector, 0.0f, 200.0f );
-        g_app->m_location->m_spirits.MarkNotUsed(m_spiritId);
+        g_app->m_location->GetSpirit(m_spiritId).reset();
 
         int numFlashes = 5 + darwiniaRandom() % 5;
         for( int i = 0; i < numFlashes; ++i )

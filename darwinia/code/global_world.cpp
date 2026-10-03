@@ -1,4 +1,6 @@
-﻿#include <float.h>
+﻿#include <algorithm>
+#include <float.h>
+#include <memory>
 
 #include "lib/debug_utils.h"
 #include "lib/language_table.h"
@@ -35,6 +37,7 @@
 #include "tutorial.h"
 
 #include "worldobject/building.h"
+#include "worldobject/spirit.h"
 #include "worldobject/trunkport.h"
 
 #include "interface/buynow_window.h"
@@ -2153,7 +2156,10 @@ void GlobalWorld::TransferSpirits(int _locationId)
     // Count how many spirits remain on the location
 
     DarwiniaDebugAssert( g_app->m_location );
-    int remainingSpirits = g_app->m_location->m_spirits.NumUsed();
+
+    auto spirits = g_app->m_location->EnumerateSpirits();
+
+    int remainingSpirits =  std::count_if(spirits.begin(), spirits.end(), [](const auto& index_spirit){return std::get<1>(index_spirit) != nullptr;});
 
     GlobalLocation *location = GetLocation( _locationId );
     DarwiniaReleaseAssert(location, "GlobalWorld::TransferSpirits, failed to lookup location %d", _locationId );

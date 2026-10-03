@@ -565,19 +565,18 @@ void DeformEffect::Stop()
 		//        and can be disturbing when applied on multiple souls.
 		if (0)
 		{
-			std::vector<SoulDistance> sorted(g_app->m_location->m_spirits.Size());
+			auto spirits = g_app->m_location->EnumerateSpirits();
+
+			std::vector<SoulDistance> sorted(spirits.size());
 			unsigned numSouls = 0;
-			for(int i=0;i<g_app->m_location->m_spirits.Size();i++)
+			for(const auto& [index, spirit] : spirits)
 			{
-				if( g_app->m_location->m_spirits.ValidIndex(i) )
+				if(!spirit) continue;
+				if(spirit->m_state!=Spirit::StateAttached)
 				{
-					Spirit *r = g_app->m_location->m_spirits.GetPointer(i);
-					if(r->m_state!=Spirit::StateAttached)
-					{
-						sorted[numSouls].m_spirit = r;
-						sorted[numSouls].m_distance = (r->m_pos-g_app->m_camera->GetPos()).MagSquared();
-						numSouls++;
-					}
+					sorted[numSouls].m_spirit = spirit.get();
+					sorted[numSouls].m_distance = (spirit->m_pos - g_app->m_camera->GetPos()).MagSquared();
+					numSouls++;
 				}
 			}
 			qsort(sorted.data(),numSouls,sizeof(SoulDistance),CompareSoulDistance);

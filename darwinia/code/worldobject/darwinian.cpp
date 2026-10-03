@@ -630,7 +630,7 @@ bool Darwinian::AdvanceWorshipSpirit()
     //
     // Check our spirit is still there and valid
 
-    if( !g_app->m_location->m_spirits.ValidIndex(m_spiritId) )
+    if( !g_app->m_location->GetSpirit(m_spiritId) )
     {
         m_state = StateIdle;
         m_retargetTimer = 3.0f;
@@ -638,7 +638,7 @@ bool Darwinian::AdvanceWorshipSpirit()
         return false;
     }
 
-    Spirit *spirit = g_app->m_location->m_spirits.GetPointer(m_spiritId);
+    auto& spirit = g_app->m_location->GetSpirit(m_spiritId);
     if( spirit->m_state != Spirit::StateBirth &&
         spirit->m_state != Spirit::StateFloating )
     {
@@ -1430,21 +1430,19 @@ bool Darwinian::SearchForSpirits()
 
     if( syncrand() % 5 == 0 )
     {
-        for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+        for( const auto& [index, spirit] : g_app->m_location->EnumerateSpirits() )
         {
-            if( g_app->m_location->m_spirits.ValidIndex(i) )
-            {
-                Spirit *s = g_app->m_location->m_spirits.GetPointer(i);
-                float theDist = ( s->m_pos - m_pos ).Mag();
+            if(!spirit) continue;
 
-                if( theDist < closest &&
-                    ( s->m_state == Spirit::StateBirth ||
-                      s->m_state == Spirit::StateFloating ) )
-                {
-                    found = s;
-                    spiritId = i;
-                    closest = theDist;
-                }
+            float theDist = ( spirit->m_pos - m_pos ).Mag();
+
+            if( theDist < closest &&
+                ( spirit->m_state == Spirit::StateBirth ||
+                    spirit->m_state == Spirit::StateFloating ) )
+            {
+                found = spirit.get();
+                spiritId = index;
+                closest = theDist;
             }
         }
     }

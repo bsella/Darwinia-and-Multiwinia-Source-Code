@@ -2,6 +2,7 @@
 #define INCLUDED_LOCATION_H
 
 #include <float.h>
+#include <memory>
 #include <vector>
 
 #include "lib/fast_darray.h"
@@ -17,6 +18,7 @@
 #include "worldobject/weapons.h"
 #include "worldobject/spirit.h"
 
+#include <ranges>
 
 class ServerToClientLetter;
 class WorldObject;
@@ -51,7 +53,7 @@ protected:
     void AdvanceWeapons			( int _slice );
     void AdvanceBuildings		( int _slice );
     void AdvanceTeams			( int _slice );
-    void AdvanceSpirits			( int _slice );
+    void AdvanceSpirits			();
     void AdvanceClouds			( int _slice );
 
     void RenderLandscape		();
@@ -87,9 +89,11 @@ public:
 
 	FastDArray		<Light *>		m_lights;
     SliceDArray     <Building *>    m_buildings;
-    SliceDArray     <Spirit>        m_spirits;
     SliceDArray     <Laser>         m_lasers;
     SliceDArray     <WorldObject *> m_effects;
+
+private:
+    std::vector<std::unique_ptr<Spirit>> m_spirits; // Every instance is nullable
 
 public:
     Location();
@@ -147,7 +151,8 @@ public:
     Unit        *GetUnit        ( WorldObjectId _id );
     WorldObject *GetEffect      ( WorldObjectId _id );
     Building    *GetBuilding    ( int _id );
-    Spirit      *GetSpirit      ( int _index );
+
+    std::unique_ptr<Spirit>& GetSpirit( int index );
 
     void SetupFog			();
     void SetupLights		();
@@ -156,6 +161,8 @@ public:
 
 	void FlushOpenGlState	();
 	void RegenerateOpenGlState();
+
+    decltype(std::views::enumerate(m_spirits)) EnumerateSpirits();
 };
 
 

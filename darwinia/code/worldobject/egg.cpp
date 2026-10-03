@@ -179,9 +179,8 @@ void Egg::Render( float predictionTime )
 
 bool Egg::Advance( Unit *_unit )
 {
-    if( g_app->m_location->m_spirits.ValidIndex( m_spiritId ) )
+    if( auto& spirit = g_app->m_location->GetSpirit(m_spiritId) )
     {
-        Spirit *spirit = g_app->m_location->m_spirits.GetPointer(m_spiritId);
         spirit->m_pos = m_pos+Vector3(0,3,0);
     }
 
@@ -193,7 +192,7 @@ bool Egg::Advance( Unit *_unit )
 
             if( m_timer >= 15.0f )
             {
-                g_app->m_location->m_spirits.MarkNotUsed( m_spiritId );
+                g_app->m_location->GetSpirit(m_spiritId).reset();
                 g_app->m_location->SpawnEntities( m_pos, m_id.GetTeamId(), -1, Entity::TypeVirii, 4, g_zeroVector, 0.0f, 200.0f );
                 return true;
             }
@@ -226,9 +225,8 @@ bool Egg::Advance( Unit *_unit )
 
     if( m_dead )
     {
-        if( g_app->m_location->m_spirits.ValidIndex( m_spiritId ) )
+        if( auto& spirit = g_app->m_location->GetSpirit(m_spiritId) )
         {
-            Spirit *spirit = g_app->m_location->m_spirits.GetPointer(m_spiritId);
             spirit->EggDestroyed();
             m_spiritId = -1;
         }
@@ -253,10 +251,9 @@ bool Egg::Advance( Unit *_unit )
 
 void Egg::Fertilise( int spiritId )
 {
-    if( g_app->m_location->m_spirits.ValidIndex( spiritId ) )
+    if( auto& spirit = g_app->m_location->GetSpirit(spiritId) )
     {
         m_spiritId = spiritId;
-        Spirit *spirit = g_app->m_location->m_spirits.GetPointer(m_spiritId);
         spirit->InEgg();
         m_state = StateFertilised;
         m_timer = 0.0f;

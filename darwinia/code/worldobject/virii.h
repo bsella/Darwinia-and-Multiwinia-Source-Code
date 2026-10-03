@@ -3,6 +3,7 @@
 
 #include "worldobject/entity.h"
 #include "unit.h"
+#include "worldobject/spirit.h"
 
 #define VIRII_MAXSEARCHRANGE    60.0f
 #define VIRII_MINSEARCHRANGE    30.0f
@@ -64,7 +65,6 @@ protected:
     bool SearchForEggs();
     bool SearchForIdleDirection();
 
-    WorldObjectId  FindNearbyEgg        ( int _spiritId, float _autoAccept=99999.9f );
     WorldObjectId  FindNearbyEgg        ( Vector3 const &_pos );
 
     bool    AdvanceToTargetPos          ( Vector3 const &_pos ); // returns have-I-Arrived?

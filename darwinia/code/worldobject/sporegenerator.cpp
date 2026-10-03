@@ -119,23 +119,20 @@ bool SporeGenerator::SearchForSpirits()
     int foundIndex = -1;
     float nearest = 9999.9f;
 
-    for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+    for( const auto& [i, spirit] : g_app->m_location->EnumerateSpirits() )
     {
-        if( g_app->m_location->m_spirits.ValidIndex(i) )
+        if(!spirit) continue;
+        if( spirit->NumNearbyEggs() < 3 && spirit->m_pos.y > 0.0f )
         {
-            Spirit *s = g_app->m_location->m_spirits.GetPointer(i);
-            if( s->NumNearbyEggs() < 3 && s->m_pos.y > 0.0f )
-            {
-                float theDist = ( s->m_pos - m_pos ).Mag();
+            float theDist = ( spirit->m_pos - m_pos ).Mag();
 
-                if( theDist <= SPOREGENERATOR_SPIRITSEARCHRANGE &&
-                    theDist < nearest &&
-                    s->m_state == Spirit::StateFloating )
-                {
-                    found = s;
-                    foundIndex = i;
-                    nearest = theDist;
-                }
+            if( theDist <= SPOREGENERATOR_SPIRITSEARCHRANGE &&
+                theDist < nearest &&
+                spirit->m_state == Spirit::StateFloating )
+            {
+                found = spirit.get();
+                foundIndex = i;
+                nearest = theDist;
             }
         }
     }

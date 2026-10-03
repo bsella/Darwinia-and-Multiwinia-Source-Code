@@ -22,6 +22,7 @@
 #include "sound/soundsystem.h"
 
 #include "FFP_emulation.h"
+#include <algorithm>
 
 // ============================================================================
 // Class ActionHelp
@@ -249,7 +250,9 @@ namespace {
 
 			if( spaceAvailable && researchAvailable )
 			{
-				bool spiritsFound = g_app->m_location->m_spirits.NumUsed() > 0;
+				auto spirits = g_app->m_location->EnumerateSpirits();
+
+				bool spiritsFound = std::any_of(spirits.begin(), spirits.end(), [](const auto& index_spirit){return std::get<1>(index_spirit) != nullptr;} );
 				if( spiritsFound ) return true;
 
 				for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )

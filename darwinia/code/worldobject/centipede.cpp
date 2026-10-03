@@ -334,20 +334,17 @@ void Centipede::EatSpirits()
     //
     // Find all spirits that we could potentially eat
 
-    for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+    for( const auto& [index, spirit] : g_app->m_location->EnumerateSpirits() )
     {
-        if( g_app->m_location->m_spirits.ValidIndex(i) )
-        {
-            Spirit *spirit = g_app->m_location->m_spirits.GetPointer(i);
+        if(!spirit) continue;
 
-            if( spirit->m_state == Spirit::StateFloating )
+        if( spirit->m_state == Spirit::StateFloating )
+        {
+            Vector3 theVector = ( spirit->m_pos - m_pos );
+            theVector.y = 0.0f;
+            if( theVector.Mag() < CENTIPEDE_SPIRITEATRANGE )
             {
-                Vector3 theVector = ( spirit->m_pos - m_pos );
-                theVector.y = 0.0f;
-                if( theVector.Mag() < CENTIPEDE_SPIRITEATRANGE )
-                {
-                    m_eaten.PutData( i );
-                }
+                m_eaten.PutData( index );
             }
         }
     }
@@ -363,7 +360,7 @@ void Centipede::EatSpirits()
         if( syncfrand(1.0f) < eatChance )
         {
             int eatenIndex = m_eaten[i];
-            g_app->m_location->m_spirits.MarkNotUsed( eatenIndex );
+            g_app->m_location->GetSpirit(eatenIndex).reset();
             ++m_numSpiritsEaten;
             break;
         }
@@ -498,21 +495,19 @@ bool Centipede::SearchForSpirits()
     Spirit *found = nullptr;
     float nearest = 9999.9f;
 
-    for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+    for( const auto& [_, spirit] : g_app->m_location->EnumerateSpirits() )
     {
-        if( g_app->m_location->m_spirits.ValidIndex(i) )
-        {
-            Spirit *s = g_app->m_location->m_spirits.GetPointer(i);
-            float theDist = ( s->m_pos - m_pos ).Mag();
+        if(!spirit) continue;
 
-            if( theDist <= CENTIPEDE_MAXSEARCHRANGE &&
-                theDist >= CENTIPEDE_MINSEARCHRANGE &&
-                theDist < nearest &&
-                s->m_state == Spirit::StateFloating )
-            {
-                found = s;
-                nearest = theDist;
-            }
+        float theDist = ( spirit->m_pos - m_pos ).Mag();
+
+        if( theDist <= CENTIPEDE_MAXSEARCHRANGE &&
+            theDist >= CENTIPEDE_MINSEARCHRANGE &&
+            theDist < nearest &&
+            spirit->m_state == Spirit::StateFloating )
+        {
+            found = spirit.get();
+            nearest = theDist;
         }
     }
 

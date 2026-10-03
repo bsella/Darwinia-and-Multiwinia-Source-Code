@@ -124,21 +124,19 @@ bool AntHill::TargettedEntity( WorldObjectId _id )
 
 bool AntHill::SearchForSpirits( Vector3 &_pos )
 {
-    for( int i = 0; i < g_app->m_location->m_spirits.Size(); ++i )
+    for( const auto& [_, spirit] : g_app->m_location->EnumerateSpirits() )
     {
-        if( g_app->m_location->m_spirits.ValidIndex(i) )
-        {
-            Spirit *s = g_app->m_location->m_spirits.GetPointer(i);
-            float theDist = ( s->m_pos - m_pos ).Mag();
+        if(!spirit) continue;
 
-            if( theDist <= ANTHILL_SEARCHRANGE &&
-                !SearchingArea( s->m_pos ) &&
-                ( s->m_state == Spirit::StateBirth ||
-                  s->m_state == Spirit::StateFloating ) )
-            {
-                _pos = s->m_pos;
-                return true;
-            }
+        float theDist = ( spirit->m_pos - m_pos ).Mag();
+
+        if( theDist <= ANTHILL_SEARCHRANGE &&
+            !SearchingArea( spirit->m_pos ) &&
+            ( spirit->m_state == Spirit::StateBirth ||
+                spirit->m_state == Spirit::StateFloating ) )
+        {
+            _pos = spirit->m_pos;
+            return true;
         }
     }
 
