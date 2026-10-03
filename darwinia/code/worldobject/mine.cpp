@@ -434,7 +434,7 @@ float MineBuilding::RefinerySpeed()
         int numFuelGenerators = 0;
         float fuelGeneratorFactor = 0.0f;
 
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeRefinery ||
                 building.m_type == TypeYard )

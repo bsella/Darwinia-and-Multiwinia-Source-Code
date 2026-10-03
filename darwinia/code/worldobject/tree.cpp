@@ -133,7 +133,7 @@ bool Tree::Advance()
 		//Vector3 hitCentre = m_pos + m_hitcheckCentre*actualHeight;
 		//float hitRadius = m_hitcheckRadius * actualHeight;
 
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( &building != this &&
                 building.m_type == TypeTree )

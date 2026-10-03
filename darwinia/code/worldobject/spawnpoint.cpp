@@ -419,13 +419,11 @@ bool MasterSpawnPoint::Advance()
 
     if( m_isGlobal )
     {
-        for( const auto& [_, spirit] : g_app->m_location->EnumerateSpirits() )
+        for( auto&  spirit : g_app->m_location->ValidSpirits() )
         {
-            if(!spirit) continue;
-            
-            if( spirit->m_state == Spirit::StateBirth || spirit->m_state == Spirit::StateFloating )
+            if( spirit.m_state == Spirit::StateBirth || spirit.m_state == Spirit::StateFloating )
             {
-                spirit->SkipStage();
+                spirit.SkipStage();
             }
         }
     }
@@ -513,7 +511,7 @@ bool SpawnPoint::PopulationLocked()
     {
         m_populationLock = -2;
 
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeSpawnPopulationLock )
             {
@@ -827,7 +825,7 @@ bool SpawnPopulationLock::Advance()
 
         int totalOverpopulation = 0;
 
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeSpawnPopulationLock )
             {

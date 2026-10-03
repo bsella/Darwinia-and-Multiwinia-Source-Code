@@ -442,7 +442,7 @@ bool ArmyAnt::SearchForAntHill()
     int buildingId = -1;
     float nearest = 500.0f;
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
         if( building.m_type == Building::TypeAntHill &&
             g_app->m_location->IsFriend( building.m_id.GetTeamId(), m_id.GetTeamId() ) )

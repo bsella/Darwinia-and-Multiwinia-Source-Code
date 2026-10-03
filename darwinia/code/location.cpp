@@ -356,7 +356,7 @@ int Location::GetSpirit( WorldObjectId _id )
     }
 
     int index = 0;
-    for( const auto& [_, spirit] : m_spirits.EnumerateValues() )
+    for( const auto& spirit : m_spirits.Values() )
     {
         if( spirit.m_worldObjectId == _id )
         {
@@ -514,7 +514,7 @@ Building *Location::GetBuilding( int uniqueId )
     }
     else
     {
-        for( const auto& [_, building] : EnumerateValidBuildings() )
+        for( auto& building : ValidBuildings() )
         {
             if( building.m_id.GetUniqueId() == uniqueId )
             {
@@ -529,7 +529,7 @@ Building *Location::GetBuilding( int uniqueId )
 
 Building *Location::GetBuilding(Vector3 const &_rayStart, Vector3 const &_rayDir )
 {
-	for (const auto& [_, building] : EnumerateValidBuildings())
+	for (auto& building : ValidBuildings())
 	{
         if (building.DoesRayHit(_rayStart, _rayDir))
         {
@@ -657,7 +657,7 @@ void Location::AdvanceBuildings()
     START_PROFILE(g_app->m_profiler, "Advance Buildings");
     bool obstructionGridChanged = false;
 
-    for( auto [_, building] : EnumerateBuildings() )
+    for( auto& building : m_buildings.Optionals() )
     {
         if(!building) continue;
 
@@ -906,7 +906,7 @@ void Location::RenderSpirits()
 
     float timeSinceAdvance = g_predictionTime;
 
-    for( const auto& [_, spirit] : m_spirits.EnumerateValues() )
+    for( auto& spirit : m_spirits.Values() )
     {
         spirit.Render( timeSinceAdvance);
     }
@@ -1037,7 +1037,7 @@ void Location::RenderBuildings()
     if( g_inputManager->controlEvent( ControlRTLoaderPixelWaveDecrease ) ) g_prefsManager->SetInt( "RenderSpecialLighting", 0 );
 #endif
 
-    for( const auto& [_, building] : EnumerateValidBuildings() )
+    for( auto& building : ValidBuildings() )
     {
         if( building.IsInView() )
         {
@@ -1626,7 +1626,7 @@ Building* Location::GetBuilding(Vector3 const &rayStart, Vector3 const &rayDir, 
     float closestRangeSqd = FLT_MAX;
     const Building* buildingId = nullptr;
 
-    for (const auto& [_, building] : m_buildings.EnumerateValues())
+    for (const auto& building : m_buildings.Values())
     {
         bool teamMatch = ( teamId == 255 ||
                             building.m_id.GetTeamId() == 255 ||
@@ -1908,7 +1908,7 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
 	// Wow, that was a big bang. Maybe we killed a building
 
     float maxBuildingRange = _range * 3.0f;
-    for( const auto& [_, building] : m_buildings.EnumerateValues() )
+    for( auto& building : m_buildings.Values() )
     {
         float dist = (_pos - building.m_pos).Mag();
 
@@ -2058,7 +2058,7 @@ bool Location::IsFriend( unsigned char _teamId1, unsigned char _teamId2 )
 void Location::FlushOpenGlState()
 {
 	int treeTypeId = Building::GetTypeId("Tree");
-	for (const auto& [_, building] : EnumerateValidBuildings())
+	for (auto& building : ValidBuildings())
 	{
         if (building.m_type == treeTypeId)
         {
@@ -2082,6 +2082,11 @@ decltype(Location::m_spirits)::EnumerateOptionalsView Location::EnumerateSpirits
     return m_spirits.EnumerateOptionals();
 }
 
+decltype(Location::m_spirits)::ValuesView Location::ValidSpirits()
+{
+    return m_spirits.Values();
+}
+
 decltype(Location::m_buildings)::EnumerateOptionalsView Location::EnumerateBuildings()
 {
     return m_buildings.EnumerateOptionals();
@@ -2095,4 +2100,9 @@ decltype(Location::m_buildings)::EnumerateValuesView Location::EnumerateValidBui
 std::unique_ptr<Building>& Location::AddBuilding(std::unique_ptr<Building>&& building)
 {
     return m_buildings.AddOptional(std::move(building));
+}
+
+decltype(Location::m_buildings)::ValuesView Location::ValidBuildings()
+{
+    return m_buildings.Values();
 }

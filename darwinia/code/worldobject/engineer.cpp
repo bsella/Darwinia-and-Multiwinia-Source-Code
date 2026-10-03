@@ -586,7 +586,7 @@ bool Engineer::SearchForIncubator()
     float nearest = 99999.9f;
     bool found = false;
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
         if( building.m_type == Building::TypeIncubator &&
             g_app->m_location->IsFriend( building.m_id.GetTeamId(), m_id.GetTeamId() ) )

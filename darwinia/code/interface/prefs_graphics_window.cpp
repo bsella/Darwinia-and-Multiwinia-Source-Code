@@ -44,7 +44,7 @@ public:
             delete g_app->m_location->m_water;
             g_app->m_location->m_water = new Water();
 
-            for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+            for( auto& building : g_app->m_location->ValidBuildings() )
             {
                 building.SetDetail( parent->m_buildingDetail );
             }

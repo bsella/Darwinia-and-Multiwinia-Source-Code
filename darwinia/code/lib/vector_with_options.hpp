@@ -51,6 +51,14 @@ private:
 
 	struct IsNotNull
 	{
+		bool operator()(const Optional& opt) const
+		{
+			return opt != nullptr;
+		}
+	};
+
+	struct IndexedIsNotNull
+	{
 		bool operator()(const std::tuple<long, const Optional&>& index_value) const
 		{
 			auto& [index, ptr] = index_value;
@@ -60,6 +68,22 @@ private:
 
 	struct OptionalToRef
 	{
+		T& operator()(const Optional& opt) const
+		{
+			return *opt;
+		}
+	};
+
+	struct OptionalToConstRef
+	{
+		const T& operator()(const Optional& opt) const
+		{
+			return *opt;
+		}
+	};
+
+	struct IndexedOptionalToRef
+	{
 		std::tuple<long, T&> operator()(const std::tuple<long, const Optional&>& index_value) const
 		{
 			auto& [index, ptr] = index_value;
@@ -67,7 +91,7 @@ private:
 		}
 	};
 
-	struct OptionalToConstRef
+	struct IndexedOptionalToConstRef
 	{
 		std::tuple<long, const T&> operator()(const std::tuple<long, const Optional&>& index_value) const
 		{
@@ -76,21 +100,37 @@ private:
 		}
 	};
 
-	using EnumerateFilterValuesView      = std::ranges::filter_view<EnumerateOptionalsView, IsNotNull>;
-	using EnumerateFilterConstValuesView = std::ranges::filter_view<EnumerateConstOptionalsView, IsNotNull>;
+	using FilterValuesView      = std::ranges::filter_view<OptionalsView, IsNotNull>;
+	using FilterConstValuesView = std::ranges::filter_view<ConstOptionalsView, IsNotNull>;
+
+	using EnumerateFilterValuesView      = std::ranges::filter_view<EnumerateOptionalsView, IndexedIsNotNull>;
+	using EnumerateFilterConstValuesView = std::ranges::filter_view<EnumerateConstOptionalsView, IndexedIsNotNull>;
 
 public:
-	using EnumerateValuesView            = std::ranges::transform_view<EnumerateFilterValuesView, OptionalToRef>;
-	using EnumerateConstValuesView       = std::ranges::transform_view<EnumerateFilterConstValuesView, OptionalToConstRef>;
+	using ValuesView            = std::ranges::transform_view<FilterValuesView, OptionalToRef>;
+	using ConstValuesView       = std::ranges::transform_view<FilterConstValuesView, OptionalToConstRef>;
+
+	ValuesView Values()
+	{
+		return Optionals() | std::views::filter(IsNotNull{}) | std::views::transform(OptionalToRef{});
+	}
+
+	ConstValuesView Values() const
+	{
+		return Optionals() | std::views::filter(IsNotNull{}) | std::views::transform(OptionalToConstRef{});
+	}
+
+	using EnumerateValuesView            = std::ranges::transform_view<EnumerateFilterValuesView, IndexedOptionalToRef>;
+	using EnumerateConstValuesView       = std::ranges::transform_view<EnumerateFilterConstValuesView, IndexedOptionalToConstRef>;
 
 	EnumerateValuesView EnumerateValues()
 	{
-		return EnumerateOptionals() | std::views::filter(IsNotNull{}) | std::views::transform(OptionalToRef{});
+		return EnumerateOptionals() | std::views::filter(IndexedIsNotNull{}) | std::views::transform(IndexedOptionalToRef{});
 	}
 
 	EnumerateConstValuesView EnumerateValues() const
 	{
-		return EnumerateOptionals() | std::views::filter(IsNotNull{}) | std::views::transform(OptionalToConstRef{});
+		return EnumerateOptionals() | std::views::filter(IndexedIsNotNull{}) | std::views::transform(IndexedOptionalToConstRef{});
 	}
 
 	Optional& AddOptional(Optional&& opt)

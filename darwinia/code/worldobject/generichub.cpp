@@ -161,7 +161,7 @@ bool DynamicHub::Advance()
         // the m_enabled state of this building has been lost.
 
         bool towerFound = false;
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeControlTower )
             {

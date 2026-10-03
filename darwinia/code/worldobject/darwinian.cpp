@@ -1538,7 +1538,7 @@ bool Darwinian::SearchForThreats()
     // No explosives nearby.  Look for bad guys
     // Start with a quick evaluation of the area, by querying any AITarget buildings
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings())
+    for( auto& building : g_app->m_location->ValidBuildings())
     {
         if( building.m_type == Building::TypeAITarget )
         {
@@ -1667,7 +1667,7 @@ bool Darwinian::SearchForPorts()
 
     LList<int> availableBuildings;
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
         float distanceToBuilding = ( building.m_pos - m_pos ).Mag();
         distanceToBuilding -= building.m_radius;

@@ -97,7 +97,7 @@ void TaskManagerInterface::RunDefaultObjective ( GlobalEventCondition *_cond )
         case GlobalEventCondition::ResearchOwned:
         {
             Building *building = nullptr;
-            for( const auto& [_, thisBuilding] : g_app->m_location->EnumerateValidBuildings() )
+            for( auto& thisBuilding : g_app->m_location->ValidBuildings() )
             {
                 if( thisBuilding.m_type == Building::TypeResearchItem &&
                     static_cast<ResearchItem&>(thisBuilding).m_researchType == _cond->m_id )

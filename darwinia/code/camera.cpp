@@ -1832,7 +1832,7 @@ Building *Camera::GetBestBuildingInView()
             float nearest = 200.0f;
             s_buildingId = -1;
 
-            for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+            for( auto& building : g_app->m_location->ValidBuildings() )
             {
 				if( building.DoesRayHit( rayStart, rayDir ) )
 				{

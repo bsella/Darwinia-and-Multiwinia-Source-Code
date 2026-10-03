@@ -492,21 +492,19 @@ bool Centipede::SearchForSpirits()
     if( size > CENTIPEDE_MAXSIZE ) return false;
 
     START_PROFILE(g_app->m_profiler, "SearchSpirits");
-    Spirit *found = nullptr;
+    const Spirit *found = nullptr;
     float nearest = 9999.9f;
 
-    for( const auto& [_, spirit] : g_app->m_location->EnumerateSpirits() )
+    for( const auto& spirit : g_app->m_location->ValidSpirits() )
     {
-        if(!spirit) continue;
-
-        float theDist = ( spirit->m_pos - m_pos ).Mag();
+        float theDist = ( spirit.m_pos - m_pos ).Mag();
 
         if( theDist <= CENTIPEDE_MAXSEARCHRANGE &&
             theDist >= CENTIPEDE_MINSEARCHRANGE &&
             theDist < nearest &&
-            spirit->m_state == Spirit::StateFloating )
+            spirit.m_state == Spirit::StateFloating )
         {
-            found = spirit.get();
+            found = &spirit;
             nearest = theDist;
         }
     }

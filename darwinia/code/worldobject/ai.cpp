@@ -47,7 +47,7 @@ void AI::Begin()
 
     float startTime = GetHighResTime();
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
         if( building.m_type == Building::TypeAITarget )
         {
@@ -61,7 +61,7 @@ void AI::Begin()
     // eg if link A -> B exists, and link B -> C exists, then don't allow
     // link A -> C unless it is much shorter distance
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
         if( building.m_type == Building::TypeAITarget )
         {
@@ -159,7 +159,7 @@ int AI::FindNearestTarget( Vector3 const &_fromPos )
     float nearest = FLT_MAX;
     int id = -1;
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
         if( building.m_type == Building::TypeAITarget )
         {
@@ -353,7 +353,7 @@ void AITarget::RecalculateNeighbours()
 {
     m_neighbours.Empty();
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
         if( building.m_type == Building::TypeAITarget &&
             &building != this )
@@ -664,7 +664,7 @@ bool AISpawnPoint::PopulationLocked()
     {
         m_populationLock = -2;
 
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeSpawnPopulationLock )
             {

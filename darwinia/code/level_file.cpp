@@ -1443,7 +1443,7 @@ void LevelFile::GenerateInstantUnits()
     //
     // Record all entities in transit in a Radar Dish beam
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings())
+    for( auto& building : g_app->m_location->ValidBuildings())
     {
 		if( building.m_type == Building::TypeRadarDish )
 		{
@@ -1557,7 +1557,7 @@ void LevelFile::GenerateDynamicBuildings()
     //
     // Search for new dynamic buildings on the level
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
 		if( building.m_dynamic )
 		{

@@ -1223,7 +1223,7 @@ void Renderer::PreRenderPixelEffect()
     }
 
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
 		float distance = ( building.m_centrePos - camPos ).Mag();
 		if( distance < cutoff )

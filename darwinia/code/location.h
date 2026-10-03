@@ -165,11 +165,13 @@ public:
 	void FlushOpenGlState	();
 	void RegenerateOpenGlState();
 
+    decltype(m_spirits)::ValuesView ValidSpirits();
     decltype(m_spirits)::EnumerateOptionalsView EnumerateSpirits();
 
-    decltype(m_buildings)::EnumerateOptionalsView EnumerateBuildings();
-
+    
+    decltype(m_buildings)::ValuesView ValidBuildings();
     decltype(m_buildings)::EnumerateValuesView EnumerateValidBuildings();
+    decltype(m_buildings)::EnumerateOptionalsView EnumerateBuildings();
 
     std::unique_ptr<Building>& AddBuilding(std::unique_ptr<Building>&&);
 };

@@ -286,7 +286,7 @@ bool Generator::Advance()
         // then returns to the level.  The tower is captured and cannot be changed, but
         // the m_enabled state of this building has been lost.
 
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeControlTower )
             {

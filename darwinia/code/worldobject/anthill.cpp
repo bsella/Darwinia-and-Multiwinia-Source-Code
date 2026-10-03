@@ -124,18 +124,16 @@ bool AntHill::TargettedEntity( WorldObjectId _id )
 
 bool AntHill::SearchForSpirits( Vector3 &_pos )
 {
-    for( const auto& [_, spirit] : g_app->m_location->EnumerateSpirits() )
+    for( const auto& spirit : g_app->m_location->ValidSpirits() )
     {
-        if(!spirit) continue;
-
-        float theDist = ( spirit->m_pos - m_pos ).Mag();
+        float theDist = ( spirit.m_pos - m_pos ).Mag();
 
         if( theDist <= ANTHILL_SEARCHRANGE &&
-            !SearchingArea( spirit->m_pos ) &&
-            ( spirit->m_state == Spirit::StateBirth ||
-                spirit->m_state == Spirit::StateFloating ) )
+            !SearchingArea( spirit.m_pos ) &&
+            ( spirit.m_state == Spirit::StateBirth ||
+                spirit.m_state == Spirit::StateFloating ) )
         {
-            _pos = spirit->m_pos;
+            _pos = spirit.m_pos;
             return true;
         }
     }
@@ -227,7 +225,7 @@ bool AntHill::PopulationLocked()
     {
         m_populationLock = -2;
 
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeSpawnPopulationLock )
             {

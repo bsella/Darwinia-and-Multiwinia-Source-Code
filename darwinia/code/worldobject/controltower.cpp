@@ -292,7 +292,7 @@ void ControlTower::RenderAlphas ( float _predictionTime )
         s_lastRecalculation = (int) GetHighResTime();
 
         float nearest = 99999.9f;
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeControlTower )
             {

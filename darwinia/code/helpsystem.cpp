@@ -255,7 +255,7 @@ namespace {
 				bool spiritsFound = std::any_of(spirits.begin(), spirits.end(), [](const auto& index_spirit){return std::get<1>(index_spirit) != nullptr;} );
 				if( spiritsFound ) return true;
 
-				for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+				for( auto& building : g_app->m_location->ValidBuildings() )
 				{
 					if( building.m_type == Building::TypeControlTower &&
 						building.m_id.GetTeamId() != g_app->m_globalWorld->m_myTeamId )
@@ -689,7 +689,7 @@ bool HelpSystem::RunHighlightedBuildingHelp()
         // Look for a nearby control tower to ensure this is possible
 
         int controlTowerFound = -1;
-        for( const auto& [_, thisBuilding] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& thisBuilding : g_app->m_location->ValidBuildings() )
         {
 			if( thisBuilding.m_type == Building::TypeControlTower &&
 				thisBuilding.GetBuildingLink() == building->m_id.GetUniqueId() )

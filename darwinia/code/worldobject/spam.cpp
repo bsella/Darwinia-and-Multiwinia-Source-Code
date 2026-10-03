@@ -281,7 +281,7 @@ bool Spam::Advance()
         //
         // Push from nearby SPAM
 
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeSpam )
             {

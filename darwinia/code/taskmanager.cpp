@@ -814,7 +814,7 @@ LList <TaskTargetArea> *TaskManager::GetTargetArea( int _id )
         {
             case GlobalResearch::TypeArmour:
             {
-                for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+                for( auto& building : g_app->m_location->ValidBuildings() )
                 {
                     if(building.m_type == Building::TypeTrunkPort &&
                         static_cast<TrunkPort&>(building).m_openTimer > 0.0f )
@@ -848,7 +848,7 @@ LList <TaskTargetArea> *TaskManager::GetTargetArea( int _id )
             //fallthrough
 
             case GlobalResearch::TypeSquad:
-                for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+                for( auto& building : g_app->m_location->ValidBuildings() )
                 {
                     if( building.m_type == Building::TypeControlTower &&
                         building.m_id.GetTeamId() == g_app->m_location->GetMyTeam()->m_teamId )

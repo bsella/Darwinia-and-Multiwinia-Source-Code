@@ -163,7 +163,7 @@ bool RadarDish::Advance ()
 
     bool previouslyAligned = ( m_receiverId != -1 );
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings())
+    for( auto& building : g_app->m_location->ValidBuildings())
     {
 		// Filter out non radar dish buildings
         if( building.m_type != TypeRadarDish ) continue;

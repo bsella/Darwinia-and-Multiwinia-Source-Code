@@ -116,7 +116,7 @@ void ObstructionGrid::CalculateAll()
     //
     // Add each building to the grid
 
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
         CalculateBuildingArea( building.m_id.GetUniqueId() );
     }

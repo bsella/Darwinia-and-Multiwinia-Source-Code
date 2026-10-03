@@ -215,7 +215,7 @@ void GodDish::SpawnSpam( bool _isResearch )
 
 void GodDish::TriggerSpam()
 {
-    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+    for( auto& building : g_app->m_location->ValidBuildings() )
     {
         if( building.m_type == TypeSpam )
         {

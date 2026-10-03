@@ -259,7 +259,7 @@ SpiritProcessor *ReceiverBuilding::GetSpiritProcessor()
 
     if( !processor || processor->m_type != Building::TypeSpiritProcessor )
     {
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.m_type == TypeSpiritProcessor )
             {

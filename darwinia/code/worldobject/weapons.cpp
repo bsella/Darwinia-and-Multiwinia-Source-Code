@@ -1161,7 +1161,7 @@ bool TurretShell::Advance()
         Vector3 hitPos(0,0,0);
         Vector3 hitNorm(0,0,0);
 
-        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
+        for( auto& building : g_app->m_location->ValidBuildings() )
         {
             if( building.DoesRayHit( m_pos, rayDir, (m_vel * SERVER_ADVANCE_PERIOD).Mag(), &hitPos, &hitNorm ) )
             {
