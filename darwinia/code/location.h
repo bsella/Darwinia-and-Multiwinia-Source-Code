@@ -55,7 +55,7 @@ protected:
     void AdvanceBuildings		();
     void AdvanceTeams			( int _slice );
     void AdvanceSpirits			();
-    void AdvanceClouds			( int _slice );
+    void AdvanceClouds			();
 
     void RenderLandscape		();
     void RenderWeapons			();

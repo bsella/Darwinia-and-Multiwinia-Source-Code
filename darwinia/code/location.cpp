@@ -771,14 +771,11 @@ void Location::AdvanceSpirits( )
 
 
 // *** AdvanceClouds
-void Location::AdvanceClouds( int _slice )
+void Location::AdvanceClouds()
 {
-    if( _slice == 3 )
-    {
-        START_PROFILE(g_app->m_profiler, "Advance Clouds");
-        m_clouds->Advance();
-        END_PROFILE(g_app->m_profiler, "Advance Clouds");
-    }
+    START_PROFILE(g_app->m_profiler, "Advance Clouds");
+    m_clouds->Advance();
+    END_PROFILE(g_app->m_profiler, "Advance Clouds");
 }
 
 
@@ -842,7 +839,7 @@ void Location::Advance( int _slice )
     AdvanceWeapons      ( _slice );
     if(_slice == 0) AdvanceBuildings    (); // TODO
     if(_slice == 0) AdvanceSpirits      (); // TODO
-    AdvanceClouds       ( _slice );
+    if(_slice == 3) AdvanceClouds       (); // TODO
 
     if (!m_missionComplete && MissionComplete())
 	{
