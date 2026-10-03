@@ -1,7 +1,9 @@
 ﻿#ifndef INCLUDED_LEVEL_FILE
 #define INCLUDED_LEVEL_FILE
 
+#include <memory>
 #include <stdlib.h>
+#include <vector>
 #include "lib/llist.h"
 #include "worldobject/worldobject.h"
 #include "landscape.h"
@@ -207,7 +209,7 @@ public:
 
 	LList				<CameraMount *>				m_cameraMounts;
 	LList				<CameraAnimation *>			m_cameraAnimations;
-	LList               <Building *>                m_buildings;
+	std::vector<std::unique_ptr<Building>>          m_buildings;
 	LList				<InstantUnit *>			    m_instantUnits;
 	LList               <Light *>                   m_lights;
 	LList				<Route *>					m_routes;

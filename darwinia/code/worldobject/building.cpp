@@ -93,7 +93,7 @@ Building::Building()
     m_up = g_upVector;
 }
 
-void Building::Initialise( Building *_template )
+void Building::Initialise( Building* _template )
 {
     m_id        = _template->m_id;
     m_pos       = _template->m_pos;
@@ -730,7 +730,7 @@ void Building::Write( FileWriter *_out )
 	_out->printf( "%-8d",	 m_isGlobal);
 }
 
-Building *Building::CreateBuilding( char *_name )
+std::unique_ptr<Building> Building::CreateBuilding( char *_name )
 {
     for( int i = 0; i < NumBuildingTypes; ++i )
     {
@@ -744,69 +744,69 @@ Building *Building::CreateBuilding( char *_name )
 	return nullptr;
 }
 
-Building *Building::CreateBuilding( int _type )
+std::unique_ptr<Building> Building::CreateBuilding( int _type )
 {
-    Building *building = nullptr;
+    std::unique_ptr<Building> building;
 
     switch( _type )
     {
-        case TypeFactory :              building = new Factory();               break;
-        case TypeCave :                 building = new Cave();                  break;
-        case TypeRadarDish :            building = new RadarDish();             break;
-        case TypeLaserFence :           building = new LaserFence();            break;
-        case TypeControlTower :         building = new ControlTower();          break;
-        case TypeGunTurret:             building = new GunTurret();             break;
-        case TypeBridge:                building = new Bridge();                break;
-		case TypePowerstation:          building = new Powerstation();	        break;
-        case TypeTree:                  building = new Tree();                  break;
-        case TypeWall:                  building = new Wall();                  break;
-        case TypeTrunkPort:             building = new TrunkPort();             break;
-        case TypeResearchItem:          building = new ResearchItem();          break;
-        case TypeLibrary:               building = new Library();               break;
-        case TypeGenerator:             building = new Generator();             break;
-        case TypePylon:                 building = new Pylon();                 break;
-        case TypePylonStart:            building = new PylonStart();            break;
-        case TypePylonEnd:              building = new PylonEnd();              break;
-        case TypeSolarPanel:            building = new SolarPanel();            break;
-        case TypeTrackLink:             building = new TrackLink();             break;
-        case TypeTrackJunction:         building = new TrackJunction();         break;
-        case TypeTrackStart:            building = new TrackStart();            break;
-        case TypeTrackEnd:              building = new TrackEnd();              break;
-        case TypeRefinery:              building = new Refinery();              break;
-        case TypeMine:                  building = new Mine();                  break;
-        case TypeYard:                  building = new ConstructionYard();      break;
-        case TypeDisplayScreen:         building = new DisplayScreen();         break;
-		case TypeUpgradePort:	        building = new UpgradePort;			    break;
-        case TypePrimaryUpgradePort:    building = new PrimaryUpgradePort();    break;
-        case TypeIncubator:             building = new Incubator();             break;
-        case TypeAntHill:               building = new AntHill();               break;
-        case TypeSafeArea:              building = new SafeArea();              break;
-        case TypeTriffid:               building = new Triffid();               break;
-        case TypeSpiritReceiver:        building = new SpiritReceiver();        break;
-        case TypeReceiverLink:          building = new ReceiverLink();          break;
-        case TypeReceiverSpiritSpawner: building = new ReceiverSpiritSpawner(); break;
-        case TypeSpiritProcessor:       building = new SpiritProcessor();       break;
-        case TypeSpawnPoint:            building = new SpawnPoint();            break;
-        case TypeSpawnPopulationLock:   building = new SpawnPopulationLock();   break;
-        case TypeSpawnPointMaster:      building = new MasterSpawnPoint();      break;
-        case TypeSpawnLink:             building = new SpawnLink();             break;
-        case TypeBlueprintStore:        building = new BlueprintStore();        break;
-        case TypeBlueprintConsole:      building = new BlueprintConsole();      break;
-        case TypeBlueprintRelay:        building = new BlueprintRelay();        break;
-        case TypeAITarget:              building = new AITarget();              break;
-        case TypeAISpawnPoint:          building = new AISpawnPoint();          break;
-        case TypeScriptTrigger:         building = new ScriptTrigger();         break;
-        case TypeSpam:                  building = new Spam();                  break;
-        case TypeGodDish:               building = new GodDish();               break;
-        case TypeStaticShape:           building = new StaticShape();           break;
-        case TypeFuelGenerator:         building = new FuelGenerator();         break;
-        case TypeFuelPipe:              building = new FuelPipe();              break;
-        case TypeFuelStation:           building = new FuelStation();           break;
-        case TypeEscapeRocket:          building = new EscapeRocket();          break;
-        case TypeFenceSwitch:           building = new FenceSwitch();           break;
-        case TypeDynamicHub:            building = new DynamicHub();            break;
-        case TypeDynamicNode:           building = new DynamicNode();           break;
-        case TypeFeedingTube:           building = new FeedingTube();           break;
+        case TypeFactory :              building = std::make_unique<Factory>();               break;
+        case TypeCave :                 building = std::make_unique<Cave>();                  break;
+        case TypeRadarDish :            building = std::make_unique<RadarDish>();             break;
+        case TypeLaserFence :           building = std::make_unique<LaserFence>();            break;
+        case TypeControlTower :         building = std::make_unique<ControlTower>();          break;
+        case TypeGunTurret:             building = std::make_unique<GunTurret>();             break;
+        case TypeBridge:                building = std::make_unique<Bridge>();                break;
+		case TypePowerstation:          building = std::make_unique<Powerstation>();          break;
+        case TypeTree:                  building = std::make_unique<Tree>();                  break;
+        case TypeWall:                  building = std::make_unique<Wall>();                  break;
+        case TypeTrunkPort:             building = std::make_unique<TrunkPort>();             break;
+        case TypeResearchItem:          building = std::make_unique<ResearchItem>();          break;
+        case TypeLibrary:               building = std::make_unique<Library>();               break;
+        case TypeGenerator:             building = std::make_unique<Generator>();             break;
+        case TypePylon:                 building = std::make_unique<Pylon>();                 break;
+        case TypePylonStart:            building = std::make_unique<PylonStart>();            break;
+        case TypePylonEnd:              building = std::make_unique<PylonEnd>();              break;
+        case TypeSolarPanel:            building = std::make_unique<SolarPanel>();            break;
+        case TypeTrackLink:             building = std::make_unique<TrackLink>();             break;
+        case TypeTrackJunction:         building = std::make_unique<TrackJunction>();         break;
+        case TypeTrackStart:            building = std::make_unique<TrackStart>();            break;
+        case TypeTrackEnd:              building = std::make_unique<TrackEnd>();              break;
+        case TypeRefinery:              building = std::make_unique<Refinery>();              break;
+        case TypeMine:                  building = std::make_unique<Mine>();                  break;
+        case TypeYard:                  building = std::make_unique<ConstructionYard>();      break;
+        case TypeDisplayScreen:         building = std::make_unique<DisplayScreen>();         break;
+		case TypeUpgradePort:	        building = std::make_unique<UpgradePort>();           break;
+        case TypePrimaryUpgradePort:    building = std::make_unique<PrimaryUpgradePort>();    break;
+        case TypeIncubator:             building = std::make_unique<Incubator>();             break;
+        case TypeAntHill:               building = std::make_unique<AntHill>();               break;
+        case TypeSafeArea:              building = std::make_unique<SafeArea>();              break;
+        case TypeTriffid:               building = std::make_unique<Triffid>();               break;
+        case TypeSpiritReceiver:        building = std::make_unique<SpiritReceiver>();        break;
+        case TypeReceiverLink:          building = std::make_unique<ReceiverLink>();          break;
+        case TypeReceiverSpiritSpawner: building = std::make_unique<ReceiverSpiritSpawner>(); break;
+        case TypeSpiritProcessor:       building = std::make_unique<SpiritProcessor>();       break;
+        case TypeSpawnPoint:            building = std::make_unique<SpawnPoint>();            break;
+        case TypeSpawnPopulationLock:   building = std::make_unique<SpawnPopulationLock>();   break;
+        case TypeSpawnPointMaster:      building = std::make_unique<MasterSpawnPoint>();      break;
+        case TypeSpawnLink:             building = std::make_unique<SpawnLink>();             break;
+        case TypeBlueprintStore:        building = std::make_unique<BlueprintStore>();        break;
+        case TypeBlueprintConsole:      building = std::make_unique<BlueprintConsole>();      break;
+        case TypeBlueprintRelay:        building = std::make_unique<BlueprintRelay>();        break;
+        case TypeAITarget:              building = std::make_unique<AITarget>();              break;
+        case TypeAISpawnPoint:          building = std::make_unique<AISpawnPoint>();          break;
+        case TypeScriptTrigger:         building = std::make_unique<ScriptTrigger>();         break;
+        case TypeSpam:                  building = std::make_unique<Spam>();                  break;
+        case TypeGodDish:               building = std::make_unique<GodDish>();               break;
+        case TypeStaticShape:           building = std::make_unique<StaticShape>();           break;
+        case TypeFuelGenerator:         building = std::make_unique<FuelGenerator>();         break;
+        case TypeFuelPipe:              building = std::make_unique<FuelPipe>();              break;
+        case TypeFuelStation:           building = std::make_unique<FuelStation>();           break;
+        case TypeEscapeRocket:          building = std::make_unique<EscapeRocket>();          break;
+        case TypeFenceSwitch:           building = std::make_unique<FenceSwitch>();           break;
+        case TypeDynamicHub:            building = std::make_unique<DynamicHub>();            break;
+        case TypeDynamicNode:           building = std::make_unique<DynamicNode>();           break;
+        case TypeFeedingTube:           building = std::make_unique<FeedingTube>();           break;
     };
 
 

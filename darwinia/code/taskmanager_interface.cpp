@@ -97,17 +97,13 @@ void TaskManagerInterface::RunDefaultObjective ( GlobalEventCondition *_cond )
         case GlobalEventCondition::ResearchOwned:
         {
             Building *building = nullptr;
-            for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+            for( const auto& [_, thisBuilding] : g_app->m_location->EnumerateValidBuildings() )
             {
-                if( g_app->m_location->m_buildings.ValidIndex(i) )
+                if( thisBuilding.m_type == Building::TypeResearchItem &&
+                    static_cast<ResearchItem&>(thisBuilding).m_researchType == _cond->m_id )
                 {
-                    Building *thisBuilding = g_app->m_location->m_buildings[i];
-                    if( thisBuilding->m_type == Building::TypeResearchItem &&
-                        ((ResearchItem *) thisBuilding)->m_researchType == _cond->m_id )
-                    {
-                        building = thisBuilding;
-                        break;
-                    }
+                    building = &thisBuilding;
+                    break;
                 }
             }
 

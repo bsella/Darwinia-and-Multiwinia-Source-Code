@@ -286,20 +286,16 @@ bool Generator::Advance()
         // then returns to the level.  The tower is captured and cannot be changed, but
         // the m_enabled state of this building has been lost.
 
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.m_type == TypeControlTower )
             {
-                Building *building = g_app->m_location->m_buildings[i];
-                if( building && building->m_type == TypeControlTower )
+                auto& tower = static_cast<ControlTower&>(building);
+                if( tower.GetBuildingLink() == m_id.GetUniqueId() &&
+                    tower.m_id.GetTeamId() == m_id.GetTeamId() )
                 {
-                    ControlTower *tower = (ControlTower *) building;
-                    if( tower->GetBuildingLink() == m_id.GetUniqueId() &&
-                        tower->m_id.GetTeamId() == m_id.GetTeamId() )
-                    {
-                        m_enabled = true;
-                        break;
-                    }
+                    m_enabled = true;
+                    break;
                 }
             }
         }

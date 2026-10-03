@@ -1842,26 +1842,26 @@ void GlobalWorld::ParseEvents(TextReader *_in)
 }
 
 
-void GlobalWorld::AddLevelBuildingToGlobalBuildings(Building *_building, int _locId)
+void GlobalWorld::AddLevelBuildingToGlobalBuildings(Building& building, int _locId)
 {
-	if( _building->m_isGlobal )
+	if( building.m_isGlobal )
 	{
-		GlobalBuilding *gb = GetBuilding(_building->m_id.GetUniqueId(), _locId);
+		GlobalBuilding *gb = GetBuilding(building.m_id.GetUniqueId(), _locId);
 		if( !gb )
 		{
 			gb = new GlobalBuilding();
-			gb->m_type = _building->m_type;
+			gb->m_type = building.m_type;
 			gb->m_locationId = _locId;
-			gb->m_id = _building->m_id.GetUniqueId();
-            gb->m_teamId = _building->m_id.GetTeamId();
+			gb->m_id = building.m_id.GetUniqueId();
+            gb->m_teamId = building.m_id.GetTeamId();
 			m_buildings.PutData(gb);
 
-			if( _building->m_type == Building::TypeTrunkPort )
+			if( building.m_type == Building::TypeTrunkPort )
 			{
-				gb->m_link = ((TrunkPort *)_building)->m_targetLocationId;
+				gb->m_link = ((TrunkPort& )building).m_targetLocationId;
 			}
 		}
-		gb->m_pos = _building->m_pos;
+		gb->m_pos = building.m_pos;
 	}
 }
 
@@ -1932,10 +1932,9 @@ void GlobalWorld::LoadGame( const char *_filename )
 
 		// Load all the level files for the location
         LevelFile levFile("null", loc->m_mapFilename);
-		for( int b = 0; b < levFile.m_buildings.Size(); ++b )
+		for( auto& building : levFile.m_buildings )
 		{
-			Building *building = levFile.m_buildings[b];
-			AddLevelBuildingToGlobalBuildings(building, loc->m_id);
+			AddLevelBuildingToGlobalBuildings(*building, loc->m_id);
 		}
 
 
@@ -1946,10 +1945,9 @@ void GlobalWorld::LoadGame( const char *_filename )
 		{
 			LevelFile levFile(missionFileNames->GetData(j), loc->m_mapFilename);
 
-			for( int b = 0; b < levFile.m_buildings.Size(); ++b )
+			for( auto& building : levFile.m_buildings )
 			{
-				Building *building = levFile.m_buildings[b];
-				AddLevelBuildingToGlobalBuildings(building, loc->m_id);
+				AddLevelBuildingToGlobalBuildings(*building, loc->m_id);
 
                 if( building->m_type == Building::TypeAntHill ||
                     building->m_type == Building::TypeTriffid ||

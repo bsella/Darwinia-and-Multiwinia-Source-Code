@@ -133,24 +133,20 @@ bool Tree::Advance()
 		//Vector3 hitCentre = m_pos + m_hitcheckCentre*actualHeight;
 		//float hitRadius = m_hitcheckRadius * actualHeight;
 
-        for( int b = 0; b < g_app->m_location->m_buildings.Size(); ++b )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(b) )
+            if( &building != this &&
+                building.m_type == TypeTree )
             {
-                Building *building = g_app->m_location->m_buildings[b];
-                if( building != this &&
-                    building->m_type == TypeTree )
-                {
-                    Tree *tree = (Tree *) building;
-                    float distance = (tree->m_pos - m_pos).Mag();
-                    float theirActualHeight = tree->GetActualHeight(0.0f);
-                    float theirRadius = theirActualHeight * tree->m_hitcheckRadius * 1.5f;
-                    float ourRadius = actualHeight * m_hitcheckRadius * 1.5f;
+                auto* tree = static_cast<Tree*>(&building);
+                float distance = (tree->m_pos - m_pos).Mag();
+                float theirActualHeight = tree->GetActualHeight(0.0f);
+                float theirRadius = theirActualHeight * tree->m_hitcheckRadius * 1.5f;
+                float ourRadius = actualHeight * m_hitcheckRadius * 1.5f;
 
-                    if( theirRadius + ourRadius >= distance )
-                    {
-                        tree->Damage(-1.0f);
-                    }
+                if( theirRadius + ourRadius >= distance )
+                {
+                    tree->Damage(-1.0f);
                 }
             }
         }

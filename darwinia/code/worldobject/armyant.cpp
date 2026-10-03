@@ -442,21 +442,16 @@ bool ArmyAnt::SearchForAntHill()
     int buildingId = -1;
     float nearest = 500.0f;
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeAntHill &&
+            g_app->m_location->IsFriend( building.m_id.GetTeamId(), m_id.GetTeamId() ) )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-
-            if( building->m_type == Building::TypeAntHill &&
-                g_app->m_location->IsFriend( building->m_id.GetTeamId(), m_id.GetTeamId() ) )
+            float distance = ( building.m_pos - m_pos ).Mag();
+            if( distance < nearest )
             {
-                float distance = ( building->m_pos - m_pos ).Mag();
-                if( distance < nearest )
-                {
-                    buildingId = building->m_id.GetUniqueId();
-                    nearest = distance;
-                }
+                buildingId = building.m_id.GetUniqueId();
+                nearest = distance;
             }
         }
     }

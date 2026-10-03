@@ -269,7 +269,7 @@ protected:
     void            ParseEvents             (TextReader *_in);
     void            ParseTutorial           (TextReader *_in);
 
-	void			AddLevelBuildingToGlobalBuildings   (Building *_building, int _locId);
+	void			AddLevelBuildingToGlobalBuildings   (Building&, int _locId);
 
     int				m_nextLocationId;
     int				m_nextBuildingId;

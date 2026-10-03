@@ -281,19 +281,15 @@ bool Spam::Advance()
         //
         // Push from nearby SPAM
 
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.m_type == TypeSpam )
             {
-                Building *b = g_app->m_location->m_buildings[i];
-                if( b && b->m_type == TypeSpam )
+                bool intersect = SphereSphereIntersection( m_centrePos, m_radius,building.m_centrePos, building.m_radius );
+                if( intersect )
                 {
-                    bool intersect = SphereSphereIntersection( m_centrePos, m_radius, b->m_centrePos, b->m_radius );
-                    if( intersect )
-                    {
-                        Vector3 dir = ( m_pos - b->m_pos );
-                        m_vel += dir * 0.25f;
-                    }
+                    Vector3 dir = ( m_pos - building.m_pos );
+                    m_vel += dir * 0.25f;
                 }
             }
         }

@@ -814,21 +814,16 @@ LList <TaskTargetArea> *TaskManager::GetTargetArea( int _id )
         {
             case GlobalResearch::TypeArmour:
             {
-                for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+                for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
                 {
-                    if( g_app->m_location->m_buildings.ValidIndex(i) )
+                    if(building.m_type == Building::TypeTrunkPort &&
+                        static_cast<TrunkPort&>(building).m_openTimer > 0.0f )
                     {
-                        Building *building = g_app->m_location->m_buildings[i];
-                        if( building &&
-                            building->m_type == Building::TypeTrunkPort &&
-                            ((TrunkPort *)building)->m_openTimer > 0.0f )
-                        {
-                            TaskTargetArea tta;
-                            tta.m_centre = building->m_pos;
-                            tta.m_radius = 120.0f;
-                            tta.m_stationary = true;
-                            result->PutData( tta );
-                        }
+                        TaskTargetArea tta;
+                        tta.m_centre = building.m_pos;
+                        tta.m_radius = 120.0f;
+                        tta.m_stationary = true;
+                        result->PutData( tta );
                     }
                 }
                 break;
@@ -853,21 +848,16 @@ LList <TaskTargetArea> *TaskManager::GetTargetArea( int _id )
             //fallthrough
 
             case GlobalResearch::TypeSquad:
-                for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+                for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
                 {
-                    if( g_app->m_location->m_buildings.ValidIndex(i) )
+                    if( building.m_type == Building::TypeControlTower &&
+                        building.m_id.GetTeamId() == g_app->m_location->GetMyTeam()->m_teamId )
                     {
-                        Building *building = g_app->m_location->m_buildings[i];
-                        if( building &&
-                            building->m_type == Building::TypeControlTower &&
-                            building->m_id.GetTeamId() == g_app->m_location->GetMyTeam()->m_teamId )
-                        {
-                            TaskTargetArea tta;
-                            tta.m_centre = building->m_pos;
-                            tta.m_radius = 75.0f;
-                            tta.m_stationary = true;
-                            result->PutData( tta );
-                        }
+                        TaskTargetArea tta;
+                        tta.m_centre = building.m_pos;
+                        tta.m_radius = 75.0f;
+                        tta.m_stationary = true;
+                        result->PutData( tta );
                     }
                 }
                 break;

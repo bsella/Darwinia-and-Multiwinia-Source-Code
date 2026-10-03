@@ -1832,21 +1832,17 @@ Building *Camera::GetBestBuildingInView()
             float nearest = 200.0f;
             s_buildingId = -1;
 
-            for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+            for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
             {
-                if( g_app->m_location->m_buildings.ValidIndex(i) )
-                {
-                    Building *building = g_app->m_location->m_buildings[i];
-                    if( building->DoesRayHit( rayStart, rayDir ) )
-                    {
-                        float distance = ( building->m_pos - m_pos ).Mag();
-                        if( distance < nearest )
-                        {
-                            nearest = distance;
-                            s_buildingId = building->m_id.GetUniqueId();
-                        }
-                    }
-                }
+				if( building.DoesRayHit( rayStart, rayDir ) )
+				{
+					float distance = ( building.m_pos - m_pos ).Mag();
+					if( distance < nearest )
+					{
+						nearest = distance;
+						s_buildingId = building.m_id.GetUniqueId();
+					}
+				}
             }
 
             s_recalculateTimer = GetHighResTime();

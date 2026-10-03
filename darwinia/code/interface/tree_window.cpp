@@ -59,18 +59,17 @@ public:
                 Vector3 _pos;
                 g_app->m_location->m_landscape.RayHit( rayStart, rayDir, &_pos );
 
-                Building *newBuilding = Building::CreateBuilding( Building::TypeTree );
+                auto& newBuilding = g_app->m_location->m_levelFile->m_buildings.emplace_back( Building::CreateBuilding( Building::TypeTree ) );
                 newBuilding->Initialise( building );
                 newBuilding->SetDetail( g_prefsManager->GetInt( "RenderBuildingDetail", 1 ) );
                 newBuilding->m_id.SetUniqueId( g_app->m_globalWorld->GenerateBuildingId() );
-                g_app->m_location->m_levelFile->m_buildings.PutData( newBuilding );
 
                 darwiniaSeedRandom(time(nullptr));
-                Tree *newTree = (Tree *) newBuilding;
-                newTree->m_pos = _pos;
-                newTree->m_seed = (int) frand(99999);
-                newTree->m_height = tree->m_height * (1.0f + sfrand(0.3f) );
-                newTree->Generate();
+                Tree& newTree = static_cast<Tree&>(*newBuilding);
+                newTree.m_pos = _pos;
+                newTree.m_seed = (int) frand(99999);
+                newTree.m_height = tree->m_height * (1.0f + sfrand(0.3f) );
+                newTree.Generate();
                 break;
         }
     }

@@ -60,7 +60,7 @@ GunTurret::GunTurret()
 }
 
 
-void GunTurret::Initialise( Building *_template )
+void GunTurret::Initialise( Building* _template )
 {
     _template->m_up = g_app->m_location->m_landscape.m_normalMap->GetValue( _template->m_pos.x, _template->m_pos.z );
     Vector3 right( 1, 0, 0 );
@@ -242,10 +242,9 @@ bool GunTurret::Advance()
 
     if( !m_aiTargetCreated )
     {
-        Building *aiTarget = Building::CreateBuilding( TypeAITarget );
+        auto& aiTarget = g_app->m_location->AddBuilding(Building::CreateBuilding( TypeAITarget ));
         aiTarget->m_pos = m_pos;
         aiTarget->m_front = m_front;
-        g_app->m_location->m_buildings.PutData( aiTarget );
         int uniqueId = g_app->m_globalWorld->GenerateBuildingId();
         aiTarget->m_id.SetUniqueId( uniqueId );
         m_aiTargetCreated = true;

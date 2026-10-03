@@ -116,19 +116,19 @@ void Armour::ConvertToGunTurret()
     turretTemplate.m_front = m_front;
     turretTemplate.m_dynamic = true;
 
-    GunTurret *turret = (GunTurret *) Building::CreateBuilding( Building::TypeGunTurret );
-    g_app->m_location->m_buildings.PutData( turret );
-    turret->Initialise((Building *)&turretTemplate);
+    auto& new_building = g_app->m_location->AddBuilding( Building::CreateBuilding( Building::TypeGunTurret ) );
+    GunTurret& turret = static_cast<GunTurret&>(*new_building) ;
+    turret.Initialise(&turretTemplate);
     int id = g_app->m_globalWorld->GenerateBuildingId();
-    turret->m_id.SetUnitId( UNIT_BUILDINGS );
-    turret->m_id.SetUniqueId( id );
+    turret.m_id.SetUnitId( UNIT_BUILDINGS );
+    turret.m_id.SetUniqueId( id );
     g_app->m_location->m_obstructionGrid->CalculateAll();
 
     //
     // Explode some polys, to cover the ropey change
     Matrix34 bodyMat( m_front, m_up, m_pos );
     g_explosionManager.AddExplosion( m_shape, bodyMat );
-    turret->ExplodeBody();
+    turret.ExplodeBody();
 }
 
 

@@ -47,16 +47,11 @@ void AI::Begin()
 
     float startTime = GetHighResTime();
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeAITarget )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building->m_type == Building::TypeAITarget )
-            {
-                AITarget *aiTarget = (AITarget *) building;
-                aiTarget->RecalculateNeighbours();
-            }
+            static_cast<AITarget&>(building).RecalculateNeighbours();
         }
     }
 
@@ -66,37 +61,33 @@ void AI::Begin()
     // eg if link A -> B exists, and link B -> C exists, then don't allow
     // link A -> C unless it is much shorter distance
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeAITarget )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building->m_type == Building::TypeAITarget )
+            auto& a = static_cast<AITarget&>(building);
+            for( int n = 0; n < a.m_neighbours.Size(); ++n )
             {
-                AITarget *a = (AITarget *) building;
-                for( int n = 0; n < a->m_neighbours.Size(); ++n )
-                {
-                    int cId = a->m_neighbours[n];
-                    AITarget *c = (AITarget *) g_app->m_location->GetBuilding(cId);
-                    DarwiniaDebugAssert( c && c->m_type == Building::TypeAITarget );
-                    float distanceAtoC = a->IsNearTo( cId );
+                int cId = a.m_neighbours[n];
+                AITarget *c = (AITarget *) g_app->m_location->GetBuilding(cId);
+                DarwiniaDebugAssert( c && c->m_type == Building::TypeAITarget );
+                float distanceAtoC = a.IsNearTo( cId );
 
-                    for( int x = 0; x < a->m_neighbours.Size(); ++x )
+                for( int x = 0; x < a.m_neighbours.Size(); ++x )
+                {
+                    if( x != n )
                     {
-                        if( x != n )
+                        int bId = a.m_neighbours[x];
+                        AITarget *b = (AITarget *) g_app->m_location->GetBuilding( bId );
+                        DarwiniaDebugAssert( b && b->m_type == Building::TypeAITarget );
+                        float distanceAtoB = a.IsNearTo( bId );
+                        float distanceBtoC = b->IsNearTo( cId );
+                        if( distanceBtoC > 0.0f &&
+                            distanceAtoC > (distanceAtoB + distanceBtoC) * 0.8f )
                         {
-                            int bId = a->m_neighbours[x];
-                            AITarget *b = (AITarget *) g_app->m_location->GetBuilding( bId );
-                            DarwiniaDebugAssert( b && b->m_type == Building::TypeAITarget );
-                            float distanceAtoB = a->IsNearTo( bId );
-                            float distanceBtoC = b->IsNearTo( cId );
-                            if( distanceBtoC > 0.0f &&
-                                distanceAtoC > (distanceAtoB + distanceBtoC) * 0.8f )
-                            {
-                                a->m_neighbours.RemoveData(n);
-                                --n;
-                                break;
-                            }
+                            a.m_neighbours.RemoveData(n);
+                            --n;
+                            break;
                         }
                     }
                 }
@@ -168,22 +159,18 @@ int AI::FindNearestTarget( Vector3 const &_fromPos )
     float nearest = FLT_MAX;
     int id = -1;
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeAITarget )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building->m_type == Building::TypeAITarget )
+            auto& target = static_cast<AITarget&>(building);
+            float distance = ( target.m_pos - _fromPos ).Mag();
+            if( distance < nearest )
             {
-                AITarget *target = (AITarget *) building;
-                float distance = ( target->m_pos - _fromPos ).Mag();
-                if( distance < nearest )
+                if( g_app->m_location->IsWalkable( _fromPos, target.m_pos, true ) )
                 {
-                    if( g_app->m_location->IsWalkable( _fromPos, target->m_pos, true ) )
-                    {
-                        id = building->m_id.GetUniqueId();
-                        nearest = distance;
-                    }
+                    id = building.m_id.GetUniqueId();
+                    nearest = distance;
                 }
             }
         }
@@ -252,23 +239,19 @@ bool AI::Advance( Unit * )
     // Look for buildings that are well defended
 
     LList<int> m_wellDefendedIds;
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [i, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeAITarget &&
+            building.m_id.GetTeamId() == m_id.GetTeamId() )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building->m_type == Building::TypeAITarget &&
-                building->m_id.GetTeamId() == m_id.GetTeamId() )
-            {
-                AITarget *target = (AITarget *) building;
-                int idleCount = target->m_idleCount[m_id.GetTeamId()];
-                int enemyCount = target->m_enemyCount[m_id.GetTeamId()];
-                int friendCount = target->m_friendCount[m_id.GetTeamId()];
+            auto& target = static_cast<AITarget&>(building);
+            int idleCount = target.m_idleCount[m_id.GetTeamId()];
+            int enemyCount = target.m_enemyCount[m_id.GetTeamId()];
+            int friendCount = target.m_friendCount[m_id.GetTeamId()];
 
-                if( idleCount > 30 && enemyCount < friendCount * 0.33f )
-                {
-                    m_wellDefendedIds.PutData(i);
-                }
+            if( idleCount > 30 && enemyCount < friendCount * 0.33f )
+            {
+                m_wellDefendedIds.PutData(i);
             }
         }
     }
@@ -281,7 +264,8 @@ bool AI::Advance( Unit * )
     for( int i = 0; i < m_wellDefendedIds.Size(); ++i )
     {
         int buildingIndex = m_wellDefendedIds[i];
-        AITarget *target = (AITarget *) g_app->m_location->m_buildings[ buildingIndex ];
+
+        AITarget *target = (AITarget *) std::get<1>(g_app->m_location->EnumerateBuildings()[ buildingIndex ]).get();
         int numIdle = target->m_idleCount[ m_id.GetTeamId() ];
 
         int targetBuildingId = FindTargetBuilding( target->m_id.GetUniqueId(), m_id.GetTeamId() );
@@ -369,20 +353,16 @@ void AITarget::RecalculateNeighbours()
 {
     m_neighbours.Empty();
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeAITarget &&
+            &building != this )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building->m_type == Building::TypeAITarget &&
-                building != this )
+            float distance = ( building.m_pos - m_pos ).Mag();
+            bool isWalkable = g_app->m_location->IsWalkable( m_pos, building.m_pos, true );
+            if( distance <= AITARGET_LINKRANGE && isWalkable )
             {
-                float distance = ( building->m_pos - m_pos ).Mag();
-                bool isWalkable = g_app->m_location->IsWalkable( m_pos, building->m_pos, true );
-                if( distance <= AITARGET_LINKRANGE && isWalkable )
-                {
-                    m_neighbours.PutData( building->m_id.GetUniqueId() );
-                }
+                m_neighbours.PutData( building.m_id.GetUniqueId() );
             }
         }
     }
@@ -657,18 +637,18 @@ AISpawnPoint::AISpawnPoint()
 }
 
 
-void AISpawnPoint::Initialise( Building *_template )
+void AISpawnPoint::Initialise( Building* _template )
 {
     Building::Initialise( _template );
 
-    AISpawnPoint *spawnPoint = (AISpawnPoint *) _template;
+    auto& spawnPoint = static_cast<AISpawnPoint&>(*_template);
 
-    m_entityType = spawnPoint->m_entityType;
-    m_count = spawnPoint->m_count;
-    m_period = spawnPoint->m_period;
-    m_activatorId = spawnPoint->m_activatorId;
-    m_spawnLimit = spawnPoint->m_spawnLimit;
-	m_routeId = spawnPoint->m_routeId;
+    m_entityType = spawnPoint.m_entityType;
+    m_count = spawnPoint.m_count;
+    m_period = spawnPoint.m_period;
+    m_activatorId = spawnPoint.m_activatorId;
+    m_spawnLimit = spawnPoint.m_spawnLimit;
+	m_routeId = spawnPoint.m_routeId;
 
     m_timer = m_period;//syncfrand(m_period);
 }
@@ -684,20 +664,16 @@ bool AISpawnPoint::PopulationLocked()
     {
         m_populationLock = -2;
 
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.m_type == TypeSpawnPopulationLock )
             {
-                Building *building = g_app->m_location->m_buildings[i];
-                if( building && building->m_type == TypeSpawnPopulationLock )
+                auto& lock = static_cast<SpawnPopulationLock&>(building);
+                float distance = ( building.m_pos - m_pos ).Mag();
+                if( distance < lock.m_searchRadius )
                 {
-                    SpawnPopulationLock *lock = (SpawnPopulationLock *) building;
-                    float distance = ( building->m_pos - m_pos ).Mag();
-                    if( distance < lock->m_searchRadius )
-                    {
-                        m_populationLock = lock->m_id.GetUniqueId();
-                        break;
-                    }
+                    m_populationLock = lock.m_id.GetUniqueId();
+                    break;
                 }
             }
         }

@@ -315,9 +315,8 @@ public:
         //
         // Buildings
 
-        for( int i = 0; i < levelFile->m_buildings.Size(); ++i )
+        for( auto& building : levelFile->m_buildings )
         {
-            Building *building = levelFile->m_buildings[i];
             building->m_pos.x *= m_scaleFactor;
             building->m_pos.z *= m_scaleFactor;
         }

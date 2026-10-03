@@ -292,16 +292,12 @@ void ControlTower::RenderAlphas ( float _predictionTime )
         s_lastRecalculation = (int) GetHighResTime();
 
         float nearest = 99999.9f;
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.m_type == TypeControlTower )
             {
-                Building *building = g_app->m_location->m_buildings[i];
-                if( building && building->m_type == TypeControlTower )
-                {
-                    float camDist = (building->m_pos - g_app->m_camera->GetPos()).Mag();
-                    if( camDist < nearest ) nearest = camDist;
-                }
+                float camDist = (building.m_pos - g_app->m_camera->GetPos()).Mag();
+                if( camDist < nearest ) nearest = camDist;
             }
         }
 

@@ -80,11 +80,8 @@ int LocationEditor::DoesRayHitBuilding(Vector3 const &rayStart, Vector3 const &r
 {
 	Location *location = g_app->m_location;
 
-	for (int i = 0; i < location->m_levelFile->m_buildings.Size(); i++)
+	for (auto& building : location->m_levelFile->m_buildings)
 	{
-		if (!location->m_levelFile->m_buildings.ValidIndex(i))	continue;
-
-		Building *building = location->m_levelFile->m_buildings.GetData(i);
 		bool result = building->DoesRayHit(rayStart, rayDir);
 		if (result)
 		{
@@ -287,20 +284,16 @@ void LocationEditor::AdvanceModeNone()
 
 void LocationEditor::MoveBuildingsInTile( LandscapeTile *_tile, float _dX, float _dZ )
 {
-    for( int i = 0; i < g_app->m_location->m_levelFile->m_buildings.Size(); ++i )
+    for( auto& building : g_app->m_location->m_levelFile->m_buildings )
     {
-        if( g_app->m_location->m_levelFile->m_buildings.ValidIndex(i) )
-        {
-            Building *building = g_app->m_location->m_levelFile->m_buildings[i];
-            if( building->m_pos.x >= _tile->m_posX &&
-                building->m_pos.z >= _tile->m_posZ &&
-                building->m_pos.x <= _tile->m_posX + _tile->m_size &&
-                building->m_pos.z <= _tile->m_posZ + _tile->m_size )
-            {
-                building->m_pos.x += _dX;
-                building->m_pos.z += _dZ;
-            }
-        }
+		if( building->m_pos.x >= _tile->m_posX &&
+			building->m_pos.z >= _tile->m_posZ &&
+			building->m_pos.x <= _tile->m_posX + _tile->m_size &&
+			building->m_pos.z <= _tile->m_posZ + _tile->m_size )
+		{
+			building->m_pos.x += _dX;
+			building->m_pos.z += _dZ;
+		}
     }
 
 }
@@ -1017,25 +1010,17 @@ void LocationEditor::Render()
 
 	g_app->m_renderer->SetObjectLighting();
     LevelFile *levelFile = g_app->m_location->m_levelFile;
-    for( int i = 0; i < levelFile->m_buildings.Size(); ++i )
+    for( auto& building : levelFile->m_buildings )
     {
-        if( levelFile->m_buildings.ValidIndex(i) )
-        {
-            Building *b = levelFile->m_buildings.GetData(i);
-            b->Render(0.0f);
-        }
+        building->Render(0.0f);
     }
     g_app->m_renderer->UnsetObjectLighting();
 	if (m_mode == ModeBuilding)
 	{
-		for( int i = 0; i < levelFile->m_buildings.Size(); ++i )
+		for( auto& building : levelFile->m_buildings )
 		{
-			if( levelFile->m_buildings.ValidIndex(i) )
-			{
-				Building *b = levelFile->m_buildings.GetData(i);
-				b->RenderAlphas(0.0f);
-				b->RenderLink();
-			}
+			building->RenderAlphas(0.0f);
+			building->RenderLink();
 		}
 	}
 

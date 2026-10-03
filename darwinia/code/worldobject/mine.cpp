@@ -434,17 +434,13 @@ float MineBuilding::RefinerySpeed()
         int numFuelGenerators = 0;
         float fuelGeneratorFactor = 0.0f;
 
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.m_type == TypeRefinery ||
+                building.m_type == TypeYard )
             {
-                Building *building = g_app->m_location->m_buildings[i];
-                if( building->m_type == TypeRefinery ||
-                    building->m_type == TypeYard )
-                {
-                    driver = building;
-                    break;
-                }
+                driver = &building;
+                break;
             }
         }
 

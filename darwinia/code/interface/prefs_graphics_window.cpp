@@ -44,13 +44,9 @@ public:
             delete g_app->m_location->m_water;
             g_app->m_location->m_water = new Water();
 
-            for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+            for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
             {
-                if( g_app->m_location->m_buildings.ValidIndex(i) )
-                {
-                    Building *building = g_app->m_location->m_buildings[i];
-                    building->SetDetail( parent->m_buildingDetail );
-                }
+                building.SetDetail( parent->m_buildingDetail );
             }
 
             g_prefsManager->Save();

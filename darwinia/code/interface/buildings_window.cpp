@@ -213,12 +213,11 @@ class CloneBuildingButton : public DarwiniaButton
         Building *building = g_app->m_location->GetBuilding(g_app->m_locationEditor->m_selectionId);
         DarwiniaDebugAssert(building);
 
-        Building *newBuilding = Building::CreateBuilding( building->m_type );
+        auto& newBuilding = g_app->m_location->m_levelFile->m_buildings.emplace_back(Building::CreateBuilding( building->m_type ));
         newBuilding->Initialise( building );
         newBuilding->SetDetail( g_prefsManager->GetInt( "RenderBuildingDetail", 1 ) );
         newBuilding->m_id.SetUniqueId( g_app->m_globalWorld->GenerateBuildingId() );
         newBuilding->m_pos = _pos;
-        g_app->m_location->m_levelFile->m_buildings.PutData( newBuilding );
     }
 };
 
@@ -534,12 +533,11 @@ public:
         g_app->m_location->m_landscape.RayHit( rayStart, rayDir, &_pos );
 
         BuildingsCreateWindow *bcw = (BuildingsCreateWindow *) m_parent;
-        Building *building = Building::CreateBuilding( bcw->m_buildingType );
-        if( building )
+        if( auto building = Building::CreateBuilding( bcw->m_buildingType ))
         {
             building->m_pos = _pos;
             building->m_id.SetUniqueId( g_app->m_globalWorld->GenerateBuildingId() );
-            g_app->m_location->m_levelFile->m_buildings.PutData( building );
+            g_app->m_location->m_levelFile->m_buildings.emplace_back( std::move(building) );
         }
     }
 };

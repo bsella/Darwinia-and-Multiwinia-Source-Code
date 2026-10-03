@@ -255,16 +255,12 @@ namespace {
 				bool spiritsFound = std::any_of(spirits.begin(), spirits.end(), [](const auto& index_spirit){return std::get<1>(index_spirit) != nullptr;} );
 				if( spiritsFound ) return true;
 
-				for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+				for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
 				{
-					if( g_app->m_location->m_buildings.ValidIndex(i) )
+					if( building.m_type == Building::TypeControlTower &&
+						building.m_id.GetTeamId() != g_app->m_globalWorld->m_myTeamId )
 					{
-						Building *building = g_app->m_location->m_buildings[i];
-						if( building->m_type == Building::TypeControlTower &&
-							building->m_id.GetTeamId() != g_app->m_globalWorld->m_myTeamId )
-						{
-							return true;
-						}
+						return true;
 					}
 				}
 			}
@@ -693,18 +689,14 @@ bool HelpSystem::RunHighlightedBuildingHelp()
         // Look for a nearby control tower to ensure this is possible
 
         int controlTowerFound = -1;
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, thisBuilding] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
-            {
-                Building *thisBuilding = g_app->m_location->m_buildings[i];
-                if( thisBuilding->m_type == Building::TypeControlTower &&
-                    thisBuilding->GetBuildingLink() == building->m_id.GetUniqueId() )
-                {
-                    controlTowerFound = thisBuilding->m_id.GetUniqueId();
-                    break;
-                }
-            }
+			if( thisBuilding.m_type == Building::TypeControlTower &&
+				thisBuilding.GetBuildingLink() == building->m_id.GetUniqueId() )
+			{
+				controlTowerFound = thisBuilding.m_id.GetUniqueId();
+				break;
+			}
         }
 
         if( controlTowerFound != -1 )

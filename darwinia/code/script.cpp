@@ -436,16 +436,11 @@ void Script::RunCommand_RestoreResearch()
 
 GodDish *GetGodDish()
 {
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeGodDish )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building && building->m_type == Building::TypeGodDish )
-            {
-                GodDish *dish = (GodDish *) building;
-                return dish;
-            }
+            return &static_cast<GodDish&>(building);
         }
     }
 

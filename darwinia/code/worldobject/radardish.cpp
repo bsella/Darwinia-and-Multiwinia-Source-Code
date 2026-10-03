@@ -163,20 +163,16 @@ bool RadarDish::Advance ()
 
     bool previouslyAligned = ( m_receiverId != -1 );
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings())
     {
-		// Skip empty slots
-        if( !g_app->m_location->m_buildings.ValidIndex(i) ) continue;
-
 		// Filter out non radar dish buildings
-		Building *building = g_app->m_location->m_buildings.GetData(i);
-        if( building->m_type != TypeRadarDish ) continue;
+        if( building.m_type != TypeRadarDish ) continue;
 
 		// Don't compare against ourself
-		if( building == this ) continue;
+		if( &building == this ) continue;
 
 		// Does our "ray" hit their dish
-        RadarDish *otherDish = (RadarDish *) building;
+        auto* otherDish = static_cast<RadarDish*>(&building);
         bool hit = RaySphereIntersection( dishPos, dishFront, otherDish->m_centrePos, otherDish->m_radius, 1e9 );
         if( hit )
 		{

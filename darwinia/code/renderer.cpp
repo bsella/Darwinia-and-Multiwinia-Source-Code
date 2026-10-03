@@ -1223,22 +1223,18 @@ void Renderer::PreRenderPixelEffect()
     }
 
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
-        {
-            Building *building = g_app->m_location->m_buildings[i];
-            float distance = ( building->m_centrePos - camPos ).Mag();
-            if( distance < cutoff )
-            {
-                bool rendered = building->RenderPixelEffect( g_predictionTime );
-                if( rendered )
-                {
-                    float distance = (building->m_pos - g_app->m_camera->GetPos()).Mag();
-                    if( distance < nearest ) nearest = distance;
-                }
-            }
-        }
+		float distance = ( building.m_centrePos - camPos ).Mag();
+		if( distance < cutoff )
+		{
+			bool rendered = building.RenderPixelEffect( g_predictionTime );
+			if( rendered )
+			{
+				float distance = (building.m_pos - g_app->m_camera->GetPos()).Mag();
+				if( distance < nearest ) nearest = distance;
+			}
+		}
     }
 
     END_PROFILE(g_app->m_profiler, "Draw pixelated");

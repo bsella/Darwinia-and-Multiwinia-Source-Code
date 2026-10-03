@@ -259,17 +259,13 @@ SpiritProcessor *ReceiverBuilding::GetSpiritProcessor()
 
     if( !processor || processor->m_type != Building::TypeSpiritProcessor )
     {
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.m_type == TypeSpiritProcessor )
             {
-                Building *building = g_app->m_location->m_buildings[i];
-                if( building->m_type == TypeSpiritProcessor )
-                {
-                    processor = (SpiritProcessor *) building;
-                    processorId = processor->m_id.GetUniqueId();
-                    break;
-                }
+                processor = static_cast<SpiritProcessor*>(&building);
+                processorId = processor->m_id.GetUniqueId();
+                break;
             }
         }
     }

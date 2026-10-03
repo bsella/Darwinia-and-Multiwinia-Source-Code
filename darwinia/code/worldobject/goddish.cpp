@@ -200,9 +200,9 @@ void GodDish::SpawnSpam( bool _isResearch )
     spamTemplate.m_id.SetUniqueId( buildingId );
     spamTemplate.m_id.SetUnitId( UNIT_BUILDINGS );
 
-    Spam *spam = (Spam *) CreateBuilding( TypeSpam );
+    auto& new_building = g_app->m_location->AddBuilding(CreateBuilding( TypeSpam ));
+    auto* spam = static_cast<Spam*>(new_building.get()) ;
     spam->Initialise( &spamTemplate );
-    g_app->m_location->m_buildings.PutData( spam );
 
     spam->SendFromHeaven();
     if( _isResearch ) spam->SetAsResearch();
@@ -215,16 +215,11 @@ void GodDish::SpawnSpam( bool _isResearch )
 
 void GodDish::TriggerSpam()
 {
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == TypeSpam )
         {
-            Building *b = g_app->m_location->m_buildings[i];
-            if( b && b->m_type == TypeSpam )
-            {
-                Spam *spam = (Spam *) b;
-                spam->SpawnInfection();
-            }
+            static_cast<Spam&>(building).SpawnInfection();
         }
     }
 }

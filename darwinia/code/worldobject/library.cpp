@@ -7,6 +7,7 @@
 
 #include "app.h"
 #include "location.h"
+#include <memory>
 
 
 Library::Library()
@@ -34,12 +35,12 @@ bool Library::Advance()
             Matrix34 rootMat(m_front, g_upVector, m_pos);
             Matrix34 scrollPos = scrollMarker->GetWorldMatrix( rootMat );
 
-            ResearchItem *item = new ResearchItem();
+            auto& new_building = g_app->m_location->AddBuilding(std::make_unique<ResearchItem>());
+            auto* item = static_cast<ResearchItem*>(new_building.get());
             item->m_researchType = i;
             item->m_inLibrary = true;
             item->m_pos = scrollPos.pos;
             item->m_id.SetUniqueId( g_app->m_globalWorld->GenerateBuildingId() );
-            g_app->m_location->m_buildings.PutData( item );
 
             m_scrollSpawned[i] = true;
         }

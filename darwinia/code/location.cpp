@@ -10,6 +10,7 @@
 #include <math.h>
 #include <time.h>
 #include <float.h>
+#include <tuple>
 #include <vector>
 
 #ifdef USE_DIRECT3D
@@ -79,9 +80,7 @@ Location::Location()
 {
     m_lasers.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
     m_effects.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
-    m_buildings.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
 
-	m_buildings.SetStepSize(10);
 	m_lasers.SetStepSize(100);
 	m_effects.SetSize(100);
 }
@@ -114,9 +113,8 @@ void Location::Init( char const *_missionFilename, char const *_mapFilename )
     }
     else
     {
-	    for (int i = 0; i < m_levelFile->m_buildings.Size(); i++)
+	    for (auto& building : m_levelFile->m_buildings)
 	    {
-		    Building *building = m_levelFile->m_buildings.GetData(i);
             building->m_pos.y = m_landscape.m_heightMap->GetValue( building->m_pos.x, building->m_pos.z );
         }
     }
@@ -141,7 +139,7 @@ void Location::Empty()
 	m_landscape.Empty();
 
 	m_lights.clear();
-	m_buildings.Empty();		// LList <Building *>
+	m_buildings.clear();		// LList <Building *>
 	m_spirits.clear();
     m_lasers.Empty();
     m_effects.Empty();
@@ -195,9 +193,9 @@ void Location::InitLights()
 
 void Location::InitBuildings()
 {
-	for (int i = 0; i < m_levelFile->m_buildings.Size(); i++)
+	for (auto& building : m_levelFile->m_buildings)
 	{
-		Building *building = m_levelFile->m_buildings.GetData(i);
+        if(!building) continue;
         Building *existing = g_app->m_location->GetBuilding(building->m_id.GetUniqueId());
         if( existing )
         {
@@ -210,9 +208,8 @@ void Location::InitBuildings()
                            Building::GetTypeName(existing->m_type),
                            Building::GetTypeName(building->m_type) );
         }
-        Building *newBuilding = Building::CreateBuilding( building->m_type );
-        m_buildings.PutData(newBuilding);
-        newBuilding->Initialise( building );
+        auto& newBuilding = m_buildings.emplace_back(Building::CreateBuilding( building->m_type ));
+        newBuilding->Initialise( building.get() );
         newBuilding->SetDetail( g_prefsManager->GetInt( "RenderBuildingDetail", 1 ) );
 	}
 }
@@ -529,25 +526,21 @@ Unit *Location::GetUnit( WorldObjectId _id )
 }
 
 
-Building *Location::GetBuilding( int _id )
+Building *Location::GetBuilding( int uniqueId )
 {
-    if( _id == -1 ) return nullptr;
+    if( uniqueId == -1 ) return nullptr;
 
     if( g_app->m_editing )
     {
-        return m_levelFile->GetBuilding( _id );
+        return m_levelFile->GetBuilding( uniqueId );
     }
     else
     {
-        for( int i = 0; i < m_buildings.Size(); ++i )
+        for( const auto& [_, building] : EnumerateValidBuildings() )
         {
-            if( m_buildings.ValidIndex(i) )
+            if( building.m_id.GetUniqueId() == uniqueId )
             {
-                Building *building = m_buildings.GetData(i);
-                if( building->m_id.GetUniqueId() == _id )
-                {
-                    return building;
-                }
+                return &building;
             }
         }
     }
@@ -558,16 +551,12 @@ Building *Location::GetBuilding( int _id )
 
 Building *Location::GetBuilding(Vector3 const &_rayStart, Vector3 const &_rayDir )
 {
-	for (int i = 0; i < m_buildings.Size(); ++i)
+	for (const auto& [_, building] : EnumerateValidBuildings())
 	{
-		if (m_buildings.ValidIndex(i))
-		{
-			Building *b = m_buildings[i];
-			if (b->DoesRayHit(_rayStart, _rayDir))
-			{
-				return b;
-			}
-		}
+        if (building.DoesRayHit(_rayStart, _rayDir))
+        {
+            return &building;
+        }
 	}
 
 	return nullptr;
@@ -685,28 +674,23 @@ void Location::AdvanceWeapons( int _slice )
 
 
 // *** AdvanceBuildings
-void Location::AdvanceBuildings( int _slice )
+void Location::AdvanceBuildings()
 {
     START_PROFILE(g_app->m_profiler, "Advance Buildings");
     bool obstructionGridChanged = false;
 
-    int startIndex, endIndex;
-    m_buildings.GetNextSliceBounds( _slice, &startIndex, &endIndex );
-    for( int i = startIndex; i <= endIndex; ++i )
+    for( auto [_, building] : EnumerateBuildings() )
     {
-        if( m_buildings.ValidIndex(i) )
+        if(!building) continue;
+
+        START_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
+        bool removeBuilding = building->Advance();
+        END_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
+
+        if( removeBuilding )
         {
-            Building *building = m_buildings.GetData(i);
-
-            START_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
-            bool removeBuilding = building->Advance();
-            END_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
-
-            if( removeBuilding )
-            {
-                m_buildings.MarkNotUsed(i);
-                obstructionGridChanged = true;
-            }
+            building.reset();
+            obstructionGridChanged = true;
         }
     }
 
@@ -854,17 +838,11 @@ void Location::Advance( int _slice )
 
     m_lastSliceProcessed = _slice;
 
-	for(int step=0;step<=4;step++)
-	{
-		switch(step)
-		{
-			case 0: AdvanceTeams        ( _slice ); break;
-			case 1: AdvanceWeapons      ( _slice ); break;
-			case 2: AdvanceBuildings    ( _slice ); break;
-			case 3: if(_slice == 0) AdvanceSpirits      (); break; // TODO
-			case 4: AdvanceClouds       ( _slice ); break;
-		}
-	}
+    AdvanceTeams        ( _slice );
+    AdvanceWeapons      ( _slice );
+    if(_slice == 0) AdvanceBuildings    (); // TODO
+    if(_slice == 0) AdvanceSpirits      (); // TODO
+    AdvanceClouds       ( _slice );
 
     if (!m_missionComplete && MissionComplete())
 	{
@@ -1085,24 +1063,13 @@ void Location::RenderBuildings()
     if( g_inputManager->controlEvent( ControlRTLoaderPixelWaveDecrease ) ) g_prefsManager->SetInt( "RenderSpecialLighting", 0 );
 #endif
 
-    for( int i = 0; i < m_buildings.Size(); ++i )
+    for( const auto& [_, building] : EnumerateValidBuildings() )
     {
-	    if( m_buildings.ValidIndex(i) )
+        if( building.IsInView() )
         {
-            Building *building = m_buildings.GetData(i);
-            if( building->IsInView() )
-            {
-                START_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
-                if( i > m_buildings.GetLastUpdated() )
-                {
-                    building->Render( timeSinceAdvance + SERVER_ADVANCE_PERIOD );
-                }
-                else
-                {
-                    building->Render( timeSinceAdvance );
-                }
-                END_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
-            }
+            START_PROFILE( g_app->m_profiler, Building::GetTypeName( building.m_type ) );
+            building.Render( timeSinceAdvance );
+            END_PROFILE( g_app->m_profiler, Building::GetTypeName( building.m_type ) );
         }
     }
 
@@ -1159,37 +1126,26 @@ void Location::RenderBuildingAlphas()
     SetupFog        ();
     glEnable        (GL_FOG);
 
-    for( int i = 0; i < m_buildings.Size(); ++i )
+    for( const auto& [i, building] : EnumerateValidBuildings() )
     {
-	    if( m_buildings.ValidIndex(i) )
+        if( building.IsInView() )
         {
-            Building *building = m_buildings.GetData(i);
-            if( building->IsInView() )
+            Vector3 centrePos;
+            if( building.PerformDepthSort( centrePos ) )
             {
-                Vector3 centrePos;
-                if( building->PerformDepthSort( centrePos ) )
-                {
-                    float distance = ( centrePos - g_app->m_camera->GetPos() ).MagSquared();
-                    s_sortedBuildings[s_nextSortedBuilding].m_buildingIndex = i;
-                    s_sortedBuildings[s_nextSortedBuilding].m_distance = distance;
-                    s_nextSortedBuilding++;
-                    DarwiniaReleaseAssert( s_nextSortedBuilding < MaxDepthSortedBuildings, "More that 256 buildings require Depth Sorting!" );
-                }
-                else
-                {
-                    START_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
+                float distance = ( centrePos - g_app->m_camera->GetPos() ).MagSquared();
+                s_sortedBuildings[s_nextSortedBuilding].m_buildingIndex = i;
+                s_sortedBuildings[s_nextSortedBuilding].m_distance = distance;
+                s_nextSortedBuilding++;
+                DarwiniaReleaseAssert( s_nextSortedBuilding < MaxDepthSortedBuildings, "More that 256 buildings require Depth Sorting!" );
+            }
+            else
+            {
+                START_PROFILE( g_app->m_profiler, Building::GetTypeName( building.m_type ) );
 
-                    if( i > m_buildings.GetLastUpdated() )
-                    {
-                        building->RenderAlphas( timeSinceAdvance + SERVER_ADVANCE_PERIOD );
-                    }
-                    else
-                    {
-                        building->RenderAlphas( timeSinceAdvance );
-                    }
+                building.RenderAlphas( timeSinceAdvance );
 
-                    END_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
-                }
+                END_PROFILE( g_app->m_profiler, Building::GetTypeName( building.m_type ) );
             }
         }
     }
@@ -1208,19 +1164,13 @@ void Location::RenderBuildingAlphas()
 
     for( int i = s_nextSortedBuilding-1; i >= 0; i-- )
     {
-        int buildingIndex = s_sortedBuildings[i].m_buildingIndex;
-        Building *building = m_buildings.GetData(buildingIndex);
+        auto& building = m_buildings[s_sortedBuildings[i].m_buildingIndex];
+
+        if(!building) continue;
 
         START_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
 
-        if( buildingIndex > m_buildings.GetLastUpdated() )
-        {
-            building->RenderAlphas( timeSinceAdvance + SERVER_ADVANCE_PERIOD );
-        }
-        else
-        {
-            building->RenderAlphas( timeSinceAdvance );
-        }
+        building->RenderAlphas( timeSinceAdvance );
 
         END_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
     }
@@ -1702,43 +1652,41 @@ Building* Location::GetBuilding(Vector3 const &rayStart, Vector3 const &rayDir, 
     float closestRangeSqd = FLT_MAX;
     Building* buildingId = nullptr;
 
-    for (int i = 0; i < m_buildings.Size(); i++)
+    for (const auto& building : m_buildings)
     {
-        if (m_buildings.ValidIndex(i))
+        if(!building) continue;
+
+        bool teamMatch = ( teamId == 255 ||
+                            building->m_id.GetTeamId() == 255 ||
+                            teamId == building->m_id.GetTeamId() );
+
+        if( building->m_type != Building::TypeControlTower && teamMatch )
         {
-            Building *building = m_buildings.GetData(i);
-            bool teamMatch = ( teamId == 255 ||
-                               building->m_id.GetTeamId() == 255 ||
-                               teamId == building->m_id.GetTeamId() );
+            Vector3 hitPos;
+            bool rayHit = false;
 
-            if( building->m_type != Building::TypeControlTower && teamMatch )
+            if( building->m_type == Building::TypeRadarDish )
             {
-                Vector3 hitPos;
-                bool rayHit = false;
+                rayHit = building->DoesRayHit( rayStart, rayDir, 1e10 );
+                if( rayHit ) RaySphereIntersection( rayStart, rayDir, building->m_centrePos, building->m_radius, _maxDistance, &hitPos );
+                // Have to do the raySphereIntersection in order to calculate the hitPos
+            }
+            else
+            {
+                rayHit = RaySphereIntersection( rayStart, rayDir, building->m_centrePos, building->m_radius, _maxDistance, &hitPos );
+            }
 
-                if( building->m_type == Building::TypeRadarDish )
-                {
-                    rayHit = building->DoesRayHit( rayStart, rayDir, 1e10 );
-                    if( rayHit ) RaySphereIntersection( rayStart, rayDir, building->m_centrePos, building->m_radius, _maxDistance, &hitPos );
-                    // Have to do the raySphereIntersection in order to calculate the hitPos
-                }
-                else
-                {
-                    rayHit = RaySphereIntersection( rayStart, rayDir, building->m_centrePos, building->m_radius, _maxDistance, &hitPos );
-                }
+            if( rayHit )
+            {
+                float centrePosX, centrePosY, rayHitX, rayHitY;
+                g_app->m_camera->Get2DScreenPos( building->m_centrePos, &centrePosX, &centrePosY );
+                g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
 
-                if( rayHit )
+                float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
+                if( rangeSqd < closestRangeSqd )
                 {
-                    float centrePosX, centrePosY, rayHitX, rayHitY;
-                    g_app->m_camera->Get2DScreenPos( building->m_centrePos, &centrePosX, &centrePosY );
-                    g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
-
-                    float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
-                    if( rangeSqd < closestRangeSqd )
-                    {
-				        buildingId = building;
-                        closestRangeSqd = rangeSqd;
-                    }
+                    buildingId = building.get();
+                    closestRangeSqd = rangeSqd;
                 }
             }
         }
@@ -1987,21 +1935,19 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
 	// Wow, that was a big bang. Maybe we killed a building
 
     float maxBuildingRange = _range * 3.0f;
-    for( int i = 0; i < m_buildings.Size(); ++i )
+    for( const auto& building : m_buildings )
     {
-        if( m_buildings.ValidIndex(i) )
-        {
-		    Building *building = m_buildings[i];
-		    float dist = (_pos - building->m_pos).Mag();
+        if(!building) continue;
 
-            if( dist < maxBuildingRange )
-            {
-                //float fraction = (_range*3.0f - dist) / _range*3.0f;
-                float fraction = 1.0f - dist / maxBuildingRange;
-                fraction = std::max( 0.0f, fraction );
-                fraction = std::min( 1.0f, fraction );
-                building->Damage( _damage * fraction * -1.0f );
-            }
+        float dist = (_pos - building->m_pos).Mag();
+
+        if( dist < maxBuildingRange )
+        {
+            //float fraction = (_range*3.0f - dist) / _range*3.0f;
+            float fraction = 1.0f - dist / maxBuildingRange;
+            fraction = std::max( 0.0f, fraction );
+            fraction = std::min( 1.0f, fraction );
+            building->Damage( _damage * fraction * -1.0f );
         }
     }
 }
@@ -2141,17 +2087,12 @@ bool Location::IsFriend( unsigned char _teamId1, unsigned char _teamId2 )
 void Location::FlushOpenGlState()
 {
 	int treeTypeId = Building::GetTypeId("Tree");
-	for (int i = 0; i < m_buildings.Size(); ++i)
+	for (const auto& [_, building] : EnumerateValidBuildings())
 	{
-		if (m_buildings.ValidIndex(i))
-		{
-			Building *building = m_buildings[i];
-			if (building->m_type == treeTypeId)
-			{
-				Tree *tree = (Tree*)building;
-				tree->DeleteDisplayLists();
-			}
-		}
+        if (building.m_type == treeTypeId)
+        {
+            static_cast<Tree&>(building).DeleteDisplayLists();
+        }
 	}
 }
 
@@ -2168,4 +2109,31 @@ void Location::RegenerateOpenGlState()
 decltype(std::views::enumerate(Location::m_spirits)) Location::EnumerateSpirits()
 {
     return std::views::enumerate(m_spirits);
+}
+
+bool Location::IsNonNullPtr::operator()(const std::tuple<long, std::unique_ptr<Building>&>& index_value) const
+{
+    auto& [index, ptr] = index_value;
+    return ptr != nullptr;
+}
+
+std::tuple<long, Building&> Location::UniquePtrToRef::operator()(const std::tuple<long, std::unique_ptr<Building>&>& index_value) const
+{
+    auto& [index, ptr] = index_value;
+    return std::tuple<long, Building&>{index, *ptr};
+}
+
+Location::EnumerateBuildingPointersView Location::EnumerateBuildings()
+{
+    return std::views::enumerate(m_buildings);
+}
+
+Location::EnumerateValidBuildingsView Location::EnumerateValidBuildings()
+{
+    return std::views::enumerate(m_buildings) | std::views::filter(IsNonNullPtr{}) | std::views::transform(UniquePtrToRef{});
+}
+
+std::unique_ptr<Building>& Location::AddBuilding(std::unique_ptr<Building>&& building)
+{
+    return m_buildings.emplace_back(std::move(building));
 }

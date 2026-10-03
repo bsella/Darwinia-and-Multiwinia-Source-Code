@@ -161,32 +161,28 @@ bool DynamicHub::Advance()
         // the m_enabled state of this building has been lost.
 
         bool towerFound = false;
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.m_type == TypeControlTower )
             {
-                Building *building = g_app->m_location->m_buildings[i];
-                if( building && building->m_type == TypeControlTower )
+                auto& tower = static_cast<ControlTower&>(building);
+                if( tower.GetBuildingLink() == m_id.GetUniqueId() )
                 {
-                    ControlTower *tower = (ControlTower *) building;
-                    if( tower->GetBuildingLink() == m_id.GetUniqueId() )
+                    towerFound = true;
+                    if( tower.m_id.GetTeamId() == m_id.GetTeamId() )
                     {
-                        towerFound = true;
-                        if( tower->m_id.GetTeamId() == m_id.GetTeamId() )
-                        {
-                            m_reprogrammed = true;
-                            break;
-                        }
+                        m_reprogrammed = true;
+                        break;
                     }
                 }
+            }
 
-                if( building && building->m_type == TypeDynamicNode )
+            if( building.m_type == TypeDynamicNode )
+            {
+                auto& node = static_cast<DynamicNode&>(building);
+                if( node.GetBuildingLink() == m_id.GetUniqueId() )
                 {
-                    DynamicNode *node = (DynamicNode *)building;
-                    if( node->GetBuildingLink() == m_id.GetUniqueId() )
-                    {
-                        m_numLinks++;
-                    }
+                    m_numLinks++;
                 }
             }
         }

@@ -1538,23 +1538,19 @@ bool Darwinian::SearchForThreats()
     // No explosives nearby.  Look for bad guys
     // Start with a quick evaluation of the area, by querying any AITarget buildings
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings())
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeAITarget )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building && building->m_type == Building::TypeAITarget )
+            float range = ( building.m_pos - m_pos ).MagSquared();
+            if( range < 40000.0f )              // 200m
             {
-                float range = ( building->m_pos - m_pos ).MagSquared();
-                if( range < 40000.0f )              // 200m
+                auto& target = static_cast<AITarget&>(building);
+                int numEnemiesNearby = target.m_enemyCount[ m_id.GetTeamId() ];
+                if( numEnemiesNearby == 0 )
                 {
-                    AITarget *target = (AITarget *) building;
-                    int numEnemiesNearby = target->m_enemyCount[ m_id.GetTeamId() ];
-                    if( numEnemiesNearby == 0 )
-                    {
-                        END_PROFILE( g_app->m_profiler, "SearchThreats" );
-                        return false;
-                    }
+                    END_PROFILE( g_app->m_profiler, "SearchThreats" );
+                    return false;
                 }
             }
         }
@@ -1671,19 +1667,15 @@ bool Darwinian::SearchForPorts()
 
     LList<int> availableBuildings;
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        float distanceToBuilding = ( building.m_pos - m_pos ).Mag();
+        distanceToBuilding -= building.m_radius;
+        if( distanceToBuilding < DARWINIAN_SEARCHRANGE_PORTS )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            float distanceToBuilding = ( building->m_pos - m_pos ).Mag();
-            distanceToBuilding -= building->m_radius;
-            if( distanceToBuilding < DARWINIAN_SEARCHRANGE_PORTS )
+            if( building.GetNumPortsOccupied() < building.GetNumPorts() )
             {
-                if( building->GetNumPortsOccupied() < building->GetNumPorts() )
-                {
-                    availableBuildings.PutData( building->m_id.GetUniqueId() );
-                }
+                availableBuildings.PutData( building.m_id.GetUniqueId() );
             }
         }
     }

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <string.h>
 #include <stdio.h>
 
@@ -305,8 +306,7 @@ void LevelFile::ParseBuildings(TextReader *_in, bool _dynamic)
             return;
         }
 
-		Building *building = Building::CreateBuilding( word );
-        if( building )
+        if( auto building = Building::CreateBuilding( word ) )
         {
             building->Read( _in, _dynamic );
 
@@ -336,32 +336,32 @@ void LevelFile::ParseBuildings(TextReader *_in, bool _dynamic)
 			if (building->m_id.GetTeamId() == 1) {
 				switch (building->m_type) {
 					case Building::TypeSpawnPopulationLock: {
-						SpawnPopulationLock *spl = (SpawnPopulationLock *) building;
+						SpawnPopulationLock *spl = (SpawnPopulationLock *) building.get();
 						spl->m_maxPopulation = int(spl->m_maxPopulation * loadDifficultyFactor);
 					}
 					break;
 
 					case Building::TypeAntHill: {
-						AntHill *ah = (AntHill *) building;
+						AntHill *ah = (AntHill *) building.get();
 						ah->m_numAntsInside = int(ah->m_numAntsInside * loadDifficultyFactor);
 					}
 					break;
 
 					case Building::TypeAISpawnPoint: {
-						AISpawnPoint *aisp = (AISpawnPoint *) building;
+						AISpawnPoint *aisp = (AISpawnPoint *) building.get();
 						aisp->m_period = int(aisp->m_period / loadDifficultyFactor);
 					}
 					break;
 
 					case Building::TypeTriffid: {
-						Triffid *t = (Triffid *) building;
+						Triffid *t = (Triffid *) building.get();
 						t->m_reloadTime = int(t->m_reloadTime / loadDifficultyFactor);
 					}
 					break;
 				}
 			}
 
-			m_buildings.PutData(building);
+			m_buildings.emplace_back(std::move(building));
         }
 	}
 }
@@ -781,10 +781,8 @@ void LevelFile::GenerateAutomaticObjectives()
 	//
 	// Add secondary objectives for trunk ports and research items
 
-	for (int i = 0; i < m_buildings.Size(); ++i)
+	for (auto& building : m_buildings)
 	{
-		Building *building = m_buildings.GetData(i);
-
 		if (building->m_type != Building::TypeResearchItem &&
 			building->m_type != Building::TypeTrunkPort)
 		{
@@ -804,7 +802,7 @@ void LevelFile::GenerateAutomaticObjectives()
 
             if (primaryObjective->m_type == GlobalEventCondition::ResearchOwned &&
                 building->m_type == Building::TypeResearchItem &&
-                ((ResearchItem *)building)->m_researchType == primaryObjective->m_id )
+                (static_cast<ResearchItem*>(building.get()))->m_researchType == primaryObjective->m_id )
             {
                 found = true;
                 break;
@@ -841,9 +839,8 @@ void LevelFile::GenerateAutomaticObjectives()
                     //
                     // Is there a Control Tower that can enable this trunk port?
                     bool towerFound = false;
-                    for( int c = 0; c < m_buildings.Size(); ++c )
+                    for( auto& thisBuilding : m_buildings )
                     {
-                        Building *thisBuilding = m_buildings[c];
                         if( thisBuilding->m_type == Building::TypeControlTower &&
                             thisBuilding->GetBuildingLink() == building->m_id.GetUniqueId() )
                         {
@@ -953,9 +950,8 @@ void LevelFile::WriteBuildings(FileWriter *_out, bool _dynamic)
 	_out->printf( "\t# Type              id      x       z       tm      rx      rz      isGlobal\n");
 	_out->printf( "\t# ==========================================================================\n");
 
-	for (int i = 0; i < m_buildings.Size(); i++)
+	for (auto& building : m_buildings)
 	{
-		Building *building = m_buildings.GetData(i);
 		if (building->m_dynamic == _dynamic)
 		{
 			building->Write( _out );
@@ -1122,7 +1118,6 @@ LevelFile::~LevelFile()
 {
 	m_cameraMounts.EmptyAndDelete();
 	m_cameraAnimations.EmptyAndDelete();
-    m_buildings.EmptyAndDelete();
     m_instantUnits.EmptyAndDelete();
     m_lights.EmptyAndDelete();
     m_routes.EmptyAndDelete();
@@ -1199,12 +1194,11 @@ void LevelFile::SaveMissionFile(char const *_filename)
 
 Building *LevelFile::GetBuilding( int _id )
 {
-    for( int i = 0; i < m_buildings.Size(); ++i )
+    for( auto& building : m_buildings )
     {
-        Building *building = m_buildings.GetData(i);
         if( building->m_id.GetUniqueId() == _id )
         {
-            return building;
+            return building.get();
         }
     }
     return nullptr;
@@ -1239,21 +1233,9 @@ int LevelFile::GetCameraAnimId(char const *_name)
 }
 
 
-void LevelFile::RemoveBuilding( int _id )
+void LevelFile::RemoveBuilding( int uniqueId )
 {
-    for( int i = 0; i < m_buildings.Size(); ++i )
-    {
-        if( m_buildings.ValidIndex(i) )
-        {
-            Building *building = m_buildings.GetData(i);
-            if( building->m_id.GetUniqueId() == _id )
-            {
-                m_buildings.RemoveData(i);
-                delete building;
-                break;
-            }
-        }
-    }
+	std::erase_if(m_buildings, [&](const auto& building) { return building->m_id.GetUniqueId() == uniqueId; });
 }
 
 
@@ -1461,53 +1443,49 @@ void LevelFile::GenerateInstantUnits()
     //
     // Record all entities in transit in a Radar Dish beam
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings())
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
-        {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building && building->m_type == Building::TypeRadarDish )
-            {
-                RadarDish *dish = (RadarDish *) building;
-                Vector3 exitPos, exitFront;
-                dish->GetExit( exitPos, exitFront );
+		if( building.m_type == Building::TypeRadarDish )
+		{
+			auto& dish = static_cast<RadarDish&>(building);
+			Vector3 exitPos, exitFront;
+			dish.GetExit( exitPos, exitFront );
 
-                for( int e = 0; e < dish->m_inTransit.Size(); ++e )
-                {
-                    WorldObjectId id = *dish->m_inTransit.GetPointer(e);
-                    Entity *entity = g_app->m_location->GetEntity( id );
+			for( int e = 0; e < dish.m_inTransit.Size(); ++e )
+			{
+				WorldObjectId id = *dish.m_inTransit.GetPointer(e);
+				Entity *entity = g_app->m_location->GetEntity( id );
 
-					if( entity == nullptr )
-						continue;
+				if( entity == nullptr )
+					continue;
 
-					if( entity->m_type == Entity::TypeInsertionSquadie )
-					{
-						// InsertionSquaddies are running programs and will be saved there, so no
-						// need to create an InstantUnit for them. However, we do need to adjust the
-						// position of the squaddies so that they are not dunked in the water when revived
-						entity->m_pos.x = exitPos.x;
-						entity->m_pos.z = exitPos.z;
-						entity->m_pos.y = g_app->m_location->m_landscape.m_heightMap->GetValue(entity->m_pos.x, entity->m_pos.z) + 0.1f;
-					}
-					else
-                    {
-                        InstantUnit *unit = new InstantUnit();
-                        unit->m_type = entity->m_type;
-                        unit->m_teamId = id.GetTeamId();
-                        unit->m_posX = exitPos.x;
-                        unit->m_posZ = exitPos.z;
-                        unit->m_spread = 50;
-                        unit->m_number = 1;
-                        unit->m_inAUnit = false;
-                        unit->m_state = 0;
-                        unit->m_routeId = entity->m_routeId;
-                        unit->m_routeWaypointId = entity->m_routeWayPointId;
-                        //unit->m_waypointX = officer->m_orderPosition.x;
-                        //unit->m_waypointZ = officer->m_orderPosition.z;
-                        m_instantUnits.PutData( unit );
-                    }
-                }
-            }
+				if( entity->m_type == Entity::TypeInsertionSquadie )
+				{
+					// InsertionSquaddies are running programs and will be saved there, so no
+					// need to create an InstantUnit for them. However, we do need to adjust the
+					// position of the squaddies so that they are not dunked in the water when revived
+					entity->m_pos.x = exitPos.x;
+					entity->m_pos.z = exitPos.z;
+					entity->m_pos.y = g_app->m_location->m_landscape.m_heightMap->GetValue(entity->m_pos.x, entity->m_pos.z) + 0.1f;
+				}
+				else
+				{
+					InstantUnit *unit = new InstantUnit();
+					unit->m_type = entity->m_type;
+					unit->m_teamId = id.GetTeamId();
+					unit->m_posX = exitPos.x;
+					unit->m_posZ = exitPos.z;
+					unit->m_spread = 50;
+					unit->m_number = 1;
+					unit->m_inAUnit = false;
+					unit->m_state = 0;
+					unit->m_routeId = entity->m_routeId;
+					unit->m_routeWaypointId = entity->m_routeWayPointId;
+					//unit->m_waypointX = officer->m_orderPosition.x;
+					//unit->m_waypointZ = officer->m_orderPosition.z;
+					m_instantUnits.PutData( unit );
+				}
+			}
         }
     }
 
@@ -1521,84 +1499,80 @@ void LevelFile::GenerateDynamicBuildings()
     // Remove all dynamic buildings from the list
     // that aren't on the level anymore
 
-    for( int i = 0; i < m_buildings.Size(); ++i )
+    for( auto building_itr = m_buildings.begin(); building_itr != m_buildings.end(); )
     {
-        Building *building = m_buildings[i];
+        auto& building = *building_itr;
         if( building && building->m_dynamic )
         {
             Building *locBuilding = g_app->m_location->GetBuilding( building->m_id.GetUniqueId() );
             if( !locBuilding )
             {
-                m_buildings.RemoveData(i);
-                delete building;
-                --i;
+                m_buildings.erase(building_itr);
             }
             else
             {
-                if( building->m_type == Building::TypeAntHill )
-                {
-                    ((AntHill *) building)->m_numAntsInside = ((AntHill *)locBuilding)->m_numAntsInside;
-                }
-                else if( building->m_type == Building::TypeIncubator )
-                {
-                    ((Incubator *) building)->m_numStartingSpirits = ((Incubator *)locBuilding)->NumSpiritsInside();
-                }
-                else if( building->m_type == Building::TypeEscapeRocket )
-                {
-                    ((EscapeRocket *) building)->m_fuel = ((EscapeRocket *)locBuilding)->m_fuel;
-                    ((EscapeRocket *) building)->m_passengers = ((EscapeRocket *)locBuilding)->m_passengers;
-                    ((EscapeRocket *) building)->m_spawnCompleted = ((EscapeRocket *)locBuilding)->m_spawnCompleted;
-                }
-                else if( building->m_type == Building::TypeFenceSwitch )
-                {
-                    ((FenceSwitch *) building)->m_locked = ((FenceSwitch *) locBuilding)->m_locked;
-                    ((FenceSwitch *) building)->m_switchValue = ((FenceSwitch *) locBuilding)->m_switchValue;
-                }
-                else if( building->m_type == Building::TypeLaserFence )
-                {
-                    ((LaserFence *) building)->m_mode = ((LaserFence *) locBuilding)->m_mode;
-                }
-                else if( building->m_type == Building::TypeDynamicHub )
-                {
-                    ((DynamicHub *) building)->m_currentScore = ((DynamicHub *) locBuilding)->m_currentScore;
-                }
-                else if( building->m_type == Building::TypeDynamicNode )
-                {
-                    ((DynamicNode *) building)->m_scoreSupplied = ((DynamicNode *) locBuilding)->m_scoreSupplied;
-                }
-                else if( building->m_type == Building::TypeAISpawnPoint )
-                {
-                    ((AISpawnPoint *) building)->m_spawnLimit = ((AISpawnPoint *) locBuilding)->m_spawnLimit;
-                }
+				switch (building->m_type)
+				{
+					case Building::TypeAntHill:
+						(static_cast<AntHill*>(building.get()))->m_numAntsInside = ((AntHill *)locBuilding)->m_numAntsInside;
+					break;
+
+					case Building::TypeIncubator:
+						(static_cast<Incubator*>(building.get()))->m_numStartingSpirits = ((Incubator *)locBuilding)->NumSpiritsInside();
+					break;
+
+					case Building::TypeEscapeRocket:
+						(static_cast<EscapeRocket*>(building.get()))->m_fuel = ((EscapeRocket *)locBuilding)->m_fuel;
+						(static_cast<EscapeRocket*>(building.get()))->m_passengers = ((EscapeRocket *)locBuilding)->m_passengers;
+						(static_cast<EscapeRocket*>(building.get()))->m_spawnCompleted = ((EscapeRocket *)locBuilding)->m_spawnCompleted;
+					break;
+
+					case Building::TypeFenceSwitch:
+						(static_cast<FenceSwitch*>(building.get()))->m_locked = ((FenceSwitch *) locBuilding)->m_locked;
+						(static_cast<FenceSwitch*>(building.get()))->m_switchValue = ((FenceSwitch *) locBuilding)->m_switchValue;
+					break;
+
+					case Building::TypeLaserFence:
+						(static_cast<LaserFence *>(building.get()))->m_mode = ((LaserFence *) locBuilding)->m_mode;
+					break;
+
+					case Building::TypeDynamicHub:
+						(static_cast<DynamicHub*>(building.get()))->m_currentScore = ((DynamicHub *) locBuilding)->m_currentScore;
+					break;
+
+					case Building::TypeDynamicNode:
+						(static_cast<DynamicNode*>(building.get()))->m_scoreSupplied = ((DynamicNode *) locBuilding)->m_scoreSupplied;
+					break;
+
+					case Building::TypeAISpawnPoint:
+						(static_cast<AISpawnPoint*>(building.get()))->m_spawnLimit = ((AISpawnPoint *) locBuilding)->m_spawnLimit;
+					break;
+				}
             }
         }
+		building_itr++;
     }
 
 
     //
     // Search for new dynamic buildings on the level
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
-        {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building && building->m_dynamic )
-            {
-                Building *levelFileBuilding = GetBuilding( building->m_id.GetUniqueId() );
-                if( !levelFileBuilding )
-                {
-                    Building *newBuilding = Building::CreateBuilding( building->m_type );
-                    newBuilding->m_id = building->m_id;
-                    newBuilding->m_pos = building->m_pos;
-                    newBuilding->m_front = building->m_front;
-                    newBuilding->m_type = building->m_type;
-                    newBuilding->m_dynamic = building->m_dynamic;
-                    newBuilding->m_isGlobal = building->m_isGlobal;
-                    m_buildings.PutData( newBuilding );
-                }
-            }
-        }
+		if( building.m_dynamic )
+		{
+			Building *levelFileBuilding = GetBuilding( building.m_id.GetUniqueId() );
+			if( !levelFileBuilding )
+			{
+				auto& newBuilding = m_buildings.emplace_back( Building::CreateBuilding( building.m_type ) );
+				newBuilding->m_id = building.m_id;
+				newBuilding->m_pos = building.m_pos;
+				newBuilding->m_front = building.m_front;
+				newBuilding->m_type = building.m_type;
+				newBuilding->m_dynamic = building.m_dynamic;
+				newBuilding->m_isGlobal = building.m_isGlobal;
+			}
+		}
     }
 }
 

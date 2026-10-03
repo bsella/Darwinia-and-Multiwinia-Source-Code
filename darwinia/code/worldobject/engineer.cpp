@@ -132,25 +132,21 @@ bool Engineer::SearchForControlTowers()
     int buildingIndex = -1;
     float closest = 99999.9f;
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [i, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeControlTower )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building->m_type == Building::TypeControlTower )
+            auto& ct = static_cast<ControlTower&>(building);
+            Vector3 pos, front;
+            if( (ct.m_id.GetTeamId() != m_id.GetTeamId() || ct.m_ownership < 100.0f) &&
+                ct.GetAvailablePosition(pos, front) != -1 )
             {
-                ControlTower *ct = (ControlTower *) building;
-                Vector3 pos, front;
-                if( (ct->m_id.GetTeamId() != m_id.GetTeamId() || ct->m_ownership < 100.0f) &&
-                    ct->GetAvailablePosition(pos, front) != -1 )
+                float theDist = (building.m_pos - m_pos).Mag();
+                if( theDist <= ENGINEER_SEARCHRANGE &&
+                    theDist < closest )
                 {
-                    float theDist = (building->m_pos - m_pos).Mag();
-                    if( theDist <= ENGINEER_SEARCHRANGE &&
-                        theDist < closest )
-                    {
-                        buildingIndex = i;
-                        closest = theDist;
-                    }
+                    buildingIndex = i;
+                    closest = theDist;
                 }
             }
         }
@@ -158,7 +154,7 @@ bool Engineer::SearchForControlTowers()
 
     if( buildingIndex != -1 )
     {
-        Building *building = g_app->m_location->m_buildings[buildingIndex];
+        auto [_, building] = g_app->m_location->EnumerateBuildings()[buildingIndex];
         m_buildingId = building->m_id.GetUniqueId();
         m_state = StateToControlTower;
         return true;
@@ -173,31 +169,27 @@ bool Engineer::SearchForBridges()
     int buildingIndex = -1;
     float closest = 99999.9f;
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [i, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeBridge)
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building->m_type == Building::TypeBridge)
+            auto& bridge = static_cast<Bridge&>(building);
+            Vector3 pos, front;
+            float theDist = (building.m_pos - m_pos).Mag();
+            if( bridge.GetAvailablePosition( pos, front ) &&
+                bridge.m_status < 100.0f &&
+                theDist <= ENGINEER_SEARCHRANGE &&
+                theDist < closest )
             {
-                Bridge *bridge = (Bridge *) building;
-                Vector3 pos, front;
-                float theDist = (building->m_pos - m_pos).Mag();
-                if( bridge->GetAvailablePosition( pos, front ) &&
-                    bridge->m_status < 100.0f &&
-                    theDist <= ENGINEER_SEARCHRANGE &&
-                    theDist < closest )
-                {
-                    buildingIndex = i;
-                    closest = theDist;
-                }
+                buildingIndex = i;
+                closest = theDist;
             }
         }
     }
 
     if( buildingIndex != -1 )
     {
-        Building *building = g_app->m_location->m_buildings[buildingIndex];
+        auto [_, building] = g_app->m_location->EnumerateBuildings()[buildingIndex];
         m_buildingId = building->m_id.GetUniqueId();
         m_state = StateToBridge;
         return true;
@@ -212,29 +204,25 @@ bool Engineer::SearchForResearchItems()
     float closest = 99999.9f;
     int buildingIndex = -1;
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [i, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeResearchItem)
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building->m_type == Building::TypeResearchItem)
+            auto& item = static_cast<ResearchItem&>(building);
+            float theDist = (building.m_pos - m_pos).Mag();
+            if( item.NeedsReprogram() &&
+                theDist <= ENGINEER_SEARCHRANGE &&
+                theDist < closest )
             {
-                ResearchItem *item = (ResearchItem *) building;
-                float theDist = (building->m_pos - m_pos).Mag();
-                if( item->NeedsReprogram() &&
-                    theDist <= ENGINEER_SEARCHRANGE &&
-                    theDist < closest )
-                {
-                    buildingIndex = i;
-                    closest = theDist;
-                }
+                buildingIndex = i;
+                closest = theDist;
             }
         }
     }
 
     if( buildingIndex != -1 )
     {
-        Building *building = g_app->m_location->m_buildings[buildingIndex];
+        auto [_, building] = g_app->m_location->EnumerateBuildings()[buildingIndex];
         m_buildingId = building->m_id.GetUniqueId();
         Vector3 usToThem = ( building->m_pos - m_pos ).SetLength( 35.0f );
         m_targetPos = building->m_pos - usToThem;
@@ -598,24 +586,20 @@ bool Engineer::SearchForIncubator()
     float nearest = 99999.9f;
     bool found = false;
 
-    for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+    for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
     {
-        if( g_app->m_location->m_buildings.ValidIndex(i) )
+        if( building.m_type == Building::TypeIncubator &&
+            g_app->m_location->IsFriend( building.m_id.GetTeamId(), m_id.GetTeamId() ) )
         {
-            Building *building = g_app->m_location->m_buildings[i];
-            if( building->m_type == Building::TypeIncubator &&
-                g_app->m_location->IsFriend( building->m_id.GetTeamId(), m_id.GetTeamId() ) )
-            {
-                float distance = ( building->m_pos - m_pos ).Mag();
-                int population = ((Incubator *)building)->NumSpiritsInside();
-                distance += population * 10;
+            float distance = ( building.m_pos - m_pos ).Mag();
+            int population = (static_cast<Incubator&>(building)).NumSpiritsInside();
+            distance += population * 10;
 
-                if( distance < nearest )
-                {
-                    m_buildingId = building->m_id.GetUniqueId();
-                    nearest = distance;
-                    found = true;
-                }
+            if( distance < nearest )
+            {
+                m_buildingId = building.m_id.GetUniqueId();
+                nearest = distance;
+                found = true;
             }
         }
     }
@@ -864,8 +848,8 @@ void Engineer::BeginBridge( Vector3 _to )
 
     for( int i = numComponents; i >= 0; --i )
     {
-        Bridge *component = (Bridge *) Building::CreateBuilding( Building::TypeBridge );
-        g_app->m_location->m_buildings.PutData(component);
+        auto& new_building = g_app->m_location->AddBuilding(Building::CreateBuilding( Building::TypeBridge ));
+        auto* component = static_cast<Bridge *>(new_building.get());
         component->m_id.SetUniqueId( g_app->m_globalWorld->GenerateBuildingId() );
         component->m_nextBridgeId = linkBuildingId;
         component->m_pos = m_wayPoint + componentSpan * (float) i;

@@ -513,20 +513,16 @@ bool SpawnPoint::PopulationLocked()
     {
         m_populationLock = -2;
 
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.m_type == TypeSpawnPopulationLock )
             {
-                Building *building = g_app->m_location->m_buildings[i];
-                if( building && building->m_type == TypeSpawnPopulationLock )
+                auto& lock = static_cast<SpawnPopulationLock&>(building);
+                float distance = ( building.m_pos - m_pos ).Mag();
+                if( distance < lock.m_searchRadius )
                 {
-                    SpawnPopulationLock *lock = (SpawnPopulationLock *) building;
-                    float distance = ( building->m_pos - m_pos ).Mag();
-                    if( distance < lock->m_searchRadius )
-                    {
-                        m_populationLock = lock->m_id.GetUniqueId();
-                        break;
-                    }
+                    m_populationLock = lock.m_id.GetUniqueId();
+                    break;
                 }
             }
         }
@@ -831,18 +827,14 @@ bool SpawnPopulationLock::Advance()
 
         int totalOverpopulation = 0;
 
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.m_type == TypeSpawnPopulationLock )
             {
-                Building *building = g_app->m_location->m_buildings[i];
-                if( building && building->m_type == TypeSpawnPopulationLock )
+                auto& lock = static_cast<SpawnPopulationLock&>(building);
+                if( lock.m_teamCount[0] > lock.m_originalMaxPopulation )
                 {
-                    SpawnPopulationLock *lock = (SpawnPopulationLock *) building;
-                    if( lock->m_teamCount[0] > lock->m_originalMaxPopulation )
-                    {
-                        totalOverpopulation += (lock->m_teamCount[0] - lock->m_originalMaxPopulation);
-                    }
+                    totalOverpopulation += (lock.m_teamCount[0] - lock.m_originalMaxPopulation);
                 }
             }
         }

@@ -1161,26 +1161,22 @@ bool TurretShell::Advance()
         Vector3 hitPos(0,0,0);
         Vector3 hitNorm(0,0,0);
 
-        for( int i = 0; i < g_app->m_location->m_buildings.Size(); ++i )
+        for( const auto& [_, building] : g_app->m_location->EnumerateValidBuildings() )
         {
-            if( g_app->m_location->m_buildings.ValidIndex(i) )
+            if( building.DoesRayHit( m_pos, rayDir, (m_vel * SERVER_ADVANCE_PERIOD).Mag(), &hitPos, &hitNorm ) )
             {
-                Building *building = g_app->m_location->m_buildings.GetData(i);
-                if( building->DoesRayHit( m_pos, rayDir, (m_vel * SERVER_ADVANCE_PERIOD).Mag(), &hitPos, &hitNorm ) )
+                for( int p = 0; p < 3; ++p )
                 {
-                    for( int p = 0; p < 3; ++p )
-                    {
-                        Vector3 vel = ( m_pos - building->m_centrePos ).Normalise();
-                        vel *= 50.0f;
-                        vel.x += sfrand(10.0f);
-                        vel.y += frand(10.0f);
-                        vel.z += sfrand(10.0f);
-                        float size = 25.0f + frand(25.0f);
-                        g_app->m_particleSystem->CreateParticle( m_pos, vel, Particle::TypeRocketTrail, size );
-                    }
-                    building->Damage( -2 );
-                    return true;
+                    Vector3 vel = ( m_pos - building.m_centrePos ).Normalise();
+                    vel *= 50.0f;
+                    vel.x += sfrand(10.0f);
+                    vel.y += frand(10.0f);
+                    vel.z += sfrand(10.0f);
+                    float size = 25.0f + frand(25.0f);
+                    g_app->m_particleSystem->CreateParticle( m_pos, vel, Particle::TypeRocketTrail, size );
                 }
+                building.Damage( -2 );
+                return true;
             }
         }
     }

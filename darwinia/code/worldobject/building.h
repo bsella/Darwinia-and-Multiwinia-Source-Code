@@ -9,6 +9,7 @@
 #include "worldobject/worldobject.h"
 
 #include "globals.h"
+#include <memory>
 
 class Shape;
 class ShapeFragment;
@@ -159,8 +160,8 @@ public:
 
 	static const char *GetTypeName    ( int _type );
     static int   GetTypeId	    ( char const *_name );
-    static Building *CreateBuilding ( int _type );
-    static Building *CreateBuilding ( char *_name );
+    static std::unique_ptr<Building> CreateBuilding ( int _type );
+    static std::unique_ptr<Building> CreateBuilding ( char *_name );
 
 	static const char *GetTypeNameTranslated( int _type );
 };

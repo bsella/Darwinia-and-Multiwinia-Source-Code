@@ -2,6 +2,7 @@
 #define INCLUDED_LOCATION_H
 
 #include <float.h>
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -51,7 +52,7 @@ protected:
     void LoadLevel				( char const *_missionFilename, char const *_mapFilename );
 
     void AdvanceWeapons			( int _slice );
-    void AdvanceBuildings		( int _slice );
+    void AdvanceBuildings		();
     void AdvanceTeams			( int _slice );
     void AdvanceSpirits			();
     void AdvanceClouds			( int _slice );
@@ -87,13 +88,13 @@ public:
 
     float           m_christmasTimer;
 
-	std::vector<Light> m_lights;
-    SliceDArray     <Building *>    m_buildings;
+	std::vector<Light>                     m_lights;
     SliceDArray     <Laser>         m_lasers;
     SliceDArray     <WorldObject *> m_effects;
 
 private:
-    std::vector<std::unique_ptr<Spirit>> m_spirits; // Every instance is nullable
+    std::vector<std::unique_ptr<Building>> m_buildings; // Every instance is nullable
+    std::vector<std::unique_ptr<Spirit>>   m_spirits; // Every instance is nullable
 
 public:
     Location();
@@ -163,6 +164,32 @@ public:
 	void RegenerateOpenGlState();
 
     decltype(std::views::enumerate(m_spirits)) EnumerateSpirits();
+    
+    using BuildingPointers = std::views::all_t<decltype(m_buildings)&>;
+    using EnumerateBuildingPointersView = std::ranges::enumerate_view<BuildingPointers>;
+
+    EnumerateBuildingPointersView EnumerateBuildings();
+
+private:
+    struct IsNonNullPtr
+    {
+        bool operator()(const std::tuple<long, std::unique_ptr<Building>&>&) const;
+    };
+
+    using FilterValidEnumerateBuildingsView = std::ranges::filter_view<EnumerateBuildingPointersView, IsNonNullPtr>;
+
+    struct UniquePtrToRef
+    {
+        std::tuple<long, Building&> operator()(const std::tuple<long, std::unique_ptr<Building>&>&) const;
+    };
+
+public:
+
+    using EnumerateValidBuildingsView = std::ranges::transform_view<FilterValidEnumerateBuildingsView, UniquePtrToRef>;
+
+    EnumerateValidBuildingsView EnumerateValidBuildings();
+
+    std::unique_ptr<Building>& AddBuilding(std::unique_ptr<Building>&&);
 };
 
 
