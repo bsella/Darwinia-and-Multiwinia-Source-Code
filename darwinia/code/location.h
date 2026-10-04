@@ -90,10 +90,11 @@ public:
 
     float           m_christmasTimer;
 
-	std::vector<Light>                     m_lights;
-    SliceDArray     <Laser>         m_lasers;
+	std::vector<Light>              m_lights;
     SliceDArray     <WorldObject *> m_effects;
-
+    
+    VectorWithOptionals<Laser>    m_lasers;
+    
 private:
     VectorWithOptionals<Building> m_buildings;
     VectorWithOptionals<Spirit>   m_spirits;

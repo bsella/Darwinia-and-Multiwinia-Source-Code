@@ -78,10 +78,8 @@ Location::Location()
 	m_teams(nullptr),
     m_christmasTimer(-99.9f)
 {
-    m_lasers.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
     m_effects.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
 
-	m_lasers.SetStepSize(100);
 	m_effects.SetSize(100);
 }
 
@@ -141,7 +139,7 @@ void Location::Empty()
 	m_lights.clear();
 	m_buildings.clear();
 	m_spirits.clear();
-    m_lasers.Empty();
+    m_lasers.clear();
     m_effects.Empty();
 
 	delete m_levelFile;			m_levelFile = nullptr;
@@ -618,25 +616,24 @@ bool Location::IsWalkable( Vector3 const &_from, Vector3 const &_to, bool _evalu
 
 void Location::AdvanceWeapons( int _slice )
 {
-    START_PROFILE(g_app->m_profiler, "Advance Lasers");
-    int startIndex, endIndex;
-    m_lasers.GetNextSliceBounds(_slice, &startIndex, &endIndex);
-    for( int i = startIndex; i <= endIndex; ++i )
+    if(_slice == 0)
     {
-        if( m_lasers.ValidIndex(i) )
+        START_PROFILE(g_app->m_profiler, "Advance Lasers");
+        for( auto& laser : m_lasers.Optionals() )
         {
-            Laser *l = m_lasers.GetPointer(i);
-            bool remove = l->Advance();
+            if(!laser) continue;
+            
+            bool remove = laser->Advance();
             if( remove )
             {
-                m_lasers.MarkNotUsed(i);
+                laser.reset();
             }
         }
+        END_PROFILE(g_app->m_profiler, "Advance Lasers");
     }
-    END_PROFILE(g_app->m_profiler, "Advance Lasers");
-
 
     START_PROFILE(g_app->m_profiler, "Advance Effects");
+    int startIndex, endIndex;
     m_effects.GetNextSliceBounds(_slice, &startIndex, &endIndex);
     for( int i = startIndex; i <= endIndex; ++i )
     {
@@ -1231,21 +1228,9 @@ void Location::RenderWeapons()
 	g_app->m_camera->SetupProjectionMatrix(nearPlaneStart * 1.2f,
 									 	   g_app->m_renderer->GetFarPlane());
 
-	for( int i = 0; i < m_lasers.Size(); ++i )
+	for( auto& laser : m_lasers.Values() )
 	{
-		if( m_lasers.ValidIndex(i) )
-		{
-			Laser *l = m_lasers.GetPointer(i);
-
-			if( i > m_lasers.GetLastUpdated() )
-			{
-				l->Render( timeSinceAdvance + SERVER_ADVANCE_PERIOD );
-			}
-			else
-			{
-				l->Render( timeSinceAdvance );
-			}
-		}
+		laser.Render( timeSinceAdvance );
 	}
 
 	glDisable		(GL_TEXTURE_2D);
@@ -1781,7 +1766,7 @@ void Location::FireLaser( Vector3 const &_pos, Vector3 const &_vel, unsigned cha
         case 4 :        lifetime = 1.0f;            break;
     }
 
-    Laser *l = m_lasers.GetPointer();
+    auto& l = m_lasers.AddOptional(std::make_unique<Laser>());
     l->m_pos = _pos;
     l->m_vel = _vel;
     l->m_fromTeamId = _teamId;

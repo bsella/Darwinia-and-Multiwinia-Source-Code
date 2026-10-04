@@ -416,14 +416,11 @@ bool Demo2Tutorial::AdvanceCurrentChapter()
 
         case 8:                         // Fire lasers
             HandleSquadDeath();
-            for( int l = 0; l < g_app->m_location->m_lasers.Size(); ++l )
+            for( const auto& laser : g_app->m_location->m_lasers.Values() )
             {
-                if( g_app->m_location->m_lasers.ValidIndex(l) )
+                if( laser.m_fromTeamId == 2 )
                 {
-                    if( g_app->m_location->m_lasers[l].m_fromTeamId == 2 )
-                    {
-                        m_nextChapterTimer = GetHighResTime() + 5.0f;
-                    }
+                    m_nextChapterTimer = GetHighResTime() + 5.0f;
                 }
             }
             break;

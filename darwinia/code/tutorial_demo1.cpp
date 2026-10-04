@@ -18,6 +18,7 @@
 
 #include "worldobject/controltower.h"
 #include "worldobject/officer.h"
+#include <iterator>
 
 
 Demo1Tutorial::Demo1Tutorial()
@@ -330,7 +331,7 @@ bool Demo1Tutorial::AdvanceCurrentChapter()
         case 9:                         // Fire lasers
         {
             HandleSquadDeath();
-            if( g_app->m_location->m_lasers.NumUsed() > 3 )
+            if( std::ranges::distance(g_app->m_location->m_lasers.Values()) > 3 )
             {
                 m_nextChapterTimer = GetHighResTime() + 5.0f;
             }
