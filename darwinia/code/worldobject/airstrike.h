@@ -34,7 +34,7 @@ public:
     bool Advance    () override;
     void Render     ( float _predictionTime ) override;
 
-    bool IsInView   () override;
+    bool IsInView   () const override;
 };
 
 

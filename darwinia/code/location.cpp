@@ -276,9 +276,10 @@ std::vector<Entity*> Location::SpawnEntities( Vector3 const &_pos, unsigned char
         new_entities.push_back(s);
     }
 
-    if( _unitId != -1 )
+    if( _unitId != -1 && team->m_units.Optionals().size() > _unitId)
     {
-        team->m_units[ _unitId ]->RecalculateOffsets();
+        if(auto& unit = team->m_units.Optionals()[_unitId])
+            unit->RecalculateOffsets();
     }
 
     return new_entities;
@@ -424,16 +425,18 @@ Entity *Location::GetEntity( WorldObjectId _id )
         return nullptr;
     }
 
-    if( m_teams[teamId].m_units.size() > unitId )
+    if( unitId != -1 && m_teams[teamId].m_units.Optionals().size() > unitId )
     {
-        Unit *unit = m_teams[teamId].m_units[unitId].get();
-        if( index != -1 && unit->m_entities.Optionals().size() > index )
+        if(auto& unit = m_teams[teamId].m_units.Optionals()[unitId])
         {
-            if(auto& entity = unit->m_entities.Optionals()[index])
+            if( index != -1 && unit->m_entities.Optionals().size() > index )
             {
-                if( entity->m_id.GetUniqueId() == uniqueId )
+                if(auto& entity = unit->m_entities.Optionals()[index])
                 {
-                    return entity.get();
+                    if( entity->m_id.GetUniqueId() == uniqueId )
+                    {
+                        return entity.get();
+                    }
                 }
             }
         }
@@ -497,9 +500,9 @@ Unit *Location::GetUnit( WorldObjectId _id )
         return nullptr;
     }
 
-    if( m_teams[teamId].m_units.size() > unitId )
+    if( unitId != -1 && m_teams[teamId].m_units.Optionals().size() > unitId )
     {
-        return m_teams[teamId].m_units[unitId].get();
+        return m_teams[teamId].m_units.Optionals()[unitId].get();
     }
 
     return nullptr;
@@ -1522,12 +1525,12 @@ Unit* Location::GetUnit( Vector3 const &startRay, Vector3 const &direction, unsi
     // zoom in and perform ray-sphere checks against each entity, because a unit
     // can become seperated so its bounding sphere covers a very large area.
 
-    for( const auto& theUnit : m_teams[team].m_units)
+    for( auto& theUnit : m_teams[team].m_units.Values())
     {
-        bool rayHit = RaySphereIntersection( startRay, direction, theUnit->m_centrePos, theUnit->m_radius*1.5f );
-        if( rayHit && theUnit->NumAliveEntities() > 0 )
+        bool rayHit = RaySphereIntersection( startRay, direction, theUnit.m_centrePos, theUnit.m_radius*1.5f );
+        if( rayHit && theUnit.NumAliveEntities() > 0 )
         {
-            for( auto& entity : theUnit->m_entities.Values() )
+            for( const auto& entity : theUnit.m_entities.Values() )
             {
                 Vector3 spherePos = entity.m_pos + entity.m_centrePos;
                 float sphereRadius = entity.m_radius * 1.5f;
@@ -1544,7 +1547,7 @@ Unit* Location::GetUnit( Vector3 const &startRay, Vector3 const &direction, unsi
                     if( rangeSqd < closestRangeSqd )
                     {
                         closestRangeSqd = rangeSqd;
-                        unit = theUnit.get();
+                        unit = &theUnit;
                     }
                 }
             }

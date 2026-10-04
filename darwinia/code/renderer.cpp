@@ -1155,17 +1155,17 @@ void Renderer::PreRenderPixelEffect()
     {
         if( g_app->m_location->m_teams[t].m_teamType != Team::TeamTypeUnused )
         {
-            for( const auto& unit : g_app->m_location->m_teams[t].m_units )
+            for( auto& unit : g_app->m_location->m_teams[t].m_units.Values() )
             {
-				if( unit->m_troopType == Entity::TypeInsertionSquadie ||
-					unit->m_troopType == Entity::TypeCentipede )
+				if( unit.m_troopType == Entity::TypeInsertionSquadie ||
+					unit.m_troopType == Entity::TypeCentipede )
 				{
-					if( unit->IsInView() )
+					if( unit.IsInView() )
 					{
-						float distance = ( unit->m_centrePos - camPos ).Mag();
+						float distance = ( unit.m_centrePos - camPos ).Mag();
 						if( distance < cutoff )
 						{
-							for( auto& entity : unit->m_entities.Values() )
+							for( auto& entity : unit.m_entities.Values() )
 							{
 								bool rendered = entity.RenderPixelEffect( g_predictionTime );
 								if( rendered )

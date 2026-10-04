@@ -160,9 +160,9 @@ Unit *Team::GetMyUnit()
 Entity *Team::RayHitEntity(Vector3 const &_rayStart, Vector3 const &_rayEnd)
 {
 	// Hit against Units
-	for (const auto& unit : m_units)
+	for (auto& unit : m_units.Values())
 	{
-        Entity *result = unit->RayHit(_rayStart, _rayEnd);
+        Entity *result = unit.RayHit(_rayStart, _rayEnd);
         if (result)
         {
             return result;
@@ -191,27 +191,30 @@ Entity *Team::GetMyEntity()
 
 Unit& Team::NewUnit(int _troopType, int _numEntities, int *_unitId, Vector3 const &_pos)
 {
-    *_unitId = m_units.size();
     std::unique_ptr<Unit> unit;
 
 	if (_troopType == Entity::TypeInsertionSquadie)
 	{
-		unit = std::make_unique<InsertionSquad>( m_teamId, *_unitId, _numEntities, _pos );
+		unit = std::make_unique<InsertionSquad>( m_teamId, 0, _numEntities, _pos );
 	}
 	else if(_troopType == Entity::TypeSpaceInvader)
     {
-        unit = std::make_unique<AirstrikeUnit>( m_teamId, *_unitId, _numEntities, _pos );
+        unit = std::make_unique<AirstrikeUnit>( m_teamId, 0, _numEntities, _pos );
     }
 	else if(_troopType == Entity::TypeVirii)
     {
-        unit =  std::make_unique<ViriiUnit>( m_teamId, *_unitId, _numEntities, _pos );
+        unit =  std::make_unique<ViriiUnit>( m_teamId, 0, _numEntities, _pos );
     }
 	else
 	{
-		unit = std::make_unique<Unit>( _troopType, m_teamId, *_unitId, _numEntities, _pos );
+		unit = std::make_unique<Unit>( _troopType, m_teamId, 0, _numEntities, _pos );
 	}
 
-    auto& new_unit = m_units.emplace_back(std::move(unit));
+    auto [id, new_unit] = m_units.AddOrReplaceFirstNull(std::move(unit));
+
+    *_unitId = id;
+    new_unit->m_unitId = id;
+
     new_unit->Begin();
     return *new_unit.get();
 }
@@ -228,9 +231,12 @@ Entity *Team::NewEntity(int _troopType, int _unitId, int *_index)
     }
 	else
     {
-        if( m_units.size() > _unitId )
+        if( m_units.Optionals().size() > _unitId )
         {
-            return m_units[_unitId]->NewEntity( _index );
+            if(auto& unit = m_units.Optionals()[_unitId])
+            {
+                return unit->NewEntity( _index );
+            }
         }
     }
 
@@ -241,11 +247,11 @@ int Team::NumEntities( int _troopType)
 {
     int result = 0;
 
-    for( const auto& unit : m_units )
+    for( const auto& unit : m_units.Values() )
     {
-		if( unit->m_troopType == _troopType )
+		if( unit.m_troopType == _troopType )
 		{
-			result += unit->NumEntities();
+			result += unit.NumEntities();
 		}
     }
 
@@ -270,26 +276,24 @@ void Team::Advance()
     // Advance all Units
 
     START_PROFILE(g_app->m_profiler, "Advance Unit Entities");
-    for( const auto& unit : m_units )
+    for( auto& unit : m_units.Values() )
     {
-        unit->AdvanceEntities();
+        unit.AdvanceEntities();
     }
     END_PROFILE(g_app->m_profiler, "Advance Unit Entities");
 
     START_PROFILE(g_app->m_profiler, "Advance Units");
-    for( auto unit_itr = m_units.begin(); unit_itr != m_units.end(); )
+    for( auto& unit : m_units.Optionals() )
     {
-        bool amIDead = (*unit_itr)->Advance();
+        if(!unit) continue;
+
+        bool amIDead = unit->Advance();
         if(amIDead)
         {
-            if(unit_itr->get() == m_currentUnit)
+            if(unit.get() == m_currentUnit)
                 m_currentUnit = nullptr;
             
-            m_units.erase(unit_itr);
-        }
-        else
-        {
-            ++unit_itr;
+            unit.reset();
         }
     }
     END_PROFILE(g_app->m_profiler, "Advance Units");
@@ -357,13 +361,13 @@ void Team::Render()
 	glEnable        ( GL_ALPHA_TEST );
     glAlphaFunc     ( GL_GREATER, 0.02f );
 
-    for(const auto& unit : m_units)
+    for(auto& unit : m_units.Values())
     {
-		if( unit->IsInView() )
+		if( unit.IsInView() )
 		{
-			START_PROFILE( g_app->m_profiler, Entity::GetTypeName( unit->m_troopType ) );
-			unit->Render(timeSinceAdvance);
-			END_PROFILE( g_app->m_profiler, Entity::GetTypeName( unit->m_troopType ) );
+			START_PROFILE( g_app->m_profiler, Entity::GetTypeName( unit.m_troopType ) );
+			unit.Render(timeSinceAdvance);
+			END_PROFILE( g_app->m_profiler, Entity::GetTypeName( unit.m_troopType ) );
 		}
     }
 

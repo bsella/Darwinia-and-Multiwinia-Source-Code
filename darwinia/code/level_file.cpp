@@ -1293,12 +1293,12 @@ void LevelFile::GenerateInstantUnits()
         Team *team = &g_app->m_location->m_teams[t];
         if( team->m_teamType == Team::TeamTypeCPU )
         {
-            for( const auto& unit : team->m_units )
+            for( const auto& unit : team->m_units.Values() )
             {
 				Vector3 centrePos;
 				float roamRange = 0;
 				int numFound = 0;
-				for( auto& entity : unit->m_entities.Values() )
+				for( const auto& entity : unit.m_entities.Values() )
 				{
 					centrePos += entity.m_spawnPoint;
 					roamRange += entity.m_roamRange;
@@ -1309,15 +1309,15 @@ void LevelFile::GenerateInstantUnits()
 				roamRange /= (float) numFound;
 
 				InstantUnit *instant = new InstantUnit();
-				instant->m_type = unit->m_troopType;
-				instant->m_teamId = unit->m_teamId;
+				instant->m_type = unit.m_troopType;
+				instant->m_teamId = unit.m_teamId;
 				instant->m_posX = centrePos.x;
 				instant->m_posZ = centrePos.z;
 				instant->m_number = numFound;
 				instant->m_inAUnit = true;
 				instant->m_spread = roamRange;
-				instant->m_routeId = unit->m_routeId;
-				instant->m_routeWaypointId = unit->m_routeWayPointId;
+				instant->m_routeId = unit.m_routeId;
+				instant->m_routeWaypointId = unit.m_routeWayPointId;
 				m_instantUnits.PutData( instant );
             }
         }

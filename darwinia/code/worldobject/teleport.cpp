@@ -227,9 +227,9 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
 
                 if( newUnitId != -1 )
                 {
-                    if( g_app->m_location->m_teams[ _id.GetTeamId() ].m_units.size() > newUnitId )
+                    if( g_app->m_location->m_teams[ _id.GetTeamId() ].m_units.Optionals().size() > newUnitId )
                     {
-                        newUnit = g_app->m_location->m_teams[ _id.GetTeamId() ].m_units[ newUnitId ].get();
+                        newUnit = g_app->m_location->m_teams[ _id.GetTeamId() ].m_units.Optionals()[ newUnitId ].get();
                     }
                     else
                     {

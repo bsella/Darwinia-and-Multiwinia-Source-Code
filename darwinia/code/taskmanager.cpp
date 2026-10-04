@@ -828,12 +828,12 @@ LList <TaskTargetArea> *TaskManager::GetTargetArea( int _id )
             case GlobalResearch::TypeEngineer:
             {
                 Team *team = g_app->m_location->GetMyTeam();
-                for( const auto& unit :  team->m_units )
+                for( const auto& unit : team->m_units.Values() )
                 {
-                    if( unit->m_troopType == Entity::TypeInsertionSquadie )
+                    if( unit.m_troopType == Entity::TypeInsertionSquadie )
                     {
                         TaskTargetArea tta;
-                        tta.m_centre = unit->m_centrePos;
+                        tta.m_centre = unit.m_centrePos;
                         tta.m_radius = 100.0f;
                         tta.m_stationary = false;
                         result->PutData( tta );

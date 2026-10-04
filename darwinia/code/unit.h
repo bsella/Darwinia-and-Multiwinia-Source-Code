@@ -56,12 +56,12 @@ public:
             void    AdvanceEntities ();
     virtual void    Render          ( float _predictionTime );
 
-    virtual bool    IsInView        ();
+    virtual bool    IsInView        () const;
 
     Entity  *NewEntity              ( int *_index );
     int     AddEntity               ( std::unique_ptr<Entity>&& );
-    int     NumEntities             ();
-    int     NumAliveEntities        ();                                 // Does not count entities still in the unit, but their m_dead=true
+    int     NumEntities             () const;
+    int     NumAliveEntities        () const;                                 // Does not count entities still in the unit, but their m_dead=true
     void    UpdateEntityPosition    ( Vector3 pos, float _radius );
     void    RecalculateOffsets      ();
 

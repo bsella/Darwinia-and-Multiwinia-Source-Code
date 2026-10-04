@@ -101,7 +101,7 @@ void Unit::AdvanceEntities()
 }
 
 
-bool Unit::IsInView()
+bool Unit::IsInView() const
 {
     return( g_app->m_camera->SphereInViewFrustum( m_centrePos, m_radius ) );
 }
@@ -184,15 +184,15 @@ bool Unit::Advance( )
     return false;
 }
 
-int Unit::NumEntities()
+int Unit::NumEntities() const
 {
     return std::ranges::distance(m_entities.Values());
 }
 
 
-int Unit::NumAliveEntities()
+int Unit::NumAliveEntities() const
 {
-    return std::ranges::count_if(m_entities.Values(), [](Entity& entity){return !entity.m_dead;});
+    return std::ranges::count_if(m_entities.Values(), [](const Entity& entity){return !entity.m_dead;});
 }
 
 

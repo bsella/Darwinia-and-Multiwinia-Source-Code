@@ -158,7 +158,7 @@ bool AirstrikeUnit::Advance()
 }
 
 
-bool AirstrikeUnit::IsInView()
+bool AirstrikeUnit::IsInView() const
 {
     return true;
 }
