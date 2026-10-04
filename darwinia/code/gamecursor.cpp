@@ -128,14 +128,10 @@ WorldObjectOrUnit GameCursor::GetSelectedObject(Vector3 &_pos )
                 _pos = selected->m_centrePos + selected->m_vel * g_predictionTime;
 
                 // Add the centre pos
-                for( int i = 0; i < selected->m_entities.Size(); ++i )
+                for( auto& entity : selected->m_entities.Values() )
                 {
-                    if( selected->m_entities.ValidIndex(i) )
-                    {
-                        Entity *ent = selected->m_entities[i];
-                        _pos += ent->m_centrePos;
-                        break;
-                    }
+                    _pos += entity.m_centrePos;
+                    break;
                 }
 
                 return selected;
@@ -212,14 +208,10 @@ WorldObjectOrUnit GameCursor::GetHighlightedObject( Vector3 &_pos, float &_radiu
             _radius = unit->m_radius;
 
             // Add the centre pos
-            for( int i = 0; i < unit->m_entities.Size(); ++i )
+            for( auto& entity : unit->m_entities.Values() )
             {
-                if( unit->m_entities.ValidIndex(i) )
-                {
-                    Entity *ent = unit->m_entities[i];
-                    _pos += ent->m_centrePos;
-                    break;
-                }
+                _pos += entity.m_centrePos;
+                break;
             }
 
             return unit;

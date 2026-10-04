@@ -63,25 +63,22 @@ void Centipede::Begin()
 
         if( myUnit )
         {
-            float size = 0.2f * pow(1.1f, myUnit->m_entities.Size() );
+            float size = 0.2f * pow(1.1f, myUnit->m_entities.Optionals().size() );
             size = std::min( size, 10.0f );
 
             Centipede *prev = nullptr;
 
-            for( int i = 0; i < myUnit->m_entities.Size(); ++i )
+            for( auto& entity : myUnit->m_entities.Values() )
             {
-                if( myUnit->m_entities.ValidIndex(i) )
+                auto& centipede = static_cast<Centipede&>(entity);
+                centipede.m_size = size;
+                size /= 1.1f;
+                if( prev )
                 {
-                    Centipede *centipede = (Centipede *) myUnit->m_entities[i];
-                    centipede->m_size = size;
-                    size /= 1.1f;
-                    if( prev )
-                    {
-                        prev->m_prev = centipede->m_id;
-                        centipede->m_next = prev->m_id;
-                    }
-                    prev = centipede;
+                    prev->m_prev = centipede.m_id;
+                    centipede.m_next = prev->m_id;
                 }
+                prev = &centipede;
             }
         }
     }

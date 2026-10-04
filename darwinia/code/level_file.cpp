@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iterator>
 #include <string.h>
 #include <stdio.h>
 
@@ -1297,15 +1298,11 @@ void LevelFile::GenerateInstantUnits()
 				Vector3 centrePos;
 				float roamRange = 0;
 				int numFound = 0;
-				for( int i = 0; i < unit->m_entities.Size(); ++i )
+				for( auto& entity : unit->m_entities.Values() )
 				{
-					if( unit->m_entities.ValidIndex(i) )
-					{
-						Entity *entity = unit->m_entities[i];
-						centrePos += entity->m_spawnPoint;
-						roamRange += entity->m_roamRange;
-						numFound++;
-					}
+					centrePos += entity.m_spawnPoint;
+					roamRange += entity.m_roamRange;
+					numFound++;
 				}
 
 				centrePos /= (float) numFound;
@@ -1650,22 +1647,17 @@ void LevelFile::WriteRunningPrograms(FileWriter *_out)
                     {
                         _out->printf( "\t%-15s %6d %6d %6d %8.2f %8.2f",
                                             Entity::GetTypeName(Entity::TypeInsertionSquadie),
-                                            squad->m_entities.NumUsed(),
+                                            std::ranges::distance(squad->m_entities.Values()),
                                             0,
                                             squad->m_weaponType,
                                             squad->GetWayPoint().x, squad->GetWayPoint().z );
 
-                        for( int e = 0; e < squad->m_entities.Size(); ++e )
+                        for( auto& entity : squad->m_entities.Values() )
                         {
-                            if( squad->m_entities.ValidIndex(e) )
-                            {
-                                Entity *entity = squad->m_entities[e];
-
-                                _out->printf( " %8.2f %8.2f %6d",
-                                                    entity->m_pos.x,
-                                                    entity->m_pos.z,
-                                                    entity->m_stats[Entity::StatHealth] );
-                            }
+							_out->printf( " %8.2f %8.2f %6d",
+												entity.m_pos.x,
+												entity.m_pos.z,
+												entity.m_stats[Entity::StatHealth] );
                         }
 
                         _out->printf( "\n" );

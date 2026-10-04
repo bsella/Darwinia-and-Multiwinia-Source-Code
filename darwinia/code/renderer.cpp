@@ -1165,25 +1165,13 @@ void Renderer::PreRenderPixelEffect()
 						float distance = ( unit->m_centrePos - camPos ).Mag();
 						if( distance < cutoff )
 						{
-							for( int j = 0; j < unit->m_entities.Size(); ++j )
+							for( auto& entity : unit->m_entities.Values() )
 							{
-								if( unit->m_entities.ValidIndex(j) )
+								bool rendered = entity.RenderPixelEffect( g_predictionTime );
+								if( rendered )
 								{
-									Entity *entity = unit->m_entities[j];
-									bool rendered = false;
-									if( j <= unit->m_entities.GetLastUpdated() )
-									{
-										rendered = entity->RenderPixelEffect( g_predictionTime );
-									}
-									else
-									{
-										rendered = entity->RenderPixelEffect( g_predictionTime+SERVER_ADVANCE_PERIOD );
-									}
-									if( rendered )
-									{
-										float distance = (entity->m_pos - g_app->m_camera->GetPos()).Mag();
-										if( distance < nearest ) nearest = distance;
-									}
+									float distance = (entity.m_pos - g_app->m_camera->GetPos()).Mag();
+									if( distance < nearest ) nearest = distance;
 								}
 							}
 						}

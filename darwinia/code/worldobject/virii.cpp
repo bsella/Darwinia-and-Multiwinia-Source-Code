@@ -85,28 +85,9 @@ void ViriiUnit::Render( float _predictionTime )
     //
 	// Render all the entities that are up-to-date with server advances
 
-    int lastUpdated = m_entities.GetLastUpdated();
-    for (int i = 0; i <= lastUpdated; i++)
+    for (auto& entity : m_entities.Values())
 	{
-        if (m_entities.ValidIndex(i))
-        {
-            Virii *virii = (Virii *) m_entities[i];
-            virii->Render( _predictionTime, m_teamId, viriiDetail );
-        }
-	}
-
-    //
-	// Render all the entities that are one step out-of-date with server advances
-
-	int size = m_entities.Size();
-	_predictionTime += SERVER_ADVANCE_PERIOD;
-	for (int i = lastUpdated + 1; i < size; i++)
-	{
-        if (m_entities.ValidIndex(i))
-        {
-            Virii *virii = (Virii *) m_entities[i];
-            virii->Render( _predictionTime, m_teamId, viriiDetail );
-        }
+        static_cast<Virii&>(entity).Render( _predictionTime, m_teamId, viriiDetail );
 	}
 
     glEnd           ();

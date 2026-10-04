@@ -365,13 +365,9 @@ void Task::Stop()
         {
             if( m_unit )
             {
-                for( int i = 0; i < m_unit->m_entities.Size(); ++i )
+                for( auto& entity : m_unit->m_entities.Values() )
                 {
-                    if( m_unit->m_entities.ValidIndex(i) )
-                    {
-                        Entity *entity = m_unit->m_entities[i];
-                        entity->ChangeHealth( -1000 );
-                    }
+                    entity.ChangeHealth( -1000 );
                 }
             }
             break;

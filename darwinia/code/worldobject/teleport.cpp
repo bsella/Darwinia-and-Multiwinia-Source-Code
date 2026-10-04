@@ -1,4 +1,5 @@
-﻿#include <math.h>
+﻿#include <iterator>
+#include <math.h>
 
 #include "lib/debug_utils.h"
 #include "lib/shape.h"
@@ -241,7 +242,7 @@ void Teleport::EnterTeleport( WorldObjectId _id, bool _relay )
                     //
                     // Oh well, i'm the first, so create a new unit
                     newUnit = &g_app->m_location->m_teams[ _id.GetTeamId() ].NewUnit( oldUnit->m_troopType,
-                                                                                  oldUnit->m_entities.NumUsed(),
+                                                                                  std::ranges::distance(oldUnit->m_entities.Values()),
                                                                                   &newUnitId,
 																			      m_pos);
 

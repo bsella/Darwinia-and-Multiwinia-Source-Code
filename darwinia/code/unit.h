@@ -3,6 +3,7 @@
 
 #include "lib/slice_darray.h"
 #include "lib/vector3.h"
+#include "lib/vector_with_options.hpp"
 
 #include "worldobject/entity.h"
 
@@ -18,7 +19,7 @@ public:
     int                 m_teamId;
     int                 m_unitId;
     int                 m_troopType;
-    SliceDArray         <Entity *> m_entities;
+    VectorWithOptionals<Entity> m_entities;
 
     Vector3             m_centrePos;
     Vector3             m_vel;
@@ -52,14 +53,13 @@ public:
     virtual void    Begin           ();
     virtual bool    Advance         ( );
     virtual void    Attack          ( Vector3 pos, bool withGrenade );
-    virtual void    AdvanceEntities ( int _slice );
+            void    AdvanceEntities ();
     virtual void    Render          ( float _predictionTime );
 
     virtual bool    IsInView        ();
 
     Entity  *NewEntity              ( int *_index );
-    int     AddEntity               ( Entity *_entity );
-    void    RemoveEntity            ( int _index, float _posX, float _posZ );
+    int     AddEntity               ( std::unique_ptr<Entity>&& );
     int     NumEntities             ();
     int     NumAliveEntities        ();                                 // Does not count entities still in the unit, but their m_dead=true
     void    UpdateEntityPosition    ( Vector3 pos, float _radius );

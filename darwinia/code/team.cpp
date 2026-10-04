@@ -271,93 +271,90 @@ int Team::NumEntities( int _troopType)
 
 void Team::Advance(int _slice)
 {
+    if( m_teamType <= TeamTypeUnused )
+        return;
+
     //
     // Advance all Units
 
-    if( m_teamType > TeamTypeUnused )
+    if( _slice == 0 )
     {
         START_PROFILE(g_app->m_profiler, "Advance Unit Entities");
         for( const auto& unit : m_units )
         {
-			unit->AdvanceEntities(_slice);
+            unit->AdvanceEntities();
         }
         END_PROFILE(g_app->m_profiler, "Advance Unit Entities");
 
-        if( _slice == 0 )
+        START_PROFILE(g_app->m_profiler, "Advance Units");
+        for( auto unit_itr = m_units.begin(); unit_itr != m_units.end(); )
         {
-            START_PROFILE(g_app->m_profiler, "Advance Units");
-            for( auto unit_itr = m_units.begin(); unit_itr != m_units.end(); )
+            bool amIDead = (*unit_itr)->Advance();
+            if(amIDead)
             {
-				bool amIDead = (*unit_itr)->Advance();
-				if(amIDead)
-				{
-					if(unit_itr->get() == m_currentUnit)
-						m_currentUnit = nullptr;
-					
-					m_units.erase(unit_itr);
-				}
-				else
-				{
-					++unit_itr;
-				}
+                if(unit_itr->get() == m_currentUnit)
+                    m_currentUnit = nullptr;
+                
+                m_units.erase(unit_itr);
             }
-            END_PROFILE(g_app->m_profiler, "Advance Units");
+            else
+            {
+                ++unit_itr;
+            }
         }
+        END_PROFILE(g_app->m_profiler, "Advance Units");
     }
 
 
     //
     // Advance all Other entities
 
-    if( m_teamType > TeamTypeUnused )
+    START_PROFILE(g_app->m_profiler, "Advance Others");
+    int startIndex, endIndex;
+    m_others.GetNextSliceBounds(_slice, &startIndex, &endIndex);
+
+    for (int i = startIndex; i <= endIndex; i++)
     {
-        START_PROFILE(g_app->m_profiler, "Advance Others");
-        int startIndex, endIndex;
-        m_others.GetNextSliceBounds(_slice, &startIndex, &endIndex);
-
-        for (int i = startIndex; i <= endIndex; i++)
+        if( m_others.ValidIndex(i) )
         {
-            if( m_others.ValidIndex(i) )
+            Entity *ent = m_others[i];
+            if( ent->m_enabled )
             {
-                Entity *ent = m_others[i];
-                if( ent->m_enabled )
-                {
-                    Vector3 oldPos( ent->m_pos );
-                    WorldObjectId myId( m_teamId, -1, i, ent->m_id.GetUniqueId() );
+                Vector3 oldPos( ent->m_pos );
+                WorldObjectId myId( m_teamId, -1, i, ent->m_id.GetUniqueId() );
 
-					const char *entityName = Entity::GetTypeName( ent->m_type );
-                    START_PROFILE( g_app->m_profiler, entityName );
-                    bool amIdead = ent->Advance(nullptr);
-                    END_PROFILE( g_app->m_profiler, entityName );
+                const char *entityName = Entity::GetTypeName( ent->m_type );
+                START_PROFILE( g_app->m_profiler, entityName );
+                bool amIdead = ent->Advance(nullptr);
+                END_PROFILE( g_app->m_profiler, entityName );
 
 #ifdef PROFILER_ENABLED
-                    DarwiniaDebugAssert( strcmp(g_app->m_profiler->m_currentElement->m_name, "Advance Others") == 0 );
+                DarwiniaDebugAssert( strcmp(g_app->m_profiler->m_currentElement->m_name, "Advance Others") == 0 );
 #endif
 
-                    if( amIdead )
-                    {
-                        g_app->m_location->m_entityGrid->RemoveObject( myId, oldPos.x, oldPos.z, ent->m_radius );
-                        m_others.MarkNotUsed(i);
+                if( amIdead )
+                {
+                    g_app->m_location->m_entityGrid->RemoveObject( myId, oldPos.x, oldPos.z, ent->m_radius );
+                    m_others.MarkNotUsed(i);
 
-                        if(ent == m_currentEntity)
-                            m_currentEntity = nullptr;
-                        
-                        delete ent;
-                    }
-                    else if( !ent->m_enabled )
-                    {
-                        g_app->m_location->m_entityGrid->RemoveObject( myId, oldPos.x, oldPos.z, ent->m_radius );
-                    }
-                    else
-                    {
-                        g_app->m_location->m_entityGrid->UpdateObject( myId, oldPos.x, oldPos.z, ent->m_pos.x, ent->m_pos.z, ent->m_radius );
-                    }
+                    if(ent == m_currentEntity)
+                        m_currentEntity = nullptr;
+                    
+                    delete ent;
+                }
+                else if( !ent->m_enabled )
+                {
+                    g_app->m_location->m_entityGrid->RemoveObject( myId, oldPos.x, oldPos.z, ent->m_radius );
+                }
+                else
+                {
+                    g_app->m_location->m_entityGrid->UpdateObject( myId, oldPos.x, oldPos.z, ent->m_pos.x, ent->m_pos.z, ent->m_radius );
                 }
             }
         }
-
-		END_PROFILE(g_app->m_profiler, "Advance Others");
     }
+
+    END_PROFILE(g_app->m_profiler, "Advance Others");
 }
 
 void Team::Render()

@@ -429,12 +429,14 @@ Entity *Location::GetEntity( WorldObjectId _id )
     if( m_teams[teamId].m_units.size() > unitId )
     {
         Unit *unit = m_teams[teamId].m_units[unitId].get();
-        if( unit->m_entities.ValidIndex( index ) )
+        if( index != -1 && unit->m_entities.Optionals().size() > index )
         {
-            Entity *entity = unit->m_entities[index];
-            if( entity->m_id.GetUniqueId() == uniqueId )
+            if(auto& entity = unit->m_entities.Optionals()[index])
             {
-                return entity;
+                if( entity->m_id.GetUniqueId() == uniqueId )
+                {
+                    return entity.get();
+                }
             }
         }
     }
@@ -1393,10 +1395,9 @@ void Location::InitialiseTeam( unsigned char _teamId, unsigned char _teamType )
 
                 SpawnEntities( pos, _teamId, unitId, Entity::TypeInsertionSquadie, program->m_count, g_zeroVector, 10.0f );
 
-                for( int s = 0; s < squad->m_entities.Size(); ++s )
+                for( const auto& [s, entity] : squad->m_entities.EnumerateOptionals() )
                 {
-                    DarwiniaDebugAssert( squad->m_entities.ValidIndex(s) );
-                    Entity *entity = squad->m_entities[s];
+                    DarwiniaDebugAssert( entity );
                     entity->m_stats[Entity::StatHealth] = program->m_health[s];
                 }
 
@@ -1539,28 +1540,24 @@ Unit* Location::GetUnit( Vector3 const &startRay, Vector3 const &direction, unsi
         bool rayHit = RaySphereIntersection( startRay, direction, theUnit->m_centrePos, theUnit->m_radius*1.5f );
         if( rayHit && theUnit->NumAliveEntities() > 0 )
         {
-            for( int i = 0; i < theUnit->m_entities.Size(); ++i )
+            for( auto& entity : theUnit->m_entities.Values() )
             {
-                if( theUnit->m_entities.ValidIndex(i) )
+                Vector3 spherePos = entity.m_pos + entity.m_centrePos;
+                float sphereRadius = entity.m_radius * 1.5f;
+                Vector3 hitPos;
+
+                bool entityHit = RaySphereIntersection( startRay, direction, spherePos, sphereRadius, 1e10, &hitPos );
+                if( entityHit && !entity.m_dead )
                 {
-                    Entity *entity = theUnit->m_entities[i];
-                    Vector3 spherePos = entity->m_pos+entity->m_centrePos;
-                    float sphereRadius = entity->m_radius * 1.5f;
-                    Vector3 hitPos;
+                    float centrePosX, centrePosY, rayHitX, rayHitY;
+                    g_app->m_camera->Get2DScreenPos( spherePos, &centrePosX, &centrePosY );
+                    g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
 
-                    bool entityHit = RaySphereIntersection( startRay, direction, spherePos, sphereRadius, 1e10, &hitPos );
-                    if( entityHit && !entity->m_dead )
+                    float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
+                    if( rangeSqd < closestRangeSqd )
                     {
-                        float centrePosX, centrePosY, rayHitX, rayHitY;
-                        g_app->m_camera->Get2DScreenPos( spherePos, &centrePosX, &centrePosY );
-                        g_app->m_camera->Get2DScreenPos( hitPos, &rayHitX, &rayHitY );
-
-                        float rangeSqd = pow(centrePosX - rayHitX, 2) + pow(centrePosY - rayHitY, 2);
-                        if( rangeSqd < closestRangeSqd )
-                        {
-                            closestRangeSqd = rangeSqd;
-                            unit = theUnit.get();
-                        }
+                        closestRangeSqd = rangeSqd;
+                        unit = theUnit.get();
                     }
                 }
             }
