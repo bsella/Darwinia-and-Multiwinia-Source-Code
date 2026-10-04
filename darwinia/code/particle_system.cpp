@@ -1,4 +1,5 @@
 #include <math.h>
+#include <memory>
 
 #include "lib/debug_utils.h"
 #include "lib/math_utils.h"
@@ -299,10 +300,6 @@ void Particle::SetupParticles()
 // *** Constructor
 ParticleSystem::ParticleSystem()
 {
-    m_particles.SetSize( 1500 );
-    m_particles.SetStepSize( 200 );
-	m_particles.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
-
 	Particle::SetupParticles();
 }
 
@@ -311,7 +308,8 @@ ParticleSystem::ParticleSystem()
 void ParticleSystem::CreateParticle(Vector3 const &_pos, Vector3 const &_vel,
                                     int _typeId, float _size, RGBAColour col)
 {
-	Particle *aParticle = m_particles.GetPointer();
+	auto [index, aParticle] = m_particles.AddOrReplaceFirstNull(std::make_unique<Particle>());
+
     aParticle->Initialise(_pos, _vel, _typeId, _size);
 	if( col != 0)
 	{
@@ -321,22 +319,17 @@ void ParticleSystem::CreateParticle(Vector3 const &_pos, Vector3 const &_vel,
 
 
 // *** Advance
-void ParticleSystem::Advance(int _slice)
+void ParticleSystem::Advance()
 {
     START_PROFILE(g_app->m_profiler, "Advance Particles");
 
-    int lower, upper;
-    m_particles.GetNextSliceBounds( _slice, &lower, &upper );
-    for( int i = lower; i <= upper; ++i )
+    for( auto& particle : m_particles.Optionals() )
     {
-        if( m_particles.ValidIndex(i) )
+        if(!particle) continue;
+        if (particle->Advance())
         {
-            Particle *p = m_particles.GetPointer(i);
-			if (p->Advance())
-			{
-				m_particles.MarkNotUsed(i);
-			}
-		}
+            particle.reset();
+        }
     }
 
     END_PROFILE(g_app->m_profiler, "Advance Particles");
@@ -359,24 +352,9 @@ void ParticleSystem::Render()
 
 
 	// Render all the particles that are up-to-date with server advances
-    int lastUpdated = m_particles.GetLastUpdated();
-  	int size = m_particles.Size();
-
-    for (int i = 0; i < size; i++)
+    for (auto& particle : m_particles.Values())
 	{
-        if (m_particles.ValidIndex(i))
-        {
-            Particle *p = m_particles.GetPointer(i);
-
-            if( i <= lastUpdated )
-            {
-			    p->Render(g_predictionTime);
-            }
-            else
-            {
-                p->Render(g_predictionTime+SERVER_ADVANCE_PERIOD);
-            }
-        }
+        particle.Render(g_predictionTime);
 	}
 
     glDepthMask ( true );
@@ -393,5 +371,5 @@ void ParticleSystem::Render()
 // *** Empty
 void ParticleSystem::Empty()
 {
-	m_particles.Empty();
+	m_particles.clear();
 }

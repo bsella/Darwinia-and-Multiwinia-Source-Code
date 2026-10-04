@@ -2,8 +2,8 @@
 #define _included_particle_system_h
 
 #include "lib/rgb_colour.h"
-#include "lib/slice_darray.h"
 #include "lib/vector3.h"
+#include "lib/vector_with_options.hpp"
 
 
 // ****************************************************************************
@@ -83,7 +83,7 @@ public:
 class ParticleSystem
 {
 private:
-	SliceDArray         <Particle> m_particles;
+	VectorWithOptionals<Particle> m_particles;
 
 public:
 	ParticleSystem();
@@ -91,7 +91,7 @@ public:
 	void CreateParticle(Vector3 const &_pos, Vector3 const &_vel,
 						int _particleTypeId, float _size=-1.0f, RGBAColour col = 0);
 
-	void Advance(int _slice);
+	void Advance();
 	void Render();
 	void Empty();
 };

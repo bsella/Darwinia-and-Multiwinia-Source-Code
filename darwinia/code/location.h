@@ -2,12 +2,7 @@
 #define INCLUDED_LOCATION_H
 
 #include <float.h>
-#include <functional>
-#include <memory>
-#include <vector>
 
-#include "lib/fast_darray.h"
-#include "lib/slice_darray.h"
 #include "lib/vector3.h"
 #include "lib/vector_with_options.hpp"
 
