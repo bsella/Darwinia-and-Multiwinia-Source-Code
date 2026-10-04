@@ -428,7 +428,7 @@ void Officer::Absorb()
 
 bool Officer::Advance( Unit *_unit )
 {
-    if( !m_onGround ) AdvanceInAir(_unit);
+    if( !m_onGround ) AdvanceInAir();
     bool amIDead = Entity::Advance(_unit);
     if( m_inWater != -1.0f ) AdvanceInWater(_unit);
 

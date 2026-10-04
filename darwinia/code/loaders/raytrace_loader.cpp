@@ -208,9 +208,7 @@ RayTraceLoader::RayTraceLoader()
 {
     glDisable           (GL_DEPTH_TEST );
     glDisable           (GL_CULL_FACE );
-#ifndef USE_DIRECT3D
     glEnable            (GL_BLEND ); // our d3d present discards old backbuffer
-#endif
     glShadeModel        (GL_FLAT);
 
     //
@@ -672,9 +670,6 @@ void RayTraceLoader::Run()
 		}
 
         CastAllRays();
-#ifdef USE_DIRECT3D
-		glClear(GL_COLOR_BUFFER_BIT);
-#endif
         RenderBackground();
         RenderRays();
 

@@ -79,7 +79,7 @@ GameCursor::GameCursor()
     BinaryReader *binReader = g_app->m_resource->GetBinaryReader( m_selectionArrowFilename );
 	DarwiniaReleaseAssert(binReader, "Failed to open mouse cursor resource %s", m_selectionArrowFilename );
     BitmapRGBA bmp( binReader, "bmp" );
-	SAFE_DELETE(binReader);
+	delete binReader;
 
 	g_app->m_resource->AddBitmap(m_selectionArrowFilename, bmp);
 
@@ -91,14 +91,14 @@ GameCursor::GameCursor()
 
 GameCursor::~GameCursor()
 {
-	SAFE_DELETE(m_cursorStandard);
-	SAFE_DELETE(m_cursorPlacement);
-	SAFE_DELETE(m_cursorDisabled);
-	SAFE_DELETE(m_cursorMoveHere);
-	SAFE_DELETE(m_cursorHighlight);
-	SAFE_DELETE(m_cursorTurretTarget);
-	SAFE_DELETE(m_cursorSelection);
-	SAFE_DELETE(m_cursorMissile);
+	delete m_cursorStandard;
+	delete m_cursorPlacement;
+	delete m_cursorDisabled;
+	delete m_cursorMoveHere;
+	delete m_cursorHighlight;
+	delete m_cursorTurretTarget;
+	delete m_cursorSelection;
+	delete m_cursorMissile;
 }
 
 WorldObjectOrUnit GameCursor::GetSelectedObject(Vector3 &_pos )
@@ -959,7 +959,7 @@ MouseCursor::MouseCursor( char const *_filename )
     BinaryReader *binReader = g_app->m_resource->GetBinaryReader( m_mainFilename );
 	DarwiniaReleaseAssert(binReader, "Failed to open mouse cursor resource %s", _filename);
     BitmapRGBA bmp( binReader, "bmp" );
-	SAFE_DELETE(binReader);
+	delete binReader;
 
 	g_app->m_resource->AddBitmap(m_mainFilename, bmp);
 

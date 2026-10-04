@@ -1,7 +1,6 @@
 ﻿#include <math.h>
 
 #include "lib/math_utils.h"
-#include "lib/ogl_extensions.h"
 #include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
@@ -269,19 +268,8 @@ void RadarDish::Render( float _predictionTime )
 	Building::Render(_predictionTime);
 }
 
-
-#ifdef USE_DIRECT3D
-#include "lib/opengl_directx_internals.h"
-#endif
-
 void RadarDish::RenderAlphas ( float _predictionTime )
 {
-#ifdef USE_DIRECT3D
-	// sets default vertex format (somebody changes it and not returns back, where?)
-	// without this code, radar beams are not reflected
-	extern LPDIRECT3DVERTEXDECLARATION9 s_pCustomVertexDecl;
-	OpenGLD3D::g_pd3dDevice->SetVertexDeclaration( s_pCustomVertexDecl );
-#endif
     if( m_signal > 0.0f )
     {
         RenderSignal( _predictionTime, 10.0f, 0.4f );
@@ -338,12 +326,6 @@ void RadarDish::RenderSignal( float _predictionTime, float _radius, float _alpha
     glColor4f           (1.0f,1.0f,1.0f,_alpha);
 
     glMatrixMode        (GL_MODELVIEW);
-#ifdef USE_DIRECT3D
-	void SwapToViewMatrix();
-	void SwapToModelMatrix();
-
-	SwapToViewMatrix();
-#endif
     glTranslatef        ( startPos.x, startPos.y, startPos.z );
     Vector3 dishFront   = GetDishFront(_predictionTime);
     double eqn1[4]      = { dishFront.x, dishFront.y, dishFront.z, -1.0f };
@@ -358,9 +340,7 @@ void RadarDish::RenderSignal( float _predictionTime, float _radius, float _alpha
     Vector3 diff = receiverPos - startPos;
     float thisDistance = -(receiverFront * diff);
 
-#ifndef USE_DIRECT3D
     thisDistance = -1.0f;
-#endif
 
     double eqn2[4]      = { receiverFront.x, receiverFront.y, receiverFront.z, thisDistance };
     glClipPlane         (GL_CLIP_PLANE1, eqn2 );
@@ -405,10 +385,6 @@ void RadarDish::RenderSignal( float _predictionTime, float _radius, float _alpha
     glEnd();
 
     glTranslatef        ( -startPos.x, -startPos.y, -startPos.z );
-
-#ifdef USE_DIRECT3D
-	SwapToModelMatrix();
-#endif
 
     glDisable           (GL_CLIP_PLANE0);
     glDisable           (GL_CLIP_PLANE1);

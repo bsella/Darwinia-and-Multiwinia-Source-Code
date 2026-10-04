@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/debug_utils.h"
+﻿#include "lib/debug_utils.h"
 #include "lib/preferences.h"
 
 #include "sound/sound_library_2d_sdl.h"
@@ -10,10 +8,7 @@
 static SDL_AudioSpec s_audioSpec;
 static int s_audioStarted = 0;
 
-#include "app.h"
 #include "lib/hi_res_time.h"
-
-#include "soundsystem.h"
 
 #define G_SL2D static_cast<SoundLibrary2dSDL *>(g_soundLibrary2d)
 

@@ -1,6 +1,3 @@
-#include "lib/universal_include.h"
-
-#include "lib/ogl_extensions.h"
 #include "lib/render_utils.h"
 
 #include "FFP_emulation.h"

@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/math_utils.h"
+﻿#include "lib/math_utils.h"
 #include "lib/profiler.h"
 #include "lib/resource.h"
 #include "lib/shape.h"
@@ -212,7 +210,7 @@ bool Darwinian::Advance( Unit *_unit )
     }
 
 
-    if( !m_onGround ) AdvanceInAir( _unit );
+    if( !m_onGround ) AdvanceInAir();
 
     if( m_state == StateOnFire && !amIDead && !m_dead )
     {

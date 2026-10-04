@@ -9,7 +9,6 @@
 #include "lib/profiler.h"
 #include "lib/hi_res_time.h"
 #include "lib/language_table.h"
-#include "lib/ogl_extensions.h"
 #include "lib/binary_stream_readers.h"
 
 #include "network/clienttoserver.h"
@@ -1030,24 +1029,6 @@ static BitmapRGBA *s_alphaMask = nullptr;
 static unsigned int s_alphaMaskId = -1;
 static BitmapRGBA *s_gestures=nullptr;
 static unsigned int s_textureId=-1;
-
-#ifdef USE_DIRECT3D
-void TaskManagerInterfaceGestures::ReleaseD3dResources()
-{
-	SAFE_DELETE(s_alphaMask);
-	SAFE_DELETE(s_gestures);
-	if(s_alphaMaskId!=-1)
-	{
-		glDeleteTextures(1,&s_alphaMaskId);
-		s_alphaMaskId = -1;
-	}
-	if(s_textureId!=-1)
-	{
-		glDeleteTextures(1,&s_textureId);
-		s_textureId = -1;
-	}
-}
-#endif
 
 void TaskManagerInterfaceGestures::RenderTaskManager()
 {

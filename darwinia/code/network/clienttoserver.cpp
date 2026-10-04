@@ -89,11 +89,11 @@ ClientToServer::~ClientToServer()
 
 	m_inbox.EmptyAndDelete();
 	m_outbox.EmptyAndDelete();
-	SAFE_DELETE(m_inboxMutex);
-	SAFE_DELETE(m_outboxMutex);
-	SAFE_DELETE(m_netLib);
-	SAFE_DELETE(m_sendSocket);
-	SAFE_DELETE(m_receiveSocket);
+	delete m_inboxMutex;
+	delete m_outboxMutex;
+	delete m_netLib;
+	delete m_sendSocket;
+	delete m_receiveSocket;
 }
 
 

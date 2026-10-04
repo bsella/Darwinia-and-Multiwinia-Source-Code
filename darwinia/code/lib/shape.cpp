@@ -128,10 +128,10 @@ ShapeMarker::ShapeMarker(TextReader *_in, char const *_name)
 
 ShapeMarker::~ShapeMarker()
 {
-	SAFE_FREE(m_parentName);
-	SAFE_FREE(m_name);
+	free(m_parentName);
+	free(m_name);
 	//for(unsigned i=0;i<m_depth;i++) delete m_parents[i]; should we?
-	SAFE_DELETE(m_parents);
+	delete m_parents;
 }
 
 // *** GetWorldMatrix
@@ -336,8 +336,8 @@ ShapeFragment::ShapeFragment(char const *_name, char const *_parentName)
 
 ShapeFragment::~ShapeFragment()
 {
-	SAFE_DELETE_ARRAY(m_positions);
-	SAFE_DELETE_ARRAY(m_positionsInWS);
+	delete[] m_positions;
+	delete[] m_positionsInWS;
 	free(m_name);				m_name = nullptr;
 	free(m_parentName);			m_parentName = nullptr;
     delete [] m_vertices;		m_vertices = nullptr;

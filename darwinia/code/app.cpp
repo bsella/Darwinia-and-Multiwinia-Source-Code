@@ -2,15 +2,8 @@
 #include <stdio.h>
 //#include <shlobj.h>
 
-#ifdef TARGET_OS_VISTA
-#include <knownfolders.h>
-#endif
-
 #include "network/clienttoserver.h"
 
-#ifdef TARGET_OS_VISTA
-#include "lib/poster_maker.h"
-#endif
 #include "lib/language_table.h"
 #include "lib/preferences.h"
 #include "lib/profiler.h"
@@ -102,10 +95,6 @@ App::App()
 	m_levelReset(false),
     m_atMainMenu(false),
     m_gameMode(GameModeNone)
-#ifdef TARGET_OS_VISTA
-	,m_thumbnailScreenshot(nullptr),
-	m_saveThumbnail(false)
-#endif
 {
     g_app = this;
 
@@ -193,13 +182,6 @@ App::App()
 
     SetProfileName( g_prefsManager->GetString("UserProfile", "none") );
 
-#ifdef TARGET_OS_VISTA
-    if( strlen( g_saveFile ) > 0 )
-    {
-        SetProfileName( g_saveFile );
-    }
-#endif
-
     m_helpSystem        = new HelpSystem();
 	m_particleSystem	= new ParticleSystem();
     m_taskManager       = new TaskManager();
@@ -235,13 +217,6 @@ App::App()
 	{
 		m_largeMenus = true;
 	}
-#ifdef TARGET_OS_VISTA
-    else if( menuOption == 0 &&
-             g_mediaCenter == true )
-    {
-        m_largeMenus = true;
-    }
-#endif
 
     //
     // Load mods
@@ -261,36 +236,36 @@ App::App()
 
 App::~App()
 {
-	SAFE_DELETE(m_globalWorld);
-	SAFE_DELETE(m_langTable);
+	delete m_globalWorld;
+	delete m_langTable;
 #ifdef DEMOBUILD
-	SAFE_DELETE(m_tutorial);
+	delete m_tutorial;
 #endif
-	SAFE_DELETE(m_taskManagerInterface);
-	SAFE_DELETE(m_controlHelpSystem);
+	delete m_taskManagerInterface;
+	delete m_controlHelpSystem;
 #ifdef ATTRACTMODE_ENABLED
-	SAFE_DELETE(m_attractMode);
+	delete m_attractMode;
 #endif
-	SAFE_DELETE(m_script);
-	SAFE_DELETE(m_sepulveda);
-	SAFE_DELETE(m_gesture);
-	SAFE_DELETE(m_taskManager);
-	SAFE_DELETE(m_particleSystem);
-	SAFE_DELETE(m_helpSystem);
+	delete m_script;
+	delete m_sepulveda;
+	delete m_gesture;
+	delete m_taskManager;
+	delete m_particleSystem;
+	delete m_helpSystem;
 #ifdef SOUND_EDITOR
-	SAFE_DELETE(m_effectProcessor);
+	delete m_effectProcessor;
 #endif // SOUND_EDITOR
-	SAFE_DELETE(m_camera);
-	SAFE_DELETE(m_userInput);
-	SAFE_DELETE(m_clientToServer);
-	SAFE_DELETE(m_soundSystem);
-	SAFE_DELETE(m_gameCursor);
-	SAFE_DELETE(m_renderer);
+	delete m_camera;
+	delete m_userInput;
+	delete m_clientToServer;
+	delete m_soundSystem;
+	delete m_gameCursor;
+	delete m_renderer;
 #ifdef PROFILER_ENABLED
-	SAFE_DELETE(m_profiler);
+	delete m_profiler;
 #endif
-	SAFE_DELETE(g_prefsManager);
-	SAFE_DELETE(m_resource);
+	delete g_prefsManager;
+	delete m_resource;
 }
 
 void App::UpdateDifficultyFromPreferences()
@@ -436,28 +411,6 @@ const char *App::GetProfileDirectory()
 		return "";
 
 #else
-#ifdef TARGET_OS_VISTA
-    if( IsRunningVista() )
-    {
-        static char userdir[256];
-
-		PWSTR path;
-		SHGetKnownFolderPath( FOLDERID_SavedGames, 0, nullptr, &path );
-		wcstombs( userdir, path, sizeof(userdir) );
-		CoTaskMemFree( path );
-
-#ifdef TARGET_VISTA_DEMO2
-		const char *subdir = "\\Darwinia Demo 2\\";
-#else
-		const char *subdir = "\\Darwinia\\";
-#endif
-        strncat(userdir, subdir, sizeof(userdir) );
-        CreateDirectory( userdir );
-
-        return userdir;
-    }
-    else
-#endif // TARGET_OS_VISTA
 	{
         return "";
     }
@@ -480,14 +433,7 @@ const char *App::GetPreferencesPath()
 
 const char *App::GetScreenshotDirectory()
 {
-#ifdef TARGET_OS_VISTA
-    static char dir[MAX_PATH];
-    SHGetFolderPath( nullptr, CSIDL_DESKTOP, nullptr, SHGFP_TYPE_CURRENT, dir );
-    sprintf( dir, "%s\\", dir );
-    return dir;
-#else
     return "";
-#endif
 }
 
 bool App::LoadProfile()
@@ -562,13 +508,6 @@ bool App::SaveProfile( bool _global, bool _local )
         DebugOut( "failed to create folder %s\n", folderName );
         return false;
     }
-
-#ifdef TARGET_OS_VISTA
-	if( _global )
-	{
-		SaveRichHeader();
-	}
-#endif
 
     if( _global )
     {
@@ -691,86 +630,3 @@ void App::LoadCampaign()
     g_prefsManager->Save();
 }
 
-#ifdef TARGET_OS_VISTA
-void App::SaveRichHeader()
-{
-	if( g_app->m_editing ) return;
-	if( !m_thumbnailScreenshot ) return;
-
-	char _filename[256];
-	sprintf( _filename, "%s.dsg", m_userProfileName );
-
-	char fullFilename[256];
-    sprintf( fullFilename, "%susers/%s", g_app->GetProfileDirectory(), _filename );
-
-	RICH_GAME_MEDIA_HEADER header;
-	ZeroMemory( &header, sizeof(RICH_GAME_MEDIA_HEADER) );
-	header.dwMagicNumber = RM_MAGICNUMBER;
-	header.dwHeaderVersion = 1;
-	header.dwHeaderSize = sizeof(RICH_GAME_MEDIA_HEADER);
-	header.liThumbnailOffset.QuadPart = 0;
-	if( m_thumbnailScreenshot )
-	{
-		unsigned int size = (m_thumbnailScreenshot->m_height * m_thumbnailScreenshot->m_width * 3 ) + 54;
-		header.dwThumbnailSize = size;
-	}
-	else
-	{
-		header.dwThumbnailSize = 0;
-	}
-
-	header.guidGameId.Data1 = 0xF58175C7;
-	header.guidGameId.Data2 = 0xE99C;
-	header.guidGameId.Data3 = 0x4151;
-
-	header.guidGameId.Data4[0] = 0x80;
-	header.guidGameId.Data4[1] = 0x0D;
-	header.guidGameId.Data4[2] = 0x7B;
-	header.guidGameId.Data4[3] = 0xB5;
-	header.guidGameId.Data4[4] = 0xE8;
-	header.guidGameId.Data4[5] = 0x9E;
-	header.guidGameId.Data4[6] = 0x49;
-	header.guidGameId.Data4[7] = 0x60;
-
-	WCHAR saveName[256];
-	char filePath[256];
-	sprintf( filePath, "%susers\\%s.dsg", GetProfileDirectory(), m_userProfileName );
-
-	mbstowcs( saveName, filePath, 256 );
-
-	wcscpy(header.szGameName,  L"Darwinia");
-	wcscpy(header.szSaveName, saveName );
-	wcscpy(header.szLevelName, L"");
-	wcscpy(header.szComments, L"");
-
-	FILE *file = fopen(fullFilename, "wb");
-	fwrite( &header, sizeof(RICH_GAME_MEDIA_HEADER), 1, file );
-
-	m_thumbnailScreenshot->WritePng( file );
-	// m_thumbnailScreenshot->SavePng( "ss.bmp" );
-	delete m_thumbnailScreenshot;
-	m_thumbnailScreenshot = nullptr;
-
-	fclose(file);
-
-}
-
-void App::SaveThumbnailScreenshot()
-{
-	PosterMaker pm(g_app->m_renderer->ScreenW(), g_app->m_renderer->ScreenH());
-	pm.AddFrame();
-
-	float newWidth = 256.0f;
-	float newHeight = 192.0f;
-
-	BitmapRGBA scaled(newWidth, newHeight );
-
-	scaled.Blit(0, 0, pm.GetBitmap()->m_width, pm.GetBitmap()->m_height, pm.GetBitmap(),
-							   0, 0, newWidth, newHeight, true);
-
-	m_thumbnailScreenshot = new BitmapRGBA( scaled );
-
-	m_saveThumbnail = false;
-}
-
-#endif

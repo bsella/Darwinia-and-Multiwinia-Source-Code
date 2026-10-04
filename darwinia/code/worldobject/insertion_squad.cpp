@@ -505,7 +505,7 @@ bool Squadie::Advance(Unit *_theUnit)
         }
     }
 
-	if( !m_onGround ) AdvanceInAir(nullptr);
+	if( !m_onGround ) AdvanceInAir();
 
     m_vel = (m_pos - oldPos) / SERVER_ADVANCE_PERIOD;
 

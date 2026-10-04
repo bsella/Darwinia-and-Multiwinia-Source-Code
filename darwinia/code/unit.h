@@ -1,7 +1,6 @@
 #ifndef _included_unit_h
 #define _included_unit_h
 
-#include "lib/slice_darray.h"
 #include "lib/vector3.h"
 #include "lib/vector_with_options.hpp"
 

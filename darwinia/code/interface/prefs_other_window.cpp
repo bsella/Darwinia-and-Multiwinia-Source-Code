@@ -79,13 +79,6 @@ class ApplyOtherButton : public DarwiniaButton
 			g_app->m_largeMenus = true;
 
 		}
-#ifdef TARGET_OS_VISTA
-        else if( parent->m_largeMenus == 0 &&
-            g_mediaCenter == true )
-        {
-            g_app->m_largeMenus = true;
-        }
-#endif
 		else
 		{
 			g_app->m_largeMenus = false;

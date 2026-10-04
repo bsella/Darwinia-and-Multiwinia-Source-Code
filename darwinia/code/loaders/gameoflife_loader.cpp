@@ -19,19 +19,10 @@
 #define MAXSPAWNAGE     30.0f
 #define MAXSPIRITAGE    20.0f
 
-#ifdef USE_DIRECT3D
-// Enable GL Tracing
-void glTraceEnable( bool _enable);
-#endif // USE_DIRECT3D
-
 GameOfLifeLoader::GameOfLifeLoader( bool _glow )
 :   Loader(),
     m_glow(_glow)
 {
-#ifdef USE_DIRECT3D
-	glTraceEnable(true);
-#endif // USE_DIRECT3D
-
     m_numCellsX = 128;
     m_numCellsY = int( m_numCellsX * (float) g_app->m_renderer->ScreenH() / (float) g_app->m_renderer->ScreenW() );
 
@@ -51,10 +42,6 @@ GameOfLifeLoader::GameOfLifeLoader( bool _glow )
     glBindTexture( GL_TEXTURE_2D, g_app->m_resource->GetTexture( "sprites/darwinian.bmp" ) );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-
-#ifdef USE_DIRECT3D
-	glTraceEnable(false);
-#endif // USE_DIRECT3D
 }
 
 
@@ -300,9 +287,6 @@ void GameOfLifeLoader::RenderHelp()
 
 void GameOfLifeLoader::Run()
 {
-#ifdef USE_DIRECT3D
-	glTraceEnable(true);
-#endif // USE_DIRECT3D
 	FlipBuffers();
 
     g_app->m_soundSystem->TriggerOtherEvent( nullptr, "LoaderGameOfLife", SoundSourceBlueprint::TypeMusic );
@@ -405,7 +389,4 @@ void GameOfLifeLoader::Run()
 
 
     g_app->m_soundSystem->StopAllSounds( WorldObjectId(), "Music LoaderGameOfLife" );
-#ifdef USE_DIRECT3D
-	glTraceEnable(false);
-#endif // USE_DIRECT3D
 }

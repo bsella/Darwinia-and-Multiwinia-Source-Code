@@ -13,9 +13,6 @@
 #include <tuple>
 #include <vector>
 
-#ifdef USE_DIRECT3D
-#include "lib/opengl_directx_internals.h"
-#endif
 #include "lib/debug_utils.h"
 #include "lib/profiler.h"
 #include "lib/math_utils.h"
@@ -675,43 +672,6 @@ void Location::AdvanceBuildings()
 
     END_PROFILE(g_app->m_profiler, "Advance Buildings");
 }
-/*
-void Location::AdvanceBuildings( int _slice )
-{
-    if( _slice == 5 )
-    {
-        START_PROFILE(g_app->m_profiler, "Advance Buildings");
-        bool obstructionGridChanged = false;
-
-        for( int i = 0; i < m_buildings.Size(); ++i )
-        {
-            if( m_buildings.ValidIndex(i) )
-            {
-                Building *building = m_buildings.GetData(i);
-
-                START_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
-                bool removeBuilding = building->Advance();
-                END_PROFILE( g_app->m_profiler, Building::GetTypeName( building->m_type ) );
-
-                if( removeBuilding )
-                {
-                    m_buildings.MarkNotUsed(i);
-                    obstructionGridChanged = true;
-                }
-            }
-        }
-
-        if( obstructionGridChanged )
-        {
-            // TODO: This is WAY too slow, should only recalculate the areas affected
-            g_app->m_location->m_obstructionGrid->CalculateAll();
-        }
-
-        END_PROFILE(g_app->m_profiler, "Advance Buildings");
-    }
-}*/
-
-
 
 // *** AdvanceTeams
 void Location::AdvanceTeams()
@@ -930,9 +890,7 @@ void Location::Render(bool renderWaterAndClouds)
     RenderLandscape();
 	CHECK_OPENGL_STATE();
     if( renderWaterAndClouds ) RenderWater();
-#ifdef USE_DIRECT3D
-		else glDisable(GL_CLIP_PLANE2);
-#endif
+
 	CHECK_OPENGL_STATE();
 
 	// don't reflect buildings, teams etc.
@@ -983,10 +941,6 @@ void Location::RenderBuildings()
     SetupFog        ();
     glEnable        (GL_FOG);
 	g_app->m_renderer->SetObjectLighting();
-#ifdef USE_DIRECT3D
-	OpenGLD3D::g_pd3dDevice->SetRenderState( D3DRS_SPECULARENABLE, TRUE );
-#endif
-
 
     //
     // Special lighting mode used for Demo2
@@ -1038,9 +992,6 @@ void Location::RenderBuildings()
         }
     }
 
-#ifdef USE_DIRECT3D
-	OpenGLD3D::g_pd3dDevice->SetRenderState( D3DRS_SPECULARENABLE, FALSE );
-#endif
     glDisable       (GL_FOG);
 	g_app->m_renderer->SetObjectLighting();
 	g_app->m_renderer->UnsetObjectLighting();

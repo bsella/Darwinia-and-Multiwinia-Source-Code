@@ -1,5 +1,4 @@
-﻿#include "lib/universal_include.h"
-#include "lib/resource.h"
+﻿#include "lib/resource.h"
 #include "lib/debug_utils.h"
 #include "lib/file_writer.h"
 #include "lib/text_stream_readers.h"

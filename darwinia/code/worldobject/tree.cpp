@@ -22,10 +22,6 @@
 
 #include "FFP_emulation.h"
 
-#ifdef USE_DIRECT3D
-#include "lib/opengl_directx_internals.h"
-#endif
-
 Tree::Tree()
 :   Building(),
     m_fireDamage(0.0f),

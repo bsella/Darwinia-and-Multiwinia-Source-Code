@@ -86,7 +86,7 @@ public:
 	virtual void Begin              ();
 	virtual bool Advance            ( Unit *_unit );
 	virtual bool AdvanceDead        ( Unit *_unit );
-	virtual void AdvanceInAir       ( Unit *_unit );
+	        void AdvanceInAir       ();
 	virtual void AdvanceInWater     ( Unit *_unit );
 
     virtual void ChangeHealth       ( int amount );

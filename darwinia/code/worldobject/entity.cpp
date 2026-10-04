@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <string.h>
 #include <math.h>
 
@@ -273,7 +271,7 @@ int Entity::EnterTeleports( int _requiredId )
 }
 
 
-void Entity::AdvanceInAir( Unit * )
+void Entity::AdvanceInAir()
 {
     m_vel += Vector3(0,-15.0,0) * SERVER_ADVANCE_PERIOD;
     m_pos += m_vel * SERVER_ADVANCE_PERIOD;

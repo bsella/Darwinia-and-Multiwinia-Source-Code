@@ -1,29 +1,12 @@
-﻿#include "lib/universal_include.h"
-#include "lib/hi_res_time.h"
-#include "lib/resource.h"
+﻿#include "lib/resource.h"
 #include "lib/language_table.h"
 
-#include "interface/buildings_window.h"
-#include "interface/camera_mount_window.h"
 #include "interface/editor_window.h"
-#include "interface/input_field.h"
-#include "interface/instant_unit_window.h"
-#include "interface/landscape_window.h"
-#include "interface/lights_window.h"
 #include "interface/message_dialog.h"
 
-#include "worldobject/building.h"
-#include "worldobject/factory.h"
-#include "worldobject/cave.h"
-#include "worldobject/teleport.h"
-#include "worldobject/laserfence.h"
-#include "worldobject/powerstation.h"
-
 #include "app.h"
-#include "camera.h"
 #include "location_editor.h"
 #include "level_file.h"
-#include "renderer.h"
 #include "location.h"
 
 #ifdef LOCATION_EDITOR

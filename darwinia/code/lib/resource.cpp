@@ -1,6 +1,4 @@
-﻿#include "lib/universal_include.h"
-
-#include <memory>
+﻿#include <memory>
 #include <stdio.h>
 #include <unrar.h>
 
@@ -23,9 +21,6 @@
 #include "landscape_renderer.h"
 #include "location.h"
 #include "renderer.h"
-
-#include "FFP_emulation.h"
-
 
 Resource::Resource()
 :	m_nameSeed(1),
@@ -132,16 +127,6 @@ TextReader *Resource::GetTextReader(char const *_filename)
         sprintf( fullFilename, "%smods/%s/%s", g_app->GetProfileDirectory(), m_modName, _filename );
         if( DoesFileExist(fullFilename) )
 			reader = new TextFileReader(fullFilename);
-
-#ifdef TARGET_OS_VISTA
-		// The Oberon build bundles the Perdition mod
-		if( !reader )
-		{
-			sprintf( fullFilename, "mods/%s/%s", m_modName, _filename );
-			if( DoesFileExist(fullFilename) )
-				reader = new TextFileReader(fullFilename);
-		}
-#endif
 	}
 
     if( !reader )
@@ -173,16 +158,6 @@ BinaryReader *Resource::GetBinaryReader(char const *_filename)
         sprintf( fullFilename, "%smods/%s/%s", g_app->GetProfileDirectory(), m_modName, _filename );
         if( DoesFileExist( fullFilename) ) reader = new BinaryFileReader(fullFilename);
     }
-
-#ifdef TARGET_OS_VISTA
-
-    if( !reader )
-    {
-        sprintf( fullFilename, "mods/%s/%s", m_modName, _filename );
-        if( DoesFileExist( fullFilename) ) reader = new BinaryFileReader(fullFilename);
-    }
-
-#endif
 
     if( !reader )
     {
@@ -313,17 +288,6 @@ Shape *Resource::GetShapeCopy( char const *_name, bool _animating )
         strlwr(fullPath);
         if (DoesFileExist(fullPath)) theShape = new Shape( fullPath, _animating );
     }
-
-#ifdef TARGET_OS_VISTA
-
-    if( !theShape )
-    {
-        sprintf( fullPath, "mods/%s/shapes/%s", m_modName, _name );
-        strlwr(fullPath);
-        if (DoesFileExist(fullPath)) theShape = new Shape( fullPath, _animating );
-    }
-
-#endif
 
     if( !theShape )
     {
@@ -682,17 +646,6 @@ LList <char *> *Resource::ListResources(char const *_dir, char const *_filter, b
             OrderedInsert( results, thisResult );
         }
         modResults->EmptyAndDelete();
-
-#ifdef TARGET_OS_VISTA
-        sprintf( fullDirectory, "mods/%s/%s", m_modName, _dir );
-        modResults = ListDirectory( fullDirectory, _filter, _longResults );
-        for( int i = 0; i < modResults->Size(); ++i )
-        {
-            char *thisResult = modResults->GetData(i);
-            OrderedInsert( results, thisResult );
-        }
-        modResults->EmptyAndDelete();
-#endif
     }
 
     //

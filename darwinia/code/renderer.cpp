@@ -13,7 +13,6 @@
 #endif
 #include "lib/poster_maker.h"
 #include "lib/math_utils.h"
-#include "lib/ogl_extensions.h"
 #include "lib/persisting_debug_render.h"
 #include "lib/preferences.h"
 #include "lib/profiler.h"
@@ -56,11 +55,7 @@
 
 #include "interface/message_dialog.h"
 
-#ifdef USE_DIRECT3D
-    #define USE_PIXEL_EFFECT_GRID_OPTIMISATION	1
-#else
-    #define USE_PIXEL_EFFECT_GRID_OPTIMISATION	1
-#endif
+#define USE_PIXEL_EFFECT_GRID_OPTIMISATION	1
 
 #include <algorithm>
 
@@ -148,8 +143,6 @@ void Renderer::Initialise()
         g_prefsManager->SetInt( "ScreenRefresh", 60 );
         g_prefsManager->Save();
     }
-
-	InitialiseOGLExtensions();
 
 	BuildOpenGlState();
 
@@ -315,14 +308,6 @@ void Renderer::Render()
 	{
 		RenderFrame();
 	}
-
-#ifdef TARGET_OS_VISTA
-	if( g_app->m_saveThumbnail )
-	{
-		g_app->SaveThumbnailScreenshot();
-	}
-#endif
-
 
 #ifdef PROFILER_ENABLED
 	g_app->m_profiler->RenderEnded();
@@ -1250,15 +1235,6 @@ void Renderer::PreRenderPixelEffect()
     END_PROFILE(g_app->m_profiler, "Pixel Pre-render");
 }
 
-#ifdef USE_DIRECT3D
-inline float d3dOneMinus( float _x )
-{
-	return 1.0f - _x;
-}
-#else
-#define d3dOneMinus( _x ) _x
-#endif
-
 void Renderer::PaintPixels()
 {
 #if USE_PIXEL_EFFECT_GRID_OPTIMISATION
@@ -1300,16 +1276,16 @@ void Renderer::PaintPixels()
 					// Direct3D renders the texture upside down for some reason, so we flip the
 					// texture coordinates here.
 
-					glTexCoord2f(tx, d3dOneMinus(ty));
+					glTexCoord2f(tx, ty);
 					glVertex3d(x1, y1a, -distance);
 
-					glTexCoord2f(tx + gridToTexture, d3dOneMinus(ty));
+					glTexCoord2f(tx + gridToTexture, ty);
 					glVertex3d(x2, y1a, -distance);
 
-					glTexCoord2f(tx + gridToTexture, d3dOneMinus(ty + gridToTextureY));
+					glTexCoord2f(tx + gridToTexture, ty + gridToTextureY);
 					glVertex3d(x2, y2a, -distance);
 
-					glTexCoord2f(tx, d3dOneMinus(ty + gridToTextureY));
+					glTexCoord2f(tx, ty + gridToTextureY);
 					glVertex3d(x1, y2a, -distance);
 				}
 			}

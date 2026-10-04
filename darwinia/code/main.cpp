@@ -1,16 +1,9 @@
 ﻿#include "unit.h"
 #include "worldobject/building.h"
-#include <chrono>
 #include <memory>
 #include <math.h>
-#include <thread>
 #ifdef _OPENMP
 #include <omp.h>
-#endif
-
-#ifdef TARGET_OS_VISTA
-#include <wpc.h>
-#include <shellapi.h>
 #endif
 
 #include "lib/debug_utils.h"
@@ -106,10 +99,6 @@ float g_predictionTime;
 float g_targetFrameRate = 20.0f;
 int g_lastProcessedSequenceId = -1;
 int g_sliceNum;							// Most recently advanced slice
-#ifdef TARGET_OS_VISTA
-char g_saveFile[128];       // The profile name extracted from the save file that was used to launch darwinia
-bool g_mediaCenter = false;
-#endif
 
 void SwitchTaskManagerForX360Controller();
 
@@ -1003,73 +992,6 @@ void InitialiseInputManager()
 	}
 }
 
-#if defined(TARGET_OS_VISTA)
-void DoVistaChecks()
-{
-    // Check to make sure the game is running on Vista
-
-	if( !IsRunningVista() )
-	{
-		return;
-	}
-
-
-	// Check Parental Controls to make sure current user is allowed to run Darwinia
-
-	HRESULT hr = CoInitialize(nullptr);
-
-	IWindowsParentalControls* wpc = nullptr;
-	hr = CoCreateInstance(__uuidof(WindowsParentalControls), 0, CLSCTX_INPROC_SERVER,
-                    __uuidof(IWindowsParentalControls), (LPVOID *)&wpc);
-
-	if( FAILED(hr) )
-	{
-		wprintf(L"Info:  Parental Controls interface not detected.\n");
-        wprintf(L"Info:   This is an error if on a supported SKU of Windows Vista.\n");
-	}
-	else
-	{
-		IWPCGamesSettings *wpcGamesSettings = nullptr;
-		hr = wpc->GetGamesSettings( nullptr, &wpcGamesSettings );
-		if( FAILED(hr) )
-		{
-			wprintf(L"Warning:  Unable to obtain the Parental Controls user\n");
-            wprintf(L"          settings interface.  This is expected if the\n");
-            wprintf(L"          current user is a Protected Administrator or\n");
-            wprintf(L"          Built-In Administrator.\n");
-		}
-		else
-		{
-			GUID guidGameId;
-			guidGameId.Data1 = 0xF58175C7;
-			guidGameId.Data2 = 0xE99C;
-			guidGameId.Data3 = 0x4151;
-			guidGameId.Data4[0] = 0x80;
-			guidGameId.Data4[1] = 0x0D;
-			guidGameId.Data4[2] = 0x7B;
-			guidGameId.Data4[3] = 0xB5;
-			guidGameId.Data4[4] = 0xE8;
-			guidGameId.Data4[5] = 0x9E;
-			guidGameId.Data4[6] = 0x49;
-			guidGameId.Data4[7] = 0x60;
-
-			DWORD reasons = 0;
-			hr = wpcGamesSettings->IsBlocked( guidGameId, &reasons );
-
-			if( FAILED(hr) ||
-                reasons != WPCFLAG_ISBLOCKED_NOTBLOCKED )
-			{
-                MessageBox(nullptr, LANGUAGEPHRASE("error_parental"), LANGUAGEPHRASE("darwinia_vistaedition"), MB_OK|MB_ICONERROR );
-				exit(0);
-			}
-			wpcGamesSettings->Release();
-		}
-		wpc->Release();
-	}
-}
-
-#endif
-
 void Initialise()
 {
 	WindowManagerSDL* sdlWindowManager = new WindowManagerSDL();
@@ -1087,10 +1009,6 @@ void Initialise()
 	g_app = new App();
 
     InitialiseInputManager();
-
-#if defined(TARGET_OS_VISTA)
-    DoVistaChecks();
-#endif
 
 	g_target = new TargetCursor();
 	//if( g_prefsManager->GetInt("ControlMethod")==0 ) getW32EventHandler()->BindAltTab();
@@ -1125,25 +1043,6 @@ void Finalise()
 	delete g_soundLibrary2d; g_soundLibrary2d = nullptr;
 
     delete g_app->m_resource;
-
-#ifdef TARGET_OS_VISTA
-	// Skip if not running on a Media Center
-    if( g_mediaCenter )
-	{
-		// Get the path to Media Center
-		WCHAR szExpandedPath[MAX_PATH];
-		if( ExpandEnvironmentStringsW( L"%SystemRoot%\\ehome\\ehshell.exe", szExpandedPath, MAX_PATH) )
-		{
-			// Skip if ehshell.exe doesn't exist
-			if( GetFileAttributesW( szExpandedPath ) != 0xFFFFFFFF )
-			{
-				// Launch ehshell.exe
-				INT_PTR result = (INT_PTR)ShellExecuteW( nullptr, L"open", szExpandedPath, nullptr, nullptr, SW_SHOWNORMAL);
-			}
-		}
-	}
-#endif
-
 }
 
 void RunBootLoaders()

@@ -34,7 +34,7 @@ SpawnBuilding::SpawnBuilding()
 SpawnBuilding::~SpawnBuilding()
 {
 	m_links.EmptyAndDelete();
-	//SAFE_DELETE(m_spiritLink); probably not necessary
+	//delete m_spiritLink; probably not necessary
 }
 
 void SpawnBuilding::Initialise( Building *_template )

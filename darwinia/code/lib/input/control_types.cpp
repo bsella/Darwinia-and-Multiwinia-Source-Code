@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include "lib/input/input_types.h"
 #include "lib/input/control_bindings.h"
 

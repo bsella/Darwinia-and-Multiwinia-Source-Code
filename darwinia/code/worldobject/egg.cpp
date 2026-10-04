@@ -234,7 +234,7 @@ bool Egg::Advance( Unit *_unit )
 
     if( !m_onGround )
     {
-        AdvanceInAir(_unit);
+        AdvanceInAir();
     }
     else
     {

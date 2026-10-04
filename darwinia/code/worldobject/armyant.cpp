@@ -92,7 +92,7 @@ bool ArmyAnt::Advance( Unit *_unit )
 {
     bool amIDead = Entity::Advance( _unit );
 
-    if( !m_onGround ) AdvanceInAir(_unit);
+    if( !m_onGround ) AdvanceInAir();
 
     if( !amIDead && !m_dead && m_onGround )
     {

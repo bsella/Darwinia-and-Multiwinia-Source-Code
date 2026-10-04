@@ -881,7 +881,6 @@ int BitmapRGBA::ConvertToTexture(bool _mipmapping) const
 		int result = 1;
 
 		// Our OpenGL implementation in Direct3D mandates power of 2 texture sizes
-#if !defined USE_DIRECT3D
 		bool sameDimensions = (m_width == newWidth && m_height == newHeight);
 		bool scale = (bool) g_prefsManager->GetInt("ManuallyScaleTextures", 0);
 
@@ -891,7 +890,6 @@ int BitmapRGBA::ConvertToTexture(bool _mipmapping) const
 			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 		else
-#endif // USE_DIRECT3D
 		{
 			// Scale the bitmap ourselves
 

@@ -6,7 +6,6 @@
 #include "lib/shape.h"
 #include "lib/resource.h"
 #include "lib/text_stream_readers.h"
-#include "lib/ogl_extensions.h"
 #include "lib/preferences.h"
 
 #include "main.h"

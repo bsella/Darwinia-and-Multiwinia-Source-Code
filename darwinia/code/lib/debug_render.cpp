@@ -310,13 +310,7 @@ void PrintMatrices( const char *_title )
 	if (numTimes > 10)
 		return;
 
-	DebugOut(
-#ifdef USE_DIRECT3D
-		"Direct3D: "
-#else
-		"OpenGL:   "
-#endif
-		"%s\n", _title);
+	DebugOut("OpenGL:   %s\n", _title);
 	PrintMatrix( "Model View", GL_MODELVIEW_MATRIX );
 	PrintMatrix( "Projection", GL_PROJECTION_MATRIX );
 

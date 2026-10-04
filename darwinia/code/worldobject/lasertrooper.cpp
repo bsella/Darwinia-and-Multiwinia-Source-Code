@@ -130,7 +130,7 @@ bool LaserTrooper::Advance(Unit *_unit)
         }
     }
 
-	if( !m_onGround ) AdvanceInAir(_unit);
+	if( !m_onGround ) AdvanceInAir();
 
     bool enteredTeleport = EnterTeleports();
     if( enteredTeleport )
@@ -168,7 +168,7 @@ bool LaserTrooper::Advance( Unit *_unit )
         if( EnterTeleports() )  return true;
     }
 
-	if( !m_onGround )       AdvanceInAir(_unit);
+	if( !m_onGround )       AdvanceInAir();
     if( m_inWater != -1 )   AdvanceInWater(_unit);
 
     if( m_reloading > 0.0f )

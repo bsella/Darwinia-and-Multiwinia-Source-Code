@@ -75,10 +75,6 @@ public:
 	bool AdviseCreateControlHelpGreen();
 	bool AdviseCloseControlHelp();
 	bool AdviseOverSelectableZone();
-
-#ifdef USE_DIRECT3D
-	static void ReleaseD3dResources();
-#endif
 };
 
 

@@ -68,15 +68,7 @@ void ModsWindow::Create()
     char modsDir[256];
     sprintf( modsDir, "%smods/*.*", g_app->GetProfileDirectory() );
     LList<char *> *modList = ListSubDirectoryNames( modsDir );
-#ifdef TARGET_OS_VISTA
-    sprintf( modsDir, "mods/*.*" );
-    LList<char *> *baseModList = ListSubDirectoryNames( modsDir );
 
-    for( int i = 0; i < baseModList->Size(); ++i )
-    {
-        modList->PutData( baseModList->GetData(i) );
-    }
-#endif
     int numMods = modList->Size();
 
     int windowH = 210 + numMods * 30;

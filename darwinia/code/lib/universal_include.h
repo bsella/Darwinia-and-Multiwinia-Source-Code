@@ -12,8 +12,6 @@
 //#define TARGET_PURITYCONTROL
 //#define TARGET_DEMO2
 //#define TARGET_DEBUG
-//#define TARGET_VISTA
-//#define TARGET_VISTA_DEMO2
 
 // === PICK ONE OF THESE TARGETS ===
 
@@ -21,13 +19,6 @@
 
 #ifndef _OPENMP
 #define PROFILER_ENABLED
-#endif
-
-#ifdef TARGET_VISTA
-    #define DARWINIA_GAMETYPE "vista"
-    #define LOCATION_EDITOR
-    #define TARGET_OS_VISTA
-    #define ATTRACTMODE_ENABLED
 #endif
 
 #ifdef TARGET_FULLGAME
@@ -50,13 +41,6 @@
     #define DARWINIA_GAMETYPE "demo2"
     #define DEMOBUILD
     #define DEMO2
-#endif
-
-#ifdef TARGET_VISTA_DEMO2
-    #define DARWINIA_GAMETYPE "vista-demo2"
-    #define DEMOBUILD
-    #define DEMO2
-    #define TARGET_OS_VISTA
 #endif
 
 #ifdef TARGET_PURITYCONTROL
@@ -83,9 +67,7 @@
     !defined(TARGET_FULLGAME) &&    \
     !defined(TARGET_DEMOGAME) &&    \
     !defined(TARGET_DEMO2) &&       \
-    !defined(TARGET_PURITYCONTROL) && \
-    !defined(TARGET_VISTA) && \
-    !defined(TARGET_VISTA_DEMO2 )
+    !defined(TARGET_PURITYCONTROL)
 #error "Unknown target, cannot determine game type"
 #endif
 
@@ -207,19 +189,8 @@
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
-#ifdef USE_DIRECT3D
-	#include <d3d9.h>
-	#include <d3dx9.h>
-	#include "lib/opengl_directx.h"
-#else
 	#include <GL/gl.h>
 	#include <GL/glu.h>
-#endif // USE_DIRECTX
 #endif // !TARGET_OS_MACOSX
-
-#define SAFE_FREE(x) {free(x);x=nullptr;}
-#define SAFE_DELETE(x) {delete x;x=nullptr;}
-#define SAFE_DELETE_ARRAY(x) {delete[] x;x=nullptr;}
-#define SAFE_RELEASE(x) {if(x){(x)->Release();x=nullptr;}}
 
 #endif

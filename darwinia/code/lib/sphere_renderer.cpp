@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <math.h>
 
 #include "lib/vector2.h"

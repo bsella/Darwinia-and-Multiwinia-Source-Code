@@ -1,15 +1,10 @@
-﻿#include "lib/universal_include.h"
-
-#include "lib/hi_res_time.h"
-#include "lib/window_manager.h"
+﻿#include "lib/hi_res_time.h"
 #include "lib/input/input.h"
-#include "lib/math_utils.h"
 #include "lib/resource.h"
 
 #include "loaders/matrix_loader.h"
 
 #include "app.h"
-#include "renderer.h"
 
 #include "sound/soundsystem.h"
 

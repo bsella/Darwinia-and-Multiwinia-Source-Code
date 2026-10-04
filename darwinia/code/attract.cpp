@@ -1,5 +1,3 @@
-#include "lib/universal_include.h"
-
 #include <eclipse.h>
 
 #include "lib/input/input.h"

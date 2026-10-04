@@ -305,9 +305,6 @@ class ExitLevelButton : public DarwiniaButton
 			g_app->m_requestedLocationId = -1;
 		}
 
-#ifdef	TARGET_OS_VISTA
-		g_app->m_saveThumbnail = true;
-#endif
         if( g_app->m_gameMode != App::GameModeCampaign )
         {
             //g_app->m_atMainMenu = true;
