@@ -408,10 +408,16 @@ void Officer::Absorb()
         m_absorbTimer -= SERVER_ADVANCE_PERIOD;
         if( m_absorbTimer < 0.0f )
         {
-            Entity *entity = g_app->m_location->GetEntity( nearestId );
+            const Entity *entity = g_app->m_location->GetEntity( nearestId );
 
             g_app->m_location->m_entityGrid->RemoveObject( nearestId, entity->m_pos.x, entity->m_pos.z, entity->m_radius );
-            g_app->m_location->m_teams[nearestId.GetTeamId()].m_others.MarkNotUsed( nearestId.GetIndex() );
+
+            auto nearest_index = nearestId.GetIndex();
+            auto& team = g_app->m_location->m_teams[nearestId.GetTeamId()];
+            if(nearest_index != -1 && team.m_others.Optionals().size() > nearest_index)
+            {
+                team.m_others.Optionals()[nearest_index].reset();
+            }
             ++m_shield;
             m_absorbTimer = 1.0f;
         }

@@ -1334,105 +1334,96 @@ void LevelFile::GenerateInstantUnits()
         Team *team = &g_app->m_location->m_teams[t];
         if( team->m_teamType == Team::TeamTypeCPU )
         {
-            for( int i = 0; i < team->m_others.Size(); ++i )
+            for( auto& entity : team->m_others.Values() )
             {
-                if( team->m_others.ValidIndex(i) )
-                {
-                    Entity *entity = team->m_others[i];
-                    if( entity->m_enabled )
-                    {
-                        bool insideSpawnArea = ( entity->m_pos - entity->m_spawnPoint ).Mag() < entity->m_roamRange;
+				if(!entity.m_enabled) continue;
 
-                        InstantUnit *unit = new InstantUnit();
-                        unit->m_type = entity->m_type;
-                        unit->m_teamId = t;
-                        unit->m_posX = insideSpawnArea ? entity->m_spawnPoint.x : entity->m_pos.x;
-                        unit->m_posZ = insideSpawnArea ? entity->m_spawnPoint.z : entity->m_pos.z;
-                        unit->m_spread = insideSpawnArea ? entity->m_roamRange : 0;
-                        unit->m_number = 1;
-                        unit->m_inAUnit = false;
-                        unit->m_routeId = entity->m_routeId;
-                        unit->m_routeWaypointId = entity->m_routeWayPointId;
+				bool insideSpawnArea = ( entity.m_pos - entity.m_spawnPoint ).Mag() < entity.m_roamRange;
 
-                        if( entity->m_type == Entity::TypeDarwinian )
-                        {
-                            Darwinian *darwinian = (Darwinian *) entity;
-                            unit->m_posX = darwinian->m_pos.x;
-                            unit->m_posZ = darwinian->m_pos.z;
-                            unit->m_waypointX = darwinian->m_wayPoint.x;
-                            unit->m_waypointZ = darwinian->m_wayPoint.z;
-                            unit->m_spread = 0.0f; // Darwinians should be placed exactly where they were when the game was saved
-                            if( darwinian->m_state == Darwinian::StateFollowingOrders )
-                            {
-                                unit->m_state = Darwinian::StateFollowingOrders;
-                            }
-                        }
+				InstantUnit *unit = new InstantUnit();
+				unit->m_type = entity.m_type;
+				unit->m_teamId = t;
+				unit->m_posX = insideSpawnArea ? entity.m_spawnPoint.x : entity.m_pos.x;
+				unit->m_posZ = insideSpawnArea ? entity.m_spawnPoint.z : entity.m_pos.z;
+				unit->m_spread = insideSpawnArea ? entity.m_roamRange : 0;
+				unit->m_number = 1;
+				unit->m_inAUnit = false;
+				unit->m_routeId = entity.m_routeId;
+				unit->m_routeWaypointId = entity.m_routeWayPointId;
 
-                        m_instantUnits.PutData( unit );
-                    }
-                }
+				if( entity.m_type == Entity::TypeDarwinian )
+				{
+					auto& darwinian = static_cast<Darwinian&>(entity);
+					unit->m_posX = darwinian.m_pos.x;
+					unit->m_posZ = darwinian.m_pos.z;
+					unit->m_waypointX = darwinian.m_wayPoint.x;
+					unit->m_waypointZ = darwinian.m_wayPoint.z;
+					unit->m_spread = 0.0f; // Darwinians should be placed exactly where they were when the game was saved
+					if( darwinian.m_state == Darwinian::StateFollowingOrders )
+					{
+						unit->m_state = Darwinian::StateFollowingOrders;
+					}
+				}
+
+				m_instantUnits.PutData( unit );
             }
         }
         if( team->m_teamType == Team::TeamTypeLocalPlayer )
         {
-            for( int i = 0; i < team->m_others.Size(); ++i )
+            for( auto& entity : team->m_others.Values() )
             {
-                if( team->m_others.ValidIndex(i) )
-                {
-                    Entity *entity = team->m_others[i];
-                    if( entity->m_type == Entity::TypeOfficer &&
-                        entity->m_enabled )
-                    {
-                        Officer *officer = (Officer *) entity;
-                        InstantUnit *unit = new InstantUnit();
-                        unit->m_type = entity->m_type;
-                        unit->m_teamId = t;
-                        unit->m_posX = entity->m_pos.x;
-                        unit->m_posZ = entity->m_pos.z;
-                        unit->m_spread = 0;
-                        unit->m_number = 1;
-                        unit->m_inAUnit = false;
-                        unit->m_state = officer->m_orders;
-                        unit->m_waypointX = officer->m_orderPosition.x;
-                        unit->m_waypointZ = officer->m_orderPosition.z;
-                        unit->m_routeId = officer->m_routeId;
-                        unit->m_routeWaypointId = officer->m_routeWayPointId;
-                        m_instantUnits.PutData( unit );
-                    }
-                    else if( entity->m_type == Entity::TypeArmour )
-                    {
-                        bool taskControlled = false;
-                        for( int i = 0; i < g_app->m_taskManager->m_tasks.Size(); ++i )
-                        {
-                            Task *task = g_app->m_taskManager->m_tasks[i];
-                            if( task->m_type == GlobalResearch::TypeArmour &&
-                                task->m_entity == entity )
-                            {
-                                taskControlled = true;
-                                break;
-                            }
-                        }
-                        if( !taskControlled )
-                        {
-                            Armour *armour = (Armour *) entity;
-                            InstantUnit *unit = new InstantUnit();
-                            unit->m_type = Entity::TypeArmour;
-                            unit->m_teamId = t;
-                            unit->m_posX = armour->m_pos.x;
-                            unit->m_posZ = armour->m_pos.z;
-                            unit->m_spread = 0;
-                            unit->m_number = 1;
-                            unit->m_inAUnit = false;
-                            unit->m_state = armour->m_state;
-                            unit->m_waypointX = armour->m_wayPoint.x;
-                            unit->m_waypointZ = armour->m_wayPoint.z;
-                            unit->m_routeId = armour->m_routeId;
-                            unit->m_routeWaypointId = armour->m_routeWayPointId;
-                            m_instantUnits.PutData( unit );
-                        }
-                    }
-                }
-            }
+				if( entity.m_type == Entity::TypeOfficer &&
+					entity.m_enabled )
+				{
+					auto& officer = static_cast<Officer&>(entity);
+					InstantUnit *unit = new InstantUnit();
+					unit->m_type = entity.m_type;
+					unit->m_teamId = t;
+					unit->m_posX = entity.m_pos.x;
+					unit->m_posZ = entity.m_pos.z;
+					unit->m_spread = 0;
+					unit->m_number = 1;
+					unit->m_inAUnit = false;
+					unit->m_state = officer.m_orders;
+					unit->m_waypointX = officer.m_orderPosition.x;
+					unit->m_waypointZ = officer.m_orderPosition.z;
+					unit->m_routeId = officer.m_routeId;
+					unit->m_routeWaypointId = officer.m_routeWayPointId;
+					m_instantUnits.PutData( unit );
+				}
+				else if( entity.m_type == Entity::TypeArmour )
+				{
+					bool taskControlled = false;
+					for( int i = 0; i < g_app->m_taskManager->m_tasks.Size(); ++i )
+					{
+						Task *task = g_app->m_taskManager->m_tasks[i];
+						if( task->m_type == GlobalResearch::TypeArmour &&
+							task->m_entity == &entity )
+						{
+							taskControlled = true;
+							break;
+						}
+					}
+					if( !taskControlled )
+					{
+						auto& armour = static_cast<Armour&>(entity);
+						InstantUnit *unit = new InstantUnit();
+						unit->m_type = Entity::TypeArmour;
+						unit->m_teamId = t;
+						unit->m_posX = armour.m_pos.x;
+						unit->m_posZ = armour.m_pos.z;
+						unit->m_spread = 0;
+						unit->m_number = 1;
+						unit->m_inAUnit = false;
+						unit->m_state = armour.m_state;
+						unit->m_waypointX = armour.m_wayPoint.x;
+						unit->m_waypointZ = armour.m_wayPoint.z;
+						unit->m_routeId = armour.m_routeId;
+						unit->m_routeWaypointId = armour.m_routeWayPointId;
+						m_instantUnits.PutData( unit );
+					}
+				}
+			}
         }
     }
 

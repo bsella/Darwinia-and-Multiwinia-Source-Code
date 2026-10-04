@@ -22,6 +22,7 @@
 #include "worldobject/spawnpoint.h"
 
 #include "FFP_emulation.h"
+#include <iterator>
 
 SpawnBuilding::SpawnBuilding()
 :   Building(),
@@ -433,7 +434,7 @@ bool MasterSpawnPoint::Advance()
 
     if( g_app->m_location->m_teams[1].m_teamType != Team::TeamTypeUnused )
     {
-        int numRed = g_app->m_location->m_teams[1].m_others.NumUsed();
+        int numRed = std::ranges::distance(g_app->m_location->m_teams[1].m_others.Values());
         if( numRed < 10 )
         {
             GlobalBuilding *gb = g_app->m_globalWorld->GetBuilding( m_id.GetUniqueId(), g_app->m_locationId );
@@ -470,7 +471,7 @@ const char *MasterSpawnPoint::GetObjectiveCounter()
 
     if( g_app->m_location->m_teams[1].m_teamType != Team::TeamTypeUnused )
     {
-        int numRed = g_app->m_location->m_teams[1].m_others.NumUsed();
+        int numRed = std::ranges::distance(g_app->m_location->m_teams[1].m_others.Values());
         sprintf( result, "%s : %d", LANGUAGEPHRASE("objective_redpopulation"), numRed );
     }
     else

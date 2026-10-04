@@ -1179,33 +1179,21 @@ void Renderer::PreRenderPixelEffect()
                 }
             }
 
-            for( int i = 0; i < g_app->m_location->m_teams[t].m_others.Size(); ++i )
+            for( auto& entity : g_app->m_location->m_teams[t].m_others.Values() )
             {
-                if( g_app->m_location->m_teams[t].m_others.ValidIndex(i) )
-                {
-                    Entity *entity = g_app->m_location->m_teams[t].m_others[i];
-                    if( entity->IsInView() )
-                    {
-                        float distance = ( entity->m_pos - camPos ).Mag();
-                        if( distance < cutoff )
-                        {
-                            bool rendered = false;
-                            if( i <= g_app->m_location->m_teams[t].m_others.GetLastUpdated() )
-                            {
-                                rendered = entity->RenderPixelEffect( g_predictionTime );
-                            }
-                            else
-                            {
-                                rendered = entity->RenderPixelEffect( g_predictionTime+SERVER_ADVANCE_PERIOD );
-                            }
-                            if( rendered )
-                            {
-                                float distance = (entity->m_pos - g_app->m_camera->GetPos()).Mag();
-                                if( distance < nearest ) nearest = distance;
-                            }
-                        }
-                    }
-                }
+				if( entity.IsInView() )
+				{
+					float distance = ( entity.m_pos - camPos ).Mag();
+					if( distance < cutoff )
+					{
+						bool rendered = entity.RenderPixelEffect( g_predictionTime );
+						if( rendered )
+						{
+							float distance = (entity.m_pos - g_app->m_camera->GetPos()).Mag();
+							if( distance < nearest ) nearest = distance;
+						}
+					}
+				}
             }
         }
     }

@@ -4,6 +4,7 @@
 #include "lib/fast_darray.h"
 #include "lib/slice_darray.h"
 #include "lib/rgb_colour.h"
+#include "lib/vector_with_options.hpp"
 
 #include "worldobject/building.h"
 #include "worldobject/worldobject.h"
@@ -34,7 +35,7 @@ public:
     int                         m_teamType;
 
     std::vector<std::unique_ptr<Unit>> m_units;
-    SliceDArray <Entity *>      m_others;
+    VectorWithOptionals<Entity>        m_others;
     LList       <WorldObjectId> m_specials;             // Officers and tanks for quick lookup
 
     RGBAColour               m_colour;
@@ -64,7 +65,7 @@ public:
 
     int  NumEntities    (int _troopType);               // Counts the total number
 
-    void Advance        (int _slice);
+    void Advance        ();
 
     void Render             ();
     void RenderVirii        (float _predictionTime);

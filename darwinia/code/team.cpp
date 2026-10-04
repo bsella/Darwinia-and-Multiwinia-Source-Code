@@ -50,8 +50,6 @@ Team::Team()
     m_currentEntity(nullptr),
     m_currentBuilding(nullptr)
 {
-    m_others.SetTotalNumSlices( NUM_SLICES_PER_FRAME );
-	m_others.SetStepSize(100);
 }
 
 
@@ -173,15 +171,12 @@ Entity *Team::RayHitEntity(Vector3 const &_rayStart, Vector3 const &_rayEnd)
 	}
 
 	// Hit against Others
-	for (int i = 0; i < m_others.Size(); ++i)
+	for (auto& entity : m_others.Values())
 	{
-		if (m_others.ValidIndex(i))
-		{
-			if (m_others[i]->RayHit(_rayStart, _rayEnd))
-			{
-				return m_others[i];
-			}
-		}
+        if (entity.RayHit(_rayStart, _rayEnd))
+        {
+            return &entity;
+        }
 	}
 
 	return nullptr;
@@ -225,10 +220,11 @@ Entity *Team::NewEntity(int _troopType, int _unitId, int *_index)
 {
 	if( _unitId == -1 )
     {
-        Entity *entity = Entity::NewEntity( _troopType );
-        DarwiniaDebugAssert( entity );
-        *_index = m_others.PutData( entity );
-        return entity;
+        auto [index, new_entity] = m_others.AddOrReplaceFirstNull(std::unique_ptr<Entity>{Entity::NewEntity( _troopType )});
+    
+        *_index = index;
+
+        return new_entity.get();
     }
 	else
     {
@@ -253,15 +249,11 @@ int Team::NumEntities( int _troopType)
 		}
     }
 
-    for( int i = 0; i < m_others.Size(); ++i )
+    for( auto& entity : m_others.Values())
     {
-        if( m_others.ValidIndex(i) )
+        if( entity.m_type == _troopType )
         {
-            Entity *ent = m_others[i];
-            if( ent->m_type == _troopType )
-            {
-                ++result;
-            }
+            ++result;
         }
     }
 
@@ -269,7 +261,7 @@ int Team::NumEntities( int _troopType)
 }
 
 
-void Team::Advance(int _slice)
+void Team::Advance()
 {
     if( m_teamType <= TeamTypeUnused )
         return;
@@ -277,79 +269,71 @@ void Team::Advance(int _slice)
     //
     // Advance all Units
 
-    if( _slice == 0 )
+    START_PROFILE(g_app->m_profiler, "Advance Unit Entities");
+    for( const auto& unit : m_units )
     {
-        START_PROFILE(g_app->m_profiler, "Advance Unit Entities");
-        for( const auto& unit : m_units )
-        {
-            unit->AdvanceEntities();
-        }
-        END_PROFILE(g_app->m_profiler, "Advance Unit Entities");
-
-        START_PROFILE(g_app->m_profiler, "Advance Units");
-        for( auto unit_itr = m_units.begin(); unit_itr != m_units.end(); )
-        {
-            bool amIDead = (*unit_itr)->Advance();
-            if(amIDead)
-            {
-                if(unit_itr->get() == m_currentUnit)
-                    m_currentUnit = nullptr;
-                
-                m_units.erase(unit_itr);
-            }
-            else
-            {
-                ++unit_itr;
-            }
-        }
-        END_PROFILE(g_app->m_profiler, "Advance Units");
+        unit->AdvanceEntities();
     }
+    END_PROFILE(g_app->m_profiler, "Advance Unit Entities");
+
+    START_PROFILE(g_app->m_profiler, "Advance Units");
+    for( auto unit_itr = m_units.begin(); unit_itr != m_units.end(); )
+    {
+        bool amIDead = (*unit_itr)->Advance();
+        if(amIDead)
+        {
+            if(unit_itr->get() == m_currentUnit)
+                m_currentUnit = nullptr;
+            
+            m_units.erase(unit_itr);
+        }
+        else
+        {
+            ++unit_itr;
+        }
+    }
+    END_PROFILE(g_app->m_profiler, "Advance Units");
 
 
     //
     // Advance all Other entities
 
     START_PROFILE(g_app->m_profiler, "Advance Others");
-    int startIndex, endIndex;
-    m_others.GetNextSliceBounds(_slice, &startIndex, &endIndex);
 
-    for (int i = startIndex; i <= endIndex; i++)
+    for (const auto& [i, entity] : m_others.EnumerateOptionals())
     {
-        if( m_others.ValidIndex(i) )
-        {
-            Entity *ent = m_others[i];
-            if( ent->m_enabled )
-            {
-                Vector3 oldPos( ent->m_pos );
-                WorldObjectId myId( m_teamId, -1, i, ent->m_id.GetUniqueId() );
+        if(!entity) continue;
 
-                const char *entityName = Entity::GetTypeName( ent->m_type );
-                START_PROFILE( g_app->m_profiler, entityName );
-                bool amIdead = ent->Advance(nullptr);
-                END_PROFILE( g_app->m_profiler, entityName );
+        if( entity->m_enabled )
+        {
+            Vector3 oldPos( entity->m_pos );
+            WorldObjectId myId( m_teamId, -1, i, entity->m_id.GetUniqueId() );
+
+            const char *entityName = Entity::GetTypeName( entity->m_type );
+            START_PROFILE( g_app->m_profiler, entityName );
+            bool amIdead = entity->Advance(nullptr);
+            END_PROFILE( g_app->m_profiler, entityName );
 
 #ifdef PROFILER_ENABLED
-                DarwiniaDebugAssert( strcmp(g_app->m_profiler->m_currentElement->m_name, "Advance Others") == 0 );
+            DarwiniaDebugAssert( strcmp(g_app->m_profiler->m_currentElement->m_name, "Advance Others") == 0 );
 #endif
 
-                if( amIdead )
-                {
-                    g_app->m_location->m_entityGrid->RemoveObject( myId, oldPos.x, oldPos.z, ent->m_radius );
-                    m_others.MarkNotUsed(i);
-
-                    if(ent == m_currentEntity)
-                        m_currentEntity = nullptr;
-                    
-                    delete ent;
-                }
-                else if( !ent->m_enabled )
-                {
-                    g_app->m_location->m_entityGrid->RemoveObject( myId, oldPos.x, oldPos.z, ent->m_radius );
-                }
-                else
-                {
-                    g_app->m_location->m_entityGrid->UpdateObject( myId, oldPos.x, oldPos.z, ent->m_pos.x, ent->m_pos.z, ent->m_radius );
-                }
+            if( amIdead )
+            {
+                g_app->m_location->m_entityGrid->RemoveObject( myId, oldPos.x, oldPos.z, entity->m_radius );
+                
+                if(entity.get() == m_currentEntity)
+                    m_currentEntity = nullptr;
+            
+                entity.reset();
+            }
+            else if( !entity->m_enabled )
+            {
+                g_app->m_location->m_entityGrid->RemoveObject( myId, oldPos.x, oldPos.z, entity->m_radius );
+            }
+            else
+            {
+                g_app->m_location->m_entityGrid->UpdateObject( myId, oldPos.x, oldPos.z, entity->m_pos.x, entity->m_pos.z, entity->m_radius );
             }
         }
     }
@@ -428,9 +412,7 @@ void Team::Render()
 
 void Team::RenderVirii(float _predictionTime)
 {
-	if (m_others.Size() == 0) return;
-
-    int lastUpdated = m_others.GetLastUpdated();
+	if (m_others.Optionals().empty()) return;
 
 	float nearPlaneStart = g_app->m_renderer->GetNearPlane();
 	g_app->m_camera->SetupProjectionMatrix(nearPlaneStart * 1.05f,
@@ -452,34 +434,23 @@ void Team::RenderVirii(float _predictionTime)
 
     int entityDetail = g_prefsManager->GetInt( "RenderEntityDetail" );
 
-    for (int i = 0; i <= m_others.Size(); i++)
+    for (auto& entity : m_others.Values())
     {
-        if( m_others.ValidIndex(i) )
+        if( entity.m_type == Entity::TypeVirii )
         {
-            Entity *entity = m_others.GetData(i);
-            if( entity->m_type == Entity::TypeVirii )
+            auto& virii = static_cast<Virii&>(entity);
+            if( virii.IsInView() )
             {
-                Virii *virii = (Virii *) entity;
-                if( virii->IsInView() )
-                {
-                    float rangeToCam = ( virii->m_pos - g_app->m_camera->GetPos() ).Mag();
-                    int viriiDetail = 1;
-                    if      ( entityDetail == 1 && rangeToCam > 1000.0f )        viriiDetail = 2;
-                    else if ( entityDetail == 2 && rangeToCam > 1000.0f )        viriiDetail = 3;
-                    else if ( entityDetail == 2 && rangeToCam > 500.0f )         viriiDetail = 2;
-                    else if ( entityDetail == 3 && rangeToCam > 1000.0f )        viriiDetail = 4;
-                    else if ( entityDetail == 3 && rangeToCam > 600.0f )         viriiDetail = 3;
-                    else if ( entityDetail == 3 && rangeToCam > 300.0f )         viriiDetail = 2;
+                float rangeToCam = ( virii.m_pos - g_app->m_camera->GetPos() ).Mag();
+                int viriiDetail = 1;
+                if      ( entityDetail == 1 && rangeToCam > 1000.0f )        viriiDetail = 2;
+                else if ( entityDetail == 2 && rangeToCam > 1000.0f )        viriiDetail = 3;
+                else if ( entityDetail == 2 && rangeToCam > 500.0f )         viriiDetail = 2;
+                else if ( entityDetail == 3 && rangeToCam > 1000.0f )        viriiDetail = 4;
+                else if ( entityDetail == 3 && rangeToCam > 600.0f )         viriiDetail = 3;
+                else if ( entityDetail == 3 && rangeToCam > 300.0f )         viriiDetail = 2;
 
-                    if( i <= lastUpdated )
-                    {
-                        virii->Render ( _predictionTime, m_teamId, viriiDetail );
-                    }
-                    else
-                    {
-                        virii->Render  ( _predictionTime+SERVER_ADVANCE_PERIOD, m_teamId, viriiDetail );
-                    }
-                }
+                virii.Render ( _predictionTime, m_teamId, viriiDetail );
             }
         }
     }
@@ -500,9 +471,7 @@ void Team::RenderVirii(float _predictionTime)
 
 void Team::RenderDarwinians(float _predictionTime)
 {
-	if (m_others.Size() == 0) return;
-
-    int lastUpdated = m_others.GetLastUpdated();
+	if (m_others.Optionals().empty()) return;
 
     glEnable        ( GL_TEXTURE_2D );
     glBindTexture   ( GL_TEXTURE_2D, g_app->m_resource->GetTexture( "sprites/darwinian.bmp" ) );
@@ -521,30 +490,19 @@ void Team::RenderDarwinians(float _predictionTime)
 
     highDetailDistanceSqd *= highDetailDistanceSqd;
 
-    for (int i = 0; i <= m_others.Size(); i++)
+    for (auto& entity : m_others.Values())
     {
-        if( m_others.ValidIndex(i) )
+        if( entity.m_type == Entity::TypeDarwinian )
         {
-            Entity *entity = m_others.GetData(i);
-            if( entity->m_type == Entity::TypeDarwinian )
+            auto& darwinian = static_cast<Darwinian&>(entity);
+            if( darwinian.IsInView() )
             {
-                Darwinian *darwinian = (Darwinian *) entity;
-                if( darwinian->IsInView() )
-                {
-                    float camDistSqd = ( darwinian->m_pos - g_app->m_camera->GetPos() ).MagSquared();
-                    float highDetail = 1.0f - ( camDistSqd / highDetailDistanceSqd );
-                    highDetail = std::max( highDetail, 0.0f );
-                    highDetail = std::min( highDetail, 1.0f );
+                float camDistSqd = ( darwinian.m_pos - g_app->m_camera->GetPos() ).MagSquared();
+                float highDetail = 1.0f - ( camDistSqd / highDetailDistanceSqd );
+                highDetail = std::max( highDetail, 0.0f );
+                highDetail = std::min( highDetail, 1.0f );
 
-                    if( i <= lastUpdated )
-                    {
-                        darwinian->Render ( _predictionTime, highDetail );
-                    }
-                    else
-                    {
-                        darwinian->Render  ( _predictionTime+SERVER_ADVANCE_PERIOD, highDetail );
-                    }
-                }
+                darwinian.Render ( _predictionTime, highDetail );
             }
         }
     }
@@ -559,42 +517,17 @@ void Team::RenderDarwinians(float _predictionTime)
 
 void Team::RenderOthers(float _predictionTime)
 {
-    int lastUpdated = m_others.GetLastUpdated();
-
-    for (int i = 0; i <= lastUpdated; i++)
+    for (auto& entity :  m_others.Values())
     {
-        if( m_others.ValidIndex(i) )
+        if( entity.m_type != Entity::TypeVirii &&
+            entity.m_type != Entity::TypeDarwinian &&
+            entity.IsInView() )
         {
-            Entity *entity = m_others.GetData(i);
-            if( entity->m_type != Entity::TypeVirii &&
-                entity->m_type != Entity::TypeDarwinian &&
-                entity->IsInView() )
-            {
-                START_PROFILE( g_app->m_profiler, Entity::GetTypeName( entity->m_type ) );
-                entity->Render( _predictionTime );
-                END_PROFILE( g_app->m_profiler, Entity::GetTypeName( entity->m_type ) );
-            }
+            START_PROFILE( g_app->m_profiler, Entity::GetTypeName( entity.m_type ) );
+            entity.Render( _predictionTime );
+            END_PROFILE( g_app->m_profiler, Entity::GetTypeName( entity.m_type ) );
         }
     }
-
-	int size = m_others.Size();
-	_predictionTime += SERVER_ADVANCE_PERIOD;
-	for (int i = lastUpdated + 1; i < size; i++)
-    {
-        if( m_others.ValidIndex(i) )
-        {
-            Entity *entity = m_others.GetData(i);
-            if( entity->m_type != Entity::TypeVirii &&
-                entity->m_type != Entity::TypeDarwinian &&
-                entity->IsInView() )
-            {
-                START_PROFILE( g_app->m_profiler, Entity::GetTypeName( entity->m_type ) );
-                entity->Render( _predictionTime );
-                END_PROFILE( g_app->m_profiler, Entity::GetTypeName( entity->m_type ) );
-            }
-        }
-    }
-
 }
 
 // ****************************************************************************

@@ -500,22 +500,21 @@ bool FuelStation::Advance()
             // Find a random Darwinian and make him board
 
             Team *team = &g_app->m_location->m_teams[0];
-            int numOthers = team->m_others.Size();
+            int numOthers = team->m_others.Optionals().size();
             if( numOthers > 0 )
             {
                 int randomIndex = syncrand() % numOthers;
-                if( team->m_others.ValidIndex(randomIndex) )
+                if( auto& entity = team->m_others.Optionals()[randomIndex] )
                 {
-                    Entity *entity = team->m_others[randomIndex];
-                    if( entity && entity->m_type == Entity::TypeDarwinian )
+                    if( entity->m_type == Entity::TypeDarwinian )
                     {
-                        Darwinian *darwinian = (Darwinian *) entity;
+                        auto& darwinian = static_cast<Darwinian&>(*entity);
                         float distance = (entity->m_pos - m_pos).Mag();
                         if( distance < 300.0f &&
-                            (darwinian->m_state == Darwinian::StateIdle ||
-                             darwinian->m_state == Darwinian::StateWorshipSpirit) )
+                            (darwinian.m_state == Darwinian::StateIdle ||
+                             darwinian.m_state == Darwinian::StateWorshipSpirit) )
                         {
-                            darwinian->BoardRocket( m_id.GetUniqueId() );
+                            darwinian.BoardRocket( m_id.GetUniqueId() );
                         }
                     }
                 }
@@ -1157,22 +1156,18 @@ void EscapeRocket::SetupSpectacle()
         for( int t = 0; t < NUM_TEAMS; ++t )
         {
             Team *team = &g_app->m_location->m_teams[t];
-            for( int i = 0; i < team->m_others.Size(); ++i )
+            for( auto& entity : team->m_others.Values() )
             {
-                if( team->m_others.ValidIndex(i) )
+                if( entity.m_type == Entity::TypeDarwinian )
                 {
-                    Entity *entity = team->m_others[i];
-                    if( entity && entity->m_type == Entity::TypeDarwinian )
+                    auto& darwinian = static_cast<Darwinian&>(entity);
+                    //if( m_state == StateReady ) darwinian->CastShadow( m_id.GetUniqueId() );
+                    // Causes too much of a slow down, and doesn't add much visually to the scene
+                    if( t == 0 &&
+                        darwinian.m_state == Darwinian::StateIdle &&
+                        (syncrand() % 10) < 2 )
                     {
-                        Darwinian *darwinian = (Darwinian *) entity;
-                        //if( m_state == StateReady ) darwinian->CastShadow( m_id.GetUniqueId() );
-                        // Causes too much of a slow down, and doesn't add much visually to the scene
-                        if( t == 0 &&
-                            darwinian->m_state == Darwinian::StateIdle &&
-                            (syncrand() % 10) < 2 )
-                        {
-                            darwinian->WatchSpectacle( m_id.GetUniqueId() );
-                        }
+                        darwinian.WatchSpectacle( m_id.GetUniqueId() );
                     }
                 }
             }
@@ -1203,20 +1198,19 @@ void EscapeRocket::SetupAttackers()
     if( !m_spawnCompleted && syncfrand() < 0.2f )
     {
         Team *team = &g_app->m_location->m_teams[1];
-        int numOthers = team->m_others.Size();
+        int numOthers = team->m_others.Optionals().size();
         if( numOthers > 0 )
         {
             int randomIndex = syncrand() % numOthers;
-            if( team->m_others.ValidIndex(randomIndex) )
+            if( auto& entity = team->m_others.Optionals()[randomIndex] )
             {
-                Entity *entity = team->m_others[randomIndex];
-                if( entity && entity->m_type == Entity::TypeDarwinian )
+                if( entity->m_type == Entity::TypeDarwinian )
                 {
-                    Darwinian *darwinian = (Darwinian *) entity;
-                    float range = ( darwinian->m_pos - m_pos ).Mag();
+                    auto& darwinian = static_cast<Darwinian&>(*entity);
+                    float range = ( darwinian.m_pos - m_pos ).Mag();
                     if( range < 350.0f )
                     {
-                        darwinian->AttackBuilding( m_id.GetUniqueId() );
+                        darwinian.AttackBuilding( m_id.GetUniqueId() );
                     }
                 }
             }

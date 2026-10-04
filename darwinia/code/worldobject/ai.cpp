@@ -20,6 +20,8 @@
 #include "worldobject/blueprintstore.h"
 
 #include "FFP_emulation.h"
+#include <iterator>
+#include <ranges>
 
 AI::AI()
 :   Entity(),
@@ -187,26 +189,24 @@ bool AI::Advance( Unit * )
     // We can't do this for every darwinian every frame, so just do it for some
 
     Team *team = &g_app->m_location->m_teams[m_id.GetTeamId()];
-    int numRemaining = team->m_others.Size() * 0.02f;
-    numRemaining = std::max( numRemaining, 1 );
+    auto numRemaining = std::max( size_t(team->m_others.Optionals().size() * 0.02f), 1uz );
 
     while( numRemaining > 0 )
     {
-        int index = syncrand() % team->m_others.Size();
-        if( team->m_others.ValidIndex(index) )
+        int index = syncrand() % team->m_others.Optionals().size();
+        if( auto& entity = team->m_others.Optionals()[index] )
         {
-            Entity *entity = team->m_others[index];
-            if( entity && entity->m_type == TypeDarwinian )
+            if( entity->m_type == TypeDarwinian )
             {
-                Darwinian *darwinian = (Darwinian *) entity;
-                if( darwinian->m_state == Darwinian::StateIdle ||
-                    darwinian->m_state == Darwinian::StateWorshipSpirit ||
-                    darwinian->m_state == Darwinian::StateWatchingSpectacle )
+                auto& darwinian = static_cast<Darwinian&>(*entity);
+                if( darwinian.m_state == Darwinian::StateIdle ||
+                    darwinian.m_state == Darwinian::StateWorshipSpirit ||
+                    darwinian.m_state == Darwinian::StateWatchingSpectacle )
                 {
-                    Building *nearestTarget = g_app->m_location->GetBuilding( FindNearestTarget(darwinian->m_pos) );
+                    Building *nearestTarget = g_app->m_location->GetBuilding( FindNearestTarget(darwinian.m_pos) );
                     if( nearestTarget )
                     {
-                        float distance = ( nearestTarget->m_pos - darwinian->m_pos ).Mag();
+                        float distance = ( nearestTarget->m_pos - darwinian.m_pos ).Mag();
                         if( distance > 70.0f )
                         {
                             Vector3 targetPos = nearestTarget->m_pos;
@@ -216,7 +216,7 @@ bool AI::Advance( Unit * )
                             targetPos.x += radius * sinf(theta);
 	                        targetPos.z += radius * cosf(theta);
                             targetPos.y = g_app->m_location->m_landscape.m_heightMap->GetValue(targetPos.x, targetPos.z);
-                            darwinian->GiveOrders( targetPos );
+                            darwinian.GiveOrders( targetPos );
                         }
                     }
                 }
@@ -319,8 +319,8 @@ void AI::Render( [[maybe_unused]] float _predictionTime )
         pos.y = 400.0f;
         RenderSphere( pos, 20.0f, teamCol );
 
-        int numGreen = g_app->m_location->m_teams[0].m_others.NumUsed();
-        int numRed = g_app->m_location->m_teams[1].m_others.NumUsed();
+        int numGreen = std::ranges::distance(g_app->m_location->m_teams[0].m_others.Values());
+        int numRed = std::ranges::distance(g_app->m_location->m_teams[1].m_others.Values());
 
         glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
         g_editorFont.DrawText3DCentre( pos-Vector3(0,30,0), 25, "Green : %d", numGreen );
