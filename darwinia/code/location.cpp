@@ -68,8 +68,7 @@
 
 // *** Constructor
 Location::Location()
-:	m_lastSliceProcessed(0),
-	m_missionComplete(false),
+:	m_missionComplete(false),
 	m_entityGrid(nullptr),
     m_obstructionGrid(nullptr),
 	m_levelFile(nullptr),
@@ -78,9 +77,6 @@ Location::Location()
 	m_teams(nullptr),
     m_christmasTimer(-99.9f)
 {
-    m_effects.SetTotalNumSlices(NUM_SLICES_PER_FRAME);
-
-	m_effects.SetSize(100);
 }
 
 
@@ -140,7 +136,7 @@ void Location::Empty()
 	m_buildings.clear();
 	m_spirits.clear();
     m_lasers.clear();
-    m_effects.Empty();
+    m_effects.clear();
 
 	delete m_levelFile;			m_levelFile = nullptr;
 	delete [] m_teams;			m_teams = nullptr;
@@ -399,12 +395,15 @@ std::unique_ptr<Spirit>& Location::GetSpirit( int _index )
 
 WorldObject *Location::GetEffect( WorldObjectId _id )
 {
-    if( m_effects.ValidIndex(_id.GetIndex()) )
+    auto index = _id.GetIndex();
+    if( index != -1 && m_effects.Optionals().size() > index )
     {
-        WorldObject *wobj = m_effects[_id.GetIndex()];
-        if( wobj->m_id.GetUniqueId() == _id.GetUniqueId() )
+        if(auto& wobj = m_effects.Optionals()[index])
         {
-            return wobj;
+            if( wobj->m_id.GetUniqueId() == _id.GetUniqueId() )
+            {
+                return wobj.get();
+            }
         }
     }
 
@@ -617,38 +616,30 @@ bool Location::IsWalkable( Vector3 const &_from, Vector3 const &_to, bool _evalu
 }
 
 
-void Location::AdvanceWeapons( int _slice )
+void Location::AdvanceWeapons()
 {
-    if(_slice == 0)
+    START_PROFILE(g_app->m_profiler, "Advance Lasers");
+    for( auto& laser : m_lasers.Optionals() )
     {
-        START_PROFILE(g_app->m_profiler, "Advance Lasers");
-        for( auto& laser : m_lasers.Optionals() )
+        if(!laser) continue;
+        
+        bool remove = laser->Advance();
+        if( remove )
         {
-            if(!laser) continue;
-            
-            bool remove = laser->Advance();
-            if( remove )
-            {
-                laser.reset();
-            }
+            laser.reset();
         }
-        END_PROFILE(g_app->m_profiler, "Advance Lasers");
     }
+    END_PROFILE(g_app->m_profiler, "Advance Lasers");
 
     START_PROFILE(g_app->m_profiler, "Advance Effects");
-    int startIndex, endIndex;
-    m_effects.GetNextSliceBounds(_slice, &startIndex, &endIndex);
-    for( int i = startIndex; i <= endIndex; ++i )
+    for( auto& effect : m_effects.Optionals() )
     {
-        if( m_effects.ValidIndex(i) )
+        if(!effect) continue;
+
+        bool remove = effect->Advance();
+        if( remove )
         {
-            WorldObject *e = m_effects[i];
-            bool remove = e->Advance();
-            if( remove )
-            {
-                m_effects.MarkNotUsed(i);
-                delete e;
-            }
+            effect.reset();
         }
     }
     END_PROFILE(g_app->m_profiler, "Advance Effects");
@@ -811,17 +802,15 @@ bool Location::MissionComplete()
 
 
 // *** Advance
-void Location::Advance( int _slice )
+void Location::Advance()
 {
     if( g_app->m_paused ) return;
 
-    m_lastSliceProcessed = _slice;
-
-    if(_slice == 0) AdvanceTeams        ();
-    AdvanceWeapons      ( _slice );
-    if(_slice == 0) AdvanceBuildings    (); // TODO
-    if(_slice == 0) AdvanceSpirits      (); // TODO
-    if(_slice == 3) AdvanceClouds       (); // TODO
+    AdvanceTeams        ();
+    AdvanceWeapons      ();
+    AdvanceBuildings    ();
+    AdvanceSpirits      ();
+    AdvanceClouds       ();
 
     if (!m_missionComplete && MissionComplete())
 	{
@@ -846,9 +835,8 @@ void Location::AdvanceChristmas()
             float sizeZ = m_landscape.GetWorldSizeZ();
             float posY = syncfrand(1000.0f);
             Vector3 spawnPos = Vector3( syncfrand(sizeX), posY, syncfrand(sizeZ) ) ;
-            Snow *snow = new Snow();
+            auto [index, snow] = m_effects.AddOrReplaceFirstNull( std::make_unique<Snow>() );
             snow->m_pos = spawnPos;
-            int index = m_effects.PutData( snow );
             snow->m_id.Set( -1, UNIT_EFFECTS, index, -1 );
             snow->m_id.GenerateUniqueId();
         }
@@ -862,9 +850,8 @@ void Location::AdvanceChristmas()
         float sizeZ = m_landscape.GetWorldSizeZ();
         float posY = 700.0f + syncfrand(300.0f);
         Vector3 spawnPos = Vector3( syncfrand(sizeX), posY, syncfrand(sizeZ) ) ;
-        Snow *snow = new Snow();
+        auto [index, snow] = m_effects.AddOrReplaceFirstNull( std::make_unique<Snow>() );
         snow->m_pos = spawnPos;
-        int index = m_effects.PutData( snow );
         snow->m_id.Set( -1, UNIT_EFFECTS, index, -1 );
         snow->m_id.GenerateUniqueId();
     }
@@ -1168,14 +1155,7 @@ void Location::RenderClouds()
     if( m_clouds )
     {
         float timeSinceAdvance = g_predictionTime;
-        if( m_lastSliceProcessed >= 3 )
-        {
-            m_clouds->Render( timeSinceAdvance );
-        }
-        else
-        {
-            m_clouds->Render( timeSinceAdvance + 0.1f );
-        }
+        m_clouds->Render( timeSinceAdvance );
     }
 
     END_PROFILE(g_app->m_profiler, "Render Clouds");
@@ -1198,21 +1178,9 @@ void Location::RenderWeapons()
 	glDisable       ( GL_CULL_FACE );
 	glDepthMask     ( false );
 
-    for( int i = 0; i < m_effects.Size(); ++i )
+    for( auto& effect : m_effects.Values() )
 	{
-		if( m_effects.ValidIndex(i) )
-		{
-			WorldObject *w = m_effects[i];
-
-			if( i > m_effects.GetLastUpdated() )
-			{
-				w->Render( timeSinceAdvance + SERVER_ADVANCE_PERIOD );
-			}
-			else
-			{
-				w->Render( timeSinceAdvance );
-			}
-		}
+		effect.Render( timeSinceAdvance );
 	}
 	glEnable        ( GL_CULL_FACE );
 
@@ -1671,27 +1639,26 @@ void Location::ThrowWeapon( Vector3 const &_pos, Vector3 const &_target, int _ty
     front.y = 1.0f;
     front.Normalise();
 
-    ThrowableWeapon *weapon = nullptr;
+    std::unique_ptr<ThrowableWeapon> effect = nullptr;
 
     switch( _type )
     {
-        case WorldObject::EffectThrowableGrenade:             weapon = new Grenade( _pos, front, force );             break;
-        case WorldObject::EffectThrowableAirstrikeMarker:     weapon = new AirStrikeMarker( _pos, front, force );     break;
-        case WorldObject::EffectThrowableControllerGrenade:   weapon = new ControllerGrenade( _pos, front, force );   break;
+        case WorldObject::EffectThrowableGrenade:             effect = std::make_unique<Grenade>( _pos, front, force );             break;
+        case WorldObject::EffectThrowableAirstrikeMarker:     effect = std::make_unique<AirStrikeMarker>( _pos, front, force );     break;
+        case WorldObject::EffectThrowableControllerGrenade:   effect = std::make_unique<ControllerGrenade>( _pos, front, force );   break;
     }
 
-    int weaponId = m_effects.PutData( weapon );
+    auto [weaponId, weapon] = m_effects.AddOrReplaceFirstNull( std::move(effect) );
     weapon->m_id.Set( _fromTeamId, UNIT_EFFECTS, weaponId, -1 );
     weapon->m_id.GenerateUniqueId();
-    weapon->Initialise();
+    static_cast<ThrowableWeapon*>(weapon.get())->Initialise();
 
 
     //
     // Create muzzle flash
 
     Vector3 flashFront = front;
-    MuzzleFlash *mf = new MuzzleFlash( _pos, flashFront, 20.0f, 3.0f);
-    int index = m_effects.PutData( mf );
+    auto [index, mf] = m_effects.AddOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 20.0f, 3.0f) );
     mf->m_id.Set( _fromTeamId, UNIT_EFFECTS, index, -1 );
     mf->m_id.GenerateUniqueId();
 
@@ -1700,10 +1667,10 @@ void Location::ThrowWeapon( Vector3 const &_pos, Vector3 const &_target, int _ty
 
 void Location::FireRocket( Vector3 const &_pos, Vector3 const &_target, unsigned char _teamId )
 {
-    Rocket *r = new Rocket(_pos, _target);
+    auto [weaponId, effect] = m_effects.AddOrReplaceFirstNull( std::make_unique<Rocket>(_pos, _target) );
+    auto* r = static_cast<Rocket*>(effect.get());
     r->m_fromTeamId = _teamId;
 
-    int weaponId = m_effects.PutData( r );
     r->m_id.Set( _teamId, UNIT_EFFECTS, weaponId, -1 );
     r->m_id.GenerateUniqueId();
     r->Initialise();
@@ -1714,8 +1681,7 @@ void Location::FireRocket( Vector3 const &_pos, Vector3 const &_target, unsigned
 
     Vector3 flashFront = _target - _pos;
     flashFront.Normalise();
-    MuzzleFlash *mf = new MuzzleFlash( _pos, flashFront, 20.0f, 3.0f);
-    int index = m_effects.PutData( mf );
+    auto [index, mf] = m_effects.AddOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 20.0f, 3.0f) );
     mf->m_id.Set( _teamId, UNIT_EFFECTS, index, -1 );
     mf->m_id.GenerateUniqueId();
 }
@@ -1734,11 +1700,9 @@ void Location::FireTurretShell( Vector3 const &_pos, Vector3 const &_vel )
         case 4 :    lifeTime = 2.0f;            break;
     }
 
-    TurretShell *shell = new TurretShell(lifeTime);
+    auto [weaponId, shell] = m_effects.AddOrReplaceFirstNull( std::make_unique<TurretShell>(lifeTime) );
     shell->m_pos = _pos;
     shell->m_vel = _vel;
-
-    int weaponId = m_effects.PutData( shell );
     shell->m_id.Set( -1, UNIT_EFFECTS, weaponId, -1 );
     shell->m_id.GenerateUniqueId();
 
@@ -1749,8 +1713,7 @@ void Location::FireTurretShell( Vector3 const &_pos, Vector3 const &_vel )
     Vector3 flashFront = _vel;
     flashFront.Normalise();
 
-    MuzzleFlash *mf = new MuzzleFlash( _pos, flashFront, 40.0f, 2.0f);
-    int index = m_effects.PutData( mf );
+    auto [index, mf] = m_effects.AddOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 40.0f, 2.0f) );
     mf->m_id.Set( -1, UNIT_EFFECTS, index, -1 );
     mf->m_id.GenerateUniqueId();
 }
@@ -1781,8 +1744,7 @@ void Location::FireLaser( Vector3 const &_pos, Vector3 const &_vel, unsigned cha
 
     Vector3 flashFront = _vel;
     flashFront.Normalise();
-    MuzzleFlash *mf = new MuzzleFlash( _pos, flashFront, 20.0f * lifetime, 1.0f );
-    int index = m_effects.PutData( mf );
+    auto [index, mf] = m_effects.AddOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 20.0f * lifetime, 1.0f ) );
     mf->m_id.Set( _teamId, UNIT_EFFECTS, index, -1 );
     mf->m_id.GenerateUniqueId();
 }
@@ -1907,9 +1869,8 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
 
 void Location::CreateShockwave( Vector3 const &_pos, float _size, unsigned char _teamId )
 {
-    Shockwave *s = new Shockwave( _teamId, _size );
+    auto [index, s] = m_effects.AddOrReplaceFirstNull( std::make_unique<Shockwave>( _teamId, _size ) );
     s->m_pos = _pos;
-    int index = m_effects.PutData( s );
     s->m_id.Set( _teamId, UNIT_EFFECTS, index, -1 );
     s->m_id.GenerateUniqueId();
 }

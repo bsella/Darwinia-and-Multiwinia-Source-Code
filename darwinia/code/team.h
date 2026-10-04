@@ -1,16 +1,12 @@
 #ifndef _INCLUDED_TEAM_H
 #define _INCLUDED_TEAM_H
 
-#include "lib/fast_darray.h"
-#include "lib/slice_darray.h"
 #include "lib/rgb_colour.h"
 #include "lib/vector_with_options.hpp"
 
 #include "worldobject/building.h"
 #include "worldobject/worldobject.h"
 #include "worldobject/entity.h"
-#include <memory>
-#include <vector>
 
 class Unit;
 class InsertionSquad;

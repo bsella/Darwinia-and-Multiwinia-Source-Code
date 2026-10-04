@@ -21,6 +21,7 @@
 #include "worldobject/souldestroyer.h"
 
 #include "FFP_emulation.h"
+#include <memory>
 
 Shape *SoulDestroyer::s_shapeHead = nullptr;
 Shape *SoulDestroyer::s_shapeTail = nullptr;
@@ -211,14 +212,14 @@ void SoulDestroyer::Attack( Vector3 const &_pos )
 
 
             // Create a zombie
-            Zombie *zombie = new Zombie();
+            auto [index, effect] = g_app->m_location->m_effects.AddOrReplaceFirstNull( std::make_unique<Zombie>());
+            auto* zombie = static_cast<Zombie*>(effect.get());
             zombie->m_pos = entity->m_pos;
             zombie->m_front = entity->m_front;
             zombie->m_up = g_upVector;
             zombie->m_up.RotateAround( zombie->m_front * syncsfrand() );
             zombie->m_vel = m_vel * 0.5f;
             zombie->m_vel.y = 20.0f + syncfrand(25.0f);
-            int index = g_app->m_location->m_effects.PutData( zombie );
             zombie->m_id.Set( id.GetTeamId(), UNIT_EFFECTS, index, -1 );
             zombie->m_id.GenerateUniqueId();
         }

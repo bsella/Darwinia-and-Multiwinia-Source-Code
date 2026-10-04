@@ -342,16 +342,12 @@ bool Demo1Tutorial::AdvanceCurrentChapter()
         {
             HandleSquadDeath();
             bool grenadeFound = false;
-            for( int i = 0; i < g_app->m_location->m_effects.Size(); ++i )
+            for( const auto& effect : g_app->m_location->m_effects.Values() )
             {
-                if( g_app->m_location->m_effects.ValidIndex(i) )
+                if( effect.m_type == WorldObject::EffectThrowableGrenade )
                 {
-                    WorldObject *wobj = g_app->m_location->m_effects[i];
-                    if( wobj->m_type == WorldObject::EffectThrowableGrenade )
-                    {
-                        grenadeFound = true;
-                        break;
-                    }
+                    grenadeFound = true;
+                    break;
                 }
             }
             if( grenadeFound )

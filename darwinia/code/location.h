@@ -47,13 +47,12 @@ class TeamControls;
 class Location
 {
 protected:
-    int	 m_lastSliceProcessed;
 	bool m_missionComplete;
 
     void SetMyTeamId			( unsigned char _teamId );
     void LoadLevel				( char const *_missionFilename, char const *_mapFilename );
 
-    void AdvanceWeapons			( int _slice );
+    void AdvanceWeapons			();
     void AdvanceBuildings		();
     void AdvanceTeams			();
     void AdvanceSpirits			();
@@ -90,8 +89,8 @@ public:
 
     float           m_christmasTimer;
 
-	std::vector<Light>              m_lights;
-    SliceDArray     <WorldObject *> m_effects;
+	std::vector<Light>               m_lights;
+    VectorWithOptionals<WorldObject> m_effects;
     
     VectorWithOptionals<Laser>    m_lasers;
     
@@ -107,7 +106,7 @@ public:
     void InitBuildings			();
 	void Empty				();
 
-    void Advance            ( int _slice );
+    void Advance            ();
     void Render             ( bool renderWaterAndClouds = true );
 
     void InitialiseTeam     ( unsigned char _teamId,

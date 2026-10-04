@@ -1,4 +1,5 @@
 ﻿#include <math.h>
+#include <memory>
 
 #include "lib/resource.h"
 #include "lib/shape.h"
@@ -255,8 +256,7 @@ bool GunTurret::Advance()
 
     if( !m_targetCreated )
     {
-        GunTurretTarget *target = new GunTurretTarget( m_id.GetUniqueId() );
-        int index = g_app->m_location->m_effects.PutData( target );
+        auto [index, target] = g_app->m_location->m_effects.AddOrReplaceFirstNull( std::make_unique<GunTurretTarget>(m_id.GetUniqueId()) );
         target->m_id.Set( m_id.GetTeamId(), UNIT_EFFECTS, index, -1 );
         target->m_id.GenerateUniqueId();
         m_targetCreated = true;

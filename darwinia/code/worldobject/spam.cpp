@@ -225,11 +225,11 @@ void Spam::SpawnInfection()
         vel += Vector3( syncsfrand(1.0f), syncfrand(2.0f), syncsfrand(1.0f) );
         vel.SetLength( 100.0f );
 
-        SpamInfection *infection = new SpamInfection();
+        auto [index, effect] = g_app->m_location->m_effects.AddOrReplaceFirstNull( std::make_unique<SpamInfection>() );
+        auto* infection = static_cast<SpamInfection*>(effect.get());
         infection->m_pos = m_centrePos;
         infection->m_vel = vel;
         infection->m_parentId = m_id.GetUniqueId();
-        int index = g_app->m_location->m_effects.PutData( infection );
         infection->m_id.Set( -1, UNIT_EFFECTS, index, -1 );
         infection->m_id.GenerateUniqueId();
     }

@@ -34,6 +34,7 @@
 #include "worldobject/rocket.h"
 
 #include "FFP_emulation.h"
+#include <memory>
 
 Darwinian::Darwinian()
 :   Entity(),
@@ -686,30 +687,26 @@ bool Darwinian::AdvanceWorshipSpirit()
     {
         bool existingKiteFound = false;
 
-        for( int i = 0; i < g_app->m_location->m_effects.Size(); ++i )
+        for( const auto& effect : g_app->m_location->m_effects.Values() )
         {
-            if( g_app->m_location->m_effects.ValidIndex(i))
+            if( effect.m_id.GetUnitId() == UNIT_EFFECTS &&
+                effect.m_type == EffectBoxKite )
             {
-                WorldObject *obj = g_app->m_location->m_effects[i];
-                if( obj->m_id.GetUnitId() == UNIT_EFFECTS &&
-                    obj->m_type == EffectBoxKite )
+                float distanceSqd = ( effect.m_pos - m_pos ).MagSquared();
+                if( distanceSqd < 2500.0f )
                 {
-                    float distanceSqd = ( obj->m_pos - m_pos ).MagSquared();
-                    if( distanceSqd < 2500.0f )
-                    {
-                        existingKiteFound = true;
-                        break;
-                    }
+                    existingKiteFound = true;
+                    break;
                 }
             }
         }
 
         if( !existingKiteFound )
         {
-            BoxKite *boxKite = new BoxKite();
+            auto [index, effect] = g_app->m_location->m_effects.AddOrReplaceFirstNull( std::make_unique<BoxKite>() );
+            auto* boxKite = static_cast<BoxKite*>(effect.get());
             boxKite->m_pos = m_pos + m_front * 2 + g_upVector * 5;
             boxKite->m_front = m_front;
-            int index = g_app->m_location->m_effects.PutData( boxKite );
             boxKite->m_id.Set( m_id.GetTeamId(), UNIT_EFFECTS, index, -1 );
             boxKite->m_id.GenerateUniqueId();
             m_boxKiteId = boxKite->m_id;
@@ -1494,25 +1491,21 @@ bool Darwinian::SearchForThreats()
 
     float maxGrenadeRangeSqd = pow( DARWINIAN_SEARCHRANGE_GRENADES, 2 );
 
-    for( int i = 0; i < g_app->m_location->m_effects.Size(); ++i )
+    for( const auto& effect : g_app->m_location->m_effects.Values() )
     {
-        if( g_app->m_location->m_effects.ValidIndex(i) )
+        if( effect.m_type == EffectThrowableGrenade ||
+            effect.m_type == EffectThrowableAirstrikeMarker ||
+            effect.m_type == EffectGunTurretTarget ||
+            (effect.m_type == EffectSpamInfection && m_id.GetTeamId() == 0) )
         {
-            WorldObject *wobj = g_app->m_location->m_effects[i];
-            if( wobj->m_type == EffectThrowableGrenade ||
-                wobj->m_type == EffectThrowableAirstrikeMarker ||
-                wobj->m_type == EffectGunTurretTarget ||
-                (wobj->m_type == EffectSpamInfection && m_id.GetTeamId() == 0) )
-            {
-                float distanceSqd = ( wobj->m_pos - m_pos ).MagSquared();
+            float distanceSqd = ( effect.m_pos - m_pos ).MagSquared();
 
-                if( distanceSqd < maxGrenadeRangeSqd &&
-                    distanceSqd < nearestThreatSqd )
-                {
-                    nearestThreatSqd = distanceSqd;
-                    threatId = wobj->m_id;
-                    throwableWeaponFound = true;
-                }
+            if( distanceSqd < maxGrenadeRangeSqd &&
+                distanceSqd < nearestThreatSqd )
+            {
+                nearestThreatSqd = distanceSqd;
+                threatId = effect.m_id;
+                throwableWeaponFound = true;
             }
         }
     }

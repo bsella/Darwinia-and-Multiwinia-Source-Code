@@ -24,6 +24,7 @@
 #include "sound/soundsystem.h"
 
 #include "FFP_emulation.h"
+#include <memory>
 
 Officer::Officer()
 :   Entity(),
@@ -461,10 +462,10 @@ bool Officer::Advance( Unit *_unit )
     {
         if( syncfrand() < 0.05f )
         {
-            OfficerOrders *orders = new OfficerOrders();
+            auto [index, effect] = g_app->m_location->m_effects.AddOrReplaceFirstNull(std::make_unique<OfficerOrders>());
+            auto* orders = static_cast<OfficerOrders*>(effect.get());
             orders->m_pos = m_pos + Vector3(0,2,0);
             orders->m_wayPoint = m_orderPosition;
-            int index = g_app->m_location->m_effects.PutData( orders );
             orders->m_id.Set( m_id.GetTeamId(), UNIT_EFFECTS, index, -1 );
             orders->m_id.GenerateUniqueId();
         }

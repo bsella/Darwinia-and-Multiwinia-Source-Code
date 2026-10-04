@@ -508,17 +508,13 @@ bool Demo2Tutorial::AdvanceCurrentChapter()
 
         case 16:                        // Thrown a grenade
         {
-            for( int i = 0; i < g_app->m_location->m_effects.Size(); ++i )
+            for( const auto& effect : g_app->m_location->m_effects.Values() )
             {
-                if( g_app->m_location->m_effects.ValidIndex(i) )
+                if( effect.m_id.GetUnitId() == UNIT_EFFECTS &&
+                    effect.m_type == WorldObject::EffectThrowableGrenade &&
+                    effect.m_id.GetTeamId() == 2 )
                 {
-                    WorldObject *wobj = g_app->m_location->m_effects[i];
-                    if( wobj->m_id.GetUnitId() == UNIT_EFFECTS &&
-                        wobj->m_type == WorldObject::EffectThrowableGrenade &&
-                        wobj->m_id.GetTeamId() == 2 )
-                    {
-                        m_nextChapterTimer = GetHighResTime() + 5.0f;
-                    }
+                    m_nextChapterTimer = GetHighResTime() + 5.0f;
                 }
             }
             break;

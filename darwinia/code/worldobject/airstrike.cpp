@@ -8,6 +8,8 @@
 #include "renderer.h"
 
 #include "sound/soundsystem.h"
+#include "worldobject/weapons.h"
+#include <memory>
 
 
 AirstrikeUnit::AirstrikeUnit(int teamId, int unitId, int numEntities, Vector3 const &_pos)
@@ -128,11 +130,13 @@ bool AirstrikeUnit::Advance()
     //
     // Has our target marker moved?
 
-    if( g_app->m_location->m_effects.ValidIndex(m_effectId) )
+    if( m_effectId != -1 && g_app->m_location->m_effects.Optionals().size() > m_effectId )
     {
-        WorldObject *targetMarker = g_app->m_location->m_effects[ m_effectId ];
-        m_attackPosition = targetMarker->m_pos;
-        m_attackPosition.y = g_app->m_location->m_landscape.m_heightMap->GetValue( m_attackPosition.x, m_attackPosition.z ) + 70.0f;
+        if(auto& targetMarker = g_app->m_location->m_effects.Optionals()[ m_effectId ])
+        {
+            m_attackPosition = targetMarker->m_pos;
+            m_attackPosition.y = g_app->m_location->m_landscape.m_heightMap->GetValue( m_attackPosition.x, m_attackPosition.z ) + 70.0f;
+        }
     }
 
     switch( m_state )
@@ -221,11 +225,11 @@ bool SpaceInvader::Advance( Unit *_unit )
         float distToTarget = ( m_pos - airstrikeUnit->m_attackPosition ).Mag();
         if( distToTarget < 90.0f )
         {
-            Grenade *weapon = new Grenade( m_pos - g_upVector * 12.0f, m_front, m_vel.Mag() );
+            auto [index, effect] = g_app->m_location->m_effects.AddOrReplaceFirstNull( std::make_unique<Grenade>( m_pos - g_upVector * 12.0f, m_front, m_vel.Mag() ) );
+            auto* weapon = static_cast<Grenade*>(effect.get());
             weapon->m_type = EffectThrowableAirstrikeBomb;
             weapon->m_life = 1.5f;
             weapon->m_power = 50.0f;
-            int index = g_app->m_location->m_effects.PutData( weapon );
             weapon->m_id.Set( m_id.GetTeamId(), UNIT_EFFECTS, index, -1 );
             weapon->m_id.GenerateUniqueId();
             g_app->m_soundSystem->TriggerEntityEvent( this, "DropGrenade" );

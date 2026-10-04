@@ -636,7 +636,7 @@ void LocationGameLoop()
 
 				if( g_sliceNum != -1 )
 				{
-        			g_app->m_location->Advance( g_sliceNum );
+        			if(g_sliceNum == 0) g_app->m_location->Advance();
 					g_app->m_particleSystem->Advance( g_sliceNum );
 
 					if (g_sliceNum < NUM_SLICES_PER_FRAME-1)
