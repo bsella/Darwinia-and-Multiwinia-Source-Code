@@ -83,7 +83,7 @@ public:
 class ParticleSystem
 {
 private:
-	VectorWithOptionals<Particle> m_particles;
+	VectorWithOptionals<std::unique_ptr<Particle>> m_particles;
 
 public:
 	ParticleSystem();

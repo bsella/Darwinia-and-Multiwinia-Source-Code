@@ -18,7 +18,7 @@ public:
     int                 m_teamId;
     int                 m_unitId;
     int                 m_troopType;
-    VectorWithOptionals<Entity> m_entities;
+    VectorWithOptionals<std::unique_ptr<Entity>> m_entities;
 
     Vector3             m_centrePos;
     Vector3             m_vel;

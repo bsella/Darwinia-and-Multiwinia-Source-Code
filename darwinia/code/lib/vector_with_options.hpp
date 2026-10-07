@@ -1,16 +1,42 @@
 #pragma once
 
-#include <vector>
 #include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
 
 #include <ranges>
 
+template<typename Optional>
+struct OptionalTraits;
+
 template<typename T>
+struct OptionalTraits<std::optional<T>>
+{
+	using Type = T;
+
+	static std::optional<T> make(auto&& ... args)
+	{
+		return std::make_optional<T>(std::forward<decltype(args)>(args)...);
+	}
+};
+
+template<typename T>
+struct OptionalTraits<std::unique_ptr<T>>
+{
+	using Type = T;
+
+	static std::unique_ptr<T> make(auto&& ... args)
+	{
+		return std::make_unique<T>(std::forward<decltype(args)>(args)...);
+	}
+};
+
+template<typename Optional>
 class VectorWithOptionals
 {
 public:
-	using Optional      = std::unique_ptr<T>;
-	using ConstOptional = const std::unique_ptr<const T>;
+	using ValueType = typename OptionalTraits<Optional>::Type;
 
 	void clear() noexcept
 	{
@@ -53,7 +79,7 @@ private:
 	{
 		bool operator()(const Optional& opt) const
 		{
-			return opt != nullptr;
+			return bool(opt);
 		}
 	};
 
@@ -61,14 +87,13 @@ private:
 	{
 		bool operator()(const std::tuple<long, const Optional&>& index_value) const
 		{
-			auto& [index, ptr] = index_value;
-			return ptr != nullptr;
+			return bool(std::get<1>(index_value));
 		}
 	};
 
 	struct OptionalToRef
 	{
-		T& operator()(const Optional& opt) const
+		ValueType& operator()(const Optional& opt) const
 		{
 			return *opt;
 		}
@@ -76,7 +101,7 @@ private:
 
 	struct OptionalToConstRef
 	{
-		const T& operator()(const Optional& opt) const
+		const ValueType& operator()(const Optional& opt) const
 		{
 			return *opt;
 		}
@@ -84,19 +109,19 @@ private:
 
 	struct IndexedOptionalToRef
 	{
-		std::tuple<long, T&> operator()(const std::tuple<long, const Optional&>& index_value) const
+		std::tuple<long, ValueType&> operator()(const std::tuple<long, const Optional&>& index_value) const
 		{
 			auto& [index, ptr] = index_value;
-			return std::tuple<long, T&>{index, *ptr};
+			return std::tuple<long, ValueType&>{index, *ptr};
 		}
 	};
 
 	struct IndexedOptionalToConstRef
 	{
-		std::tuple<long, const T&> operator()(const std::tuple<long, const Optional&>& index_value) const
+		std::tuple<long, const ValueType&> operator()(const std::tuple<long, const Optional&>& index_value) const
 		{
 			auto& [index, ptr] = index_value;
-			return std::tuple<long, T&>{index, *ptr};
+			return std::tuple<long, ValueType&>{index, *ptr};
 		}
 	};
 
@@ -138,7 +163,7 @@ public:
 		return m_values.emplace_back(std::move(opt));
 	}
 
-	std::tuple<std::size_t, Optional&> AddOrReplaceFirstNull(Optional&& opt)
+	std::tuple<std::size_t, Optional&> MoveOrReplaceFirstNull(Optional&& opt)
 	{
 		auto itr = std::find_if(m_values.begin(), m_values.end(), [] (Optional& opt) {return !opt;} );
 
@@ -160,5 +185,10 @@ public:
 		}
 
 		return {index, *itr};
+	}
+
+	std::tuple<std::size_t, Optional&> MakeOrReplaceFirstNull(auto&& ... args)
+	{
+		return this->MoveOrReplaceFirstNull(OptionalTraits<Optional>::make(std::forward<decltype(args)>(args) ...));
 	}
 };

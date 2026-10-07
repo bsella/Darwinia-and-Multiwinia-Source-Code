@@ -212,7 +212,7 @@ void SoulDestroyer::Attack( Vector3 const &_pos )
 
 
             // Create a zombie
-            auto [index, effect] = g_app->m_location->m_effects.AddOrReplaceFirstNull( std::make_unique<Zombie>());
+            auto [index, effect] = g_app->m_location->m_effects.MoveOrReplaceFirstNull( std::make_unique<Zombie>());
             auto* zombie = static_cast<Zombie*>(effect.get());
             zombie->m_pos = entity->m_pos;
             zombie->m_front = entity->m_front;

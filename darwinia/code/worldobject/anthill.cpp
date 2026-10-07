@@ -42,7 +42,7 @@ void AntHill::Initialise( Building* _template )
 {
     Building::Initialise( _template );
 
-    m_numAntsInside = ((AntHill& ) _template).m_numAntsInside;
+    m_numAntsInside = ((AntHill* ) _template)->m_numAntsInside;
 
     m_spawnTimer = GetHighResTime() + 5.0f;
 }

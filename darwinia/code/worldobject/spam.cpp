@@ -225,7 +225,7 @@ void Spam::SpawnInfection()
         vel += Vector3( syncsfrand(1.0f), syncfrand(2.0f), syncsfrand(1.0f) );
         vel.SetLength( 100.0f );
 
-        auto [index, effect] = g_app->m_location->m_effects.AddOrReplaceFirstNull( std::make_unique<SpamInfection>() );
+        auto [index, effect] = g_app->m_location->m_effects.MoveOrReplaceFirstNull( std::make_unique<SpamInfection>() );
         auto* infection = static_cast<SpamInfection*>(effect.get());
         infection->m_pos = m_centrePos;
         infection->m_vel = vel;

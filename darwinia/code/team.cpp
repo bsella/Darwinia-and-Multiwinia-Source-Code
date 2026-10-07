@@ -210,7 +210,7 @@ Unit& Team::NewUnit(int _troopType, int _numEntities, int *_unitId, Vector3 cons
 		unit = std::make_unique<Unit>( _troopType, m_teamId, 0, _numEntities, _pos );
 	}
 
-    auto [id, new_unit] = m_units.AddOrReplaceFirstNull(std::move(unit));
+    auto [id, new_unit] = m_units.MoveOrReplaceFirstNull(std::move(unit));
 
     *_unitId = id;
     new_unit->m_unitId = id;
@@ -223,7 +223,7 @@ Entity *Team::NewEntity(int _troopType, int _unitId, int *_index)
 {
 	if( _unitId == -1 )
     {
-        auto [index, new_entity] = m_others.AddOrReplaceFirstNull(std::unique_ptr<Entity>{Entity::NewEntity( _troopType )});
+        auto [index, new_entity] = m_others.MoveOrReplaceFirstNull(std::unique_ptr<Entity>{Entity::NewEntity( _troopType )});
     
         *_index = index;
 

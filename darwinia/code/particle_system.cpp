@@ -308,7 +308,7 @@ ParticleSystem::ParticleSystem()
 void ParticleSystem::CreateParticle(Vector3 const &_pos, Vector3 const &_vel,
                                     int _typeId, float _size, RGBAColour col)
 {
-	auto [index, aParticle] = m_particles.AddOrReplaceFirstNull(std::make_unique<Particle>());
+	auto [index, aParticle] = m_particles.MakeOrReplaceFirstNull();
 
     aParticle->Initialise(_pos, _vel, _typeId, _size);
 	if( col != 0)

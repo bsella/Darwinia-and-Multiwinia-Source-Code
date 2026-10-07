@@ -30,8 +30,8 @@ public:
     int                         m_teamId;
     int                         m_teamType;
 
-    VectorWithOptionals<Unit>   m_units;
-    VectorWithOptionals<Entity> m_others;
+    VectorWithOptionals<std::unique_ptr<Unit>>   m_units;
+    VectorWithOptionals<std::unique_ptr<Entity>> m_others;
     LList       <WorldObjectId> m_specials;             // Officers and tanks for quick lookup
 
     RGBAColour               m_colour;

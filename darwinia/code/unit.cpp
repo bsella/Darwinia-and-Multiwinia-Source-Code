@@ -57,7 +57,7 @@ void Unit::Begin()
 
 Entity *Unit::NewEntity( int *_index )
 {
-    auto [index, new_entity] = m_entities.AddOrReplaceFirstNull(std::unique_ptr<Entity>{Entity::NewEntity( m_troopType )});
+    auto [index, new_entity] = m_entities.MoveOrReplaceFirstNull(std::unique_ptr<Entity>{Entity::NewEntity( m_troopType )});
     
     *_index = index;
     return new_entity.get();
@@ -65,7 +65,7 @@ Entity *Unit::NewEntity( int *_index )
 
 int Unit::AddEntity( std::unique_ptr<Entity>&& entity)
 {
-    auto [index, _] = m_entities.AddOrReplaceFirstNull(std::move(entity));
+    auto [index, _] = m_entities.MoveOrReplaceFirstNull(std::move(entity));
     return index;
 }
 

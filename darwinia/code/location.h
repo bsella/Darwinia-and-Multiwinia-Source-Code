@@ -85,13 +85,13 @@ public:
     float           m_christmasTimer;
 
 	std::vector<Light>               m_lights;
-    VectorWithOptionals<WorldObject> m_effects;
+    VectorWithOptionals<std::unique_ptr<WorldObject>> m_effects;
     
-    VectorWithOptionals<Laser>    m_lasers;
+    VectorWithOptionals<std::unique_ptr<Laser>>    m_lasers;
     
 private:
-    VectorWithOptionals<Building> m_buildings;
-    VectorWithOptionals<Spirit>   m_spirits;
+    VectorWithOptionals<std::unique_ptr<Building>> m_buildings;
+    VectorWithOptionals<std::unique_ptr<Spirit>>   m_spirits;
 
 public:
     Location();

@@ -225,7 +225,7 @@ bool SpaceInvader::Advance( Unit *_unit )
         float distToTarget = ( m_pos - airstrikeUnit->m_attackPosition ).Mag();
         if( distToTarget < 90.0f )
         {
-            auto [index, effect] = g_app->m_location->m_effects.AddOrReplaceFirstNull( std::make_unique<Grenade>( m_pos - g_upVector * 12.0f, m_front, m_vel.Mag() ) );
+            auto [index, effect] = g_app->m_location->m_effects.MoveOrReplaceFirstNull( std::make_unique<Grenade>( m_pos - g_upVector * 12.0f, m_front, m_vel.Mag() ) );
             auto* weapon = static_cast<Grenade*>(effect.get());
             weapon->m_type = EffectThrowableAirstrikeBomb;
             weapon->m_life = 1.5f;

@@ -701,7 +701,7 @@ bool Darwinian::AdvanceWorshipSpirit()
 
         if( !existingKiteFound )
         {
-            auto [index, effect] = g_app->m_location->m_effects.AddOrReplaceFirstNull( std::make_unique<BoxKite>() );
+            auto [index, effect] = g_app->m_location->m_effects.MoveOrReplaceFirstNull( std::make_unique<BoxKite>() );
             auto* boxKite = static_cast<BoxKite*>(effect.get());
             boxKite->m_pos = m_pos + m_front * 2 + g_upVector * 5;
             boxKite->m_front = m_front;

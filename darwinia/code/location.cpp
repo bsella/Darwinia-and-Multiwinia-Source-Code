@@ -326,7 +326,7 @@ int Location::SpawnSpirit( Vector3 const &_pos, Vector3 const &_vel, unsigned ch
 {
     DarwiniaDebugAssert( _teamId < NUM_TEAMS );
 
-    auto [index, spirit] = m_spirits.AddOrReplaceFirstNull(std::make_unique<Spirit>());
+    auto [index, spirit] = m_spirits.MakeOrReplaceFirstNull();
 
     spirit->m_pos = _pos + g_upVector;
     spirit->m_vel = _vel;
@@ -795,7 +795,7 @@ void Location::AdvanceChristmas()
             float sizeZ = m_landscape.GetWorldSizeZ();
             float posY = syncfrand(1000.0f);
             Vector3 spawnPos = Vector3( syncfrand(sizeX), posY, syncfrand(sizeZ) ) ;
-            auto [index, snow] = m_effects.AddOrReplaceFirstNull( std::make_unique<Snow>() );
+            auto [index, snow] = m_effects.MoveOrReplaceFirstNull( std::make_unique<Snow>() );
             snow->m_pos = spawnPos;
             snow->m_id.Set( -1, UNIT_EFFECTS, index, -1 );
             snow->m_id.GenerateUniqueId();
@@ -810,7 +810,7 @@ void Location::AdvanceChristmas()
         float sizeZ = m_landscape.GetWorldSizeZ();
         float posY = 700.0f + syncfrand(300.0f);
         Vector3 spawnPos = Vector3( syncfrand(sizeX), posY, syncfrand(sizeZ) ) ;
-        auto [index, snow] = m_effects.AddOrReplaceFirstNull( std::make_unique<Snow>() );
+        auto [index, snow] = m_effects.MoveOrReplaceFirstNull( std::make_unique<Snow>() );
         snow->m_pos = spawnPos;
         snow->m_id.Set( -1, UNIT_EFFECTS, index, -1 );
         snow->m_id.GenerateUniqueId();
@@ -1599,7 +1599,7 @@ void Location::ThrowWeapon( Vector3 const &_pos, Vector3 const &_target, int _ty
         case WorldObject::EffectThrowableControllerGrenade:   effect = std::make_unique<ControllerGrenade>( _pos, front, force );   break;
     }
 
-    auto [weaponId, weapon] = m_effects.AddOrReplaceFirstNull( std::move(effect) );
+    auto [weaponId, weapon] = m_effects.MoveOrReplaceFirstNull( std::move(effect) );
     weapon->m_id.Set( _fromTeamId, UNIT_EFFECTS, weaponId, -1 );
     weapon->m_id.GenerateUniqueId();
     static_cast<ThrowableWeapon*>(weapon.get())->Initialise();
@@ -1609,7 +1609,7 @@ void Location::ThrowWeapon( Vector3 const &_pos, Vector3 const &_target, int _ty
     // Create muzzle flash
 
     Vector3 flashFront = front;
-    auto [index, mf] = m_effects.AddOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 20.0f, 3.0f) );
+    auto [index, mf] = m_effects.MoveOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 20.0f, 3.0f) );
     mf->m_id.Set( _fromTeamId, UNIT_EFFECTS, index, -1 );
     mf->m_id.GenerateUniqueId();
 
@@ -1618,7 +1618,7 @@ void Location::ThrowWeapon( Vector3 const &_pos, Vector3 const &_target, int _ty
 
 void Location::FireRocket( Vector3 const &_pos, Vector3 const &_target, unsigned char _teamId )
 {
-    auto [weaponId, effect] = m_effects.AddOrReplaceFirstNull( std::make_unique<Rocket>(_pos, _target) );
+    auto [weaponId, effect] = m_effects.MoveOrReplaceFirstNull( std::make_unique<Rocket>(_pos, _target) );
     auto* r = static_cast<Rocket*>(effect.get());
     r->m_fromTeamId = _teamId;
 
@@ -1632,7 +1632,7 @@ void Location::FireRocket( Vector3 const &_pos, Vector3 const &_target, unsigned
 
     Vector3 flashFront = _target - _pos;
     flashFront.Normalise();
-    auto [index, mf] = m_effects.AddOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 20.0f, 3.0f) );
+    auto [index, mf] = m_effects.MoveOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 20.0f, 3.0f) );
     mf->m_id.Set( _teamId, UNIT_EFFECTS, index, -1 );
     mf->m_id.GenerateUniqueId();
 }
@@ -1651,7 +1651,7 @@ void Location::FireTurretShell( Vector3 const &_pos, Vector3 const &_vel )
         case 4 :    lifeTime = 2.0f;            break;
     }
 
-    auto [weaponId, shell] = m_effects.AddOrReplaceFirstNull( std::make_unique<TurretShell>(lifeTime) );
+    auto [weaponId, shell] = m_effects.MoveOrReplaceFirstNull( std::make_unique<TurretShell>(lifeTime) );
     shell->m_pos = _pos;
     shell->m_vel = _vel;
     shell->m_id.Set( -1, UNIT_EFFECTS, weaponId, -1 );
@@ -1664,7 +1664,7 @@ void Location::FireTurretShell( Vector3 const &_pos, Vector3 const &_vel )
     Vector3 flashFront = _vel;
     flashFront.Normalise();
 
-    auto [index, mf] = m_effects.AddOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 40.0f, 2.0f) );
+    auto [index, mf] = m_effects.MoveOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 40.0f, 2.0f) );
     mf->m_id.Set( -1, UNIT_EFFECTS, index, -1 );
     mf->m_id.GenerateUniqueId();
 }
@@ -1695,7 +1695,7 @@ void Location::FireLaser( Vector3 const &_pos, Vector3 const &_vel, unsigned cha
 
     Vector3 flashFront = _vel;
     flashFront.Normalise();
-    auto [index, mf] = m_effects.AddOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 20.0f * lifetime, 1.0f ) );
+    auto [index, mf] = m_effects.MoveOrReplaceFirstNull( std::make_unique<MuzzleFlash>( _pos, flashFront, 20.0f * lifetime, 1.0f ) );
     mf->m_id.Set( _teamId, UNIT_EFFECTS, index, -1 );
     mf->m_id.GenerateUniqueId();
 }
@@ -1820,7 +1820,7 @@ void Location::Bang( Vector3 const &_pos, float _range, float _damage )
 
 void Location::CreateShockwave( Vector3 const &_pos, float _size, unsigned char _teamId )
 {
-    auto [index, s] = m_effects.AddOrReplaceFirstNull( std::make_unique<Shockwave>( _teamId, _size ) );
+    auto [index, s] = m_effects.MoveOrReplaceFirstNull( std::make_unique<Shockwave>( _teamId, _size ) );
     s->m_pos = _pos;
     s->m_id.Set( _teamId, UNIT_EFFECTS, index, -1 );
     s->m_id.GenerateUniqueId();
