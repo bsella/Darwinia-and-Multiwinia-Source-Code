@@ -2009,7 +2009,7 @@ bool Darwinian::AdvanceOnFire()
         //fireSpawn -= m_vel * 0.1f;
         float fireSize = 20 + syncfrand(30.0f);
         Vector3 fireVel = m_vel * 0.3f + g_upVector * (3+syncfrand(3));
-        int particleType = Particle::TypeDarwinianFire;
+        auto particleType = Particle::TypeDarwinianFire;
         if( i > 4 ) particleType = Particle::TypeMissileTrail;
         g_app->m_particleSystem->CreateParticle( fireSpawn, fireVel, particleType, fireSize );
     }

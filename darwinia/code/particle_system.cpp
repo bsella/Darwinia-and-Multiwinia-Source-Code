@@ -1,5 +1,6 @@
 #include <math.h>
 #include <memory>
+#include <optional>
 
 #include "lib/debug_utils.h"
 #include "lib/math_utils.h"
@@ -40,16 +41,9 @@ ParticleType::ParticleType()
 ParticleType Particle::m_types[TypeNumTypes];
 
 // *** Constructor
-Particle::Particle()
+Particle::Particle(Vector3 const &_pos, Vector3 const &_vel, Type _typeId, float _size)
 {
-}
-
-
-// *** Initialise
-void Particle::Initialise(Vector3 const &_pos, Vector3 const &_vel,
-                          int _typeId, float _size)
-{
-	DarwiniaDebugAssert(_typeId < Particle::TypeNumTypes);
+    DarwiniaDebugAssert(_typeId < Particle::TypeNumTypes);
 
 	m_pos = _pos;
 	m_vel = _vel;
@@ -71,6 +65,25 @@ void Particle::Initialise(Vector3 const &_pos, Vector3 const &_vel,
 	m_birthTime = g_gameTime;
 }
 
+Particle::operator bool() const
+{
+    return m_typeId != Type::TypeNone;
+}
+
+Particle& Particle::operator*()
+{
+    return *this;
+}
+
+const Particle& Particle::operator*() const
+{
+    return *this;
+}
+
+void Particle::reset()
+{
+    m_typeId = Type::TypeNone;
+}
 
 // *** Advance
 // Returns true if this particle should be removed from the particle list
@@ -306,14 +319,13 @@ ParticleSystem::ParticleSystem()
 
 // *** CreateParticle
 void ParticleSystem::CreateParticle(Vector3 const &_pos, Vector3 const &_vel,
-                                    int _typeId, float _size, RGBAColour col)
+                                    Particle::Type _typeId, float _size, RGBAColour col)
 {
-	auto [index, aParticle] = m_particles.MakeOrReplaceFirstNull();
+	auto [index, aParticle] = m_particles.MakeOrReplaceFirstNull(_pos, _vel, _typeId, _size);
 
-    aParticle->Initialise(_pos, _vel, _typeId, _size);
 	if( col != 0)
 	{
-		aParticle->m_colour = col;
+		aParticle.m_colour = col;
 	}
 }
 
@@ -325,8 +337,9 @@ void ParticleSystem::Advance()
 
     for( auto& particle : m_particles.Optionals() )
     {
-        if(!particle) continue;
-        if (particle->Advance())
+        if(!bool(particle)) continue;
+
+        if (particle.Advance())
         {
             particle.reset();
         }

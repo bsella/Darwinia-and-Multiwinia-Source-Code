@@ -4,6 +4,8 @@
 #include "lib/rgb_colour.h"
 #include "lib/vector3.h"
 #include "lib/vector_with_options.hpp"
+#include <cstdint>
+#include <optional>
 
 
 // ****************************************************************************
@@ -34,10 +36,10 @@ public:
 class Particle
 {
 public:
-	enum
+	enum Type : std::uint8_t
 	{
-		TypeInvalid = -1,
-		TypeRocketTrail = 0,
+		TypeNone = 0, // Marks the particle as disabled/deleted
+		TypeRocketTrail,
 		TypeExplosionCore,
 		TypeExplosionDebris,
 		TypeMuzzleFlash,
@@ -60,14 +62,19 @@ public:
 	Vector3         m_pos;
 	Vector3         m_vel;
 	float           m_birthTime;
-	int				m_typeId;
-    float           m_size;
-    RGBAColour      m_colour;
+	float           m_size;
+	RGBAColour      m_colour;
+	Type            m_typeId;
 
-	Particle();
+	Particle(const Vector3& pos, const Vector3& vel, Type, float _size=-1.0f);
 
-    void Initialise(Vector3 const &_pos, Vector3 const &_vel,
-                    int _type, float _size=-1.0f);
+	operator bool() const;
+
+	Particle&       operator*();
+	const Particle& operator*() const;
+	
+	void reset();
+
 	bool Advance();
 	void Render(float _predictionTime);
 
@@ -75,6 +82,16 @@ public:
 };
 
 
+template<>
+struct OptionalTraits<Particle>
+{
+	using Type = Particle;
+
+	static Particle make(auto&& ... args)
+	{
+		return Particle(std::forward<decltype(args)>(args)...);
+	}
+};
 
 // ****************************************************************************
 // ParticleSystem
@@ -83,13 +100,12 @@ public:
 class ParticleSystem
 {
 private:
-	VectorWithOptionals<std::unique_ptr<Particle>> m_particles;
+	VectorWithOptionals<Particle> m_particles;
 
 public:
 	ParticleSystem();
 
-	void CreateParticle(Vector3 const &_pos, Vector3 const &_vel,
-						int _particleTypeId, float _size=-1.0f, RGBAColour col = 0);
+	void CreateParticle(Vector3 const &_pos, Vector3 const &_vel, Particle::Type, float _size=-1.0f, RGBAColour col = 0);
 
 	void Advance();
 	void Render();
