@@ -93,7 +93,7 @@ private:
 
 	struct OptionalToRef
 	{
-		ValueType& operator()(const Optional& opt) const
+		ValueType& operator()(Optional& opt) const
 		{
 			return *opt;
 		}
