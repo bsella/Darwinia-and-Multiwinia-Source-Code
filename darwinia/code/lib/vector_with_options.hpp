@@ -43,6 +43,21 @@ public:
 		m_values.clear();
 	}
 
+	Optional* data()
+	{
+		return m_values.data();
+	}
+
+	const Optional* data() const
+	{
+		return m_values.data();
+	}
+
+	std::size_t size() const
+	{
+		return m_values.size();
+	}
+
 private:
 	std::vector<Optional> m_values;
 
