@@ -13,6 +13,8 @@ namespace ffp_emulation
 
     std::span<const VertexData> get_current_vertex_buffer();
 
+    GLuint get_fragment_shader();
+
     void glBegin(GLenum);
     void glEnd();
 

@@ -44,7 +44,7 @@ namespace ffp_emulation
 
         std::optional<DynamicVertexBuffer> g_vertex_buffer;
 
-        GLuint g_program;
+        GLuint g_fragment_shader;
 
         std::stack<glm::mat4> g_model_view;
         std::stack<glm::mat4> g_projection;
@@ -56,29 +56,17 @@ namespace ffp_emulation
         std::array<GLuint,    MAX_TEXTURES> g_texture_env_combine_rgb;
         std::array<glm::vec4, MAX_TEXTURES> g_texture_env_color;
 
-        GLint g_texture_enabled_loc;
-        GLint g_texture_env_mode_loc;
-        GLint g_texture_env_color_loc;
-        GLint g_texture_env_combine_rgb_loc;
-        GLint g_texture_location;
-
+        
         std::array<int,       MAX_LIGHTS> g_lights_enabled;
         std::array<glm::vec4, MAX_LIGHTS> g_lights_position;
         std::array<glm::vec4, MAX_LIGHTS> g_lights_ambient;
         std::array<glm::vec4, MAX_LIGHTS> g_lights_diffuse;
         std::array<glm::vec4, MAX_LIGHTS> g_lights_specular;
 
-        GLint g_light_enabled_location;
-        GLint g_light_position_location;
-        GLint g_light_ambient_location;
-        GLint g_light_diffuse_location;
-        GLint g_light_specular_location;
+        std::optional<Uniforms> g_uniforms;
 
         std::array<int,       MAX_CLIP_PLANES> g_clip_plane_enabled;
         std::array<glm::vec4, MAX_CLIP_PLANES> g_clip_planes;
-
-        GLint g_clip_plane_enabled_location;
-        GLint g_clip_plane_location;
 
         int g_alpha_test = false;
         
@@ -91,19 +79,6 @@ namespace ffp_emulation
         glm::vec4 g_material_ambient  = {0.2, 0.2, 0.2, 1.0};
 
         glm::vec4 g_scene_ambient  = {0.2, 0.2, 0.2, 1.0};
-
-        GLint g_model_view_location;
-        GLint g_projection_location;
-
-        GLint g_color_material_enabled_loc;
-        GLint g_lighting_enabled_loc;
-        GLint g_material_shininess_loc;
-        GLint g_material_specular_loc;
-        GLint g_material_diffuse_loc;
-        GLint g_material_ambient_loc;
-        GLint g_scene_ambient_loc;
-
-        GLint g_alpha_test_location;
 
         constexpr const char* vertex_shader_source =
 R"(
@@ -356,6 +331,33 @@ void main()
         }
     }
 
+    Uniforms::Uniforms(GLuint program)
+        : program(program)
+        , texture_enabled_location(glGetUniformLocation(program, "u_texture_enabled"))
+        , texture_env_mode_location(glGetUniformLocation(program, "u_texture_env_mode"))
+        , texture_env_color_location(glGetUniformLocation(program, "u_texture_env_color"))
+        , texture_env_combine_rgb_location(glGetUniformLocation(program, "u_texture_env_combine_rgb"))
+        , texture_location(glGetUniformLocation(program, "u_texture"))
+        , light_enabled_location(glGetUniformLocation(program, "u_light_enabled"))
+        , light_position_location(glGetUniformLocation(program, "u_light_position"))
+        , light_ambient_location(glGetUniformLocation(program, "u_light_ambient"))
+        , light_diffuse_location(glGetUniformLocation(program, "u_light_diffuse"))
+        , light_specular_location(glGetUniformLocation(program, "u_light_specular"))
+        , clip_plane_enabled_location(glGetUniformLocation(program, "u_clip_plane_enabled"))
+        , clip_plane_location(glGetUniformLocation(program, "u_clip_plane"))
+        , model_view_location(glGetUniformLocation(program, "u_model_view"))
+        , projection_location(glGetUniformLocation(program, "u_projection"))
+        , color_material_enabled_location(glGetUniformLocation(program, "u_color_material_enabled"))
+        , lighting_enabled_location(glGetUniformLocation(program, "u_lighting_enabled"))
+        , material_shininess_location(glGetUniformLocation(program, "u_material_shininess"))
+        , material_specular_location(glGetUniformLocation(program, "u_material_specular"))
+        , material_diffuse_location(glGetUniformLocation(program, "u_material_diffuse"))
+        , material_ambient_location(glGetUniformLocation(program, "u_material_ambient"))
+        , scene_ambient_location(glGetUniformLocation(program, "u_scene_ambient"))
+        , alpha_test_location(glGetUniformLocation(program, "u_alpha_test"))
+    {
+    }
+
     VertexBuffer::VertexBuffer()
     {
         glGenVertexArrays(1, &m_vao);
@@ -381,6 +383,12 @@ void main()
         glBindVertexArray(0);
     }
 
+    VertexBuffer::VertexBuffer(unsigned int vao, unsigned int vbo)
+        : m_vao(vao)
+        , m_vbo(vbo)
+    {
+    }
+
     VertexBuffer::~VertexBuffer()
     {
         glDeleteBuffers(1, &m_vbo);
@@ -394,6 +402,8 @@ void main()
         glBufferData(GL_ARRAY_BUFFER, vertex_data.size() * sizeof(VertexData), vertex_data.data(), GL_STATIC_DRAW);
     }
 
+    DynamicVertexBuffer::DynamicVertexBuffer(unsigned int vao, unsigned int vbo) : VertexBuffer(vao, vbo) {}
+
     void StaticVertexBuffer::draw_buffer(unsigned int primitive_mode) const
     {
         VertexBuffer::draw(primitive_mode, 0, m_num_vertices);
@@ -404,14 +414,32 @@ void main()
         VertexBuffer::draw(primitive_mode, 0, m_num_vertices);
     }
 
-    void StaticVertexBuffer::draw_buffer(unsigned int primitive_mode, unsigned int program) const
+    void StaticVertexBuffer::draw_buffer(unsigned int primitive_mode, GLuint program) const
     {
         VertexBuffer::draw(primitive_mode, 0, m_num_vertices, program);
     }
 
-    void DynamicVertexBuffer::draw_buffer(unsigned int primitive_mode, unsigned int program) const
+    void DynamicVertexBuffer::draw_buffer(unsigned int primitive_mode, GLuint program) const
     {
         VertexBuffer::draw(primitive_mode, 0, m_num_vertices, program);
+    }
+
+    void StaticVertexBuffer::draw_buffer(unsigned int primitive_mode, const Uniforms& uniforms) const
+    {
+        VertexBuffer::draw(primitive_mode, 0, m_num_vertices, uniforms);
+    }
+
+    void DynamicVertexBuffer::draw_buffer(unsigned int primitive_mode, const Uniforms& uniforms) const
+    {
+        VertexBuffer::draw(primitive_mode, 0, m_num_vertices, uniforms);
+    }
+
+    void DynamicVertexBuffer::update(void* data, size_t byte_count, int num_vertices)
+    {
+        m_num_vertices = num_vertices;
+        
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        glBufferData(GL_ARRAY_BUFFER, byte_count, data, GL_DYNAMIC_DRAW);
     }
 
     void DynamicVertexBuffer::update(std::span<const VertexData> vertex_data)
@@ -426,39 +454,66 @@ void main()
     {
         glUseProgram(program);
     
+        if (primitive_mode == GL_QUADS)      primitive_mode = GL_TRIANGLES;
+        if (primitive_mode == GL_QUAD_STRIP) primitive_mode = GL_TRIANGLE_STRIP;
+
+        assert(
+            primitive_mode == GL_POINTS ||
+            primitive_mode == GL_LINE_STRIP ||
+            primitive_mode == GL_LINE_LOOP ||
+            primitive_mode == GL_LINES ||
+            primitive_mode == GL_LINE_STRIP_ADJACENCY ||
+            primitive_mode == GL_LINES_ADJACENCY ||
+            primitive_mode == GL_TRIANGLE_STRIP ||
+            primitive_mode == GL_TRIANGLE_FAN ||
+            primitive_mode == GL_TRIANGLES ||
+            primitive_mode == GL_TRIANGLE_STRIP_ADJACENCY ||
+            primitive_mode == GL_TRIANGLES_ADJACENCY ||
+            primitive_mode == GL_PATCHES
+        );
+
+        // Draw the primitives
+        glBindVertexArray(m_vao);
+        glDrawArrays(primitive_mode, first, num_vertices);
+    }
+
+    void VertexBuffer::draw(GLenum primitive_mode, GLint first, GLsizei num_vertices, const Uniforms& uniforms) const
+    {
+        glUseProgram(uniforms.program);
+    
         // Upload the matrices
-        glUniformMatrix4fv(g_model_view_location, 1, GL_FALSE, glm::value_ptr(g_model_view.top()));
-        glUniformMatrix4fv(g_projection_location, 1, GL_FALSE, glm::value_ptr(g_projection.top()));
+        glUniformMatrix4fv(uniforms.model_view_location, 1, GL_FALSE, glm::value_ptr(g_model_view.top()));
+        glUniformMatrix4fv(uniforms.projection_location, 1, GL_FALSE, glm::value_ptr(g_projection.top()));
 
         std::array<int, MAX_TEXTURES> texture_indices = {0, 1};
 
         // Update the bound texture id
-        glUniform1iv(g_texture_location, MAX_TEXTURES, texture_indices.data());
+        glUniform1iv(uniforms.texture_location, MAX_TEXTURES, texture_indices.data());
 
-        glUniform1iv(g_texture_enabled_loc, MAX_TEXTURES, g_texture_enabled.data());
-        glUniform1uiv(g_texture_env_mode_loc, MAX_TEXTURES, g_texture_env_mode.data());
-        glUniform1uiv(g_texture_env_combine_rgb_loc, MAX_TEXTURES, g_texture_env_combine_rgb.data());
-        glUniform4fv(g_texture_env_color_loc, MAX_TEXTURES, glm::value_ptr(*g_texture_env_color.data()));
+        glUniform1iv(uniforms.texture_enabled_location, MAX_TEXTURES, g_texture_enabled.data());
+        glUniform1uiv(uniforms.texture_env_mode_location, MAX_TEXTURES, g_texture_env_mode.data());
+        glUniform1uiv(uniforms.texture_env_combine_rgb_location, MAX_TEXTURES, g_texture_env_combine_rgb.data());
+        glUniform4fv(uniforms.texture_env_color_location, MAX_TEXTURES, glm::value_ptr(*g_texture_env_color.data()));
 
-        glUniform1i(g_color_material_enabled_loc, g_color_material_enabled);
-        glUniform1i(g_lighting_enabled_loc, g_lighting_enabled);
+        glUniform1i(uniforms.color_material_enabled_location, g_color_material_enabled);
+        glUniform1i(uniforms.lighting_enabled_location, g_lighting_enabled);
 
-        glUniform1iv(g_light_enabled_location, MAX_LIGHTS, g_lights_enabled.data());
-        glUniform4fv(g_light_position_location, MAX_LIGHTS, glm::value_ptr(*g_lights_position.data()));
-        glUniform4fv(g_light_ambient_location, MAX_LIGHTS, glm::value_ptr(*g_lights_ambient.data()));
-        glUniform4fv(g_light_diffuse_location, MAX_LIGHTS, glm::value_ptr(*g_lights_diffuse.data()));
-        glUniform4fv(g_light_specular_location, MAX_LIGHTS,glm::value_ptr(*g_lights_specular.data()));
+        glUniform1iv(uniforms.light_enabled_location, MAX_LIGHTS, g_lights_enabled.data());
+        glUniform4fv(uniforms.light_position_location, MAX_LIGHTS, glm::value_ptr(*g_lights_position.data()));
+        glUniform4fv(uniforms.light_ambient_location, MAX_LIGHTS, glm::value_ptr(*g_lights_ambient.data()));
+        glUniform4fv(uniforms.light_diffuse_location, MAX_LIGHTS, glm::value_ptr(*g_lights_diffuse.data()));
+        glUniform4fv(uniforms.light_specular_location, MAX_LIGHTS,glm::value_ptr(*g_lights_specular.data()));
 
-        glUniform1iv(g_clip_plane_enabled_location, MAX_CLIP_PLANES, g_clip_plane_enabled.data());
-        glUniform4fv(g_clip_plane_location, MAX_CLIP_PLANES, glm::value_ptr(*g_clip_planes.data()));
+        glUniform1iv(uniforms.clip_plane_enabled_location, MAX_CLIP_PLANES, g_clip_plane_enabled.data());
+        glUniform4fv(uniforms.clip_plane_location, MAX_CLIP_PLANES, glm::value_ptr(*g_clip_planes.data()));
 
-        glUniform1f(g_material_shininess_loc, g_material_shininess);
-        glUniform4f(g_material_specular_loc, g_material_specular.r, g_material_specular.g, g_material_specular.b, g_material_specular.a);
-        glUniform4f(g_material_diffuse_loc, g_material_diffuse.r, g_material_diffuse.g, g_material_diffuse.b, g_material_diffuse.a);
-        glUniform4f(g_material_ambient_loc, g_material_ambient.r, g_material_ambient.g, g_material_ambient.b, g_material_ambient.a);
-        glUniform4f(g_scene_ambient_loc, g_scene_ambient.r, g_scene_ambient.g, g_scene_ambient.b, g_scene_ambient.a);
+        glUniform1f(uniforms.material_shininess_location, g_material_shininess);
+        glUniform4f(uniforms.material_specular_location, g_material_specular.r, g_material_specular.g, g_material_specular.b, g_material_specular.a);
+        glUniform4f(uniforms.material_diffuse_location, g_material_diffuse.r, g_material_diffuse.g, g_material_diffuse.b, g_material_diffuse.a);
+        glUniform4f(uniforms.material_ambient_location, g_material_ambient.r, g_material_ambient.g, g_material_ambient.b, g_material_ambient.a);
+        glUniform4f(uniforms.scene_ambient_location, g_scene_ambient.r, g_scene_ambient.g, g_scene_ambient.b, g_scene_ambient.a);
 
-        glUniform1i(g_alpha_test_location, g_alpha_test);
+        glUniform1i(uniforms.alpha_test_location, g_alpha_test);
 
         if (primitive_mode == GL_QUADS)      primitive_mode = GL_TRIANGLES;
         if (primitive_mode == GL_QUAD_STRIP) primitive_mode = GL_TRIANGLE_STRIP;
@@ -485,7 +540,7 @@ void main()
 
     void VertexBuffer::draw(GLenum primitive_mode, GLint first, GLsizei num_vertices) const
     {
-        draw(primitive_mode, first, num_vertices, g_program);
+        draw(primitive_mode, first, num_vertices, *g_uniforms);
     }
 
     void init()
@@ -493,7 +548,7 @@ void main()
         int success;
         char infoLog[512];
 
-        GLuint vertex_shader, fragment_shader;
+        GLuint vertex_shader;
 
         {
             vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -512,33 +567,35 @@ void main()
         }
 
         {
-            fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+            g_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     
-            glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
+            glShaderSource(g_fragment_shader, 1, &fragment_shader_source, NULL);
             
-            glCompileShader(fragment_shader);
+            glCompileShader(g_fragment_shader);
     
             // print compile errors if any
-            glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+            glGetShaderiv(g_fragment_shader, GL_COMPILE_STATUS, &success);
             if(!success)
             {
-                glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
+                glGetShaderInfoLog(g_fragment_shader, 512, NULL, infoLog);
                 std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
             };
         }
 
         {
-            g_program = glCreateProgram();
-            glAttachShader(g_program, vertex_shader);
-            glAttachShader(g_program, fragment_shader);
-            glLinkProgram(g_program);
+            GLuint program = glCreateProgram();
+            glAttachShader(program, vertex_shader);
+            glAttachShader(program, g_fragment_shader);
+            glLinkProgram(program);
             // print linking errors if any
-            glGetProgramiv(g_program, GL_LINK_STATUS, &success);
+            glGetProgramiv(program, GL_LINK_STATUS, &success);
             if(!success)
             {
-                glGetProgramInfoLog(g_program, 512, NULL, infoLog);
+                glGetProgramInfoLog(program, 512, NULL, infoLog);
                 std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
             }
+
+            g_uniforms.emplace(program);
         }
 
         for(size_t i = 0; i < MAX_TEXTURES; i++)
@@ -564,38 +621,7 @@ void main()
         g_lights_diffuse[0]  = {1.0, 1.0, 1.0, 1.0};
         g_lights_specular[0] = {1.0, 1.0, 1.0, 1.0};
 
-        g_model_view_location    = glGetUniformLocation(g_program, "u_model_view");
-        g_projection_location    = glGetUniformLocation(g_program, "u_projection");
-
-        g_texture_enabled_loc         = glGetUniformLocation(g_program, "u_texture_enabled");
-        g_texture_env_mode_loc        = glGetUniformLocation(g_program, "u_texture_env_mode");
-        g_texture_env_color_loc       = glGetUniformLocation(g_program, "u_texture_env_color");
-        g_texture_location            = glGetUniformLocation(g_program, "u_texture");
-        g_texture_env_combine_rgb_loc = glGetUniformLocation(g_program, "u_texture_env_combine_rgb");
-
-        g_color_material_enabled_loc  = glGetUniformLocation(g_program, "u_color_material_enabled");
-        g_lighting_enabled_loc        = glGetUniformLocation(g_program, "u_lighting_enabled");
-
-        g_light_enabled_location  = glGetUniformLocation(g_program, "u_light_enabled");
-        g_light_position_location = glGetUniformLocation(g_program, "u_light_position");
-        g_light_ambient_location  = glGetUniformLocation(g_program, "u_light_ambient");
-        g_light_diffuse_location  = glGetUniformLocation(g_program, "u_light_diffuse");
-        g_light_specular_location = glGetUniformLocation(g_program, "u_light_specular");
-
-        g_clip_plane_enabled_location = glGetUniformLocation(g_program, "u_clip_plane_enabled");
-        g_clip_plane_location         = glGetUniformLocation(g_program, "u_clip_plane");
-
-        g_material_shininess_loc      = glGetUniformLocation(g_program, "u_material_shininess");
-        g_material_specular_loc       = glGetUniformLocation(g_program, "u_material_specular");
-        g_material_diffuse_loc        = glGetUniformLocation(g_program, "u_material_diffuse");
-        g_material_ambient_loc        = glGetUniformLocation(g_program, "u_material_ambient");
-
-        g_scene_ambient_loc = glGetUniformLocation(g_program, "u_scene_ambient");
-
-        g_alpha_test_location = glGetUniformLocation(g_program, "u_alpha_test");
-
         glDeleteShader(vertex_shader);
-        glDeleteShader(fragment_shader);
 
         g_model_view.push(glm::mat4(1.0));
         g_projection.push(glm::mat4(1.0));
@@ -611,6 +637,11 @@ void main()
     std::span<const VertexData> get_current_vertex_buffer()
     {
         return g_vertex_buffer_data;
+    }
+
+    GLuint get_fragment_shader()
+    {
+        return g_fragment_shader;
     }
 
     void glBegin(GLenum mode)
