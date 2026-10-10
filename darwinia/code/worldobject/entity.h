@@ -5,6 +5,7 @@
 #include "lib/texture_uv.h"
 
 #include "worldobject/worldobject.h"
+#include <memory>
 
 class Unit;
 class InsertionSquad;
@@ -111,7 +112,8 @@ public:
 
 	static const char* GetTypeName     ( int _troopType );
     static int      GetTypeId       ( char const *_typeName );
-    static Entity  *NewEntity       ( int _troopType );
+
+    static std::unique_ptr<Entity> NewEntity( int _troopType );
 
 	static const char  *GetTypeNameTranslated ( int _troopType );
 

@@ -628,30 +628,30 @@ void Entity::RenderShadow( Vector3 const &_pos, float _size )
 }
 
 
-Entity *Entity::NewEntity( int _troopType )
+std::unique_ptr<Entity> Entity::NewEntity( int _troopType )
 {
-    Entity *entity = nullptr;
+    std::unique_ptr<Entity> entity;
 
     switch(_troopType)
     {
-        case Entity::TypeLaserTroop:            entity = new LaserTrooper();        break;
-        case Entity::TypeInsertionSquadie:      entity = new Squadie();             break;
-        case Entity::TypeEngineer:              entity = new Engineer();            break;
-        case Entity::TypeVirii:                 entity = new Virii();               break;
-        case Entity::TypeEgg:                   entity = new Egg();                 break;
-        case Entity::TypeSporeGenerator:        entity = new SporeGenerator();      break;
-        case Entity::TypeLander:                entity = new Lander();              break;
-		case Entity::TypeTripod:				entity = new Tripod();				break;
-        case Entity::TypeCentipede:             entity = new Centipede();           break;
-        case Entity::TypeSpaceInvader:          entity = new SpaceInvader();        break;
-		case Entity::TypeSpider:				entity = new Spider();				break;
-        case Entity::TypeDarwinian:             entity = new Darwinian();           break;
-        case Entity::TypeOfficer:               entity = new Officer();             break;
-        case Entity::TypeArmyAnt:               entity = new ArmyAnt();             break;
-        case Entity::TypeArmour:                entity = new Armour();              break;
-        case Entity::TypeSoulDestroyer:         entity = new SoulDestroyer();       break;
-        case Entity::TypeTriffidEgg:            entity = new TriffidEgg();          break;
-        case Entity::TypeAI:                    entity = new AI();                  break;
+        case Entity::TypeLaserTroop:            entity = std::make_unique<LaserTrooper>();        break;
+        case Entity::TypeInsertionSquadie:      entity = std::make_unique<Squadie>();             break;
+        case Entity::TypeEngineer:              entity = std::make_unique<Engineer>();            break;
+        case Entity::TypeVirii:                 entity = std::make_unique<Virii>();               break;
+        case Entity::TypeEgg:                   entity = std::make_unique<Egg>();                 break;
+        case Entity::TypeSporeGenerator:        entity = std::make_unique<SporeGenerator>();      break;
+        case Entity::TypeLander:                entity = std::make_unique<Lander>();              break;
+		case Entity::TypeTripod:				entity = std::make_unique<Tripod>();				break;
+        case Entity::TypeCentipede:             entity = std::make_unique<Centipede>();           break;
+        case Entity::TypeSpaceInvader:          entity = std::make_unique<SpaceInvader>();        break;
+		case Entity::TypeSpider:				entity = std::make_unique<Spider>();				break;
+        case Entity::TypeDarwinian:             entity = std::make_unique<Darwinian>();           break;
+        case Entity::TypeOfficer:               entity = std::make_unique<Officer>();             break;
+        case Entity::TypeArmyAnt:               entity = std::make_unique<ArmyAnt>();             break;
+        case Entity::TypeArmour:                entity = std::make_unique<Armour>();              break;
+        case Entity::TypeSoulDestroyer:         entity = std::make_unique<SoulDestroyer>();       break;
+        case Entity::TypeTriffidEgg:            entity = std::make_unique<TriffidEgg>();          break;
+        case Entity::TypeAI:                    entity = std::make_unique<AI>();                  break;
 
         default:                                DarwiniaDebugAssert(false);
     }

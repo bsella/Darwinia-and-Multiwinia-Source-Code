@@ -223,7 +223,7 @@ Entity *Team::NewEntity(int _troopType, int _unitId, int *_index)
 {
 	if( _unitId == -1 )
     {
-        auto [index, new_entity] = m_others.MoveOrReplaceFirstNull(std::unique_ptr<Entity>{Entity::NewEntity( _troopType )});
+        auto [index, new_entity] = m_others.MoveOrReplaceFirstNull(Entity::NewEntity( _troopType ));
     
         *_index = index;
 
