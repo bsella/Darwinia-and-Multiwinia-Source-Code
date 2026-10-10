@@ -5,8 +5,8 @@
 #include "lib/vector3.h"
 #include "lib/vector_with_options.hpp"
 #include <cstdint>
-#include <optional>
 
+#include "FFP_VertexData.h"
 
 // ****************************************************************************
 // ParticleType
@@ -36,7 +36,7 @@ public:
 class Particle
 {
 public:
-	enum Type : std::uint8_t
+	enum Type : std::uint32_t
 	{
 		TypeNone = 0, // Marks the particle as disabled/deleted
 		TypeRocketTrail,
@@ -101,6 +101,18 @@ class ParticleSystem
 {
 private:
 	VectorWithOptionals<Particle> m_particles;
+	
+	ffp_emulation::Uniforms m_uniforms;
+	
+	int m_game_time_location;
+	int m_prediction_time_location;
+	
+	unsigned int m_vao;
+	unsigned int m_vbo;
+	std::optional<ffp_emulation::DynamicVertexBuffer> m_vertex_buffer;
+
+	// The boolean tells if the particle batch is missile trails or not
+	std::vector<std::tuple<std::size_t, bool>> m_draw_batches;
 
 public:
 	ParticleSystem();
