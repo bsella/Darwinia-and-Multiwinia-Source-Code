@@ -87,5 +87,15 @@ public:
 
 extern PrefsManager *g_prefsManager;
 
+extern "C"
+{
+	const char* darw_PreferenceManager_GetString(char const *_key, const char *_default);
+	float       darw_PreferenceManager_GetFloat (char const *_key, float _default);
+	int         darw_PreferenceManager_GetInt   (char const *_key, int _default);
+	void        darw_PreferenceManager_SetString(char const *_key, char const *_string);
+	void        darw_PreferenceManager_SetFloat (char const *_key, float _val);
+	void        darw_PreferenceManager_SetInt   (char const *_key, int _val);
+}
+
 
 #endif

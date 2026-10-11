@@ -649,3 +649,31 @@ bool PrefsManager::DoesKeyExist(char const *_key)
 
 	return index != -1;
 }
+
+extern "C"
+{
+	const char* darw_PreferenceManager_GetString(char const *_key, const char *_default)
+	{
+		return g_prefsManager->GetString(_key, _default);
+	}
+	float darw_PreferenceManager_GetFloat(char const *_key, float _default)
+	{
+		return g_prefsManager->GetFloat (_key, _default);
+	}
+	int darw_PreferenceManager_GetInt(char const *_key, int _default)
+	{
+		return g_prefsManager->GetInt(_key, _default);
+	}
+	void darw_PreferenceManager_SetString(char const *_key, char const *_string)
+	{
+		g_prefsManager->SetString(_key, _string);
+	}
+	void darw_PreferenceManager_SetFloat(char const *_key, float _val)
+	{
+		g_prefsManager->SetFloat(_key, _val);
+	}
+	void darw_PreferenceManager_SetInt(char const *_key, int _val)
+	{
+		g_prefsManager->SetInt(_key, _val);
+	}
+}
