@@ -67,7 +67,7 @@ public:
 						   bool _antiAlias, const char *_title) = 0;
 
 	virtual void DestroyWin() = 0;
-	virtual PlatformWindow *Window() = 0;
+	virtual PlatformWindow Window() = 0;
 	virtual void Flip() = 0;
 	virtual void NastySetMousePos(int x, int y) = 0;
 	virtual void NastyMoveMouse(int x, int y) = 0;

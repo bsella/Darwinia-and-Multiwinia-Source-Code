@@ -26,6 +26,7 @@
 #include "lib/resource.h"
 #include "lib/text_stream_readers.h"
 #include "lib/language_table.h"
+#include "lib/window_manager_rust.h"
 
 #ifdef TARGET_MSVC
 #include "lib/input/win32_eventhandler.h"
@@ -1312,8 +1313,30 @@ void MainMenuLoop()
     g_app->m_gameMenu->DestroyMenu();
 }
 
+extern "C" void darw_GameStep()
+{
+	if( g_app->m_demoEndSequence )
+	{
+		delete g_app->m_demoEndSequence;
+		g_app->m_demoEndSequence = nullptr;
+	}
+
+	if (g_app->m_requestedLocationId != -1)
+	{
+		EnterLocation();
+	}
+	else // Not in location
+	{
+		EnterGlobalWorld();
+	}
+
+	g_inputManager.Advance();
+}
+
 void RunTheGame()
 {
+	WindowManagerRust window_manager;
+
 	Initialise();
     RunBootLoaders();
 
@@ -1340,25 +1363,9 @@ void RunTheGame()
 		g_app->LoadCampaign();
 	}
 
-    while (true)
-    {
-        if( g_app->m_demoEndSequence )
-        {
-            delete g_app->m_demoEndSequence;
-            g_app->m_demoEndSequence = nullptr;
-        }
+	//window_manager.CreateWin(123, 123, false, 0, 0, 0, false, false, "test");
 
-        if (g_app->m_requestedLocationId != -1)
-        {
-            EnterLocation();
-        }
-        else // Not in location
-        {
-            EnterGlobalWorld();
-        }
-
-		g_inputManager.Advance();
-    }
+    window_manager.RunGameLoop();
 }
 
 #ifdef TARGET_DEBUG

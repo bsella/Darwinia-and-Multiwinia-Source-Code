@@ -212,6 +212,7 @@ add_executable(darwinia
 	code/lib/window_manager.cpp
 	code/lib/window_manager_sdl.cpp
 	code/lib/ogl_extensions_sdl.cpp
+	code/lib/window_manager_rust.cpp
 	code/lib/poster_maker.cpp
 	code/lib/persisting_debug_render.cpp
 	code/lib/texture_uv.cpp

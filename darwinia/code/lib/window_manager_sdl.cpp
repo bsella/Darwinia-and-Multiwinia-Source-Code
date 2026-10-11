@@ -443,7 +443,7 @@ void WindowManagerSDL::NastyPollForMessages()
 
 }
 
-PlatformWindow *WindowManagerSDL::Window()
+PlatformWindow WindowManagerSDL::Window()
 {
 	SDL_VERSION(&m_info.version);
 	SDL_GetWindowWMInfo(m_window, &m_info);

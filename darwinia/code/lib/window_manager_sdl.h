@@ -51,7 +51,7 @@ public:
 	void NastyMoveMouse(int x, int y)override;
 	void NastyPollForMessages()override;
 	
-	PlatformWindow *Window()override;
+	PlatformWindow Window()override;
 	void		PreventFullscreenStartup();
 
 	SDL_Window* SDLWindow() {return m_window;};
