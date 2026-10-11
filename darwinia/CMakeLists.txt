@@ -1,9 +1,12 @@
-﻿cmake_minimum_required(VERSION 3.12)
+﻿cmake_minimum_required(VERSION 3.22)
 project(Darwinia)
 
 file(COPY data DESTINATION .)
 
 find_package(ALSA REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(SDL2 REQUIRED)
 
 set (CMAKE_CXX_STANDARD 20)
 
@@ -352,11 +355,11 @@ target_link_libraries(darwinia
 	vorbis
 	png
 	unrar
-	-lSDL2
-	-lGL
-	-lGLU
+	SDL2::SDL2
+	OpenGL::GL
+	OpenGL::GLU
+	GLEW::GLEW
 	#-lglut
 	ALSA::ALSA
-	-lGLEW
 	darwinia_rs
 	)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.4.3)
+cmake_minimum_required(VERSION 3.22)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
 
 if(UNIX AND NOT DEFINED CMAKE_BUILD_TYPE)
